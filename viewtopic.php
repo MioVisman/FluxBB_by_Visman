@@ -104,7 +104,7 @@ if (isset($_GET['search_hl']))
 		$temp = unserialize($row['search_data']);
 		if (isset($temp['array_shl']))
 		{
-			$string_shl = '%(?<=[^\p{L}\p{N}])('.str_replace('*', '[\p{L}\p{N}]*', implode('|', $temp['array_shl'])).')(?=[^\p{L}\p{N}])%ui';
+			$string_shl = implode('|', $temp['array_shl']);
 
 		  $url_shl = '&amp;search_hl='.$search_hl;
 		}

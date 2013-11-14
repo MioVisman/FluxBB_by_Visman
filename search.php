@@ -652,7 +652,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 		// search HL - Visman
 		if (!empty($array_shl))
 		{
-			$string_shl = '%(?<=[^\p{L}\p{N}])('.str_replace('*', '[\p{L}\p{N}]*', implode('|', $array_shl)).')(?=[^\p{L}\p{N}])%ui';
+			$string_shl = implode('|', $array_shl);
 
 			if (!empty($search_id))
 				$url_shl = '&amp;search_hl='.$search_id;

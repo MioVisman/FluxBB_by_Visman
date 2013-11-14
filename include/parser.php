@@ -966,15 +966,6 @@ function parse_message($text, $hide_smilies)
 	// Convert applicable characters to HTML entities
 	$text = pun_htmlspecialchars($text);
 
-	// search HL - Visman
-	global $string_shl;
-	if (!empty($string_shl))
-	{
-		$text = ucp_preg_replace($string_shl, '<span class="shlight">$1</span>', ' '.$text.' ');
-		$text = substr($text, 1, -1);
-	}
-	// search HL - Visman
-
 	// If the message contains a code tag we have to split it up (text within [code][/code] shouldn't be touched)
 	if (strpos($text, '[code]') !== false && strpos($text, '[/code]') !== false)
 		list($inside, $text) = extract_blocks($text, '[code]', '[/code]');
@@ -1005,6 +996,16 @@ function parse_message($text, $hide_smilies)
 			}
 		}
 	}
+
+	// search HL - Visman
+	global $string_shl;
+	if (!empty($string_shl))
+	{
+//		$text = ucp_preg_replace('%(?<=[^\p{L}\p{N}])('.str_replace('*', '[\p{L}\p{N}]*', $string_shl).')(?=[^\p{L}\p{N}])%ui', '<span class="shlight">$1</span>', ' '.$text.' ');
+		$text = ucp_preg_replace('%(?<=[^\p{L}\p{N}])('.str_replace('*', '[\p{L}\p{N}]*', $string_shl).')(?=[^\p{L}\p{N}])(?=[^>]*<)%ui', '<span class="shlight">$1</span>', '>'.$text.'<');
+		$text = substr($text, 1, -1);
+	}
+	// search HL - Visman
 
 	return clean_paragraphs($text);
 }
