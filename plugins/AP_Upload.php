@@ -1,0 +1,526 @@
+<?php
+/**
+ * Copyright (C) 2011-2013 Visman (visman@inbox.ru)
+ * Copyright (C) 2007  BN (bnmaster@la-bnbox.info)
+ * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
+ */
+
+// Make sure no one attempts to run this script "directly"
+if (!defined('PUN'))
+	exit;
+
+// Tell admin_loader.php that this is indeed a plugin and that it is loaded
+define('PUN_PLUGIN_LOADED', 1);
+define('PLUGIN_VERSION', '1.3.3');
+define('PLUGIN_NAME', 'Upload');
+define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin='.$plugin));
+define('PLUGIN_LAWS', 'jpg,jpeg,png,gif,mp3,zip,rar,7z');
+define('PLUGIN_NF', 25);
+
+$tabindex = 1;
+$maxidf = 1;
+
+require PUN_ROOT.'include/upload.php';
+
+$sconf = array(
+	'thumb' => ($gd ? 1 : 0),
+	'thumb_size' => 100,
+	'thumb_perc' => 75,
+	'pic_mass' => 307200,
+	'pic_perc' => 75,
+	'pic_w' => 1680,
+	'pic_h' => 1050,
+	);
+
+// Установка плагина/мода
+if (isset($_POST['installation']))
+{
+	$db->add_field('users', 'upload', 'INT(15)', false, 0) or error(sprintf($lang_up['err_3'], 'users'), __FILE__, __LINE__, $db->error());
+	$db->add_field('groups', 'g_up_ext', 'VARCHAR(255)', false, PLUGIN_LAWS) or error(sprintf($lang_up['err_3'], 'groups'), __FILE__, __LINE__, $db->error());
+	$db->add_field('groups', 'g_up_max', 'INT(10)', false, 0) or error(sprintf($lang_up['err_3'], 'groups'), __FILE__, __LINE__, $db->error());
+	$db->add_field('groups', 'g_up_limit', 'INT(10)', false, 0) or error(sprintf($lang_up['err_3'], 'groups'), __FILE__, __LINE__, $db->error());
+
+	$db->query('UPDATE '.$db->prefix.'groups SET g_up_ext=\''.$db->escape(PLUGIN_LAWS).'\', g_up_limit=1073741824, g_up_max='.return_bytes(ini_get('upload_max_filesize')).'  WHERE g_id='.PUN_ADMIN) or error('Unable to update user group list', __FILE__, __LINE__, $db->error());
+
+	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE "o_uploadile_%"') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
+	$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES(\'o_uploadile_other\', \''.$db->escape(serialize($sconf)).'\')') or error($lang_up['err_insert'], __FILE__, __LINE__, $db->error());
+
+	if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
+		require PUN_ROOT.'include/cache.php';
+
+	generate_config_cache();
+
+	redirect(PLUGIN_URL, $lang_up['installation_success']);
+}
+// Обновления параметров
+else if (isset($_POST['update']))
+{
+	if (!isset($pun_user['g_up_ext']))
+	{
+		$db->add_field('groups', 'g_up_ext', 'VARCHAR(255)', false, '') or error(sprintf($lang_up['err_3'], 'groups'), __FILE__, __LINE__, $db->error());
+		$db->add_field('groups', 'g_up_max', 'INT(10)', false, 0) or error(sprintf($lang_up['err_3'], 'groups'), __FILE__, __LINE__, $db->error());
+		$db->add_field('groups', 'g_up_limit', 'INT(15)', false, 0) or error(sprintf($lang_up['err_3'], 'groups'), __FILE__, __LINE__, $db->error());
+	}
+
+	$g_up_ext = isset($_POST['g_up_ext']) ? array_map('pun_trim', $_POST['g_up_ext']) : array();
+	$g_up_limit = isset($_POST['g_up_limit']) ? array_map('intval', $_POST['g_up_limit']) : array();
+	$g_up_max = isset($_POST['g_up_max']) ? array_map('intval', $_POST['g_up_max']) : array();
+
+	$result = $db->query('SELECT g_id FROM '.$db->prefix.'groups ORDER BY g_id') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
+	while ($cur_group = $db->fetch_assoc($result))
+		if ($cur_group['g_id'] != PUN_GUEST)
+		{
+			if (isset($g_up_ext[$cur_group['g_id']]))
+			{
+				$g_ext = str_replace(' ', '', $g_up_ext[$cur_group['g_id']]);
+				$g_ext = preg_replace('%[,]+%u', ',', $g_ext);
+				if (preg_match('%^[0-9a-zA-Z][0-9a-zA-Z,]*[0-9a-zA-Z]$%u', $g_ext) == 0)
+					$g_ext = PLUGIN_LAWS;
+				$g_ext = strtolower($g_ext);
+			}
+			else
+				$g_ext = PLUGIN_LAWS;
+
+			if ($cur_group['g_id'] == PUN_ADMIN)
+			{
+				$g_lim = 1073741824;
+				$g_max = return_bytes(ini_get('upload_max_filesize'));
+			}
+			else
+			{
+				$g_lim = (!isset($g_up_limit[$cur_group['g_id']]) || $g_up_limit[$cur_group['g_id']] < 0) ? 0 : $g_up_limit[$cur_group['g_id']];
+				$g_max = (!isset($g_up_max[$cur_group['g_id']]) || $g_up_max[$cur_group['g_id']] < 0) ? 0 : $g_up_max[$cur_group['g_id']];
+				$g_max = ($g_max > return_bytes(ini_get('upload_max_filesize'))) ? return_bytes(ini_get('upload_max_filesize')) : $g_max;
+			}
+
+			$db->query('UPDATE '.$db->prefix.'groups SET g_up_ext=\''.$db->escape($g_ext).'\', g_up_limit='.$g_lim.', g_up_max='.$g_max.'  WHERE g_id='.$cur_group['g_id']) or error('Unable to update user group list', __FILE__, __LINE__, $db->error());
+		}
+
+	if (isset($_POST['thumb']))
+		$sconf['thumb'] = ($_POST['thumb'] == '1' ? 1 : 0);
+	if (isset($_POST['thumb_size']) && $_POST['thumb_size'] > 0)
+		$sconf['thumb_size'] = intval($_POST['thumb_size']);
+	if (isset($_POST['thumb_perc']) && $_POST['thumb_perc'] > 0 && $_POST['thumb_perc'] <= 100)
+		$sconf['thumb_perc'] = intval($_POST['thumb_perc']);
+
+	if (isset($_POST['pic_mass']) && $_POST['pic_mass'] >= 0)
+		$sconf['pic_mass'] = intval($_POST['pic_mass']);
+	if (isset($_POST['pic_perc']) && $_POST['pic_perc'] > 0 && $_POST['pic_perc'] <= 100)
+		$sconf['pic_perc'] = intval($_POST['pic_perc']);
+	if (isset($_POST['pic_w']) && $_POST['pic_w'] >= 100)
+		$sconf['pic_w'] = intval($_POST['pic_w']);
+	if (isset($_POST['pic_h']) && $_POST['pic_h'] >= 100)
+		$sconf['pic_h'] = intval($_POST['pic_h']);
+
+	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE "o_uploadile_%"') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
+	$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES(\'o_uploadile_other\', \''.$db->escape(serialize($sconf)).'\')') or error($lang_up['err_insert'], __FILE__, __LINE__, $db->error());
+
+	if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
+		require PUN_ROOT.'include/cache.php';
+
+	generate_config_cache();
+
+	redirect(PLUGIN_URL, $lang_up['update_success']);
+}
+// Удаление мода
+else if (isset($_POST['restore']))
+{
+	$db->drop_field('users', 'upload') or error('Unable to drop upload field', __FILE__, __LINE__, $db->error());
+	$db->drop_field('groups', 'g_up_ext') or error('Unable to drop g_up_ext field', __FILE__, __LINE__, $db->error());
+	$db->drop_field('groups', 'g_up_max') or error('Unable to drop g_up_max field', __FILE__, __LINE__, $db->error());
+	$db->drop_field('groups', 'g_up_limit') or error('Unable to drop g_up_limit field', __FILE__, __LINE__, $db->error());
+
+	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE "o_uploadile_%"') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
+
+	if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
+		require PUN_ROOT.'include/cache.php';
+
+	generate_config_cache();
+	
+	redirect(PLUGIN_URL, $lang_up['restore_success']);
+}
+
+if (isset($pun_config['o_uploadile_other']))
+	$aconf = unserialize($pun_config['o_uploadile_other']);
+else
+{
+	$aconf = $sconf;
+	$aconf['thumb'] = 0;
+	define('PLUGIN_OFF', 1);
+}
+
+$mem = 'img/members/';
+$regx = '%^img/members/(\d+)/(.+)\.([0-9a-zA-Z]+)$%i';
+// #############################################################################
+// Удаление файлов
+if (isset($_POST['delete']) && $_POST['delete'] != NULL && isset($_POST['max_id']))
+{
+	$error = 0;
+	$maxidf = intval($_POST['max_id']);
+
+	if (is_dir(PUN_ROOT.$mem))
+	{
+		$au = array();
+		for ($u = 1 ; $u < $maxidf ; $u++)
+		{
+			if (isset($_POST['del_'.$u]))
+			{
+				$fichier = pun_trim($_POST['del_'.$u]);
+				preg_match($regx, $fichier, $fi);
+				if (!isset($fi[1]) || !isset($fi[2]) || !isset($fi[3])) continue;
+
+				$f = parse_file($fi[2].'.'.$fi[3]);
+				$dir = $mem.$fi[1].'/';
+				if (is_file(PUN_ROOT.$dir.$f))
+				{
+					$au[$fi[1]] = $fi[1];
+					$d1 = $d2 = unlink(PUN_ROOT.$dir.$f);
+					if (is_file(PUN_ROOT.$dir.'mini_'.$f))
+						$d2 = unlink(PUN_ROOT.$dir.'mini_'.$f);
+					if (!$d1 || !$d2)
+						$error++;
+				}
+			}
+		}
+
+		if (!defined('PLUGIN_OFF'))
+		{
+			foreach ($au as $user)
+			{
+				// Считаем общий размер файлов юзера
+				$upload = dir_size($mem.$user.'/');
+				$db->query('UPDATE '.$db->prefix.'users SET upload=\''.$upload.'\' WHERE id='.$user) or error($lang_up['err_insert'], __FILE__, __LINE__, $db->error());
+			}
+		}
+	}
+
+	$p = (!isset($_GET['p']) || $_GET['p'] <= 1) ? 1 : intval($_GET['p']);
+
+	if ($error == 0)
+		redirect(PLUGIN_URL.($p > 1 ? '&amp;p='.$p : ''), $lang_up['delete_success']);
+	else
+	{
+		$pun_config['o_redirect_delay'] = 5;
+		redirect(PLUGIN_URL.($p > 1 ? '&amp;p='.$p : ''), $lang_up['err_delete']);
+	}
+}
+
+// Display the admin navigation menu
+generate_admin_menu($plugin);
+?>
+	<div id="uploadile" class="plugin blockform">
+		<h2><span><?php echo PLUGIN_NAME.' v.'.PLUGIN_VERSION ?></span></h2>
+		<div class="box">
+			<div class="inbox">
+				<p><?php echo $lang_up['plugin_desc'] ?></p>
+				<form action="<?php echo PLUGIN_URL.'&amp;'.time() ?>" method="post">
+					<p>
+<?php
+
+$stthumb = '" disabled="disabled';
+	
+if (defined('PLUGIN_OFF'))
+{
+?>
+						<input type="submit" name="installation" value="<?php echo $lang_up['installation'] ?>" />&#160;<?php echo $lang_up['installation_info'] ?><br />
+					</p>
+				</form>
+			</div>
+		</div>
+<?php
+} else {
+
+	if ($aconf['thumb'] == 1 && $gd)
+		$stthumb = '';
+	if ($gd)
+	{
+		$disbl = '';
+		$gd_vers = gd_info();
+		$gd_vers = $gd_vers['GD Version'];
+	}
+	else
+	{
+		$disbl = '" disabled="disabled';
+		$gd_vers = '-';
+	}
+
+?>
+						<input type="submit" name="update" value="<?php echo $lang_up['update'] ?>" />&#160;<?php echo $lang_up['update_info'] ?><br />
+						<input type="submit" name="restore" value="<?php echo $lang_up['restore'] ?>" />&#160;<?php echo $lang_up['restore_info'] ?><br /><br />
+					</p>
+				</form>
+			</div>
+		</div>
+		<h2 class="block2"><span><?php echo $lang_up['configuration'] ?></span></h2>
+		<div class="box">
+			<form method="post" action="<?php echo PLUGIN_URL.'&amp;'.time() ?>">
+				<p class="submittop"><input type="submit" name="update" value="<?php echo $lang_up['update'] ?>" tabindex="<?php echo $tabindex++ ?>" /></p>
+				<div class="inform">
+					<fieldset>
+						<legend><?php echo $lang_up['legend_2'] ?></legend>
+						<div class="infldset">
+						<table cellspacing="0">
+							<tr>
+								<th scope="row"><label>GD Version</label></th>
+								<td><?php echo pun_htmlspecialchars($gd_vers) ?></td>
+							</tr>
+							<tr>
+								<th scope="row"><label for="pic_mass"><?php echo $lang_up['pictures'] ?></label></th>
+								<td>
+									<?php echo $lang_up['for pictures']."\n" ?>
+									<input type="text" name="pic_mass" size="8" maxlength="8" tabindex="<?php echo $tabindex++ ?>" value="<?php echo pun_htmlspecialchars($aconf['pic_mass']).$disbl ?>" />&#160;<?php echo $lang_up['bytes'].":\n" ?><br />
+									&#160;*&#160;<?php echo $lang_up['to jpeg'] ?><br />
+									&#160;*&#160;<?php echo $lang_up['Install quality']."\n" ?>
+									<input type="text" name="pic_perc" size="4" maxlength="3" tabindex="<?php echo $tabindex++ ?>" value="<?php echo pun_htmlspecialchars($aconf['pic_perc']).$disbl ?>" />&#160;%<br />
+									&#160;*&#160;<?php echo $lang_up['Size not more']."\n" ?>
+									<input type="text" name="pic_w" size="4" maxlength="4" tabindex="<?php echo $tabindex++ ?>" value="<?php echo pun_htmlspecialchars($aconf['pic_w']).$disbl ?>" />&#160;x
+									<input type="text" name="pic_h" size="4" maxlength="4" tabindex="<?php echo $tabindex++ ?>" value="<?php echo pun_htmlspecialchars($aconf['pic_h']).$disbl ?>" />&#160;<?php echo $lang_up['px']."\n" ?>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row"><label for="thumb"><?php echo $lang_up['thumb'] ?></label></th>
+								<td>
+									<input type="radio" tabindex="<?php echo ($tabindex++).$disbl ?>" name="thumb" value="1"<?php if ($aconf['thumb'] == 1) echo ' checked="checked"' ?> /> <strong><?php echo $lang_up['oui'] ?></strong>
+									&#160;&#160;&#160;
+									<input type="radio" tabindex="<?php echo ($tabindex++).$disbl ?>" name="thumb" value="0"<?php if ($aconf['thumb'] == 0) echo ' checked="checked"' ?> /> <strong><?php echo $lang_up['non'] ?></strong>
+									<br />
+									&#160;*&#160;<?php echo $lang_up['thumb_size']."\n" ?>
+									<input type="text" name="thumb_size" size="4" maxlength="4" tabindex="<?php echo $tabindex++ ?>" value="<?php echo pun_htmlspecialchars($aconf['thumb_size']).$disbl ?>" />&#160;<?php echo $lang_up['px']."\n" ?><br />
+									&#160;*&#160;<?php echo $lang_up['quality']."\n" ?>
+									<input type="text" name="thumb_perc" size="4" maxlength="3" tabindex="<?php echo $tabindex++ ?>" value="<?php echo pun_htmlspecialchars($aconf['thumb_perc']).$disbl ?>" />&#160;%
+								</td>
+							</tr>
+						</table>
+						</div>
+					</fieldset>
+				</div>
+
+				<div class="inform">
+					<fieldset>
+						<legend><?php echo $lang_up['groups'] ?></legend>
+						<div class="infldset">
+							<div class="inbox">
+								<p>1* - <?php echo $lang_up['laws'].' '.$lang_up['laws_info'] ?></p>
+								<p>2* - <?php echo $lang_up['maxsize_member'] ?></p>
+								<p>3* - <?php echo $lang_up['limit_member'] ?></p>
+							</div>
+							<table class="aligntop" cellspacing="0">
+							<thead>
+								<tr>
+									<th class="tcl" scope="col"><?php echo $lang_up['group'] ?></th>
+									<th class="tc2" scope="col">1*</th>
+									<th class="tcr" scope="col">2*</th>
+									<th class="tcr" scope="col">3*</th>
+								</tr>
+							</thead>
+							<tbody>
+<?php
+
+	$result = $db->query('SELECT * FROM '.$db->prefix.'groups ORDER BY g_id') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
+
+	while ($cur_group = $db->fetch_assoc($result))
+		if ($cur_group['g_id'] != PUN_GUEST)
+		{
+			if (!isset($cur_group['g_up_ext']))
+			{
+				$cur_group['g_up_max'] = $cur_group['g_up_limit'] = 0;
+				$cur_group['g_up_ext'] = '';
+			}
+				
+?>
+								<tr>
+									<td class="tcl"><?php echo pun_htmlspecialchars($cur_group['g_title']) ?></td>
+									<td class="tc2"><input type="text" name="g_up_ext[<?php echo $cur_group['g_id'] ?>]" value="<?php echo pun_htmlspecialchars($cur_group['g_up_ext']) ?>" tabindex="<?php echo $tabindex++ ?>" size="40" maxlength="255" /></td>
+									<td class="tcr"><input type="text" name="g_up_max[<?php echo $cur_group['g_id'] ?>]" value="<?php echo $cur_group['g_up_max'] ?>"  tabindex="<?php echo $tabindex++ ?>" size="10" maxlength="10" <?php echo ($cur_group['g_id'] == PUN_ADMIN ? 'disabled="disabled" ' : '')?>/></td>
+									<td class="tcr"><input type="text" name="g_up_limit[<?php echo $cur_group['g_id'] ?>]" value="<?php echo $cur_group['g_up_limit'] ?>"  tabindex="<?php echo $tabindex++ ?>" size="10" maxlength="10" <?php echo ($cur_group['g_id'] == PUN_ADMIN ? 'disabled="disabled" ' : '')?>/></td>
+								</tr>
+<?php
+		}
+?>
+							</tbody>
+							</table>
+						</div>
+					</fieldset>
+				</div>
+
+				<p class="submitend"><input type="submit" name="update" value="<?php echo $lang_up['update'] ?>" tabindex="<?php echo $tabindex++ ?>" /></p>
+				<div class="inform">
+					<fieldset>
+						<legend><?php echo $lang_up['legend_1'] ?></legend>
+						<div class="infldset">
+							<label for="mo"><?php echo $lang_up['mo'] ?></label> <input type="text" name="mo" id="mo" size="15" tabindex="<?php echo $tabindex++ ?>" /> <input type="button" value="<?php echo $lang_up['convert'] ?>" tabindex="<?php echo $tabindex++ ?>" onclick="javascript:document.getElementById('ko').value=document.getElementById('mo').value*1024; document.getElementById('o').value=document.getElementById('mo').value*1048576;" />
+							<label for="ko"><?php echo $lang_up['ko'] ?></label> <input type="text" name="ko" id="ko" size="15" tabindex="<?php echo $tabindex++ ?>" /> <input type="button" value="<?php echo $lang_up['convert'] ?>" tabindex="<?php echo $tabindex++ ?>" onclick="javascript:document.getElementById('mo').value=document.getElementById('ko').value/1024; document.getElementById('o').value=document.getElementById('ko').value*1024;"/>
+							<label for="o"><?php echo $lang_up['o'] ?></label> <input type="text" name="o" id="o" size="15" tabindex="<?php echo $tabindex++ ?>" /> <input type="button" value="<?php echo $lang_up['convert'] ?>" tabindex="<?php echo $tabindex++ ?>" onclick="javascript:document.getElementById('mo').value=document.getElementById('o').value/1048576; document.getElementById('ko').value=(document.getElementById('o').value*1024)/1048576;"/>
+							</div>
+					</fieldset>
+				</div>
+			</form>
+		</div>
+<?php
+}
+// #############################################################################
+$files = array();
+if (is_dir(PUN_ROOT.$mem))
+{
+	$af = array();
+	$ad = scandir(PUN_ROOT.$mem);
+	foreach($ad as $f)
+	{
+		if ($f != '.' && $f != '..' && is_dir(PUN_ROOT.$mem.$f))
+		{
+			$dir = $mem.$f.'/';
+			$open = opendir(PUN_ROOT.$dir);
+			while(($file = readdir($open)) !== false)
+			{
+				if (is_file(PUN_ROOT.$dir.$file) && $file[0] != '.' && $file[0] != '#' && substr($file, 0, 5) != 'mini_')
+				{
+					$ext = strtolower(substr(strrchr($file, '.'), 1)); // берем расширение файла
+					if (!in_array($ext, $extforno))
+					{
+						$time = filemtime(PUN_ROOT.$dir.$file).$file.$f;
+						$af[$time] = $dir.$file;
+					}
+				}
+			}
+			closedir($open);
+		}
+	}
+	unset($ad);
+	if (!empty($af))
+	{
+		$num_pages = ceil(sizeof($af) / PLUGIN_NF);
+		$p = (!isset($_GET['p']) || $_GET['p'] <= 1) ? 1 : intval($_GET['p']);
+		if ($p > $num_pages)
+		{
+			header('Location: '.PLUGIN_URL.'&p='.$num_pages.'#gofile');
+			exit;
+		}
+
+		$start_from = PLUGIN_NF * ($p - 1);
+
+		// Generate paging links
+		$paging_links = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.paginate($num_pages, $p, PLUGIN_URL);
+		$paging_links = preg_replace('%href="([^">]+)"%', 'href="$1#gofile"', $paging_links);
+
+		krsort($af);
+		$files = array_slice($af, $start_from, PLUGIN_NF);
+		unset($af);
+	}
+}
+
+?>
+		<h2 id="gofile" class="block2"><span><?php echo $lang_up['fichier_membre'] ?></span></h2>
+		<div class="box">
+<?php
+
+if (empty($files))
+{
+?>
+			<div class="inbox">
+				<p><?php echo $lang_up['err_2'] ?></p>
+			</div>
+<?php
+}
+else
+{
+?>
+			<div class="linkst" style="clear: right;">
+				<div class="inbox crumbsplus">
+					<div class="pagepost">
+						<p class="pagelink conl"><?php echo $paging_links ?></p>
+					</div>
+					<div class="clearer" style="clear: right;"></div>
+				</div>
+			</div>
+			<form method="post" action="<?php echo PLUGIN_URL.($p > 1 ? '&amp;p='.$p : '').'#gofile' ?>">
+				<div class="inform">
+					<p class="submittop"><input type="submit" name="update_thumb" value="<?php echo $lang_up['update_thumb'].$stthumb ?>" /></p>
+					<div class="infldset">
+						<table class="aligntop" cellspacing="0">
+							<thead>
+								<tr>
+									<th scope="col"><?php echo $lang_up['th0'] ?></th>
+									<th scope="col" style="width:80%;"><?php echo $lang_up['th'] ?></th>
+									<th scope="col"><?php echo $lang_up['th2'] ?></th>
+									<th scope="col" style="text-align:center;"><input type="submit" value="<?php echo $lang_up['delete'] ?>" name="delete" tabindex="<?php echo $tabindex++ ?>" /></th>
+								</tr>
+							</thead>
+							<tfoot>
+								<tr>
+									<th><?php echo $lang_up['th0'] ?></th>
+									<th style="width:80%;"><?php echo $lang_up['th'] ?></th>
+									<th><?php echo $lang_up['th2'] ?></th>
+									<th style="text-align:center;"><input type="submit" value="<?php echo $lang_up['delete'] ?>" name="delete" tabindex="<?php echo $tabindex++ ?>" /></th>
+								</tr>
+							</tfoot>
+							<tbody>
+<?php
+
+	// данные по юзерам
+	$au = $ag = array();
+	$result = $db->query('SELECT id, username, group_id FROM '.$db->prefix.'users WHERE group_id!='.PUN_UNVERIFIED) or error('Unable to fetch user information', __FILE__, __LINE__, $db->error());
+	while ($u = $db->fetch_assoc($result))
+	{
+		$au[$u['id']] = $u['username'];
+		$ag[$u['id']] = $u['group_id'];
+	}
+	$db->free_result($result);
+	// данные по группам
+	$extsup = array();
+	$result = $db->query('SELECT * FROM '.$db->prefix.'groups') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
+	while ($g = $db->fetch_assoc($result))
+	{
+		if (isset($g['g_up_ext']))
+			$extsup[$g['g_id']] = explode(',', $g['g_up_ext'].','.strtoupper($g['g_up_ext']));
+		else
+			$extsup[$g['g_id']] = array();
+	}
+	$db->free_result($result);
+
+	foreach ($files as $fichier)
+	{
+		preg_match($regx, $fichier, $fi);
+		if (!isset($fi[1]) || !isset($fi[2]) || !isset($fi[3])) continue;
+		
+		$fb = in_array(strtolower($fi[3]), array('jpg', 'jpeg', 'gif', 'png', 'bmp')) ? '" class="fancy_zoom" rel="vi001' : '';
+		$dir = $mem.$fi[1].'/';
+		$size_fichier = file_size(filesize(PUN_ROOT.$fichier));
+		$miniature = $dir.'mini_'.$fi[2].'.'.$fi[3];
+		if (isset($_POST['update_thumb']) && $_POST['update_thumb'] != NULL && $aconf['thumb'] == 1 && array_key_exists(strtolower($fi[3]),$extimageGD))
+			img_resize(PUN_ROOT.$fichier, $dir, 'mini_'.$fi[2], $fi[3], 0, $aconf['thumb_size'], $aconf['thumb_perc']);
+
+?>
+								<tr>
+									<td class="tc2"><?php echo (isset($au[$fi[1]]) ? pun_htmlspecialchars($au[$fi[1]]) : '&#160;') ?></td>
+									<td class="tc1"><a href="<?php echo pun_htmlspecialchars($fichier) ?>"><?php echo pun_htmlspecialchars($fi[2]) ?></a> [<?php echo pun_htmlspecialchars($size_fichier) ?>].[<?php echo (isset($ag[$fi[1]]) && in_array($fi[3], $extsup[$ag[$fi[1]]]) ? pun_htmlspecialchars($fi[3]) : '<span style="color: #ff0000"><strong>'.pun_htmlspecialchars($fi[3]).'</strong></span>') ?>]</td>
+<?php
+		if (is_file(PUN_ROOT.$miniature))
+			echo "\t\t\t\t\t\t\t\t\t".'<td class="tc2" style="text-align:center;"><a href="'.pun_htmlspecialchars($fichier).$fb.'"><img src="'.pun_htmlspecialchars($miniature).'" alt="'.pun_htmlspecialchars($fi[2]).'" /></a></td>'."\n";
+		else
+			echo "\t\t\t\t\t\t\t\t\t".'<td class="tc2" style="text-align:center;">'.$lang_up['no_preview'].'</td>'."\n";
+?>
+									<td style="text-align:center;"><input type="checkbox" name="del_<?php echo $maxidf++ ?>" value="<?php echo pun_htmlspecialchars($fichier) ?>" tabindex="<?php echo $tabindex++ ?>" /></td>
+								</tr>
+<?php
+	}
+?>
+							</tbody>
+						</table>
+						<input type="hidden" name="max_id" value="<?php echo $maxidf ?>" />
+					</div>
+				</div>
+			</form>
+			<div class="linkst">
+				<div class="inbox crumbsplus">
+					<div class="pagepost">
+						<p class="pagelink conl"><?php echo $paging_links ?></p>
+					</div>
+					<div class="clearer"></div>
+				</div>
+			</div>
+<?php
+}
+?>
+		</div>
+	</div>
+<?php

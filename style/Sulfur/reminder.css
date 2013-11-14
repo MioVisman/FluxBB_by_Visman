@@ -1,0 +1,67 @@
+.reminder {
+	display: block;
+	position: fixed;
+	border: 2px solid black;
+	visibility: visible;
+	width: 350px;
+	margin-left: -175px;
+	left: 50%;
+	top: 100px;
+}
+
+* html .reminder {
+	position: absolute;
+	top: expression((100+(ignoreMe=document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop))+'px');
+}
+
+.remhandle {
+	padding: 1px;
+	text-indent: 3px;
+	font: bold 14px Verdana, Helvetica, Arial, sans-serif;
+	overflow: hidden;
+	width: auto;
+	filter:progid:DXImageTransform.Microsoft.alpha(opacity=100);
+	-moz-opacity: 1;
+	opacity: 1;
+}
+
+.remhandle .remcontrols {
+	position: absolute;
+	right: 1px;
+	top: 2px;
+	cursor: hand;
+	cursor: pointer;
+}
+
+* html .remhandle {
+	width: 100%;
+}
+
+.remcontent {
+	font: 68.75%/1.4545em Verdana, Helvetica, Arial, sans-serif;
+	display: block;
+	border-top: 1px solid #B84623;
+	height: 150px;
+	padding: 5px;
+	overflow: hidden;
+}
+
+.remcontent a:link, .remcontent a:visited {
+	color: #822100;
+
+}
+
+.remcontent a:hover, .remcontent a:active, .remcontent a:focus {
+	color: #CA3300;
+}
+
+.remhandle {
+	background-color: #B84623;
+	color: #FFFFFF;
+}
+
+.remcontent {
+	background-color: #F1F1F1;
+	color: #333333;
+}
+

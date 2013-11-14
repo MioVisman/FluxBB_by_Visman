@@ -1,0 +1,57 @@
+/***************************
+New Private Messaging System
+***************************/
+
+#punpmsnew .pagepost {
+	overflow: hidden;
+}
+
+#punpmsnew .block2col .blocktable {
+	margin-bottom: 0px;
+}
+
+#punpmsnew .block2col .blocktable .inbox, #punpmsnew .block2col .blockpost .inbox {
+	padding: 0;
+}
+
+#punpmsnew .block2col #posterror, #punpmsnew .block2col #postform {
+	margin-bottom: 6px;
+}
+
+#punpmsnew .block2col #infono {
+	padding-bottom: 0px;
+}
+
+* html #punpmsnew .block2col .pagepost {
+	margin-bottom: 2em;
+}
+
+* html #punpmsnew .block2col #quickpost {
+	margin-top: 3em;
+}
+
+#punpmsnew .psmnwarn {
+	border-style: solid;
+	border-width: 0 0 0 3px;
+	border-color: #e99;
+	margin: 0.75em 1em 0em 2em;
+	padding: 0 0.75em;
+}
+
+#punpmsnew .psmnwarn:before {
+	content: "!";
+	position: absolute;
+	margin-left: -2em;
+	font-size: 150%;
+	font-weight: bold;
+	color: #e99;
+}
+
+#punpmsnew .tce {
+	width: 20px;
+	padding: 3px;
+}
+
+#punpmsnew .tce input {
+	margin: 0px 0px 0px 0px;
+}
