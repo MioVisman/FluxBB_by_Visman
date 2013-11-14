@@ -18,19 +18,9 @@ require PUN_ROOT.'lang/'.$pun_user['language'].'/login.php';
 
 $action = isset($_GET['action']) ? $_GET['action'] : null;
 
-require PUN_ROOT.'lang/'.$pun_user['language'].'/security.php';
-
 // мод отслеживания ошибок ввода - Visman
-if ($pun_config['o_blocking_time'] != '0' && $action != 'out')
-{
-	$block_time_term = time() - 60 * $pun_config['o_blocking_time'];
-	$db->query('DELETE FROM '.$db->prefix.'blocking WHERE block_log < '.$block_time_term) or error('Unable to delete from blocking list', __FILE__, __LINE__, $db->error());
-	$block_q = ($pun_config['o_blocking_reglog'] == '1') ? '(block_type=1 OR block_type=2)' : 'block_type=2';
-	$result = $db->query('SELECT block_ip FROM '.$db->prefix.'blocking WHERE block_ip=\''.$db->escape(get_remote_address()).'\' AND '.$block_q) or error('Unable to fetch blocking info', __FILE__, __LINE__, $db->error());
-	$block_kolvo = $db->num_rows($result);
-	if ($block_kolvo > $pun_config['o_blocking_kolvo'])
-		message($lang_sec['Limit of errors']);
-}
+require PUN_ROOT.'include/security.php';
+vsecurity_get(2);
 
 if (isset($_POST['form_sent']) && $action == 'in')
 {
@@ -90,7 +80,7 @@ if (isset($_POST['form_sent']) && $action == 'in')
 		$error = 'Error 2: '.$lang_sec['You are robot'];
 	else if ($_POST['csrf_token'] != csrf_hash())
 		$error = 'Error 3: '.$lang_sec['You are robot'];
-	else if ($cry_time < 5)
+	else if ($cry_time < 4)
 		$error = $lang_sec['You fast'];
 	else if ($cry_time > 3600)
 		$error = $lang_sec['You slowly'];
@@ -98,23 +88,8 @@ if (isset($_POST['form_sent']) && $action == 'in')
 	if (!$authorized || $error != '')
 	{
 		// мод отслеживания ошибок ввода - Visman
-		if ($pun_config['o_blocking_time'] != '0')
-		{
-			$db->query('INSERT INTO '.$db->prefix.'blocking (block_ip, block_log, block_type) VALUES(\''.$db->escape(get_remote_address()).'\', '.time().', 2)') or error('Unable to create blocking', __FILE__, __LINE__, $db->error());
+		vsecurity_get(2, 'UserName = '.$form_username);
 
-			$block_kolvo = $block_kolvo + 1;
-			if ($block_kolvo > $pun_config['o_blocking_kolvo'] && ($pun_config['o_blocking_user'] != '1' || ($pun_config['o_blocking_user'] == '1' && !empty($cur_user['password']))))
-			{
-				$reason = '[MOD] Auto Bloking. Error input login.php'."\n\n".'IP = '.get_remote_address()."\n".'UserName = '.$form_username."\n";
-				// Should we use the internal report handling?
-				if ($pun_config['o_report_method'] == '0' || $pun_config['o_report_method'] == '2')
-					$db->query('INSERT INTO '.$db->prefix.'reports (post_id, topic_id, forum_id, reported_by, created, message) VALUES(0, 0, 0, '.$pun_user['id'].', '.time().', \''.$db->escape($reason).'\')' ) or error('Unable to create report', __FILE__, __LINE__, $db->error());
-
-				message($lang_sec['Limit of errors']);
-			}
-		}
-		// мод отслеживания ошибок ввода - Visman
-		
 		if ($error != '')
 			message($error);
 		else
@@ -250,22 +225,7 @@ else if ($action == 'forget' || $action == 'forget_2')
 if (!empty($errors))
 {
 	// мод отслеживания ошибок ввода - Visman
-	if ($pun_config['o_blocking_time'] != '0')
-	{
-		$db->query('INSERT INTO '.$db->prefix.'blocking (block_ip, block_log, block_type) VALUES(\''.$db->escape(get_remote_address()).'\', '.time().', 2)') or error('Unable to create blocking', __FILE__, __LINE__, $db->error());
-
-		$block_kolvo = $block_kolvo + 1;
-		if ($block_kolvo > $pun_config['o_blocking_kolvo'])
-		{
-			$reason = '[MOD] Auto Bloking. Error input login.php'."\n\n".'IP = '.get_remote_address()."\n".'UserName = ---'."\n".'Email = '.$email."\n";
-			// Should we use the internal report handling?
-			if ($pun_config['o_report_method'] == '0' || $pun_config['o_report_method'] == '2')
-				$db->query('INSERT INTO '.$db->prefix.'reports (post_id, topic_id, forum_id, reported_by, created, message) VALUES(0, 0, 0, '.$pun_user['id'].', '.time().', \''.$db->escape($reason).'\')' ) or error('Unable to create report', __FILE__, __LINE__, $db->error());
-
-			message($lang_common['Limit of errors']);
-		}
-	}
-	// мод отслеживания ошибок ввода - Visman
+	vsecurity_get(2, 'UserName = ---'."\n".'Email = '.$email);
 
 ?>
 <div id="posterror" class="block">

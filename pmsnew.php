@@ -71,7 +71,7 @@ else
 	
 	if ($pun_user['g_pm'] == 0 || $pun_user['messages_enable'] == 0)
 		if (!in_array($pmsn_modul, array('new','topic','close','closeq')))
-			message($lang_common['No permission']);
+			message($lang_common['No permission'], false, '403 Forbidden');
 
 	if ($pmsn_modul == 'new' && $pun_user['messages_new'] == 0)
 		$pmsn_modul = 'list';
@@ -136,6 +136,9 @@ if ($pun_user['g_pm'] == 0 || $pun_user['messages_enable'] == 0 || ($pun_user['g
 else
   $pmsn_f_cnt = '<span><a href="pmsnew.php?mdl=post'.$sidamp.'">'.$lang_pmsn['New dialog'].'</a></span>';
 
+if (!isset($page_head))
+	$page_head = array();
+	
 if (file_exists(PUN_ROOT.'style/'.$pun_user['style'].'/newpms.css'))
 	$page_head['pmsnewstyle'] = '<link rel="stylesheet" type="text/css" href="style/'.$pun_user['style'].'/newpms.css" />';
 else

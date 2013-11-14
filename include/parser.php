@@ -61,6 +61,8 @@ function preparse_bbcode($text, &$errors, $is_signature = false)
 {
 	global $pun_config, $lang_common, $lang_post, $re_list;
 
+	$text = preg_replace('%('.str_replace(array('http://', 'https://', '.'), array('https?://', 'https?://', '\.'), $pun_config['o_base_url']).'/viewtopic\.php[^\[\]\s]+)(&search_hl=\d+)%ui', '$1', $text); // search HL - Visman
+
 	// Remove empty tags
 	while (($new_text = strip_empty_bbcode($text)) !== false)
 	{
@@ -916,15 +918,19 @@ function do_bbcode($text, $is_signature = false)
 function do_clickable($text)
 {
 	$text = ' '.$text;
-	$text = ucp_preg_replace_callback('%(?<=[\s\]\)])(<)?(\[)?(\()?([\'"]?)(https?|ftp|news){1}://([\p{L}\p{N}\-]+\.([\p{L}\p{N}\-]+\.)*[\p{L}\p{N}]+(:[0-9]+)?(/(?:[^\s\[]*[^\s.,?!\[;:-])?)?)\4(?(3)(\)))(?(2)(\]))(?(1)(>))(?![^\s]*\[/(?:url|img|imgl|imgr)\])%ui', 'stripslashes($matches[1].$matches[2].$matches[3].$matches[4]).handle_url_tag($matches[5]."://".$matches[6], $matches[5]."://".$matches[6], true).stripslashes($matches[4].flux_empty($matches,10).flux_empty($matches,11).flux_empty($matches,12))', $text);
-	$text = ucp_preg_replace_callback('%(?<=[\s\]\)])(<)?(\[)?(\()?([\'"]?)(www|ftp)\.(([\p{L}\p{N}\-]+\.)+[\p{L}\p{N}]+(:[0-9]+)?(/(?:[^\s\[]*[^\s.,?!\[;:-])?)?)\4(?(3)(\)))(?(2)(\]))(?(1)(>))(?![^\s]*\[/(?:url|img|imgl|imgr)\])%ui','stripslashes($matches[1].$matches[2].$matches[3].$matches[4]).handle_url_tag($matches[5].".".$matches[6], $matches[5].".".$matches[6], true).stripslashes($matches[4].flux_empty($matches,10).flux_empty($matches,11).flux_empty($matches,12))', $text);
+	$text = ucp_preg_replace_callback('%(?<=[\s\]\)])(<)?(\[)?(\()?([\'"]?)(https?|ftp|news){1}://([\p{L}\p{N}\-]+\.([\p{L}\p{N}\-]+\.)*[\p{L}\p{N}]+(:[0-9]+)?(/(?:[^\s\[]*[^\s.,?!\[;:-])?)?)\4(?(3)(\)))(?(2)(\]))(?(1)(>))(?![^\s]*\[/(?:url|img)\])%ui', 'stripslashes($matches[1].$matches[2].$matches[3].$matches[4]).handle_url_tag($matches[5]."://".$matches[6], $matches[5]."://".$matches[6], true).stripslashes($matches[4].forum_array_key($matches, 10).forum_array_key($matches, 11).forum_array_key($matches, 12))', $text);
+	$text = ucp_preg_replace_callback('%(?<=[\s\]\)])(<)?(\[)?(\()?([\'"]?)(www|ftp)\.(([\p{L}\p{N}\-]+\.)+[\p{L}\p{N}]+(:[0-9]+)?(/(?:[^\s\[]*[^\s.,?!\[;:-])?)?)\4(?(3)(\)))(?(2)(\]))(?(1)(>))(?![^\s]*\[/(?:url|img)\])%ui','stripslashes($matches[1].$matches[2].$matches[3].$matches[4]).handle_url_tag($matches[5].".".$matches[6], $matches[5].".".$matches[6], true).stripslashes($matches[4].forum_array_key($matches, 10).forum_array_key($matches, 11).forum_array_key($matches, 12))', $text);
 
 	return substr($text, 1);
 }
-// curve crutch http://fluxbb.org/development/core/tickets/888/
-function flux_empty($arr, $num)
+
+
+//
+// Return an array key, if it exists, otherwise return an empty string
+//
+function forum_array_key($arr, $key)
 {
-	return isset($arr[$num]) ? $arr[$num] : '';
+	return isset($arr[$key]) ? $arr[$key] : '';
 }
 
 
@@ -933,7 +939,7 @@ function flux_empty($arr, $num)
 //
 function do_smilies($text)
 {
-	global $pun_config, $smilies;
+	global $smilies;
 
 	$text = ' '.$text.' ';
 
@@ -959,6 +965,15 @@ function parse_message($text, $hide_smilies)
 
 	// Convert applicable characters to HTML entities
 	$text = pun_htmlspecialchars($text);
+
+	// search HL - Visman
+	global $string_shl;
+	if (!empty($string_shl))
+	{
+		$text = ucp_preg_replace($string_shl, '<span class="shlight">$1</span>', ' '.$text.' ');
+		$text = substr($text, 1, -1);
+	}
+	// search HL - Visman
 
 	// If the message contains a code tag we have to split it up (text within [code][/code] shouldn't be touched)
 	if (strpos($text, '[code]') !== false && strpos($text, '[/code]') !== false)

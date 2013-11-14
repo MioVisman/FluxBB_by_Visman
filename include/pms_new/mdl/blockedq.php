@@ -15,28 +15,28 @@ define('PUN_PMS_LOADED', 1);
 if (defined('PUN_PMS_NEW_CONFIRM'))
 {
 	if (!isset($_POST['delete']))
-		message($lang_common['Bad request']);
+		message($lang_common['Bad request'], false, '404 Not Found');
 
 	if (isset($_POST['action2']))
 	{
 		if (!isset($_POST['user_numb']))
-			message($lang_common['Bad request']);
+			message($lang_common['Bad request'], false, '404 Not Found');
 
 		if (@preg_match('/[^0-9,]/', $_POST['user_numb']))
-			message($lang_common['Bad request']);
+			message($lang_common['Bad request'], false, '404 Not Found');
 
 		$unumbs = explode(',', $_POST['user_numb']);
 	}
 	else
 	{
 		if (!isset($_POST['user_numb']))
-			message($lang_common['Bad request']);
+			message($lang_common['Bad request'], false, '404 Not Found');
 
 		$unumbs = array_map('intval', array_keys($_POST['user_numb']));
 	}
 
 	if (count($unumbs) < 1)
-		message($lang_common['Bad request']);
+		message($lang_common['Bad request'], false, '404 Not Found');
 
 	// действуем
 	if (isset($_POST['action2']))

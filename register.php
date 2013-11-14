@@ -26,19 +26,9 @@ require PUN_ROOT.'lang/'.$pun_user['language'].'/prof_reg.php';
 if ($pun_config['o_regs_allow'] == '0')
 	message($lang_register['No new regs']);
 
-require PUN_ROOT.'lang/'.$pun_user['language'].'/security.php';
-
 // мод отслеживания ошибок ввода - Visman
-if ($pun_config['o_blocking_time'] != '0')
-{
-	$block_time_term = time() - 60 * $pun_config['o_blocking_time'];
-	$db->query('DELETE FROM '.$db->prefix.'blocking WHERE block_log < '.$block_time_term) or error('Unable to delete from blocking list', __FILE__, __LINE__, $db->error());
-	$block_q = ($pun_config['o_blocking_reglog'] == '1') ? '(block_type=1 OR block_type=2)' : 'block_type=1';
-	$result = $db->query('SELECT block_ip FROM '.$db->prefix.'blocking WHERE block_ip=\''.$db->escape(get_remote_address()).'\' AND '.$block_q) or error('Unable to fetch blocking info', __FILE__, __LINE__, $db->error());
-	$block_kolvo = $db->num_rows($result);
-	if ($block_kolvo > $pun_config['o_blocking_kolvo'])
-		message($lang_sec['Limit of errors']);
-}
+require PUN_ROOT.'include/security.php';
+vsecurity_get(1);
 
 // User pressed the cancel button
 if (isset($_GET['cancel']))
@@ -148,7 +138,7 @@ if (isset($_POST['form_sent']))
 	{
 		$language = preg_replace('%[\.\\\/]%', '', $_POST['language']);
 		if (!file_exists(PUN_ROOT.'lang/'.$language.'/common.php'))
-			message($lang_common['Bad request']);
+			message($lang_common['Bad request'], false, '404 Not Found');
 	}
 	else
 		$language = $pun_config['o_default_lang'];
@@ -189,6 +179,15 @@ if (isset($_POST['form_sent']))
 		// Add the user
 		$db->query('INSERT INTO '.$db->prefix.'users (username, group_id, password, email, email_setting, timezone, dst, language, style, registered, registration_ip, last_visit) VALUES(\''.$db->escape($username).'\', '.$intial_group_id.', \''.$password_hash.'\', \''.$db->escape($email1).'\', '.$email_setting.', '.$timezone.' , '.$dst.', \''.$db->escape($language).'\', \''.$pun_config['o_default_style'].'\', '.$now.', \''.$db->escape(get_remote_address()).'\', '.$now.')') or error('Unable to create user', __FILE__, __LINE__, $db->error());
 		$new_uid = $db->insert_id();
+
+		if ($pun_config['o_regs_verify'] == '0')
+		{
+			// Regenerate the users info cache
+			if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
+				require PUN_ROOT.'include/cache.php';
+
+			generate_users_info_cache();
+		}
 
 		// If the mailing list isn't empty, we may need to send out some alerts
 		if ($pun_config['o_mailing_list'] != '')
@@ -274,12 +273,6 @@ if (isset($_POST['form_sent']))
 			message($lang_register['Reg email'].' <a href="mailto:'.pun_htmlspecialchars($pun_config['o_admin_email']).'">'.pun_htmlspecialchars($pun_config['o_admin_email']).'</a>.', true);
 		}
 
-		// Regenerate the users info cache
-		if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
-			require PUN_ROOT.'include/cache.php';
-
-		generate_users_info_cache();
-
 		pun_setcookie($new_uid, $password_hash, ($save_pass == '1') ? time() + 1209600 : time() + $pun_config['o_timeout_visit']); // мод запоминания пароля - Visman
 		
 		// удаляем из онлайн таблицы запись для этого пользователя для правильного подсчета макс. кол-во пользователей - Visman
@@ -304,22 +297,7 @@ $email_setting = isset($email_setting) ? $email_setting : $pun_config['o_default
 if (!empty($errors))
 {
 	// мод отслеживания ошибок ввода - Visman
-	if ($pun_config['o_blocking_time'] != '0')
-	{
-		$db->query('INSERT INTO '.$db->prefix.'blocking (block_ip, block_log, block_type) VALUES(\''.$db->escape(get_remote_address()).'\', '.time().', 1)') or error('Unable to create blocking', __FILE__, __LINE__, $db->error());
-
-		$block_kolvo = $block_kolvo + 1;
-		if ($block_kolvo > $pun_config['o_blocking_kolvo'] && $pun_config['o_blocking_user'] != '1')
-		{
-			$reason = '[MOD] Auto Bloking. Error input register.php'."\n\n".'IP = '.get_remote_address()."\n".'UserName = '.$username."\n".'Email = '.$email1."\n";
-			// Should we use the internal report handling?
-			if ($pun_config['o_report_method'] == '0' || $pun_config['o_report_method'] == '2')
-				$db->query('INSERT INTO '.$db->prefix.'reports (post_id, topic_id, forum_id, reported_by, created, message) VALUES(0, 0, 0, '.$pun_user['id'].', '.time().', \''.$db->escape($reason).'\')' ) or error('Unable to create report', __FILE__, __LINE__, $db->error());
-
-			message($lang_sec['Limit of errors']);
-		}
-	}
-	// мод отслеживания ошибок ввода - Visman
+	vsecurity_get(1, 'UserName = '.$username."\n".'Email = '.$email1);
 
 ?>
 <div id="posterror" class="block">

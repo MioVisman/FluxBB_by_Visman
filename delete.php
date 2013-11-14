@@ -51,7 +51,7 @@ if ($is_admmod && $pun_user['g_id'] != PUN_ADMIN && in_array($cur_post['poster_i
 
 // мод ограничения времени редактирвания - Visman
 if (!$is_admmod && $pun_user['g_deledit_interval'] != 0 && (time()-$cur_post['posted']) > $pun_user['g_deledit_interval'])
-	message($lang_common['No permission']);
+	message($lang_common['No permission'], false, '403 Forbidden');
 
 // Load the delete.php language file
 require PUN_ROOT.'lang/'.$pun_user['language'].'/delete.php';

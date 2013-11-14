@@ -14,16 +14,16 @@ define('PUN_PMS_LOADED', 1);
 
 $pid = isset($_GET['pid']) ? intval($_GET['pid']) : 0;
 if ($pid < 1)
-	message($lang_common['Bad request']);
+	message($lang_common['Bad request'], false, '404 Not Found');
 
 $result = $db->query('SELECT t.id AS tid, t.topic, t.starter, t.starter_id, t.to_user, t.to_id, t.see_to, t.topic_st, t.topic_to, p.poster, p.poster_id, p.message, p.hide_smilies, p.post_seen, p.post_new FROM '.$db->prefix.'pms_new_posts AS p INNER JOIN '.$db->prefix.'pms_new_topics AS t ON t.id=p.topic_id WHERE p.id='.$pid) or error('Unable to fetch pms_new_posts info', __FILE__, __LINE__, $db->error());
 if (!$db->num_rows($result))
-	message($lang_common['Bad request']);
+	message($lang_common['Bad request'], false, '404 Not Found');
 
 $cur_post = $db->fetch_assoc($result);
 
 if ($cur_post['poster_id'] != $pun_user['id'])
-	message($lang_common['No permission']);
+	message($lang_common['No permission'], false, '403 Forbidden');
 
 if ($cur_post['post_new'] != 1)
 	message($lang_pmsn['No edit post']);
@@ -35,7 +35,7 @@ else if (in_array($cur_post['tid'], $pmsn_arr_list))
 else if (in_array($cur_post['tid'], $pmsn_arr_save))
 	$mmodul = 'save';
 else
-	message($lang_common['Bad request']);
+	message($lang_common['Bad request'], false, '404 Not Found');
 
 
 if ($pun_config['o_censoring'] == '1')

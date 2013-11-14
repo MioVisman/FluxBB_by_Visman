@@ -40,7 +40,7 @@ function insert_text(open, close)
 	{
 		var startPos = msgfield.selectionStart;
 		var endPos = msgfield.selectionEnd;
-		msgfield.value = msgfield.value.substring(0, startPos) + open + msgfield.value.substring(startPos, endPos) + close + msgfield.value.substring(endPos, msgfield.value.length);
+		msgfield.value = msgfield.value.substring(0, startPos) + open + msgfield.value.substring(startPos, endPos) + close + msgfield.value.substring(endPos);
 		if (startPos == endPos && open == '')
 		{
 			msgfield.selectionStart = startPos + close.length;

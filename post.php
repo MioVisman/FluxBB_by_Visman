@@ -17,19 +17,9 @@ if ($pun_user['is_bot']) // Visman - на всякий случай ботам �
 	message($lang_common['No permission'], false, '403 Forbidden');
 
 require PUN_ROOT.'include/poll.php';
-require PUN_ROOT.'lang/'.$pun_user['language'].'/security.php';
-
 // мод отслеживания ошибок ввода - Visman
-if ($pun_user['is_guest'] && $pun_config['o_blocking_time'] != '0')
-{
-	$block_time_term = time() - 60 * $pun_config['o_blocking_time'];
-	$db->query('DELETE FROM '.$db->prefix.'blocking WHERE block_log < '.$block_time_term) or error('Unable to delete from blocking list', __FILE__, __LINE__, $db->error());
-	$block_q = ($pun_config['o_blocking_guest'] == '1') ? '' : ' AND block_type=3';
-	$result = $db->query('SELECT block_ip FROM '.$db->prefix.'blocking WHERE block_ip=\''.$db->escape(get_remote_address()).'\''.$block_q) or error('Unable to fetch blocking info', __FILE__, __LINE__, $db->error());
-	$block_kolvo = $db->num_rows($result);
-	if ($block_kolvo > $pun_config['o_blocking_kolvo'])
-		message($lang_sec['Limit of errors']);
-}
+require PUN_ROOT.'include/security.php';
+vsecurity_get(3);
 
 $tid = isset($_GET['tid']) ? intval($_GET['tid']) : 0;
 $fid = isset($_GET['fid']) ? intval($_GET['fid']) : 0;
@@ -57,7 +47,7 @@ $is_subscribed = $tid && $cur_posting['is_subscribed'];
 
 // Is someone trying to post into a redirect forum?
 if ($cur_posting['redirect_url'] != '')
-	message($lang_common['Bad request']);
+	message($lang_common['Bad request'], false, '404 Not Found');
 
 // Sort out who the moderators are and if we are currently a moderator (or an admin)
 $mods_array = ($cur_posting['moderators'] != '') ? unserialize($cur_posting['moderators']) : array();
@@ -600,7 +590,7 @@ else if ($fid)
 	$form = '<form id="post" method="post" action="post.php?action=post&amp;fid='.$fid.'" onsubmit="return process_form(this)">';
 }
 else
-	message($lang_common['Bad request']);
+	message($lang_common['Bad request'], false, '404 Not Found');
 
 
 $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $action);
@@ -636,22 +626,7 @@ require PUN_ROOT.'header.php';
 if (!empty($errors))
 {
 	// мод отслеживания ошибок ввода - Visman
-	if ($pun_user['is_guest'] && $pun_config['o_blocking_time'] != '0')
-	{
-		$db->query('INSERT INTO '.$db->prefix.'blocking (block_ip, block_log, block_type) VALUES(\''.$db->escape(get_remote_address()).'\', '.time().', 3)') or error('Unable to create blocking', __FILE__, __LINE__, $db->error());
-
-		$block_kolvo = $block_kolvo + 1;
-		if ($block_kolvo > $pun_config['o_blocking_kolvo'] && $pun_config['o_blocking_user'] != '1')
-		{
-			$reason = '[MOD] Auto Bloking. Error input post.php'."\n\n".'IP = '.get_remote_address()."\n".'UserName = '.$username."\n".'Email = '.$email."\n";
-			// Should we use the internal report handling?
-			if ($pun_config['o_report_method'] == '0' || $pun_config['o_report_method'] == '2')
-				$db->query('INSERT INTO '.$db->prefix.'reports (post_id, topic_id, forum_id, reported_by, created, message) VALUES(0, 0, 0, '.$pun_user['id'].', '.time().', \''.$db->escape($reason).'\')' ) or error('Unable to create report', __FILE__, __LINE__, $db->error());
-
-			message($lang_sec['Limit of errors']);
-		}
-	}
-	// мод отслеживания ошибок ввода - Visman
+	vsecurity_get(3, 'UserName = '.$username."\n".'Email = '.$email);
 
 ?>
 <div id="posterror" class="block">

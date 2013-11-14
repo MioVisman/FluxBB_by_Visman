@@ -21,7 +21,7 @@ $lang_admin_common = array(
 'Reports'				=>	'Сигналы',
 'Server statistics'				=>	'Статистика сервера',
 
-'Admin'					=>	'Админ',
+'Admin'					=>	'Администрирование',
 'Go back'				=>	'Назад',
 'Delete'				=>	'Удалить',
 'Update'				=>	'Изменить',

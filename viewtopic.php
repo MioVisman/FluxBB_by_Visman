@@ -88,6 +88,34 @@ if (!is_null(poll_post('poll_submit')))
 	redirect('viewtopic.php?id='.$id.((isset($_GET['p']) && $_GET['p'] > 1) ? '&p='.intval($_GET['p']) : ''), $lang_poll['M0']);
 }
 
+// search HL - Visman
+$url_shl = '';
+if (isset($_GET['search_hl']))
+{
+	$search_hl = intval($_GET['search_hl']);
+	if ($search_hl < 1)
+		message($lang_common['Bad request'], false, '404 Not Found');
+
+	$ident = ($pun_user['is_guest']) ? get_remote_address() : $pun_user['username'];
+
+	$result = $db->query('SELECT search_data FROM '.$db->prefix.'search_cache WHERE id='.$search_hl.' AND ident=\''.$db->escape($ident).'\'') or error('Unable to fetch search results', __FILE__, __LINE__, $db->error());
+	if ($row = $db->fetch_assoc($result))
+	{
+		$temp = unserialize($row['search_data']);
+		if (isset($temp['array_shl']))
+		{
+			$string_shl = '%(?<=[^\p{L}\p{N}])('.str_replace('*', '[\p{L}\p{N}]*', implode('|', $temp['array_shl'])).')(?=[^\p{L}\p{N}])%ui';
+
+		  $url_shl = '&amp;search_hl='.$search_hl;
+		}
+
+		unset($temp);
+	}
+	else
+		message($lang_common['Bad request'], false, '404 Not Found'); // запрос устарел или от другого юзера
+}
+// search HL - Visman
+
 // *****************************************************************************
 // Кто в этой теме - Visman
 if (defined('WITT_ENABLE'))
@@ -266,7 +294,7 @@ $p = (!isset($_GET['p']) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages) ? 1 : in
 $start_from = $pun_user['disp_posts'] * ($p - 1);
 
 // Generate paging links
-$paging_links = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.paginate($num_pages, $p, 'viewtopic.php?id='.$id);
+$paging_links = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.paginate($num_pages, $p, 'viewtopic.php?id='.$id.$url_shl); // search HL - Visman
 
 
 if ($pun_config['o_censoring'] == '1')
@@ -319,7 +347,7 @@ require PUN_ROOT.'header.php';
 			<li><a href="index.php"><?php echo $lang_common['Index'] ?></a></li>
 <?php echo sf_crumbs($cur_topic['forum_id']); // MOD subforums - Visman ?>
 			<li><span>»&#160;</span><a href="viewforum.php?id=<?php echo $cur_topic['forum_id'] ?>"><?php echo pun_htmlspecialchars($cur_topic['forum_name']) ?></a></li>
-			<li><span>»&#160;</span><strong><a href="viewtopic.php?id=<?php echo $id ?>"><?php echo pun_htmlspecialchars($cur_topic['subject']) ?></a></strong></li>
+			<li><span>»&#160;</span><strong><a href="viewtopic.php?id=<?php echo $id.$url_shl // search HL - Visman ?>"><?php echo pun_htmlspecialchars($cur_topic['subject']) ?></a></strong></li>
 		</ul>
 		<div class="pagepost">
 			<p class="pagelink conl"><?php echo $paging_links ?></p>
@@ -602,7 +630,7 @@ while ($cur_post = $db->fetch_assoc($result))
 			<li><a href="index.php"><?php echo $lang_common['Index'] ?></a></li>
 <?php echo sf_crumbs($cur_topic['forum_id']); // MOD subforums - Visman ?>
 			<li><span>»&#160;</span><a href="viewforum.php?id=<?php echo $cur_topic['forum_id'] ?>"><?php echo pun_htmlspecialchars($cur_topic['forum_name']) ?></a></li>
-			<li><span>»&#160;</span><strong><a href="viewtopic.php?id=<?php echo $id ?>"><?php echo pun_htmlspecialchars($cur_topic['subject']) ?></a></strong></li>
+			<li><span>»&#160;</span><strong><a href="viewtopic.php?id=<?php echo $id.$url_shl // search HL - Visman ?>"><?php echo pun_htmlspecialchars($cur_topic['subject']) ?></a></strong></li>
 		</ul>
 <?php echo $subscraction ?>
 		<div class="clearer"></div>

@@ -12,7 +12,7 @@ if (!defined('PUN_ROOT'))
 // Define the version and database revision that this code was written for
 define('FORUM_VERSION', '1.5.4');
 
-define('FORUM_VER_REVISION', 60);	// номер сборки - Visman
+define('FORUM_VER_REVISION', 61);	// номер сборки - Visman
 
 define('PUN_DEBUG', 1);
 //define('PUN_SHOW_QUERIES', 1);

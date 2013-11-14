@@ -27,6 +27,11 @@ require PUN_ROOT.'include/search_idx.php';
 // Figure out what to do :-)
 if (isset($_GET['action']) || isset($_GET['search_id']))
 {
+	// search HL - Visman
+	$array_shl = array();
+	$url_shl = '';
+	// search HL - Visman
+
 	$action = (isset($_GET['action'])) ? $_GET['action'] : null;
 	$forums = isset($_GET['forums']) ? (is_array($_GET['forums']) ? $_GET['forums'] : array_filter(explode(',', $_GET['forums']))) : ((isset($_GET['forum']) && isset($sf_array_asc[$_GET['forum']])) ? $sf_array_asc[$_GET['forum']] : array()); // MOD subforums - Visman
 	$sort_dir = (isset($_GET['sort_dir']) && $_GET['sort_dir'] == 'DESC') ? 'DESC' : 'ASC';
@@ -94,10 +99,10 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 	else if ($action == 'show_replies')
 	{
 		if ($pun_user['is_guest'])
-			message($lang_common['Bad request']);
+			message($lang_common['Bad request'], false, '404 Not Found');
 	}
 	else if ($action != 'show_new' && $action != 'show_unanswered')
-		message($lang_common['Bad request']);
+		message($lang_common['Bad request'], false, '404 Not Found');
 
 
 	// If a valid search_id was supplied we attempt to fetch the search results from the db
@@ -116,6 +121,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 			$sort_dir = $temp['sort_dir'];
 			$show_as = $temp['show_as'];
 			$search_type = $temp['search_type'];
+			$array_shl = isset($temp['array_shl']) ? $temp['array_shl'] : array(); // search HL - Visman
 
 			unset($temp);
 		}
@@ -196,6 +202,11 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 
 						default:
 						{
+							// search HL - Visman
+							if ($search_in > -1 && $match_type != 'not')
+								$array_shl[] = $cur_word;
+							// search HL - Visman
+
 							if (is_cjk($cur_word))
 							{
 								$where_cond = str_replace('*', '%', $cur_word);
@@ -389,7 +400,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 			else if ($action == 'show_subscriptions')
 			{
 				if ($pun_user['is_guest'])
-					message($lang_common['Bad request']);
+					message($lang_common['Bad request'], false, '404 Not Found');
 
 				$result = $db->query('SELECT t.id FROM '.$db->prefix.'topics AS t INNER JOIN '.$db->prefix.'topic_subscriptions AS s ON (t.id=s.topic_id AND s.user_id='.$user_id.') LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) ORDER BY t.last_post DESC') or error('Unable to fetch topic list', __FILE__, __LINE__, $db->error());
 				$num_hits = $db->num_rows($result);
@@ -438,7 +449,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 			$db->free_result($result);
 		}
 		else
-			message($lang_common['Bad request']);
+			message($lang_common['Bad request'], false, '404 Not Found');
 
 
 		// Prune "old" search results
@@ -460,7 +471,8 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 			'sort_by'			=> $sort_by,
 			'sort_dir'			=> $sort_dir,
 			'show_as'			=> $show_as,
-			'search_type'		=> $search_type
+			'search_type'		=> $search_type,
+			'array_shl'	=>	$array_shl // search HL - Visman
 		));
 		$search_id = mt_rand(1, 2147483647);
 
@@ -637,6 +649,16 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 			$post_count = 0;
 		}
 
+		// search HL - Visman
+		if (!empty($array_shl))
+		{
+			$string_shl = '%(?<=[^\p{L}\p{N}])('.str_replace('*', '[\p{L}\p{N}]*', implode('|', $array_shl)).')(?=[^\p{L}\p{N}])%ui';
+
+			if (!empty($search_id))
+				$url_shl = '&amp;search_hl='.$search_id;
+		}
+		// search HL - Visman
+
 		// Get topic/forum tracking data
 		if (!$pun_user['is_guest'])
 			$tracked_topics = get_tracked_topics();
@@ -686,7 +708,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 
 ?>
 <div class="blockpost<?php echo ($post_count % 2 == 0) ? ' roweven' : ' rowodd' ?><?php if ($cur_search['pid'] == $cur_search['first_post_id']) echo ' firstpost' ?><?php if ($post_count == 1) echo ' blockpost1' ?><?php if ($item_status != '') echo ' '.$item_status ?>">
-	<h2><span><span class="conr">#<?php echo ($start_from + $post_count) ?></span> <span><?php if ($cur_search['pid'] != $cur_search['first_post_id']) echo $lang_topic['Re'].' ' ?><?php echo $forum ?></span> <span>»&#160;<a href="viewtopic.php?id=<?php echo $cur_search['tid'] ?>"><?php echo pun_htmlspecialchars($cur_search['subject']) ?></a></span> <span>»&#160;<a href="viewtopic.php?pid=<?php echo $cur_search['pid'].'#p'.$cur_search['pid'] ?>"><?php echo format_time($cur_search['pposted']) ?></a></span></span></h2>
+	<h2><span><span class="conr">#<?php echo ($start_from + $post_count) ?></span> <span><?php if ($cur_search['pid'] != $cur_search['first_post_id']) echo $lang_topic['Re'].' ' ?><?php echo $forum ?></span> <span>»&#160;<a href="viewtopic.php?id=<?php echo $cur_search['tid'].$url_shl ?>"><?php echo pun_htmlspecialchars($cur_search['subject']) ?></a></span> <span>»&#160;<a href="viewtopic.php?pid=<?php echo $cur_search['pid'].$url_shl.'#p'.$cur_search['pid'] ?>"><?php echo format_time($cur_search['pposted']) ?></a></span></span></h2>
 	<div class="box">
 		<div class="inbox">
 			<div class="postbody">
@@ -715,8 +737,8 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 			<div class="postfoot clearb">
 				<div class="postfootright">
 					<ul>
-						<li><span><a href="viewtopic.php?id=<?php echo $cur_search['tid'] ?>"><?php echo $lang_search['Go to topic'] ?></a></span></li>
-						<li><span><a href="viewtopic.php?pid=<?php echo $cur_search['pid'].'#p'.$cur_search['pid'] ?>"><?php echo $lang_search['Go to post'] ?></a></span></li>
+						<li><span><a href="viewtopic.php?id=<?php echo $cur_search['tid'].$url_shl ?>"><?php echo $lang_search['Go to topic'] ?></a></span></li>
+						<li><span><a href="viewtopic.php?pid=<?php echo $cur_search['pid'].$url_shl.'#p'.$cur_search['pid'] ?>"><?php echo $lang_search['Go to post'] ?></a></span></li>
 					</ul>
 				</div>
 			</div>
@@ -733,7 +755,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 				$item_status = ($topic_count % 2 == 0) ? 'roweven' : 'rowodd';
 				$icon_type = 'icon';
 
-				$subject = '<a href="viewtopic.php?id='.$cur_search['tid'].'">'.pun_htmlspecialchars($cur_search['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_search['poster']).'</span>';
+				$subject = '<a href="viewtopic.php?id='.$cur_search['tid'].$url_shl.'">'.pun_htmlspecialchars($cur_search['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_search['poster']).'</span>'; // search HL - Visman
 
 				if ($cur_search['sticky'] == '1')
 				{
@@ -769,7 +791,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 				$num_pages_topic = ceil(($cur_search['num_replies'] + 1) / $pun_user['disp_posts']);
 
 				if ($num_pages_topic > 1)
-					$subject_multipage = '<span class="pagestext">[ '.paginate($num_pages_topic, -1, 'viewtopic.php?id='.$cur_search['tid']).' ]</span>';
+					$subject_multipage = '<span class="pagestext">[ '.paginate($num_pages_topic, -1, 'viewtopic.php?id='.$cur_search['tid'].$url_shl).' ]</span>';
 				else
 					$subject_multipage = null;
 
@@ -792,7 +814,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 					</td>
 					<td class="tc2"><?php echo $forum ?></td>
 					<td class="tc3"><?php echo forum_number_format($cur_search['num_replies']) ?></td>
-					<td class="tcr"><?php echo '<a href="viewtopic.php?pid='.$cur_search['last_post_id'].'#p'.$cur_search['last_post_id'].'">'.format_time($cur_search['last_post']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_search['last_poster']) ?></span></td>
+					<td class="tcr"><?php echo '<a href="viewtopic.php?pid='.$cur_search['last_post_id'].$url_shl.'#p'.$cur_search['last_post_id'].'">'.format_time($cur_search['last_post']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_search['last_poster']) ?></span></td>
 				</tr>
 <?php
 

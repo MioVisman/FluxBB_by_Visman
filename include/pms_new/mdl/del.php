@@ -15,7 +15,7 @@ define('PUN_PMS_LOADED', 1);
 $tid = isset($_REQUEST['tid']) ? intval($_REQUEST['tid']) : 0;
 $pid = isset($_REQUEST['pid']) ? intval($_REQUEST['pid']) : 0;
 if ($tid < 1 && $pid < 1)
-	message($lang_common['Bad request']);
+	message($lang_common['Bad request'], false, '404 Not Found');
 
 if ($pid)
 	$result = $db->query('SELECT t.id AS tid, t.topic, t.starter_id, t.to_id, t.replies, t.topic_st, t.topic_to FROM '.$db->prefix.'pms_new_posts AS p INNER JOIN '.$db->prefix.'pms_new_topics AS t ON t.id=p.topic_id WHERE p.id='.$pid.' AND p.poster_id='.$pun_user['id'].' AND post_new=1') or error('Unable to fetch pms_new_posts info', __FILE__, __LINE__, $db->error());
@@ -23,12 +23,12 @@ else
 	$result = $db->query('SELECT id AS tid, topic, starter_id, to_id, replies FROM '.$db->prefix.'pms_new_topics WHERE id='.$tid) or error('Unable to fetch pms_new_topics info', __FILE__, __LINE__, $db->error());
 
 if (!$db->num_rows($result))
-	message($lang_common['Bad request']);
+	message($lang_common['Bad request'], false, '404 Not Found');
 
 $cur_post = $db->fetch_assoc($result);
 
 if (!in_array($cur_post['tid'], $pmsn_arr_list) && !in_array($cur_post['tid'], $pmsn_arr_save))
-	message($lang_common['Bad request']);
+	message($lang_common['Bad request'], false, '404 Not Found');
 
 if (isset($_POST['action2']))
 {
@@ -44,7 +44,7 @@ if (isset($_POST['action2']))
 		list($second_last_id, $second_poster, $second_posted) = $db->fetch_row($result);
 
 		if (!$second_last_id)
-			message($lang_common['Bad request']);
+			message($lang_common['Bad request'], false, '404 Not Found');
 
 		$mquery = array();
 		$muser = 0;

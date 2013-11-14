@@ -22,7 +22,7 @@ function get_useragent_names($usrag)
 	$usrag = strtolower($usrag);
 	
 	// Browser detection
-	$browsers = array('Arora', 'AWeb', 'Camino', 'Epiphany', 'Galeon', 'HotJava', 'iCab', 'MSIE', 'Maxthon', 'OPR', 'Chrome', 'Safari', 'Konqueror', 'Flock', 'Iceweasel', 'SeaMonkey', 'Firebird', 'Netscape', 'Firefox', 'K-Meleon', 'Mozilla', 'Opera', 'PhaseOut', 'SlimBrowser');
+	$browsers = array('Arora', 'AWeb', 'Camino', 'Epiphany', 'Galeon', 'HotJava', 'iCab', 'MSIE', 'Maxthon', 'OPR', 'YaBrowser', 'Chrome', 'Safari', 'Konqueror', 'Flock', 'Iceweasel', 'SeaMonkey', 'Firebird', 'Netscape', 'Firefox', 'K-Meleon', 'Mozilla', 'Opera', 'PhaseOut', 'SlimBrowser');
 
 	$browser = ua_search_for_item($browsers, $usrag);
 
@@ -50,7 +50,7 @@ function get_useragent_names($usrag)
 	
 	if ($system == 'Linux')
 	{
-		$systems = array('CentOS', 'Debian', 'Fedora', 'Freespire', 'Gentoo', 'Katonix', 'KateOS', 'Knoppix', 'Kubuntu', 'Linspire', 'Mandriva', 'Mandrake', 'RedHat', 'Slackware', 'Slax', 'Suse', 'Xubuntu', 'Ubuntu', 'Xandros', 'Arch', 'Ark');
+		$systems = array('CentOS', 'Debian', 'Fedora', 'Freespire', 'Gentoo', 'Katonix', 'KateOS', 'Knoppix', 'Kubuntu', 'Linspire', 'Mandriva', 'Mandrake', 'RedHat', 'Slackware', 'Slax', 'Suse', 'Xubuntu', 'Ubuntu', 'Xandros', 'Arch', 'Ark', 'Android');
 
 		$system = ua_search_for_item($systems, $usrag);
 		if ($system == '')
@@ -62,7 +62,7 @@ function get_useragent_names($usrag)
 	elseif ($system == 'Windows')
 	{
 		$version = substr($usrag, strpos($usrag, 'windows nt ') + 11);
-		if (substr($version, 0, 1) == '5')
+		if (substr($version, 0, 3) == '5.1')
 			$system = 'Windows XP';
 		elseif (substr($version, 0, 1) == '6')
 		{

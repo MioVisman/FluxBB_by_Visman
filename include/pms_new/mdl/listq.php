@@ -15,7 +15,7 @@ define('PUN_PMS_LOADED', 1);
 if (defined('PUN_PMS_NEW_CONFIRM'))
 {
 	if (!isset($_POST['delete']) && !isset($_POST['save']))
-		message($lang_common['Bad request']);
+		message($lang_common['Bad request'], false, '404 Not Found');
 
 	if (isset($_POST['delete']))
 		$mflag = 2;
@@ -25,17 +25,17 @@ if (defined('PUN_PMS_NEW_CONFIRM'))
 	if (isset($_POST['action2']))
 	{
 		if (!isset($_POST['topics']))
-			message($lang_common['Bad request']);
+			message($lang_common['Bad request'], false, '404 Not Found');
 
 		if (@preg_match('/[^0-9,]/', $_POST['topics']))
-			message($lang_common['Bad request']);
+			message($lang_common['Bad request'], false, '404 Not Found');
 
 		$topics = explode(',', $_POST['topics']);
 	}
 	else
 	{
 		if (!isset($_POST['post_topic']))
-			message($lang_common['Bad request']);
+			message($lang_common['Bad request'], false, '404 Not Found');
 
 		$topics = array_map('intval', array_keys($_POST['post_topic']));
 	}

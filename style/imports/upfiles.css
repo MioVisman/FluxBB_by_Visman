@@ -1,0 +1,128 @@
+/* UpFiles
+----------------------------------------------------------------*/
+#brdmain #upf-block .pagepost {
+	overflow: hidden;
+}
+
+#upf-container {
+	overflow: auto;
+	padding: 0;
+}
+
+ul#upf-list {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+#upf-list li {
+	display: inline-block;
+	float: left;
+	margin: 3px;
+	padding: 3px;
+	text-align: center;
+	border: 1px solid;
+	position: relative;
+}
+
+.upf-but a, .upf-but a:link, .upf-but a:visited, .upf-but a:hover, .upf-but a:active, .upf-but a:focus {
+	text-decoration: none;
+}
+
+.upf-file img {
+  height: 100%;
+  border: none;
+}
+
+#upf-list .upf-name {
+	height: 26px;
+	text-align: left;
+	word-wrap: break-word;
+	min-width: 120px;
+}
+
+#upf-list .upf-size {
+	height: 26px;
+}
+
+#upf-list .upf-name span, #upf-list .upf-size span {
+	line-height: 26px;
+}
+
+.upf-delete {
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+
+.upf-insert {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+}
+
+.upf-insert-t {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+}
+
+.upf-delete span {
+	background: url("../../img/upf-x.png") no-repeat scroll 5px 5px;
+	float: right;
+}
+
+.upf-delete .upf-loading span {
+	background: url("../../img/loading.gif") no-repeat scroll 5px 5px;
+}
+
+.upf-insert span {
+	background: url("../../img/upf-i.png") no-repeat scroll 5px 5px;
+	float: right;
+}
+
+.upf-insert-t span {
+	background: url("../../img/upf-it.png") no-repeat scroll 5px 5px;
+	float: left;
+}
+
+.upf-but a span {
+	height: 26px;
+	width: 26px;
+	opacity: 0.3;
+}
+
+.upf-but a:hover span {
+	opacity: 1;
+	background-color: #999999;
+}
+
+#upf-legend {
+	border: 1px solid #4E642D;
+	width: 100%;
+}
+
+#upf-legend div {
+	border-right: 2px solid #4E642D;
+	background-color: #6C8A3F;
+	text-align: right;
+	width: 100%;
+}
+
+#upf-table th, #upf-table td {
+	text-align: center;
+	width: auto;
+}
+
+#upf-table .upf-c2 {
+	width: 80%;
+	text-align: left;
+}
+
+#upf-table .upf-c3 img {
+  border: none;
+}
+
+#upf-block #upf-table td {
+    vertical-align: middle;
+}

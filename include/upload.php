@@ -311,7 +311,7 @@ function isXSSattack ($file)
 	// сканируем содержание загруженного файла
 	$fin = fopen($file, "rb");
 	if (!$fin)
-		return $lang_up['err_open'];
+		return $lang_up['Error open'];
 
 	$buf1 = '';
 	while ($buf2 = fread($fin, 4096))
@@ -319,7 +319,7 @@ function isXSSattack ($file)
 		if (preg_match( "%<(script|html|head|title|body|table|a\s+href|img\s|plaintext|cross\-domain\-policy|embed|applet|\?php)%si", $buf1.$buf2 ))
 		{
 			fclose($fin);
-			return $lang_up['err_str'];
+			return $lang_up['Error inject'];
 		}
 		$buf1 = substr($buf2,-30);
 	}

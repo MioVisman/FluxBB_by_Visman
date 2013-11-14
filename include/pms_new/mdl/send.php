@@ -15,20 +15,20 @@ define('PUN_PMS_LOADED', 1);
 $tid = isset($_GET['tid']) ? intval($_GET['tid']) : 0;
 
 if ($tid < 1)
-	message($lang_common['Bad request']);
+	message($lang_common['Bad request'], false, '404 Not Found');
 
 if (!in_array($tid, $pmsn_arr_save))
-	message($lang_common['Bad request']);
+	message($lang_common['Bad request'], false, '404 Not Found');
 
 $result = $db->query('SELECT * FROM '.$db->prefix.'pms_new_topics WHERE id='.$tid) or error('Unable to fetch pms_new_topics info', __FILE__, __LINE__, $db->error());
 
 if (!$db->num_rows($result))
-	message($lang_common['Bad request']);
+	message($lang_common['Bad request'], false, '404 Not Found');
 
 $cur_topic = $db->fetch_assoc($result);
 
 if ($pun_user['id'] != $cur_topic['starter_id'] || $cur_topic['see_to'] != 0)
-	message($lang_common['Bad request']);
+	message($lang_common['Bad request'], false, '404 Not Found');
 
 if ($pun_user['g_pm_limit'] != 0 && $pmsn_kol_list >= $pun_user['g_pm_limit'])
 	message($lang_pmsn['More maximum list']);

@@ -14,13 +14,13 @@ define('PUN_PMS_LOADED', 1);
 
 $uid = isset($_REQUEST['uid']) ? intval($_REQUEST['uid']) : 0;
 if ($uid < 2)
-	message($lang_common['Bad request']);
+	message($lang_common['Bad request'], false, '404 Not Found');
 
 $result = $db->query('SELECT id, group_id, username FROM '.$db->prefix.'users WHERE id='.$uid) or error('Unable to fetch user information', __FILE__, __LINE__, $db->error());
 $cur_user = $db->fetch_assoc($result);
 
 if (!isset($cur_user['id']))
-	message($lang_common['Bad request']);
+	message($lang_common['Bad request'], false, '404 Not Found');
 else if ($cur_user['id'] == $pun_user['id'])
 	message($lang_pmsn['No block itself']);
 else if ($cur_user['group_id'] == PUN_ADMIN)

@@ -14,7 +14,7 @@ define('PUN_PMS_LOADED', 1);
 
 $tid = isset($_GET['tid']) ? intval($_GET['tid']) : 0;
 if ($tid < 0)
-	message($lang_common['Bad request']);
+	message($lang_common['Bad request'], false, '404 Not Found');
 	
 // Проверка на минимум сообщений
 if ($pun_user['g_id'] != PUN_ADMIN && $pun_config['o_pms_min_kolvo'] > $pun_user['num_posts'])
@@ -25,13 +25,13 @@ $to_user = array();
 if ($tid > 0)
 {
 	if (!in_array($tid, $pmsn_arr_list) && !in_array($tid, $pmsn_arr_save))
-		message($lang_common['Bad request']);
+		message($lang_common['Bad request'], false, '404 Not Found');
 	else
 	{
 		$result = $db->query('SELECT * FROM '.$db->prefix.'pms_new_topics WHERE id='.$tid) or error('Unable to fetch pmsn topic info', __FILE__, __LINE__, $db->error());
 
 		if (!$db->num_rows($result))
-			message($lang_common['Bad request']);
+			message($lang_common['Bad request'], false, '404 Not Found');
 			
 		$cur_topic = $db->fetch_assoc($result);
 
@@ -87,7 +87,7 @@ if (!isset($_POST['req_addressee']) && (isset($_GET['uid']) || $sid))
 	else
 		$uid = intval($_GET['uid']);
 	if ($uid < 2)
-		message($lang_common['Bad request']);
+		message($lang_common['Bad request'], false, '404 Not Found');
 
 	$result = $db->query('SELECT u.*, g.* FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'groups AS g ON u.group_id=g.g_id WHERE id='.$uid) or error('Unable to fetch user information', __FILE__, __LINE__, $db->error());
 	$cur_user = $db->fetch_assoc($result);
@@ -351,11 +351,11 @@ if ($tid)
 	{
 		$qid = intval($_GET['qid']);
 		if ($qid < 1)
-			message($lang_common['Bad request']);
+			message($lang_common['Bad request'], false, '404 Not Found');
 
 		$result = $db->query('SELECT poster, message FROM '.$db->prefix.'pms_new_posts WHERE id='.$qid.' AND topic_id='.$tid) or error('Unable to fetch quote info', __FILE__, __LINE__, $db->error());
 		if (!$db->num_rows($result))
-			message($lang_common['Bad request']);
+			message($lang_common['Bad request'], false, '404 Not Found');
 
 		list($q_poster, $q_message) = $db->fetch_row($result);
 

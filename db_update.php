@@ -9,7 +9,7 @@
 // The FluxBB version this script updates to
 define('UPDATE_TO', '1.5.4');
 
-define('UPDATE_TO_VER_REVISION', 60);	// номер сборки - Visman
+define('UPDATE_TO_VER_REVISION', 61);	// номер сборки - Visman
 
 define('UPDATE_TO_DB_REVISION', 20);
 define('UPDATE_TO_SI_REVISION', 2);
@@ -276,9 +276,9 @@ function convert_to_utf8(&$str, $old_charset)
 			$str = mb_convert_encoding($str, 'UTF-8', 'CP1251');
 		// Visman
 		else if (function_exists('iconv'))
-			$str = iconv($old_charset == 'ISO-8859-1' ? 'WINDOWS-1252' : 'ISO-8859-1', 'UTF-8', $str);
+			$str = iconv(!empty($old_charset) ? $old_charset : 'ISO-8859-1', 'UTF-8', $str);
 		else if (function_exists('mb_convert_encoding'))
-			$str = mb_convert_encoding($str, 'UTF-8', $old_charset == 'ISO-8859-1' ? 'WINDOWS-1252' : 'ISO-8859-1');
+			$str = mb_convert_encoding($str, 'UTF-8', !empty($old_charset) ? $old_charset : 'ISO-8859-1');
 		else if ($old_charset == 'ISO-8859-1')
 			$str = utf8_encode($str);
 	}
@@ -1821,6 +1821,7 @@ if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_v
 
 			convert_to_utf8($cur_item['forum_name'], $old_charset);
 			convert_to_utf8($cur_item['forum_desc'], $old_charset);
+			convert_to_utf8($cur_item['last_poster'], $old_charset);
 
 			if (!empty($moderators_utf8))
 				$cur_item['moderators'] = serialize($moderators_utf8);

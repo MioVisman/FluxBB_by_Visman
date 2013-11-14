@@ -90,8 +90,9 @@ while ($cur_subforum = $db->fetch_assoc($result))
 	$sf_array[$cur_subforum['parent_forum_id']][$cur_subforum['fid']] = $cur_subforum;
 }
 
-
 if (!empty($sf_cur_forum)) echo "\n".'<div id="punindex" class="subforumlist">'."\n";
+
+if (empty($sf_array[$sf_cur_forum])) $sf_array[$sf_cur_forum] = array();
 
 $cur_category = 0;
 $cat_count = 0;
@@ -193,7 +194,7 @@ foreach ($sf_array[$sf_cur_forum] as $cur_subforum)
 	}
 
 ?>
-				<tr class="<?php echo $item_status ?>">
+				<tr class="<?php echo $item_status ?>" id="forum<?php echo $cur_subforum['fid'] ?>">
 					<td class="tcl">
 						<div class="<?php echo $icon_type ?>"><div class="nosize"><?php echo forum_number_format($forum_count) ?></div></div>
 						<div class="tclcon">

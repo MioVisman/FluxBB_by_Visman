@@ -1831,3 +1831,11 @@ html, body, .pun {
 .pun .pollbut input {
 	margin-right: 12px;
 }
+
+/* Search HL
+----------------------------------------------------------------*/
+span.shlight {
+	font-weight: bold;
+	background-color: #F3BFCC;
+	color: #BC2A4D;
+}

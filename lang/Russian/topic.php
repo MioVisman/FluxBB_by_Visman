@@ -5,17 +5,17 @@ $lang_topic = array(
 
 'Post reply' => 'Ответить',
 'Topic closed' => 'Тема закрыта',
-'From' => 'Из',				// User location
+'From' => 'Откуда:',				// User location
 'IP address logged' => 'IP адрес',
 'Note' => 'Замечание',				// Admin note
 'Posts' => 'Сообщений:',
-'Registered' => 'Зарегистрирован:',
+'Registered' => 'Здесь с',
 'Replies' => 'Ответов:',
 'Website' => 'Сайт',
 'Guest' => 'Гость',
 'Online' => 'Активен',
-'Offline' => 'Неактивен',
-'Last edit' => 'Редактировался',
+'Offline' => 'Вне форума',
+'Last edit' => 'Отредактировано',
 'Report' => 'Просигналить',
 'Delete' => 'Удалить',
 'Edit' => 'Редактировать',
@@ -24,15 +24,15 @@ $lang_topic = array(
 'Unsubscribe' => 'Отказаться от подписки',
 'Subscribe' => 'Подписаться на тему',
 'Quick post' => 'Быстрый ответ',
-'Mod controls' => 'Контроль модератора',
+'Mod controls' => 'Операции модерирования',
 'New icon' => 'New post',
 'Re' => 'Re:',
 'Preview' => 'Предпросмотр',
 
 'Warnings' => 'Предупреждений:',
-'Reply' => 'Ответ',
+'Reply' => 'Ответить',
 
-'Users online' => 'Сейчас в этой теме форумчан: %s',
+'Users online' => 'Сейчас в этой теме пользователей: %s',
 'Guests online' => 'гостей: %s',
 
 );

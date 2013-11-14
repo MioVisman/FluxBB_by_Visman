@@ -487,6 +487,9 @@ function check_username($username, $exclude_id = null)
 {
 	global $db, $pun_config, $errors, $lang_prof_reg, $lang_register, $lang_common, $pun_bans;
 
+	// Include UTF-8 function
+	require PUN_ROOT.'include/utf8/strcasecmp.php';
+
 	// Convert multiple whitespace characters into one (to prevent people from registering with indistinguishable usernames)
 	$username = preg_replace('%\s+%s', ' ', $username);
 
@@ -497,7 +500,7 @@ function check_username($username, $exclude_id = null)
 		$errors[] = $lang_prof_reg['Username too long'];
 	else if (!preg_match('%^[A-Za-zА-Яа-яёЁ]+[0-9A-Za-zА-Яа-яёЁ_ ]*$%u', $username)) // строгая проверка имени пользователя - Visman
 		$errors[] = $lang_prof_reg['Username Error'];
-	else if (!strcasecmp($username, 'Guest') || !strcasecmp($username, $lang_common['Guest']))
+	else if (!strcasecmp($username, 'Guest') || !utf8_strcasecmp($username, $lang_common['Guest']))
 		$errors[] = $lang_prof_reg['Username guest'];
 	else if (preg_match('%[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}%', $username) || preg_match('%((([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(([0-9A-Fa-f]{1,4}:){0,5}:((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(::([0-9A-Fa-f]{1,4}:){0,5}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:))%', $username))
 		$errors[] = $lang_prof_reg['Username IP'];
@@ -511,7 +514,7 @@ function check_username($username, $exclude_id = null)
 		$errors[] = $lang_register['Username censor'];
 
 	// Check that the username (or a too similar username) is not already registered
-	$query = ($exclude_id) ? ' AND id!='.$exclude_id : '';
+	$query = (!is_null($exclude_id)) ? ' AND id!='.$exclude_id : '';
 
 	$result = $db->query('SELECT username FROM '.$db->prefix.'users WHERE (UPPER(username)=UPPER(\''.$db->escape($username).'\') OR UPPER(username)=UPPER(\''.$db->escape(ucp_preg_replace('%[^\p{L}\p{N}]%u', '', $username)).'\')) AND id>1'.$query) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
 
@@ -931,14 +934,14 @@ function get_title($user)
 		$ban_list = array();
 
 		foreach ($pun_bans as $cur_ban)
-			$ban_list[] = strtolower($cur_ban['username']);
+			$ban_list[] = utf8_strtolower($cur_ban['username']);
 	}
 
 	// If the user has a custom title
 	if ($user['title'] != '')
 		$user_title = pun_htmlspecialchars($user['title']);
 	// If the user is banned
-	else if (in_array(strtolower($user['username']), $ban_list))
+	else if (in_array(utf8_strtolower($user['username']), $ban_list))
 		$user_title = $lang_common['Banned'];
 	// If the user group has a default user title
 	else if ($user['g_user_title'] != '')
@@ -1111,10 +1114,18 @@ function random_key($len, $readable = false, $hash = false)
 	$key = secure_random_bytes($len);
 
 	if ($hash)
-		$key = substr(bin2hex($key), 0, $len);
+		return substr(bin2hex($key), 0, $len);
 	else if ($readable)
-		$key = substr(base64_encode($key), 0, $len);
+	{
+		$chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
+		$result = '';
+		for ($i = 0; $i < $len; ++$i)
+		$result .= substr($chars, (ord($key[$i]) % strlen($chars)), 1);
+
+		return $result;
+	}
+  	
 	return $key;
 }
 
@@ -1134,8 +1145,6 @@ function confirm_referrer($script, $error_msg = false)
 	else
 		message($error_msg ? $error_msg : $lang_common['Bad referrer']);
 
-//	preg_match('%^(https?\://)(www\.)?(.*)$%i', $pun_config['o_base_url'], $regs);
-//	$new_hash = pun_hash($regs[3].'/'.$script.get_remote_address().$pun_user['username']);
 	$new_hash = pun_hash($script.get_remote_address().$pun_user['id'].$pun_config['o_crypto_pas']);
 
 	if ($new_hash != $hash)
@@ -1150,8 +1159,6 @@ function csrf_hash($script = false)
 
 	if (!isset($a))
 	{
-//		preg_match('%^(www\.)?(.*)$%i', $_SERVER['HTTP_HOST'], $regs);
-//		$a = pun_hash($regs[2].$_SERVER['SCRIPT_NAME'].get_remote_address().$pun_user['username']);
 		$a = pun_hash(($script ? $script : basename($_SERVER['SCRIPT_NAME'])).get_remote_address().$pun_user['id'].$pun_config['o_crypto_pas']);
 	}
 	return $a;

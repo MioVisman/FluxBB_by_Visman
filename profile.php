@@ -937,7 +937,7 @@ else if (isset($_POST['form_sent']))
 		}
 
 		default:
-			message($lang_common['Bad request']);
+			message($lang_common['Bad request'], false, '404 Not Found');
 	}
 
 
@@ -951,7 +951,7 @@ else if (isset($_POST['form_sent']))
 	}
 
 	if (empty($temp))
-		message($lang_common['Bad request']);
+		message($lang_common['Bad request'], false, '404 Not Found');
 
 
 	$db->query('UPDATE '.$db->prefix.'users SET '.implode(',', $temp).' WHERE id='.$id) or error('Unable to update profile', __FILE__, __LINE__, $db->error());
@@ -1543,7 +1543,7 @@ else
 	else if ($section == 'personality')
 	{
 		if ($pun_config['o_avatars'] == '0' && $pun_config['o_signatures'] == '0')
-			message($lang_common['Bad request']);
+			message($lang_common['Bad request'], false, '404 Not Found');
 
 		$avatar_field = '<span><a href="profile.php?action=upload_avatar&amp;id='.$id.'">'.$lang_profile['Change avatar'].'</a></span>';
 
@@ -1871,7 +1871,7 @@ else
 
 	}
 	else
-		message($lang_common['Bad request']);
+		message($lang_common['Bad request'], false, '404 Not Found');
 
 ?>
 	<div class="clearer"></div>

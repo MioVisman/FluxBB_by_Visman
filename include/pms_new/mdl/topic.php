@@ -15,13 +15,13 @@ define('PUN_PMS_LOADED', 1);
 $tid = isset($_GET['tid']) ? intval($_GET['tid']) : 0;
 $pid = isset($_GET['pid']) ? intval($_GET['pid']) : 0;
 if ($tid < 1 && $pid < 1)
-	message($lang_common['Bad request']);
+	message($lang_common['Bad request'], false, '404 Not Found');
 
 if ($pid)
 {
 	$result = $db->query('SELECT topic_id FROM '.$db->prefix.'pms_new_posts WHERE id='.$pid) or error('Unable to fetch pms_new_posts info', __FILE__, __LINE__, $db->error());
 	if (!$db->num_rows($result))
-		message($lang_common['Bad request']);
+		message($lang_common['Bad request'], false, '404 Not Found');
 
 	$tid = $db->result($result);
 
@@ -47,12 +47,12 @@ else if (in_array($tid, $pmsn_arr_list))
 else if (in_array($tid, $pmsn_arr_save))
 	$mmodul = 'save';
 else
-	message($lang_common['Bad request']);
+	message($lang_common['Bad request'], false, '404 Not Found');
 
 $result = $db->query('SELECT t.*, u.num_posts, u.id AS userid, u.group_id FROM '.$db->prefix.'pms_new_topics AS t LEFT JOIN '.$db->prefix.'users AS u ON (u.id!='.$pun_user['id'].' AND (u.id=t.starter_id OR u.id=t.to_id)) WHERE t.id='.$tid) or error('Unable to fetch pms_new_topics info', __FILE__, __LINE__, $db->error());
 
 if (!$db->num_rows($result))
-	message($lang_common['Bad request']);
+	message($lang_common['Bad request'], false, '404 Not Found');
 
 $cur_topic = $db->fetch_assoc($result);
 $to_user = array();

@@ -1,14 +1,14 @@
 if (typeof FluxBB === 'undefined' || !FluxBB) {var FluxBB = {};}
 
-FluxBB.collapse = (function () {
+FluxBB.collapse = (function (doc) {
 	'use strict';
 
 	function get(e) {
-		return document.getElementById(e);
+		return doc.getElementById(e);
 	}
 	
 	function getCN(classname, node) {
-		node = node || document;
+		node = node || doc;
 		if (node.querySelectorAll)
 		{
 			return node.querySelectorAll('.' + classname);
@@ -31,7 +31,7 @@ FluxBB.collapse = (function () {
 			return result;
 		}
 	}
-
+	
 	function setCookie(name, value, expires, path, domain, secure) {
 		if (!name) return false;
 		var str = FluxBB.vars.collapse_cookieid + name + '=' + encodeURIComponent(value);
@@ -41,7 +41,7 @@ FluxBB.collapse = (function () {
 		if (domain)  str += '; domain=' + domain;
 		if (secure)  str += '; secure';
 
-		document.cookie = str;
+		doc.cookie = str;
 		return true;
 	}
 
@@ -49,21 +49,30 @@ FluxBB.collapse = (function () {
 		var pattern = "(?:; )?" + FluxBB.vars.collapse_cookieid + name + "=([^;]*);?";
 		var regexp  = new RegExp(pattern);
 
-		if (regexp.test(document.cookie))
-		return decodeURIComponent(RegExp["$1"]);
+		if (regexp.test(doc.cookie))
+			return decodeURIComponent(RegExp["$1"]);
 
 		return false;
+	}
+	
+	function getCSS(element, property) {
+		return (typeof getComputedStyle == "undefined" ? element.currentStyle : getComputedStyle(element, null))[property];
 	}
 
 	return {
 		init: function () {
-			var i, tmp, saved = [],
+			var i, tmp, old = true, f = true, saved = [],
 					brdmain = get('brdmain'),
 					blocktables = getCN('blocktable', brdmain);
 			for (i in blocktables) {
 				if (blocktables[i].id) {
+				  if (f) {
+						if (getCSS(blocktables[i].getElementsByTagName('h2')[0], 'position') == 'absolute' || getCSS(blocktables[i].getElementsByTagName('thead')[0], 'display') == 'none')
+						  old = false;
+				    f = false;
+					}
 					var id = blocktables[i].id.replace('idx', '');
-					if (FluxBB.vars.collapse_old == '1') {
+					if (old) { // FluxBB.vars.collapse_old == '1'
 						var h2 = blocktables[i].getElementsByTagName('h2')[0];
 						h2.innerHTML = '<span class="conr"><img src="' + FluxBB.vars.collapse_folder + 'exp_up.png" onclick="FluxBB.collapse.toggle(' + id + ')" alt="-" id="collapse_img_' + id + '" /></span>' + h2.innerHTML;
 						getCN('box', blocktables[i])[0].setAttribute('id', 'collapse_box_' + id);
@@ -120,4 +129,4 @@ FluxBB.collapse = (function () {
 			}
 		}
 	};
-}());
+}(document));
