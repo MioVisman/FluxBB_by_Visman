@@ -7,51 +7,62 @@
  
 if (!defined('PUN')) exit;
 
-function isbotex ($ra)
+function isbotex($ra)
 {
-	$ua = getenv('HTTP_USER_AGENT');
-	$bot_alias  = Array('Rambler','Yandex','Google','Yahoo','MSN',   'Bing',   'Mail.Ru','Alexa',      'Ask Jeeves','Begun Crawler','libwww-perl','Flatland',   'Almaden');
-	$bot_string = Array('Rambler','Yandex','Google','Yahoo','msnbot','bingbot','Mail.',  'ia_archiver','Ask Jeeves','Begun Robot',  'libwww-perl','flatlandbot','almaden');
-
-	$k = count($bot_string);
-	for ($i=0; $i < $k; $i++)
+	function isbot($ua)
 	{
-		if (strpos($ua, $bot_string[$i]) !== false) return '[Bot] '.$bot_alias[$i];
+		if ('' == pun_trim($ua)) return false;
+
+		$ual = strtolower($ua);
+		if (strstr($ual, 'bot') || strstr($ual, 'spider') || strstr($ual, 'crawler')) return true;
+		
+		if (strstr($ua, 'Mozilla/'))
+		{
+			if (strstr($ua, 'Gecko')) return false;
+			if (strstr($ua, '(compatible; MSIE ') && strstr($ua, 'Windows')) return false;
+		}
+		else if (strstr($ua, 'Opera/'))
+		{
+			if (strstr($ua, 'Presto/')) return false;
+		}
+//		else
+//		{
+//			return false;
+//		}
+    
+		return true;
 	}
 
-	$ual = strtolower($ua);
-	$ua = ' '.$ua.' ';
-	if (strpos($ual, 'http://') !== false || strpos($ual, 'bot') !== false || strpos($ual, 'spider') !== false || strpos($ual, 'crawler') !== false || strpos($ual, 'www.') !== false)
-	{
-		$pat = array(
-			'/\[.*\]/',
-			'/(mozilla|gecko|firefox|compatible|beta)(\/[\w\.]+)?/i',
-			'/\((x86|i386|amd64|x11|macintosh|windows)[^\(\)]+\)/i',
-			'/\(x11[^\(\)]+\)/i',
-			'/http:\/\/[^\s\);]*/i',
-			'/www\.[^\s\);]*/i',
-			'/[\w\.-]+@[\w\.-]+/i',
-			'/\W(msie|windows|linux|unix|java|sv|\.net)[ \w\.-]*/i',
-			'/r?v?[\.:]?\d\.\d[\w\.-]*/i',
-			'/[\s\)\(\+;:,_-]{2,}/',
-		);
-		$rep = array('', '', '', '', '', '', '', '', '', ' ',);
-		$ua = pun_trim(preg_replace($pat, $rep, $ua));
+	$ua = $_SERVER['HTTP_USER_AGENT'];
 
-		if (($pos = strpos($ua, '/')) !== false)
+	if (isbot($ua))
+	{
+		$bots = array(
+		  'Googlebot-Mobile' => 'Googlebot-Mobile',
+		  'Google' => 'Google',
+		  'Yandex' => 'Yandex',
+		  'Yahoo' => 'Yahoo',
+		  'msnbot' => 'MSN',
+		  'bingbot' => 'Bing',
+		  'Ezooms' => 'Ezooms',
+		  'Mail.' => 'Mail.Ru',
+		  'MJ12bot' => 'Majestic-12',
+		  'magpie-crawler' => 'Magpie',
+		  '360Spider' => '360Spider',
+		  'proximic' => 'Proximic',
+		  'Baiduspider' => 'Baidu',
+//		  '' => '',
+//		  '' => '',
+//		  '' => '',
+//		  '' => '',
+		);
+	
+		foreach ($bots as $str => $bot)
 		{
-			$ua = substr($ua, 0, $pos);
-			$sp = substr_count($ua, ' ');
-			if ($sp < 3) return '[Bot] '.$ua;
-			else return '[Bot] Unknown';
+			if (strstr($ua, $str)) return '[Bot] '.$bot;
 		}
-		else if (preg_match('#^[ \w\.\^\!-]+$#', $ua))
-		{
-			$sp = substr_count($ua, ' ');
-			if ($sp < 3) return '[Bot] '.$ua;
-			else return '[Bot] Unknown';
-		}
-		return '[Bot] Unknown';
+
+		return '[Bot] Unknown#-#'.$ra;
 	}
 	return $ra;
 }

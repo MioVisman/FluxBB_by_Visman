@@ -667,10 +667,11 @@ if (defined('WITT_ENABLE'))
 	}
 	foreach ($witt_bt as $online_name)
 	{
-		if (substr($online_name, 0, 5) == '[Bot]')
+		if (strpos($online_name, '[Bot]') === 0)
 		{
 		   ++$num_bots;
-		   $users[] = "\n\t\t\t\t".'<dd>'.pun_htmlspecialchars($online_name);
+		   $arr_o_name = explode('#-#', $online_name);
+		   $users[] = "\n\t\t\t\t".'<dd'.($pun_user['g_id'] == PUN_ADMIN && !empty($arr_o_name[1]) ? ' title="'.pun_htmlspecialchars($arr_o_name[1]).'" ' : '').'>'.pun_htmlspecialchars($arr_o_name[0]);
 		}
 	}
 
