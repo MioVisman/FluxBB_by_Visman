@@ -653,7 +653,7 @@ if (defined('WITT_ENABLE'))
 	$num_guests = count($witt_us[1]);
 	$num_bots = 0;
 	$num_users = count($witt_us) - 1;
-	$users = array();
+	$users = $bots = array();
 	$witt_bt = $witt_us[1];
 	unset($witt_us[1]);
 	unset($witt_us[1]);
@@ -667,14 +667,18 @@ if (defined('WITT_ENABLE'))
 	}
 	foreach ($witt_bt as $online_name)
 	{
-		if (strpos($online_name, '[Bot]') === 0)
+		if (strpos($online_name, '[Bot]') !== false)
 		{
 		   ++$num_bots;
-		   $arr_o_name = explode('#-#', $online_name);
-		   $users[] = "\n\t\t\t\t".'<dd'.($pun_user['g_id'] == PUN_ADMIN && !empty($arr_o_name[1]) ? ' title="'.pun_htmlspecialchars($arr_o_name[1]).'" ' : '').'>'.pun_htmlspecialchars($arr_o_name[0]);
+		   $arr_o_name = explode('[Bot]', $online_name);
+		   if (empty($bots[$arr_o_name[1]])) $bots[$arr_o_name[1]] = 1;
+		   else ++$bots[$arr_o_name[1]];
 		}
 	}
-
+	foreach ($bots as $online_name => $online_id)
+	{
+		   $users[] = "\n\t\t\t\t".'<dd>[Bot] '.pun_htmlspecialchars($online_name.($online_id > 1 ? ' ('.$online_id.')' : ''));
+	}
 	echo "\t\t\t\t".'<dd><span>'.sprintf($lang_topic['Users online'], '<strong>'.forum_number_format($num_users).'</strong>').', '.sprintf($lang_topic['Guests online'], '<strong>'.forum_number_format($num_guests).'</strong>').'</span></dd>'."\n\t\t\t".'</dl>'."\n";;
 
  	if ($num_users + $num_bots > 0)

@@ -329,7 +329,7 @@ function set_default_user()
 	$pun_user['style'] = $pun_config['o_default_style'];
 	$pun_user['is_guest'] = true;
 	$pun_user['is_admmod'] = false;
-	$pun_user['is_bot'] = (strpos($remote_addr, '[Bot]') === 0); // MOD определения ботов - Visman
+	$pun_user['is_bot'] = (strpos($remote_addr, '[Bot]') !== false); // MOD определения ботов - Visman
 	$pun_user['ident'] = $remote_addr;                             // Кто в этой теме - Visman
 
 	if (!empty($_COOKIE[$cookie_name.'_glang'])) // быстрое переключение языка - Visman

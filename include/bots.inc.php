@@ -35,36 +35,42 @@ function isbotex($ra)
 
 	$ua = $_SERVER['HTTP_USER_AGENT'];
 
-	if (isbot($ua))
-	{
-		$bots = array(
-		  'Googlebot-Mobile' => 'Googlebot-Mobile',
-		  'Google' => 'Google',
-		  'Yandex' => 'Yandex',
-		  'Yahoo' => 'Yahoo',
-		  'msnbot' => 'MSN',
-		  'bingbot' => 'Bing',
-		  'Ezooms' => 'Ezooms',
-		  'Mail.' => 'Mail.Ru',
-		  'MJ12bot' => 'Majestic-12',
-		  'magpie-crawler' => 'Magpie',
-		  '360Spider' => '360Spider',
-		  'proximic' => 'Proximic',
-		  'Baiduspider' => 'Baidu',
-//		  '' => '',
-//		  '' => '',
-//		  '' => '',
-//		  '' => '',
-		);
-	
-		foreach ($bots as $str => $bot)
-		{
-			if (strstr($ua, $str)) return '[Bot] '.$bot;
-		}
+	if (!isbot($ua)) return $ra;
 
-		return '[Bot] Unknown#-#'.$ra;
-	}
-	return $ra;
+	$pat = array(
+		'%(https?://|www\.).*%i',
+		'%.*compatible[^\s]*%i',
+		'%[\w\.-]+@[\w\.-]+.*%',
+		'%.*?([^\s]+(bot|spider|crawler)[^\s]*).*%i',
+		'%(?<=[\s_-])(bot|spider|crawler).*%i',
+		'%(Mozilla|Gecko|Firefox|AppleWebKit)[^\s]*%i',
+//		'%(MSIE|Windows|\.NET|Linux)[^;]+%i',
+//		'%[^\s]*\.(com|html)[^\s]*%i',
+		'%\/[v\d]+.*%',
+		'%[^0-9a-z\.]+%i'
+	);
+	$rep = array(
+		' ',
+		' ',
+		' ',
+		'$1',
+		' ',
+		' ',
+//		' ',
+//		' ',
+		' ',
+		' '
+	);
+	$ua = pun_trim(preg_replace($pat, $rep, $ua));
+
+	if (empty($ua)) return $ra.'[Bot]Unknown';
+
+	$a = explode(' ', $ua);
+	$ua = $a[0];
+	if (strlen($ua) < 20 && !empty($a[1])) $ua.= ' '.$a[1];
+	if (strlen($ua) > 25) $ua = 'Unknown';
+
+	return $ra.'[Bot]'.$ua;
 }
 
 $remote_addr = isbotex($remote_addr);
