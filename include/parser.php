@@ -893,13 +893,13 @@ function do_bbcode($text, $is_signature = false)
 	$replace[] = '<a href="mailto:$1">$1</a>';
 	$replace[] = '<a href="mailto:$1">$2</a>';
 	$replace_callback[] = 'handle_url_tag(\''.get_base_url(true).'/viewtopic.php?id=\'.$matches[1])';
-	$replace_callback[] = 'handle_url_tag(\''.get_base_url(true).'/viewtopic.php?id=\'.$matches[1],$matches[2])';
+	$replace_callback[] = 'handle_url_tag(\''.get_base_url(true).'/viewtopic.php?id=\'.$matches[1], $matches[2])';
 	$replace_callback[] = 'handle_url_tag(\''.get_base_url(true).'/viewtopic.php?pid=\'.$matches[1].\'#p\'.$matches[1])';
-	$replace_callback[] = 'handle_url_tag(\''.get_base_url(true).'/viewtopic.php?pid=\'.$matches[1].\'#p\'.$matches[1],$matches[2])';
+	$replace_callback[] = 'handle_url_tag(\''.get_base_url(true).'/viewtopic.php?pid=\'.$matches[1].\'#p\'.$matches[1], $matches[2])';
 	$replace_callback[] = 'handle_url_tag(\''.get_base_url(true).'/viewforum.php?id=\'.$matches[1])';
-	$replace_callback[] = 'handle_url_tag(\''.get_base_url(true).'/viewforum.php?id=\'.$matches[1],$matches[2])';
+	$replace_callback[] = 'handle_url_tag(\''.get_base_url(true).'/viewforum.php?id=\'.$matches[1], $matches[2])';
 	$replace_callback[] = 'handle_url_tag(\''.get_base_url(true).'/profile.php?id=\'.$matches[1])';
-	$replace_callback[] = 'handle_url_tag(\''.get_base_url(true).'/profile.php?id=\'.$matches[1],$matches[2])';
+	$replace_callback[] = 'handle_url_tag(\''.get_base_url(true).'/profile.php?id=\'.$matches[1], $matches[2])';
 
 	// This thing takes a while! :)
 	$text = preg_replace($pattern, $replace, $text);
@@ -1001,7 +1001,6 @@ function parse_message($text, $hide_smilies)
 	global $string_shl;
 	if (!empty($string_shl))
 	{
-//		$text = ucp_preg_replace('%(?<=[^\p{L}\p{N}])('.str_replace('*', '[\p{L}\p{N}]*', $string_shl).')(?=[^\p{L}\p{N}])%ui', '<span class="shlight">$1</span>', ' '.$text.' ');
 		$text = ucp_preg_replace('%(?<=[^\p{L}\p{N}])('.str_replace('*', '[\p{L}\p{N}]*', $string_shl).')(?=[^\p{L}\p{N}])(?=[^>]*<)%ui', '<span class="shlight">$1</span>', '>'.$text.'<');
 		$text = substr($text, 1, -1);
 	}

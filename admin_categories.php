@@ -80,6 +80,7 @@ else if (isset($_POST['del_cat']) || isset($_POST['del_cat_comply']))
 		if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
 			require PUN_ROOT.'include/cache.php';
 
+		generate_subforums_cache(); // MOD subforms - Visman
 		generate_quickjump_cache();
 
 		redirect('admin_categories.php', $lang_admin_categories['Category deleted redirect']);
@@ -149,6 +150,7 @@ else if (isset($_POST['update'])) // Change position and name of the categories
 	if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
 		require PUN_ROOT.'include/cache.php';
 
+	generate_subforums_cache(); // MOD subforms - Visman
 	generate_quickjump_cache();
 
 	redirect('admin_categories.php', $lang_admin_categories['Categories updated redirect']);

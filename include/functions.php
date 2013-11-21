@@ -6,7 +6,6 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-include PUN_ROOT.'include/srand.php';
 
 
 //
@@ -488,7 +487,7 @@ function check_username($username, $exclude_id = null)
 	global $db, $pun_config, $errors, $lang_prof_reg, $lang_register, $lang_common, $pun_bans;
 
 	// Include UTF-8 function
-	require PUN_ROOT.'include/utf8/strcasecmp.php';
+	require_once PUN_ROOT.'include/utf8/strcasecmp.php';
 
 	// Convert multiple whitespace characters into one (to prevent people from registering with indistinguishable usernames)
 	$username = preg_replace('%\s+%s', ' ', $username);
@@ -1111,6 +1110,9 @@ function forum_number_format($number, $decimals = 0)
 //
 function random_key($len, $readable = false, $hash = false)
 {
+	if (!function_exists('secure_random_bytes'))
+		include PUN_ROOT.'include/srand.php';
+
 	$key = secure_random_bytes($len);
 
 	if ($hash)

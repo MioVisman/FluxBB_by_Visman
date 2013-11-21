@@ -16,6 +16,10 @@ $uid = isset($_REQUEST['uid']) ? intval($_REQUEST['uid']) : 0;
 if ($uid < 2)
 	message($lang_common['Bad request'], false, '404 Not Found');
 
+$csrf_token = pun_hash($pun_user['id'].pun_hash($pun_config['o_crypto_pas'].$uid).PUN_ROOT);
+if (!isset($_REQUEST['csrf_token']) || $_REQUEST['csrf_token'] != $csrf_token)
+	message($lang_common['Bad request'], false, '404 Not Found');
+
 $result = $db->query('SELECT id, group_id, username FROM '.$db->prefix.'users WHERE id='.$uid) or error('Unable to fetch user information', __FILE__, __LINE__, $db->error());
 $cur_user = $db->fetch_assoc($result);
 
@@ -94,8 +98,9 @@ generate_pmsn_menu($pmsn_modul);
 		<div class="box">
 			<form method="post" action="pmsnew.php?mdl=blocking">
 				<div class="inform">
-					<input type="hidden" name="csrf_hash" value="<?php echo $pmsn_csrf_hash; ?>" />
-					<input type="hidden" name="uid" value="<?php echo $uid; ?>" />
+					<input type="hidden" name="csrf_hash" value="<?php echo $pmsn_csrf_hash ?>" />
+					<input type="hidden" name="csrf_token" value="<?php echo $csrf_token ?>" />
+					<input type="hidden" name="uid" value="<?php echo $uid ?>" />
 					<fieldset>
 						<legend><?php echo $lang_pmsn['Attention'] ?></legend>
 						<div class="infldset">

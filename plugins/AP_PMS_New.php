@@ -17,7 +17,7 @@ else
 
 // Tell admin_loader.php that this is indeed a plugin and that it is loaded
 define('PUN_PLUGIN_LOADED', 1);
-define('PLUGIN_VERSION', '1.6.2');
+define('PLUGIN_VERSION', '1.7.0');
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin='.$plugin));
 
 // If the "Show text" button was clicked

@@ -178,6 +178,7 @@ for ($i = 0;$cur_post_id = $db->result($result, $i);$i++)
 	$post_ids[] = $cur_post_id;
 	
 $post_view_new = array();
+$a_token = array();
 
 // мод пола, добавлен u.gender
 // убран запрос к таблице online
@@ -213,7 +214,12 @@ while ($cur_post = $db->fetch_assoc($result))
 			$post_view_new[] = $cur_post['id'];
 
 		if ($cur_post['g_id'] != PUN_GUEST && $cur_post['g_id'] != PUN_ADMIN)
-			$post_actions[] = '<li class="postreport"><span><a href="pmsnew.php?mdl=blocking&amp;uid='.$cur_post['poster_id'].'">'.$lang_pmsn['Block'].'</a></span></li>';
+		{
+			if (!isset($a_token[$cur_post['poster_id']]))
+				$a_token[$cur_post['poster_id']] = pun_hash($pun_user['id'].pun_hash($pun_config['o_crypto_pas'].$cur_post['poster_id']).PUN_ROOT);
+		  
+			$post_actions[] = '<li class="postreport"><span><a href="pmsnew.php?mdl=blocking&amp;uid='.$cur_post['poster_id'].'&amp;csrf_token='.$a_token[$cur_post['poster_id']].'">'.$lang_pmsn['Block'].'</a></span></li>';
+		}
 	}
 	else if ($cur_post['post_new'] == 1 && $newpost)
 	{

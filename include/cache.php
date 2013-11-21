@@ -54,7 +54,6 @@ function generate_bans_cache()
 //
 // Generate quick jump cache PHP scripts
 //
-?><?php
 function generate_quickjump_cache($group_id = false)
 {
 	global $db, $lang_common;
@@ -292,39 +291,39 @@ function generate_smiley_cache()
 // Generate the subforums cache - Visman
 //
 ?><?php
+function generate_subforums_desc(&$list, $tree, $node = 0)
+{
+	if (!empty($tree[$node]))
+	{
+		foreach ($tree[$node] as $forum_id => $forum)
+		{
+			$list[$forum_id] = $node ? array_merge(array($node), $list[$node]) : array();
+			$list[$forum_id]['forum_name'] = $forum['forum_name'];
+			generate_subforums_desc($list, $tree, $forum_id);
+		}
+	}
+}
+
+function generate_subforums_asc(&$list, $tree, $node = array(0))
+{
+	$list[$node[0]][] = $node[0];
+
+	if (empty($tree[$node[0]])) return;
+	foreach ($tree[$node[0]] as $forum_id => $forum)
+	{
+		$temp = array($forum_id);
+		foreach ($node as $i)
+		{
+			$list[$i][] = $forum_id;
+			$temp[] = $i;
+		}
+		generate_subforums_asc($list, $tree, $temp);
+	}
+}
+
 function generate_subforums_cache($group_id = false)
 {
 	global $db;
-
-	function generate_subforums_desc(&$list, $tree, $node = 0)
-	{
-		if (!empty($tree[$node]))
-		{
-			foreach ($tree[$node] as $forum_id => $forum)
-			{
-				$list[$forum_id] = $node ? array_merge(array($node), $list[$node]) : array();
-				$list[$forum_id]['forum_name'] = $forum['forum_name'];
-				generate_subforums_desc($list, $tree, $forum_id);
-			}
-		}
-	}
-
-	function generate_subforums_asc(&$list, $tree, $node = array(0))
-	{
-		$list[$node[0]][] = $node[0];
-
-		if (empty($tree[$node[0]])) return;
-		foreach ($tree[$node[0]] as $forum_id => $forum)
-		{
-			$temp = array($forum_id);
-			foreach ($node as $i)
-			{
-				$list[$i][] = $forum_id;
-				$temp[] = $i;
-			}
-			generate_subforums_asc($list, $tree, $temp);
-		}
-	}
 
 	$groups = array();
 
