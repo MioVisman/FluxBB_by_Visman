@@ -11,7 +11,7 @@ if (!defined('PUN'))
 
 // Tell admin_loader.php that this is indeed a plugin and that it is loaded
 define('PUN_PLUGIN_LOADED', 1);
-define('PLUGIN_VERSION', '2.0 beta');
+define('PLUGIN_VERSION', '2.0.1');
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin='.$plugin));
 define('PLUGIN_EXTS', 'jpg,jpeg,png,gif,mp3,zip,rar,7z');
 define('PLUGIN_NF', 25);
@@ -192,7 +192,7 @@ if (isset($_POST['delete']) && isset($_POST['delete_f']) && is_array($_POST['del
 	$p = (!isset($_GET['p']) || $_GET['p'] <= 1) ? 1 : intval($_GET['p']);
 
 	if ($error == 0)
-		redirect(PLUGIN_URL.($p > 1 ? '&amp;p='.$p : ''), $lang_up['delete_success']);
+		redirect(PLUGIN_URL.($p > 1 ? '&amp;p='.$p : ''), $lang_up['Redirect delete']);
 	else
 	{
 		$pun_config['o_redirect_delay'] = 5;
