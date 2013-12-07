@@ -17,7 +17,7 @@ else
 
 // Tell admin_loader.php that this is indeed a plugin and that it is loaded
 define('PUN_PLUGIN_LOADED', 1);
-define('PLUGIN_VERSION', '1.3.1');
+define('PLUGIN_VERSION', '1.3.2');
 define('PLUGIN_REVISION', 4);
 define('PLUGIN_NAME', 'Fancybox for FluxBB');
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin='.$plugin));
