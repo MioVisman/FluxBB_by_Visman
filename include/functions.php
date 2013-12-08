@@ -497,7 +497,7 @@ function check_username($username, $exclude_id = null)
 		$errors[] = $lang_prof_reg['Username too short'];
 	else if (pun_strlen($username) > 25) // This usually doesn't happen since the form element only accepts 25 characters
 		$errors[] = $lang_prof_reg['Username too long'];
-	else if (!preg_match('%^[A-Za-zА-Яа-яёЁ]+[0-9A-Za-zА-Яа-яёЁ_ ]*$%u', $username)) // строгая проверка имени пользователя - Visman
+	else if (!preg_match('%^[\w ]+$%u', $username) || preg_match('%^[\d_ ]%u', $username)) // строгая проверка имени пользователя - Visman
 		$errors[] = $lang_prof_reg['Username Error'];
 	else if (!strcasecmp($username, 'Guest') || !utf8_strcasecmp($username, $lang_common['Guest']))
 		$errors[] = $lang_prof_reg['Username guest'];
@@ -2245,7 +2245,7 @@ function generation_js($arr)
 {
 	$res = '';
 	if (!empty($arr['j']))
-		$res = AJAX_JQUERY."\n";
+		array_unshift($arr['f'], FORUM_AJAX_JQUERY);
 	if (!empty($arr['f']))
 		$res.= '<script type="text/javascript" src="'.implode('"></script>'."\n".'<script type="text/javascript" src="', $arr['f']).'"></script>'."\n";
 	if (!empty($arr['c']))

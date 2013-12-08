@@ -45,7 +45,7 @@ else
 		$result = $db->query('SELECT conf_value FROM '.$db->prefix.'config WHERE conf_name=\'o_merge_timeout\'') or error('Unable to fetch config info', __FILE__, __LINE__, $db->error());
 		if (!$db->num_rows($result))
 		{
-			$db->query('INSERT INTO '.$db->prefix."config (conf_name, conf_value) VALUES('o_merge_timeout', '86400')") or error('Unable to insert into table config', __FILE__, __LINE__, $db->error());
+			$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES(\'o_merge_timeout\', \'86400\')') or error('Unable to insert into table config', __FILE__, __LINE__, $db->error());
 			$merge_timeout = '86400';
 		}
 		else

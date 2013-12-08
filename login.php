@@ -80,7 +80,7 @@ if (isset($_POST['form_sent']) && $action == 'in')
 		$error = 'Error 2: '.$lang_sec['You are robot'];
 	else if ($_POST['csrf_token'] != csrf_hash())
 		$error = 'Error 3: '.$lang_sec['You are robot'];
-	else if ($cry_time < 4)
+	else if ($cry_time < 3)
 		$error = $lang_sec['You fast'];
 	else if ($cry_time > 3600)
 		$error = $lang_sec['You slowly'];

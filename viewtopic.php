@@ -587,7 +587,7 @@ while ($cur_post = $db->fetch_assoc($result))
 <?php if ($user_avatar != '') echo "\t\t\t\t\t\t".'<dd class="postavatar">'.$user_avatar.'</dd>'."\n"; ?>
 <?php if (count($user_info)) echo "\t\t\t\t\t\t".implode("\n\t\t\t\t\t\t", $user_info)."\n"; ?>
 <?php if (count($user_contacts)) echo "\t\t\t\t\t\t".'<dd class="usercontacts">'.implode(' ', $user_contacts).'</dd>'."\n"; ?>
-<?php echo get_useragent_icons($cur_post['user_agent']); ?>
+<?php if (!defined('FORUM_UA_OFF')) echo get_useragent_icons($cur_post['user_agent']); ?>
 					</dl>
 				</div>
 				<div class="postright">

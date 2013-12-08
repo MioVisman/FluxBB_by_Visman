@@ -35,7 +35,7 @@ if (isset($_POST['add_forum']))
 	if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
 		require PUN_ROOT.'include/cache.php';
 
-	generate_subforums_cache(); // MOD subforms - Visman
+	generate_subforums_cache(); // MOD subforums - Visman
 	generate_quickjump_cache();
 
 	redirect('admin_forums.php', $lang_admin_forums['Forum added redirect']);
@@ -80,7 +80,7 @@ else if (isset($_GET['del_forum']))
 		if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
 			require PUN_ROOT.'include/cache.php';
 
-		generate_subforums_cache(); // MOD subforms - Visman
+		generate_subforums_cache(); // MOD subforums - Visman
 		generate_quickjump_cache();
 
 		redirect('admin_forums.php', $lang_admin_forums['Forum deleted redirect']);
@@ -141,7 +141,7 @@ else if (isset($_POST['update_positions']))
 	if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
 		require PUN_ROOT.'include/cache.php';
 
-	generate_subforums_cache(); // MOD subforms - Visman
+	generate_subforums_cache(); // MOD subforums - Visman
 	generate_quickjump_cache();
 
 	redirect('admin_forums.php', $lang_admin_forums['Forums updated redirect']);
@@ -215,7 +215,7 @@ else if (isset($_GET['edit_forum']))
 		if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
 			require PUN_ROOT.'include/cache.php';
 
-		generate_subforums_cache(); // MOD subforms - Visman
+		generate_subforums_cache(); // MOD subforums - Visman
 		generate_quickjump_cache();
 
 		redirect('admin_forums.php', $lang_admin_forums['Forum updated redirect']);
@@ -230,7 +230,7 @@ else if (isset($_GET['edit_forum']))
 		if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
 			require PUN_ROOT.'include/cache.php';
 
-		generate_subforums_cache(); // MOD subforms - Visman
+		generate_subforums_cache(); // MOD subforums - Visman
 		generate_quickjump_cache();
 
 		redirect('admin_forums.php?edit_forum='.$forum_id, $lang_admin_forums['Perms reverted redirect']);

@@ -110,6 +110,7 @@ require PUN_ROOT.'header.php';
 // MOD subforums - Visman
 if ($p == 1 && !empty($sf_array_tree[$id]))
 {
+
 ?>
 <div class="linkst">
 	<div class="inbox crumbsplus">
@@ -122,6 +123,7 @@ if ($p == 1 && !empty($sf_array_tree[$id]))
 	</div>
 </div>
 <?php
+
 	require PUN_ROOT.'include/subforums_view.php';
 }
 
@@ -164,11 +166,8 @@ $result = $db->query('SELECT id FROM '.$db->prefix.'topics WHERE forum_id='.$id.
 if ($db->num_rows($result))
 {
 	$topic_ids = array();
-	for ($i = 0;$cur_topic_id = $db->result($result, $i);$i++)
+	for ($i = 0; $cur_topic_id = $db->result($result, $i); $i++)
 		$topic_ids[] = $cur_topic_id;
-
-	if (empty($topic_ids))
-		error('The topic table and forum table seem to be out of sync!', __FILE__, __LINE__);
 
 	// Fetch list of topics to display on this page
 	if ($pun_user['is_guest'] || $pun_config['o_show_dot'] == '0')

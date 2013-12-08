@@ -33,7 +33,7 @@ function isbotex($ra)
 		return true;
 	}
 
-	$ua = $_SERVER['HTTP_USER_AGENT'];
+	$ua = getenv('HTTP_USER_AGENT');
 
 	if (!isbot($ua)) return $ra;
 

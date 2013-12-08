@@ -9,7 +9,7 @@
 // The FluxBB version this script updates to
 define('UPDATE_TO', '1.5.5');
 
-define('UPDATE_TO_VER_REVISION', 62);	// номер сборки - Visman
+define('UPDATE_TO_VER_REVISION', 63);	// номер сборки - Visman
 
 define('UPDATE_TO_DB_REVISION', 20);
 define('UPDATE_TO_SI_REVISION', 2);
@@ -1187,14 +1187,14 @@ if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_v
 	if ($db_type == 'mysql' || $db_type == 'mysqli')
 		$db->query('ALTER TABLE '.$db->prefix.'blocking ENGINE = MyISAM') or error('Unable to change engine type of blocking table to MyISAM', __FILE__, __LINE__, $db->error());
 
-	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE "o_uploadile_%"') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
+	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o_uploadile_%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
 
 	if (!array_key_exists('o_crypto_enable', $pun_config))
 		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_crypto_enable\', \'1\')') or error('Unable to insert config value \'o_crypto_enable\'', __FILE__, __LINE__, $db->error());
 	if (!array_key_exists('o_crypto_pas', $pun_config))
-		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_crypto_pas\', \''.random_pass(25).'\')') or error('Unable to insert config value \'o_crypto_pas\'', __FILE__, __LINE__, $db->error());
+		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_crypto_pas\', \''.$db->escape(random_pass(25)).'\')') or error('Unable to insert config value \'o_crypto_pas\'', __FILE__, __LINE__, $db->error());
 	if (!array_key_exists('o_crypto_salt', $pun_config))
-		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_crypto_salt\', \''.random_pass(13).'\')') or error('Unable to insert config value \'o_crypto_salt\'', __FILE__, __LINE__, $db->error());
+		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_crypto_salt\', \''.$db->escape(random_pass(13)).'\')') or error('Unable to insert config value \'o_crypto_salt\'', __FILE__, __LINE__, $db->error());
 } // rev.47
 if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 52)
 {
@@ -1220,14 +1220,51 @@ if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_v
 	}
 
 	if (!array_key_exists('st_max_users', $pun_config))
-		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'st_max_users\', \''.$stats['max_users'].'\')') or error('Unable to insert config value \'st_max_users\'', __FILE__, __LINE__, $db->error());
+		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'st_max_users\', \''.$db->escape($stats['max_users']).'\')') or error('Unable to insert config value \'st_max_users\'', __FILE__, __LINE__, $db->error());
 	if (!array_key_exists('st_max_users_time', $pun_config))
-		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'st_max_users_time\', \''.$stats['max_users_time'].'\')') or error('Unable to insert config value \'st_max_users_time\'', __FILE__, __LINE__, $db->error());
+		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'st_max_users_time\', \''.$db->escape($stats['max_users_time']).'\')') or error('Unable to insert config value \'st_max_users_time\'', __FILE__, __LINE__, $db->error());
 } // rev.58
 if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 59)
 {
 	@unlink(PUN_ROOT.'include/cache_smilies.php');
 } // rev.59
+if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 63)
+{
+	$conf_contents = file_get_contents(PUN_ROOT.'include/config.php');
+
+	if ($conf_contents === false)
+		error('Unable to read config file include/config.php.', __FILE__, __LINE__);
+
+	$conf_define = array(
+	  'PUN_DEBUG' => array('1', true, ''),
+	  'PUN_SHOW_QUERIES' => array('1', false, ''),
+	  'PUN_MAX_POSTSIZE' => array('65535', true, ''),
+	  'FORUM_EOL' => array('"\r\n"', false, 'possible values can be PHP_EOL, "\r\n", "\n" or "\r"'),
+	  'FORUM_UA_OFF' => array('1', false, ''),
+	  'FORUM_AJAX_JQUERY' => array('\'//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js\'', true, ''),
+	);
+
+	$conf_add = array();
+	foreach ($conf_define as $conf_name => $conf_value)
+	{
+		if (!preg_match('%[\'"]'.$conf_name.'[\'"]%u', $conf_contents))
+		{
+			$conf_add[] = ($conf_value[1] ? '' : '//').'define(\''.$conf_name.'\', '.$conf_value[0].');'.(empty($conf_value[2]) ? '' : ' // '.$conf_value[2]);
+		}
+	}
+
+	if (!empty($conf_add))
+	{
+		$fn = @fopen(PUN_ROOT.'include/config.php', 'wb');
+		if (!$fn)
+			error('Unable to write config file include/config.php.', __FILE__, __LINE__);
+
+    if (fwrite($fn, pun_trim($conf_contents, " \n\r")."\n\n".implode("\n", $conf_add)."\n") === false)
+			error('Unable to write config file include/config.php.', __FILE__, __LINE__);
+
+		fclose($fn);
+	}
+} // rev.63
 // Visman
 
 		// If we don't need to update the database, skip this stage

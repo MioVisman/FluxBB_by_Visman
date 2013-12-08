@@ -290,7 +290,6 @@ function generate_smiley_cache()
 //
 // Generate the subforums cache - Visman
 //
-?><?php
 function generate_subforums_desc(&$list, $tree, $node = 0)
 {
 	if (!empty($tree[$node]))
@@ -354,7 +353,6 @@ function generate_subforums_cache($group_id = false)
 		{
 			$tree = $desc = $asc = array();
 
-			// !!!Нужно определить какие поля требуются!!! f.forum_desc, f.moderators, f.num_topics, f.num_posts, f.last_post, f.last_post_id, f.last_poster, f.last_topic,
 			$result = $db->query('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name, f.redirect_url, f.parent_forum_id, f.disp_position FROM '.$db->prefix.'categories AS c INNER JOIN '.$db->prefix.'forums AS f ON c.id=f.cat_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$group_id.') WHERE fp.read_forum IS NULL OR fp.read_forum=1 ORDER BY c.disp_position, c.id, f.disp_position', true) or error('Unable to fetch category/forum list', __FILE__, __LINE__, $db->error());
 
 			// Generate array of forums/subforums for this group

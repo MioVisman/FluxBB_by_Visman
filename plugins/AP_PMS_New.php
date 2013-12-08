@@ -17,7 +17,7 @@ else
 
 // Tell admin_loader.php that this is indeed a plugin and that it is loaded
 define('PUN_PLUGIN_LOADED', 1);
-define('PLUGIN_VERSION', '1.7.0');
+define('PLUGIN_VERSION', '1.7.1');
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin='.$plugin));
 
 // If the "Show text" button was clicked
@@ -36,7 +36,7 @@ if (isset($_POST['show_text']))
 	if (isset($pun_config['o_pms_flasher']))
 		$db->query('UPDATE '.$db->prefix.'config SET conf_value=\''.$flash_pms.'\' WHERE conf_name=\'o_pms_flasher\'') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
 	else
-		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES(\'o_pms_flasher\', 0)') or error('Unable to insert into table '.$db->prefix.'config. Please check your configuration and try again.');
+		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES(\'o_pms_flasher\', \'0\')') or error('Unable to insert into table '.$db->prefix.'config. Please check your configuration and try again.');
 
 	$result = $db->query('SELECT g_id FROM '.$db->prefix.'groups ORDER BY g_id') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
 
