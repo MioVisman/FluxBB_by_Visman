@@ -17,7 +17,7 @@ else
 
 // Tell admin_loader.php that this is indeed a plugin and that it is loaded
 define('PUN_PLUGIN_LOADED', 1);
-define('PLUGIN_VERSION', '1.3.3');
+define('PLUGIN_VERSION', '1.3.4');
 define('PLUGIN_REVISION', 4);
 define('PLUGIN_NAME', 'Fancybox for FluxBB');
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin='.$plugin));
@@ -231,7 +231,7 @@ if (!$f_inst)
 					<fieldset>
 						<legend><?php echo $lang_fb['legend'] ?></legend>
 						<div class="infldset">
-						<table cellspacing="0">
+						<table>
 							<tr>
 								<td>
 									<label><input type="checkbox" name="guest_on" value="1" tabindex="<?php echo $tabindex++ ?>"<?php echo (empty($pun_config['o_fbox_guest'])) ? '' : ' checked="checked"' ?> />&#160;&#160;<?php echo $lang_fb['guest info'] ?></label>
@@ -245,7 +245,7 @@ if (!$f_inst)
 					<fieldset>
 						<legend><?php echo $lang_fb['legend2'] ?></legend>
 						<div class="infldset">
-						<table cellspacing="0">
+						<table>
 <?php
 
 	$d = dir(PUN_ROOT);

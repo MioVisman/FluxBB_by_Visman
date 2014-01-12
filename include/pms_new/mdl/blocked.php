@@ -70,7 +70,7 @@ function ChekUncheck()
 		<div id="users1" class="blocktable">
 			<div class="box">
 				<div class="inbox">
-					<table cellspacing="0">
+					<table>
 					<thead>
 						<tr>
 							<th class="tcl" scope="col"><?php echo $lang_common['Username'] ?></th>

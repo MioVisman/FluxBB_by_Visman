@@ -444,7 +444,6 @@ if (isset($_GET['tid']))
 	// Used to disable the Move and Delete buttons if there are no replies to this topic
 	$button_status = ($cur_topic['num_replies'] == 0) ? ' disabled="disabled"' : '';
 
-	// MOD All - Visman
 	if (isset($_GET['action']) && $_GET['action'] == 'all')
 		$pun_user['disp_posts'] = $cur_topic['num_replies'] + 1;
         
@@ -1050,7 +1049,7 @@ require PUN_ROOT.'header.php';
 	<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 	<div class="box">
 		<div class="inbox">
-			<table cellspacing="0">
+			<table>
 			<thead>
 				<tr>
 					<th class="tcl" scope="col"><?php echo $lang_common['Topic'] ?></th>

@@ -82,7 +82,7 @@ while ($cur_forum = $db->fetch_assoc($result))
 					<fieldset>
 						<legend><?php echo $lang_admin_forums['Category subhead'] ?> <?php echo pun_htmlspecialchars($cur_forum['cat_name']) ?></legend>
 						<div class="infldset">
-							<table cellspacing="0">
+							<table>
 							<thead>
 								<tr>
 									<th class="tcl"><?php echo $lang_admin_plugin_not_sum['Not Sum'] ?></th>

@@ -76,7 +76,7 @@ else
 					<fieldset>
 						<legend><?php echo $lang_admin_plugin_merge_posts['Legend text'] ?></legend>
 						<div class="infldset">
-							<table class="aligntop" cellspacing="0">
+							<table class="aligntop">
 								<tr>
 									<th scope="row"><?php echo $lang_admin_plugin_merge_posts['Text to show'] ?><div><input type="submit" name="show_text" value="<?php echo $lang_admin_plugin_merge_posts['Show text button'] ?>" tabindex="2" /></div></th>
 									<td>

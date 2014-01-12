@@ -17,7 +17,7 @@ else
 
 // Tell admin_loader.php that this is indeed a plugin and that it is loaded
 define('PUN_PLUGIN_LOADED', 1);
-define('PLUGIN_VERSION', '1.3.3');
+define('PLUGIN_VERSION', '1.3.4');
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin='.$plugin));
 
 // If the "Show text" button was clicked
@@ -82,7 +82,7 @@ else
 					<fieldset>
 						<legend><?php echo $lang_admin_plugin_poll['Legend1'] ?></legend>
 						<div class="infldset">
-							<table class="aligntop" cellspacing="0">
+							<table class="aligntop">
 								<tr>
 									<td>
 										<label><input type="checkbox" name="enable_poll" value="1" tabindex="<?php echo ($cur_index++) ?>"<?php echo ($pun_config['o_poll_enabled'] == '1') ? ' checked="checked"' : '' ?> />&#160;&#160;<?php echo $lang_admin_plugin_poll['Q1'] ?></label>
@@ -100,7 +100,7 @@ if ($pun_config['o_poll_enabled'] == '1')
 					<fieldset>
 						<legend><?php echo $lang_admin_plugin_poll['Legend3'] ?></legend>
 						<div class="infldset">
-							<table class="aligntop" cellspacing="0">
+							<table class="aligntop">
 								<tr>
 									<td>
 										<span><input type="text" name="poll_max_ques" value="<?php echo pun_htmlspecialchars($pun_config['o_poll_max_ques']) ?>"  tabindex="<?php echo ($cur_index++) ?>" size="4" maxlength="2" />&#160;&#160;<?php echo $lang_admin_plugin_poll['Q2'] ?></span>

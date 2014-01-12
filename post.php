@@ -80,6 +80,9 @@ if (isset($_POST['form_sent']))
 	// шифрование данных - Visman
 	$cry_time = check_for_crypto();
 
+	// Make sure they got here from the site
+	confirm_referrer('post.php');
+
 	// If it's a new topic
 	if ($fid)
 	{
@@ -190,9 +193,7 @@ if (isset($_POST['form_sent']))
 	{
 		if ($pun_config['o_coding_forms'] == '1' && $_POST['form_sent'] != '7')
 			$errors = array($lang_sec['Enable JS']);
-		else if (empty($_POST['csrf_token']))
-			$errors = array('Error 3: '.$lang_sec['You are robot']);
-		else if ($_POST['csrf_token'] != csrf_hash() || !isset($_POST['kluk']) || $_POST['kluk'] != '3')
+		else if (!isset($_POST['kluk']) || $_POST['kluk'] != '4')
 			$errors = array('Error 4: '.$lang_sec['You are robot2']);
 	}
 
@@ -614,6 +615,8 @@ require PUN_ROOT.'header.php';
 		<ul class="crumbs">
 			<li><a href="index.php"><?php echo $lang_common['Index'] ?></a></li>
 			<li><span>»&#160;</span><a href="viewforum.php?id=<?php echo $cur_posting['id'] ?>"><?php echo pun_htmlspecialchars($cur_posting['forum_name']) ?></a></li>
+<?php if (isset($_POST['req_subject'])): ?>      <li><span>»&#160;</span><?php echo pun_htmlspecialchars($_POST['req_subject']) ?></li>
+<?php endif; ?>
 <?php if (isset($cur_posting['subject'])): ?>			<li><span>»&#160;</span><a href="viewtopic.php?id=<?php echo $tid ?>"><?php echo pun_htmlspecialchars($cur_posting['subject']) ?></a></li>
 <?php endif; ?>			<li><span>»&#160;</span><strong><?php echo $action ?></strong></li>
 		</ul>
@@ -761,9 +764,9 @@ else
 		$page_js['c'][] = 'document.getElementById("form_sent").value="7";';
 		$checkboxes[] = '<noscript><p style="color: red; font-weight: bold">'.$lang_sec['Enable JS'].'</p></noscript>';
 	}
-	$checkboxes[] = '<label><span class="b64">'.encode_for_js('<input type="checkbox" name="'.random_for_crypto('kluk').'" value="3"  tabindex="'.($cur_index++).'" />').'</span>'.$lang_sec['Not robot'].'<br /></label>';
-	$checkboxes[] = '<span class="b64">'.encode_for_js('<input type="hidden" name="'.random_for_crypto('csrf_token').'" value="'.csrf_hash().'" />').'</span>';
+	$checkboxes[] = '<label><span class="b64">'.encode_for_js('<input type="checkbox" name="'.random_for_crypto('kluk').'" value="4"  tabindex="'.($cur_index++).'" />').'</span>'.$lang_sec['Not robot'].'<br /></label>';
 }
+
 if (!empty($checkboxes))
 {
 
@@ -785,7 +788,10 @@ if (!empty($checkboxes))
 ?>
 			</div>
 <?php poll_form_post($tid); ?>
-			<div><input type="hidden" name="cr" value="<?php echo random_for_crypto() ?>" /></div>
+			<div>
+				<input type="hidden" name="<?php echo random_for_crypto('csrf_hash') ?>" value="<?php echo csrf_hash() ?>" />
+				<input type="hidden" name="cr" value="<?php echo random_for_crypto() ?>" />
+			</div>
 			<p class="buttons"><input type="submit" name="submit" value="<?php echo $lang_common['Submit'] ?>" tabindex="<?php echo $cur_index++ ?>" accesskey="s" /> <input type="submit" name="preview" value="<?php echo $lang_post['Preview'] ?>" tabindex="<?php echo $cur_index++ ?>" accesskey="p" /> <a href="javascript:history.go(-1)"><?php echo $lang_common['Go back'] ?></a></p>
 		</form>
 	</div>

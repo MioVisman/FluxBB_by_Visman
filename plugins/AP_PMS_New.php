@@ -17,7 +17,7 @@ else
 
 // Tell admin_loader.php that this is indeed a plugin and that it is loaded
 define('PUN_PLUGIN_LOADED', 1);
-define('PLUGIN_VERSION', '1.7.1');
+define('PLUGIN_VERSION', '1.7.2');
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin='.$plugin));
 
 // If the "Show text" button was clicked
@@ -83,7 +83,7 @@ else
 					<fieldset>
 						<legend><?php echo $lang_apmsn['Legend1'] ?></legend>
 						<div class="infldset">
-							<table class="aligntop" cellspacing="0">
+							<table class="aligntop">
 								<tr>
 									<td>
 										<label><input type="checkbox" name="enable_pms" value="1" tabindex="<?php echo ($cur_index++) ?>"<?php echo ($pun_config['o_pms_enabled'] == '1') ? ' checked="checked"' : '' ?> />&#160;&#160;<?php echo $lang_apmsn['Q1'] ?></label>
@@ -101,7 +101,7 @@ if ($pun_config['o_pms_enabled'] == '1')
 					<fieldset>
 						<legend><?php echo $lang_apmsn['Legend3'] ?></legend>
 						<div class="infldset">
-							<table class="aligntop" cellspacing="0">
+							<table class="aligntop">
 								<tr>
 									<td>
 										<span><input type="text" name="min_kolvo" value="<?php echo pun_htmlspecialchars($pun_config['o_pms_min_kolvo']) ?>"  tabindex="<?php echo ($cur_index++) ?>" size="10" maxlength="10" />&#160;&#160;<?php echo $lang_apmsn['Q3'] ?></span>
@@ -120,7 +120,7 @@ if ($pun_config['o_pms_enabled'] == '1')
 					<fieldset>
 						<legend><?php echo $lang_apmsn['Legend2'] ?></legend>
 						<div class="infldset">
-							<table class="aligntop" cellspacing="0">
+							<table class="aligntop">
 							<thead>
 								<tr>
 									<th class="tcl" scope="col"><?php echo $lang_apmsn['Group'] ?></th>

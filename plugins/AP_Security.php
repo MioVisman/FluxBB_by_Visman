@@ -73,7 +73,7 @@ else
 						<div class="infldset">
 						<p><?php echo $lang_admin_plugin_security['Explanation 1'] ?></p>
 						<p><?php echo $lang_admin_plugin_security['Explanation 2'] ?></p>
-							<table class="aligntop" cellspacing="10">
+							<table class="aligntop">
 								<tr>
 									<td>
 										<span><?php echo $lang_admin_plugin_security['Allow'] ?>&#160;<input type="text" name="blocking_kolvo" size="5" maxlength="5" tabindex="<?php echo ($cur_index++) ?>" value="<?php echo pun_htmlspecialchars($pun_config['o_blocking_kolvo']) ?>"/>&#160;<?php echo $lang_admin_plugin_security['Errors'] ?>&#160;
@@ -104,7 +104,7 @@ else
 					<fieldset>
 						<legend><?php echo $lang_admin_plugin_security['Form title2'] ?></legend>
 						<div class="infldset">
-							<table class="aligntop" cellspacing="10">
+							<table class="aligntop">
 								<tr>
 									<td>
 										<label><input type="checkbox" name="coding_forms" value="1" tabindex="<?php echo ($cur_index++) ?>"<?php echo ($pun_config['o_coding_forms'] == '1') ? ' checked="checked"' : '' ?> />&#160;&#160;<?php echo $lang_admin_plugin_security['Coding forms'] ?></label>
@@ -124,7 +124,7 @@ else
 					<fieldset>
 						<legend><?php echo $lang_admin_plugin_security['Form title3'] ?></legend>
 						<div class="infldset">
-							<table class="aligntop" cellspacing="10">
+							<table class="aligntop">
 								<tr>
 									<td>
 										<label><input type="checkbox" name="check_ip" value="1" tabindex="<?php echo ($cur_index++) ?>"<?php echo ($pun_config['o_check_ip'] == '1') ? ' checked="checked"' : '' ?> />&#160;&#160;<?php echo $lang_admin_plugin_security['Check IP'] ?></label>
@@ -139,7 +139,7 @@ else
 					<fieldset>
 						<legend><?php echo $lang_admin_plugin_security['Form title4'] ?></legend>
 						<div class="infldset">
-							<table class="aligntop" cellspacing="10">
+							<table class="aligntop">
 								<tr>
 									<td>
 										<span><?php echo $lang_admin_plugin_security['Board red help'] ?></span>

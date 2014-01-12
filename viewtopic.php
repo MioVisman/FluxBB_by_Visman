@@ -756,8 +756,7 @@ else
 			$page_js['c'][] = 'document.getElementById("form_sent").value="7";';
 			$checkboxes[] = '<noscript><p style="color: red; font-weight: bold">'.$lang_sec['Enable JS'].'</p></noscript>';
 		}
-		$checkboxes[] = '<label><span class="b64">'.encode_for_js('<input type="checkbox" name="'.random_for_crypto('kluk').'" value="3"  tabindex="'.($cur_index++).'" />').'</span>'.$lang_sec['Not robot'].'<br /></label>';
-		$checkboxes[] = '<span class="b64">'.encode_for_js('<input type="hidden" name="'.random_for_crypto('csrf_token').'" value="'.csrf_hash('post.php').'" />').'</span>';
+		$checkboxes[] = '<label><span class="b64">'.encode_for_js('<input type="checkbox" name="'.random_for_crypto('kluk').'" value="4"  tabindex="'.($cur_index++).'" />').'</span>'.$lang_sec['Not robot'].'<br /></label>';
 	}
 
 	if (!empty($checkboxes))
@@ -779,7 +778,10 @@ else
 	}
 	// End Merge mod and Not robot
 ?>
-			<div><input type="hidden" name="cr" value="<?php echo random_for_crypto() ?>" /></div>
+			<div>
+				<input type="hidden" name="<?php echo random_for_crypto('csrf_hash') ?>" value="<?php echo csrf_hash('post.php') ?>" />
+				<input type="hidden" name="cr" value="<?php echo random_for_crypto() ?>" />
+			</div>
 			<p class="buttons"><input type="submit" name="submit" tabindex="<?php echo $cur_index++ ?>" value="<?php echo $lang_common['Submit'] ?>" accesskey="s" /> <input type="submit" name="preview" value="<?php echo $lang_topic['Preview'] ?>" tabindex="<?php echo $cur_index++ ?>" accesskey="p" /></p>
 		</form>
 	</div>

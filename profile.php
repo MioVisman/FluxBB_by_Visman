@@ -84,8 +84,8 @@ if ($action == 'change_pass')
 
 	if (isset($_POST['form_sent']))
 	{
-		if ($pun_user['is_admmod'])
-			confirm_referrer('profile.php');
+		// Make sure they got here from the site
+		confirm_referrer('profile.php');
 
 		$old_password = isset($_POST['req_old_password']) ? pun_trim($_POST['req_old_password']) : '';
 		$new_password1 = pun_trim($_POST['req_new_password1']);
@@ -200,6 +200,9 @@ else if ($action == 'change_email')
 		if (pun_hash($_POST['req_password']) !== $pun_user['password'])
 			message($lang_profile['Wrong pass']);
 
+		// Make sure they got here from the site
+		confirm_referrer('profile.php');
+
 		require PUN_ROOT.'include/email.php';
 
 		// Validate the email address
@@ -298,6 +301,7 @@ else if ($action == 'change_email')
 					<legend><?php echo $lang_profile['Email legend'] ?></legend>
 					<div class="infldset">
 						<input type="hidden" name="form_sent" value="1" />
+						<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 						<label class="required"><strong><?php echo $lang_profile['New email'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="text" name="req_new_email" size="50" maxlength="80" /><br /></label>
 						<label class="required"><strong><?php echo $lang_common['Password'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="password" name="req_password" size="16" /><br /></label>
 						<p><?php echo $lang_profile['Email instructions'] ?></p>
@@ -326,6 +330,9 @@ else if ($action == 'upload_avatar' || $action == 'upload_avatar2')
 	{
 		if (!isset($_FILES['req_file']))
 			message($lang_profile['No file']);
+
+		// Make sure they got here from the site
+		confirm_referrer('profile.php');
 
 		$uploaded_file = $_FILES['req_file'];
 
@@ -712,8 +719,8 @@ else if (isset($_POST['form_sent']))
 		$is_moderator))))																			// or the user is another mod
 		message($lang_common['No permission'], false, '403 Forbidden');
 
-	if ($pun_user['is_admmod'])
-		confirm_referrer('profile.php');
+	// Make sure they got here from the site
+	confirm_referrer('profile.php');
 
 	$username_updated = false;
 

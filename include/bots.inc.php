@@ -25,11 +25,7 @@ function isbotex($ra)
 		{
 			if (strstr($ua, 'Presto/')) return false;
 		}
-//		else
-//		{
-//			return false;
-//		}
-    
+
 		return true;
 	}
 

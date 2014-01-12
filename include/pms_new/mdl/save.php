@@ -93,7 +93,7 @@ function ChekUncheck()
 		<div id="vf" class="blocktable">
 			<div class="box">
 				<div class="inbox">
-					<table cellspacing="0">
+					<table>
 					<thead>
 						<tr>
 							<th class="tcl" scope="col"><?php echo $lang_pmsn['tDialog'] ?></th>

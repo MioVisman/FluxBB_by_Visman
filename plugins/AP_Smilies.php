@@ -18,7 +18,7 @@ if (!defined('PUN'))
 
 // Tell admin_loader.php that this is indeed a plugin and that it is loaded
 define('PUN_PLUGIN_LOADED', 1);
-define('PLUGIN_VERSION', '1.4');
+define('PLUGIN_VERSION', '1.4.2');
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin='.$plugin));
 
 // Load the smilies language files
@@ -350,7 +350,7 @@ else
 					<fieldset>
 						<legend><?php echo $lang_smiley['Submit New Smiley'] ?></legend>
 						<div class="infldset">
-							<table class="aligntop" cellspacing="0">
+							<table class="aligntop">
 								<tr>
 									<th scope="row"><?php echo $lang_smiley['Smiley Code'] ?></th>
 									<td>

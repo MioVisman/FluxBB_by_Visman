@@ -11,7 +11,7 @@ if (!defined('PUN'))
 
 // Tell admin_loader.php that this is indeed a plugin and that it is loaded
 define('PUN_PLUGIN_LOADED', 1);
-define('PLUGIN_VERSION', '2.0.1');
+define('PLUGIN_VERSION', '2.0.2');
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin='.$plugin));
 define('PLUGIN_EXTS', 'jpg,jpeg,png,gif,mp3,zip,rar,7z');
 define('PLUGIN_NF', 25);
@@ -261,7 +261,7 @@ if (defined('PLUGIN_OFF'))
 					<fieldset>
 						<legend><?php echo $lang_up['legend_2'] ?></legend>
 						<div class="infldset">
-						<table cellspacing="0">
+						<table>
 							<tr>
 								<th scope="row"><label>GD Version</label></th>
 								<td><?php echo pun_htmlspecialchars($gd_vers) ?></td>
@@ -306,7 +306,7 @@ if (defined('PLUGIN_OFF'))
 								<p>2* - <?php echo $lang_up['maxsize_member'] ?></p>
 								<p>3* - <?php echo $lang_up['limit_member'] ?></p>
 							</div>
-							<table class="aligntop" cellspacing="0">
+							<table class="aligntop">
 							<thead>
 								<tr>
 									<th class="tcl" scope="col"><?php echo $lang_up['group'] ?></th>
@@ -440,7 +440,7 @@ else
 				<div class="inform">
 					<p class="submittop"><input type="submit" name="update_thumb" value="<?php echo $lang_up['update_thumb'].$stthumb ?>" /></p>
 					<div class="infldset">
-						<table id="upf-table" class="aligntop" cellspacing="0">
+						<table id="upf-table" class="aligntop">
 							<thead>
 								<tr>
 									<th class="upf-c1" scope="col"><?php echo $lang_up['th0'] ?></th>

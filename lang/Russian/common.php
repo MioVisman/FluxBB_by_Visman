@@ -135,6 +135,7 @@ $lang_common = array(
 'Jump to' => 'Перейти',
 'Go' => ' Иди ',		// submit button in forum jump
 'Moderate topic' => 'Модерирование темы',
+'All' => 'All',
 'Move topic' => 'Перенести тему',
 'Open topic' => 'Открыть тему',
 'Close topic' => 'Закрыть тему',

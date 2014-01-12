@@ -124,7 +124,7 @@ foreach ($sf_array[$sf_cur_forum] as $cur_subforum)
 	<h2><span><?php echo pun_htmlspecialchars(empty($sf_cur_forum) ? $cur_subforum['cat_name'] : (count($sf_array[$sf_cur_forum]) == 1 ? $lang_subforums['Sub forum'] : $lang_subforums['Sub forums'])) ?></span></h2>
 	<div class="box">
 		<div class="inbox">
-			<table cellspacing="0">
+			<table>
 			<thead>
 				<tr>
 					<th class="tcl" scope="col"><?php echo $lang_common['Forum'] ?></th>

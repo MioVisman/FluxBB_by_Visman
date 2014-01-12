@@ -32,7 +32,7 @@ if (isset($languages) && count($languages) > 1)
 		else
 			$lang_temp .= "\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.$temp.'</option>'."\n";
 	}
-	$lang_temp .= "\t\t\t\t\t\t".'</select>'."\n\t\t\t\t\t\t".'<input type="submit" value="'.$lang_common['Go'].'" />'."\n\t\t\t\t\t".'</label></div>'."\n\t\t\t\t".'</form>'."\n";
+	$lang_temp .= "\t\t\t\t\t\t".'</select></label>'."\n\t\t\t\t\t\t".'<input type="submit" value="'.$lang_common['Go'].'" />'."\n\t\t\t\t\t".'</div>'."\n\t\t\t\t".'</form>'."\n";
 }
 // END быстрое переключение языка - Visman
 
@@ -57,7 +57,7 @@ if (isset($footer_style) && ($footer_style == 'viewforum' || $footer_style == 'v
 	{
 		echo "\t\t\t".'<dl>'."\n";
 		echo "\t\t\t\t".'<dt><strong>'.$lang_topic['Mod controls'].'</strong></dt>'."\n";
-		echo "\t\t\t\t".'<dd><span><a href="moderate.php?fid='.$forum_id.'&amp;tid='.$id.'&amp;p='.$p.'">'.$lang_common['Moderate topic'].'</a> (<a href="moderate.php?fid='.$forum_id.'&amp;tid='.$id.'&amp;action=all">All</a>)</span></dd>'."\n";
+		echo "\t\t\t\t".'<dd><span><a href="moderate.php?fid='.$forum_id.'&amp;tid='.$id.'&amp;p='.$p.'">'.$lang_common['Moderate topic'].'</a>'.($num_pages > 1 ? ' (<a href="moderate.php?fid='.$forum_id.'&amp;tid='.$id.'&amp;action=all">'.$lang_common['All'].'</a>)' : '').'</span></dd>'."\n";
 		echo "\t\t\t\t".'<dd><span><a href="moderate.php?fid='.$forum_id.'&amp;move_topics='.$id.'">'.$lang_common['Move topic'].'</a></span></dd>'."\n";
 
 		if ($cur_topic['closed'] == '1')

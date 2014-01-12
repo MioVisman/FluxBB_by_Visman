@@ -64,7 +64,7 @@ generate_admin_menu('permissions');
 					<fieldset>
 						<legend><?php echo $lang_admin_permissions['Posting subhead'] ?></legend>
 						<div class="infldset">
-							<table class="aligntop" cellspacing="0">
+							<table class="aligntop">
 								<tr>
 									<th scope="row"><?php echo $lang_admin_permissions['BBCode label'] ?></th>
 									<td>
@@ -113,7 +113,7 @@ generate_admin_menu('permissions');
 					<fieldset>
 						<legend><?php echo $lang_admin_permissions['Signatures subhead'] ?></legend>
 						<div class="infldset">
-							<table class="aligntop" cellspacing="0">
+							<table class="aligntop">
 								<tr>
 									<th scope="row"><?php echo $lang_admin_permissions['BBCode sigs label'] ?></th>
 									<td>
@@ -160,7 +160,7 @@ generate_admin_menu('permissions');
 					<fieldset>
 						<legend><?php echo $lang_admin_permissions['Registration subhead'] ?></legend>
 						<div class="infldset">
-							<table class="aligntop" cellspacing="0">
+							<table class="aligntop">
 								<tr>
 									<th scope="row"><?php echo $lang_admin_permissions['Banned e-mail label'] ?></th>
 									<td>

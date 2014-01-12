@@ -72,7 +72,7 @@ if (isset($_POST['add_group']) || isset($_GET['edit_group']))
 						<legend><?php echo $lang_admin_groups['Group settings subhead'] ?></legend>
 						<div class="infldset">
 							<p><?php echo $lang_admin_groups['Group settings info'] ?></p>
-							<table class="aligntop" cellspacing="0">
+							<table class="aligntop">
 								<tr>
 									<th scope="row"><?php echo $lang_admin_groups['Group title label'] ?></th>
 									<td>
@@ -544,7 +544,7 @@ generate_admin_menu('groups');
 					<fieldset>
 						<legend><?php echo $lang_admin_groups['Add group subhead'] ?></legend>
 						<div class="infldset">
-							<table class="aligntop" cellspacing="0">
+							<table class="aligntop">
 								<tr>
 									<th scope="row"><?php echo $lang_admin_groups['New group label'] ?><div><input type="submit" name="add_group" value="<?php echo $lang_admin_common['Add'] ?>" tabindex="2" /></div></th>
 									<td>
@@ -575,7 +575,7 @@ foreach ($groups as $cur_group)
 					<fieldset>
 						<legend><?php echo $lang_admin_groups['Default group subhead'] ?></legend>
 						<div class="infldset">
-							<table class="aligntop" cellspacing="0">
+							<table class="aligntop">
 								<tr>
 									<th scope="row"><?php echo $lang_admin_groups['Default group label'] ?><div><input type="submit" name="set_default_group" value="<?php echo $lang_admin_common['Save'] ?>" tabindex="4" /></div></th>
 									<td>
@@ -613,7 +613,7 @@ foreach ($groups as $cur_group)
 						<legend><?php echo $lang_admin_groups['Edit groups subhead'] ?></legend>
 						<div class="infldset">
 							<p><?php echo $lang_admin_groups['Edit groups info'] ?></p>
-							<table cellspacing="0">
+							<table>
 <?php
 
 $cur_index = 5;
