@@ -1160,13 +1160,15 @@ function confirm_referrer($script, $error_msg = false)
 function csrf_hash($script = false)
 {
 	global $pun_config, $pun_user;
-	static $a;
+	static $a = array();
+	
+	$script = $script ? $script : basename($_SERVER['SCRIPT_NAME']);
 
-	if (!isset($a))
-	{
-		$a = pun_hash(($script ? $script : basename($_SERVER['SCRIPT_NAME'])).get_remote_address().$pun_user['id'].$pun_config['o_crypto_pas']);
-	}
-	return $a;
+	if (isset($a[$script])) return $a[$script];
+
+	$a[$script] = pun_hash($script.get_remote_address().$pun_user['id'].$pun_config['o_crypto_pas']);
+
+	return $a[$script];
 }
 // ********* новые ф-ии проверки подлинности - Visman
 
