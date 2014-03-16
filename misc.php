@@ -364,6 +364,7 @@ else if (isset($_GET['report']))
 					<legend><?php echo $lang_misc['Reason desc'] ?></legend>
 					<div class="infldset txtarea">
 						<input type="hidden" name="form_sent" value="1" />
+						<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 						<label class="required"><strong><?php echo $lang_misc['Reason'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><textarea name="req_reason" rows="5" cols="60"></textarea><br /></label>
 					</div>
 				</fieldset>
