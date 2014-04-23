@@ -497,7 +497,7 @@ function check_username($username, $exclude_id = null)
 		$errors[] = $lang_prof_reg['Username too short'];
 	else if (pun_strlen($username) > 25) // This usually doesn't happen since the form element only accepts 25 characters
 		$errors[] = $lang_prof_reg['Username too long'];
-	else if (!preg_match('%^[\w ]+$%u', $username) || preg_match('%^[\d_ ]%u', $username)) // строгая проверка имени пользователя - Visman
+	else if (!preg_match('%^\p{L}[\p{L}\p{N}_ ]+$%u', $username)) // строгая проверка имени пользователя - Visman
 		$errors[] = $lang_prof_reg['Username Error'];
 	else if (!strcasecmp($username, 'Guest') || !utf8_strcasecmp($username, $lang_common['Guest']))
 		$errors[] = $lang_prof_reg['Username guest'];
