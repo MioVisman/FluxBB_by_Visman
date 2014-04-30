@@ -80,7 +80,7 @@ if (isset($_POST['delete']))
 		
 		// При удалении одиночного сообщения, уменьшим кол-во сообщений у пользователя - Visman
 		// not sum - Visman
-		if ($cur_post['no_sum_mess'] == 0)
+		if ($cur_post['no_sum_mess'] == 0 && $cur_post['poster_id'] > 1)
 			$db->query('UPDATE '.$db->prefix.'users SET num_posts=num_posts-1 WHERE id='.$cur_post['poster_id']) or error('Unable to update user', __FILE__, __LINE__, $db->error());
 
     // Redirect towards the previous post
