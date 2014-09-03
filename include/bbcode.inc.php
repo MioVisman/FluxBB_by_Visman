@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2011-2013 Visman (visman@inbox.ru)
+ * Copyright (C) 2011-2014 Visman (visman@inbox.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -13,9 +13,6 @@ if (file_exists(PUN_ROOT.'style/'.$pun_user['style'].'/img/bbcode/b.png'))
 	$btndir = 'style/'.$pun_user['style'].'/img/bbcode/';
 else
 	$btndir = 'style/Air/img/bbcode/';
-$smldir = 'img/smilies/';
-
-require PUN_ROOT.'lang/'.$pun_user['language'].'/bbcode.php';
 
 if (!isset($smilies))
 {
@@ -43,24 +40,28 @@ foreach ($smilies as $smileyt => $smileyi)
 $bbres = '<style type="text/css">div.grippie {background:#EEEEEE url(img/grippie.png) no-repeat scroll center 2px;border-color:#DDDDDD;border-style:solid;border-width:0pt 1px 1px;cursor:s-resize;height:9px;overflow:hidden;} .resizable-textarea textarea {display:block;margin-bottom:0pt;width:95%;height: 20%;}</style>';
 $tpl_main = str_replace('</head>', $bbres."\n".'</head>', $tpl_main);
 
-$page_js['j'] = 1;
-$page_js['c']['arq'] = 'var apq = {\'Must\':\''.$lang_common['Must'].'\',\'Loading\':\''.$lang_common['Loading'].'\',\'Flag\':\'Topic\',\'Guest\':\''.$pun_user['is_guest'].'\'};';
-$page_js['f']['bbcode'] = 'js/post.js';
+// mod upload
+$bbflagup = 0;
+if (!$pun_user['is_guest'] && !empty($pun_user['g_up_ext']))
+{
+	if ($pun_user['g_id'] == PUN_ADMIN || ($pun_user['g_up_limit'] > 0 && $pun_user['g_up_max'] > 0))
+		$bbflagup = 1;
+}
 
-$page_js['c']['a'] = 'var bbcode_l = {\'btndir\':\''.$btndir.'\'';
-foreach ($lang_bbcode as $i => $k)
-	$page_js['c']['a'].= ',\''.$i.'\':\''.$k.'\'';
-$page_js['c']['a'].= '};'."\n";
-$page_js['c']['a'].= 'var bbcode_sm_img = new Array('.implode(',',$smil_i).');'."\n";
-$page_js['c']['a'].= 'var bbcode_sm_txt = new Array('.implode(',',$smil_t).');'."\n";
-$page_js['c']['a'].= 'var cur_index = '.$cur_index.';'."\n";
-$page_js['c']['a'].= 'ForumBBSet();';
-$cur_index += 21;
+$page_js['j'] = 1;
+$page_js['f']['bbcode'] = 'js/post.js';
+$page_js['c'][] = 'if (typeof FluxBB === \'undefined\' || !FluxBB) {var FluxBB = {};}
+FluxBB.vars = {
+	bbDir: "'.$btndir.'",
+	bbGuest: '.($pun_user['is_guest'] ? 1 : 0).',
+	bbCIndex: '.$cur_index.',
+	bbFlagUp: '.$bbflagup.',
+	bbSmImg: ['.implode(',',$smil_i).'],
+	bbSmTxt: ['.implode(',',$smil_t).']
+};
+FluxBB.post.init();';
+
+$cur_index += 19;
 
 unset($smil_g, $smil_i, $smil_t);
 
-if (!$pun_user['is_guest'] && isset($pun_user['g_up_ext']))
-{
-	if ($pun_user['g_id'] == PUN_ADMIN || ($pun_user['g_up_limit'] > 0 && $pun_user['g_up_max'] > 0))
-		$page_js['c']['up'] = 'ForumUpSet();';
-}

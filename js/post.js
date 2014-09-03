@@ -1,207 +1,97 @@
-function getElementsByCN (classname, node)
-{
-	node = node || document;
-	if (node.querySelectorAll)
-	{
-		return node.querySelectorAll('.' + classname);
+// post.js v2.0.0 Copyright (C) 2014 Visman (visman@inbox.ru)
+
+if (typeof FluxBB === 'undefined' || !FluxBB) {var FluxBB = {};}
+
+FluxBB.post = (function (doc, win) {
+	'use strict';
+	
+	var nameusers = [],
+			bbcode = [],
+			lang = [],
+			fls = false,
+			typepost = (/pmsnew/.test(doc.location.pathname) ? 'pmquote' : 'quote'),
+			quote_text = '',
+			apq_id = -1,
+			apq_user,
+			apq_temp,
+			textarea,
+			flag_sm = true,
+			flag_cr = true;
+
+	function get(elem) {
+		return doc.getElementById(elem);
 	}
-	else if (node.getElementsByClassName)
-	{
-		return node.getElementsByClassName(classname);
-	}
-	else
-	{
-		var list = node.all || node.getElementsByTagName('*');
-		var result = [];
-		for (var index = 0, elem; elem = list[index++];)
-		{
-			if (elem.className && (' ' + elem.className + ' ').indexOf(' ' + classname + ' ') > -1)
-			{
-				result[result.length] = elem;
+
+	function getCN(classname, node) {
+		node = node || doc;
+		if (node.querySelectorAll) {
+			return node.querySelectorAll('.' + classname);
+		} else if (node.getElementsByClassName) {
+			return node.getElementsByClassName(classname);
+		} else {
+			var list = node.all || node.getElementsByTagName('*');
+			var result = [];
+			for (var index = 0, elem; elem = list[index++];) {
+				if (elem.className && (' ' + elem.className + ' ').indexOf(' ' + classname + ' ') > -1) {
+					result[result.length] = elem;
+				}
 			}
-		}
-		return result;
-	}
-}
-
-function insert_text(open, close)
-{
-
-	var msgfield = document.getElementsByName('req_message')[0];
-	msgfield.focus();
-	// IE support
-	if (document.selection && document.selection.createRange)
-	{
-		sel = document.selection.createRange();
-		sel.text = open + sel.text + close;
-	}
-	// Moz support
-	else if (msgfield.selectionStart || msgfield.selectionStart == '0')
-	{
-		var startPos = msgfield.selectionStart;
-		var endPos = msgfield.selectionEnd;
-		msgfield.value = msgfield.value.substring(0, startPos) + open + msgfield.value.substring(startPos, endPos) + close + msgfield.value.substring(endPos);
-		if (startPos == endPos && open == '')
-		{
-			msgfield.selectionStart = startPos + close.length;
-			msgfield.selectionEnd = endPos + close.length;
-		}
-		else
-		{
-			msgfield.selectionStart = startPos + open.length;
-			msgfield.selectionEnd = endPos + open.length;
+			return result;
 		}
 	}
-	// Fallback support for other browsers
-	else
-	{
-		msgfield.value += open + close;
+
+	function createElement(elem) {
+		return (doc.createElementNS) ? doc.createElementNS('http://www.w3.org/1999/xhtml', elem) : doc.createElement(elem);
 	}
-	msgfield.focus();
-	return false;
-}
 
-function insert_name(id)
-{
-	return insert_text('','[b]@' + nameusers[id] + '[/b], ');
-}
-
-function get_quote_text()
-{
-	//IE
-	if (document.selection && document.selection.createRange()) {quote_text = document.selection.createRange().text;}
-	//NS,FF,SM
-	if (document.getSelection) {quote_text = document.getSelection();}
-}
-
-function Quote(mmid)
-{
-	if (quote_text!='')
-	{
-		var endq = '[quote="' + nameusers[mmid] + '"]\n' + quote_text + '\n[/quote]\n';
-		insert_text('',endq);
+	function match(str, substr) {
+		if (str.indexOf('<' + substr + '>') != -1) {
+			var newstr = str.substring(str.indexOf('<' + substr + '>') + substr.length + 2);
+			return newstr.substring(0, newstr.indexOf('</' + substr + '>'));
+		} else return '';
 	}
-	else if (typeof(jQuery) != 'undefined' && mmid != 'undefined' && typeof(mmid) == 'number' && mmid > 0 && apq['Guest'] != '1')
-	{
-		if (apq_id != -1)
-		{
-			$('#pq' + apq_id).html(apq_temp);
+
+	function cr_req() {
+		if (win.XMLHttpRequest) {
+			return new XMLHttpRequest();
+		} else {
+			try {
+				return new ActiveXObject('Microsoft.XMLHTTP');
+			} catch (e){}
 		}
-		apq_user = nameusers[mmid];
-		apq_id = mmid;
-		apq_temp = $('#pq' + apq_id).html();
-		$('#pq' + apq_id).html('<img src="img/loading.gif" />&#160;<a href="#">' + apq['Loading'] + '</a>');
-
-		if (apq['Flag'] == 'Topic')
-		{
-			var values = {
-				action: 'quote',
-				id: mmid
-			};
+		return !1;
+	}
+	
+	function check_apq () {
+		if (apq_id != -1)	{
+			get('pq' + apq_id).innerHTML = apq_temp;
+			apq_id = -1;
 		}
-		else if (apq['Flag'] == 'PM')
-		{
-			var values = {
-				action: 'pmquote',
-				id: mmid
-			};
+	}
+	
+	function orsc(req) {
+		if (req.readyState == 4) {
+			check_apq();
+		  if (req.status == 200) {
+				var quote_message = match(req.responseText, 'quote_post');
+				if (quote_message != '') {
+					return FluxBB.post.insText('', '[quote="' + apq_user + '"]\n' + quote_message + '\n[/quote]\n');
+				}
+				alert(req.responseText);
+			} else alert('Error: ' + req.status);
 		}
-		else
-		{
-			var values = new Array(1);
+	}
+
+  function SmileysMapBB() {
+		var html = "";
+		for (var i = 0; i < FluxBB.vars.bbSmImg.length; i++) {
+			html += "<img src=\"img/smilies/" + FluxBB.vars.bbSmImg[i] + "\" alt=\"" + FluxBB.vars.bbSmTxt[i] + "\" onclick=\"return FluxBB.post.insText('', ' " + FluxBB.vars.bbSmTxt[i].replace(/\\/g, '\\\\').replace(/&#039;/g, '\\\'') + " ');\" />"
 		}
-		$.post('pjq.php?' + mmid, values, function(data) {apq_ready(data)});
+		return html;
 	}
-	else
-	{
-		alert(apq['Must']);
-	}
-	return false;
-}
-
-function apq_ready(data)
-{
-	if (apq_id != -1)
-	{
-		$('#pq' + apq_id).html(apq_temp);
-		apq_id = -1;
-	}
-	var quote_message = match(data, 'quote_post');
-	if (quote_message != '')
-	{
-		var endq = '[quote="' + apq_user + '"]\n' + quote_message + '\n[/quote]\n';
-		insert_text('',endq);
-		return 1;
-	}
-	alert(data);
-}
-
-function match(str, substr)
-{
-	if (str.indexOf('<' + substr + '>') != -1)
-	{
-		var newstr = str.substring(str.indexOf('<' + substr + '>') + substr.length+2);
-		newstr = newstr.substring(0, newstr.indexOf('</' + substr + '>'));
-		return newstr;
-	}
-	else
-		return '';
-}
-
-function getposOffset(overlay, offsettype)
-{
-	var totaloffset=(offsettype=='left')? overlay.offsetLeft : overlay.offsetTop;
-	var parentEl=overlay.offsetParent;
-	totaloffset=(offsettype=='left')? totaloffset+parentEl.offsetLeft : totaloffset+parentEl.offsetTop;
-	return totaloffset;
-}
-
-function overlay(curobj, subobjstr, opt_position)
-{
-	if (document.getElementById) {
-		var subobj=document.getElementById(subobjstr);
-		if (subobjstr == 'bbcode_smileys' && bbcode_sm_vis) {
-			bbcode_sm_vis = false;
-			if (subobj) subobj.innerHTML = SmileysMapBB();
-		}
-		if (subobjstr == 'bbcode_color_map' && bbcode_cr_vis) {
-			bbcode_cr_vis = false;
-			if (subobj) subobj.innerHTML = ColorMapBB();
-			subobj.style.overflow = 'hidden';
-		}
-		if (subobj.style.display!='block') {
-			subobj.style.display='block';
-			subobj.style.position='absolute';
-//			subobj.zIndex=99;
-			var x = getposOffset(curobj, 'left');
-			var y = getposOffset(curobj, 'top');
-			var xpos=x+((typeof opt_position!='undefined' && opt_position.indexOf('right')!=-1)? -(subobj.offsetWidth-curobj.offsetWidth)/2 : 0); 
-			var ypos=y+((typeof opt_position!='undefined' && opt_position.indexOf('bottom')!=-1)? curobj.offsetHeight : 0);
-			subobj.style.left=xpos+'px';
-			subobj.style.top=ypos+'px';
-		} else
-			subobj.style.display='none';
-
-		return false;
-	}
-	else
-		return true;
-}
-
-function overlayclose(subobj)
-{
-	document.getElementById(subobj).style.display='none';
-}
-
-function showMapColor(color)
-{
-	document.getElementById("selectedMapColor").style.backgroundColor = color;
-	document.getElementById("selectedMapColorBox").value = color;
-}
-
-function ColorMapBB()
-{
-	var colors = new Array(
+	
+	function ColorMapBB() {
+		var colors = [
 		"#000000","#000033","#000066","#000099","#0000cc","#0000ff","#330000","#330033",
 		"#330066","#330099","#3300cc","#3300ff","#660000","#660033","#660066","#660099",
 		"#6600cc","#6600ff","#990000","#990033","#990066","#990099","#9900cc","#9900ff",
@@ -228,116 +118,239 @@ function ColorMapBB()
 		"#00ffcc","#00ffff","#33ff00","#33ff33","#33ff66","#33ff99","#33ffcc","#33ffff",
 		"#66ff00","#66ff33","#66ff66","#66ff99","#66ffcc","#66ffff","#99ff00","#99ff33",
 		"#99ff66","#99ff99","#99ffcc","#99ffff","#ccff00","#ccff33","#ccff66","#ccff99",
-		"#ccffcc","#ccffff","#ffff00","#ffff33","#ffff66","#ffff99","#ffffcc","#ffffff"
-	);
-	var html = '<table class="tbl"><tr>';
-	for (var i=0; i<colors.length; i++) {
-		html += "<td style='background-color:" + colors[i] + "' onclick=\"return insert_text('[color=" + colors[i] + "]', '[/color]');\" onfocus=\"showMapColor('" + colors[i] +  "');\" onmouseover=\"showMapColor('" + colors[i] + "');\">"
-		html += '</td>';
-		if ((i+1) % 18 == 0)	html += '</tr><tr>';
+		"#ccffcc","#ccffff","#ffff00","#ffff33","#ffff66","#ffff99","#ffffcc","#ffffff"];
+		var html = '<table class="tbl"><tr>';
+		for (var i=0; i<colors.length; i++) {
+			html += "<td style='background-color:" + colors[i] + "' onclick=\"return FluxBB.post.insText('[color=" + colors[i] + "]', '[/color]');\" onfocus=\"FluxBB.post.showMapColor('" + colors[i] +  "');\" onmouseover=\"FluxBB.post.showMapColor('" + colors[i] + "');\">"
+			html += '</td>';
+			if ((i+1) % 18 == 0)	html += '</tr><tr>';
+		}
+		html += '<td colspan="9" id="selectedMapColor" height="16"></td>'
+		+ '<td colspan="9">'
+		+ '<input id="selectedMapColorBox" name="selectedMapColorBox" type="text" size="7" maxlength="7" style="text-align:center;font-weight:bold;width:90px;border:1px solid;" value="" />'
+		+ '</td></tr></table>';
+		return html;
 	}
-	html += '<td colspan="9" id="selectedMapColor" height="16"></td>'
-	+ '<td colspan="9">'
-	+ '<input id="selectedMapColorBox" name="selectedMapColorBox" type="text" size="7" maxlength="7" style="text-align:center;font-weight:bold;width:90px;border:1px solid;" value="" />'
-	+ '</td></tr></table>';
-	return html;
-}
+//*********************//
+	return {
+		init : function () {
+			if (fls) return false;
+			fls = true;
+			
+			textarea = doc.getElementsByName('req_message')[0];
+			if (typeof(textarea) === 'undefined') return false;
 
-function SmileysMapBB()
-{
-	var html = "";
-	for (var i=0; i<bbcode_sm_img.length; i++) {
-		html += "<img src=\"img/smilies/" + bbcode_sm_img[i] + "\" alt=\"" + bbcode_sm_txt[i] + "\" onclick=\"return insert_text('',' " + bbcode_sm_txt[i].replace(/\\/g, '\\\\').replace(/&#039;/g, '\\\'') + " ');\" />"
-	}
-	return html;
-}
+			bbcode = [{i:'b.png', a:'[b]', s:'[b]', e:'[/b]'},
+				{i:'i.png', a:'[i]', s:'[i]', e:'[/i]'},
+				{i:'u.png', a:'[u]', s:'[u]', e:'[/u]'},
+				{i:'s.png', a:'[s]', s:'[s]', e:'[/s]'},
+				{i:'spacer.png', a:'|'},
+				{i:'center.png', a:'[center]', s:'[center]', e:'[/center]'},
+				{i:'right.png', a:'[right]', s:'[right]', e:'[/right]'},
+				{i:'justify.png', a:'[justify]', s:'[justify]', e:'[/justify]'},
+				{i:'mono.png', a:'[mono]', s:'[mono]', e:'[/mono]'},
+				{i:'spacer.png', a:'|'},
+				{i:'url.png', a:'[url]', s:'[url]', e:'[/url]'},
+				{i:'email.png', a:'[email]', s:'[email]', e:'[/email]'},
+				{i:'img.png', a:'[img]', s:'[img]', e:'[/img]'},
+				{i:'spacer.png', a:'|'},
+				{i:'list.png', a:'[list]', s:'[list]', e:'[/list]'},
+				{i:'li.png', a:'[*]', s:'[*]', e:'[/*]'},
+				{i:'spacer.png', a:'|'},
+				{i:'quote.png', a:'[quote]', s:'[quote]', e:'[/quote]'},
+				{i:'code.png', a:'[code]', s:'[code]', e:'[/code]'},
+				{i:'hr.png', a:'[hr]', s:'', e:'[hr]'},
+				{i:'color.png', a:'[color=]', f:'return FluxBB.post.overlay(this, \'bbcode_color_map\');'},
+				{i:'sp.png', a:'[spoiler]', s:'[spoiler]', e:'[/spoiler]'},
+				{i:'spacer.png', a:'|'},
+				{i:'smile.png', a:'smileys', f:'return FluxBB.post.overlay(this, \'bbcode_smileys\');'}];
 
-function ForumBBSet()
-{
-	bbcode_sm_vis = true;
-	bbcode_cr_vis = true;
+			if (doc.getElementsByTagName('html')[0].getAttribute('lang') == 'ru') {
+			  lang = {'b':'Полужирный текст', 'i':'Наклонный текст', 'u':'Подчеркнутый текст', 's':'Зачёркнутый текст', 'center':'По центру', 'right':'По правому краю', 'justify':'По ширине', 'mono':'Моношрифт', 'url':'Ссылка', 'email':'Электронная почта', 'img':'Картинка', 'list':'Список', '*':'Элемент списка', 'quote':'Цитата', 'code':'Блок кода', 'hr':'Горизонтальная линия', 'color':'Цвет текста', 'spoiler':'Скрытый текст', 'smileys':'Смайлы', 'upfiles':'Загрузки', 'QQ':'Цитировать', 'Loading':'Загрузка...', 'Must':'Вы должны выделить текст для цитирования'};
+			} else {
+			  lang = {'b':'Bold text', 'i':'Italic text', 'u':'Underlined text', 's':'Strike-through text', 'center':'Center', 'right':'Right', 'justify':'Justify', 'mono':'Mono', 'url':'Link', 'email':'E-mail', 'img':'Image', 'list':'List', '*':'List element', 'quote':'Quote', 'code':'Code block', 'hr':'Horizontal line', 'color':'Colour of text', 'spoiler':'Spoiler', 'smileys':'Smileys', 'upfiles':'Uploads', 'QQ':'Quote', 'Loading':'Loading...', 'Must':'You must select text before quoting'};
+			}
+			
+			var div = createElement('div');
+			div.setAttribute('id', 'bbcode_bar');
 
-	var textarea = document.getElementsByName('req_message')[0];
-	if (typeof(textarea) == 'undefined') return false;
+			var t = '<div id="bbcodewrapper"><div id="bbcodebuttons">';
+			for (var i in bbcode) {
+				var b = bbcode[i];
+				t = t + '<img src="' + FluxBB.vars.bbDir + b.i + '" alt="' + b.a + '" ';
+				var p = b.a.replace(/[\[\]\|\=]/g, '');
+				if (!!p) t = t + 'title="' + lang[p] + '" ';
+				if (!!b.f) {
+					t = t + 'onclick="' + b.f + '" tabindex="' + (FluxBB.vars.bbCIndex++) + '" ';
+				} else if (!!b.s || !!b.e) {
+					t = t + 'onclick="return FluxBB.post.insText(\'' + b.s + '\', \'' + b.e + '\');" tabindex="' + (FluxBB.vars.bbCIndex++) + '" ';
+				}
+				t = t + '/>';
+			}
+			div.innerHTML = t + '</div></div>'
+			+ '<div class="clearer"></div>'
+			+ '<div id="bbcode_color_map" onclick="this.style.display=\'none\';"></div>'
+			+ '<div id="bbcode_smileys" onclick="this.style.display=\'none\';"></div>';
 
-	var div = document.createElement('div');
-	div.setAttribute('id', 'bbcode_bar');
+			var p = textarea.parentNode;
+			p.insertBefore(div, textarea);
 
-	div.innerHTML = '<div id="bbcodewrapper"><div id="bbcodebuttons">'
-	+'<img src="'+bbcode_l['btndir']+'b.png" alt="[b]" title="'+bbcode_l['b']+'" onclick="return insert_text(\'[b]\',\'[/b]\');" tabindex="'+(cur_index++)+'" />'
-	+'<img src="'+bbcode_l['btndir']+'i.png" alt="[i]" title="'+bbcode_l['i']+'" onclick="return insert_text(\'[i]\',\'[/i]\');" tabindex="'+(cur_index++)+'" />'
-	+'<img src="'+bbcode_l['btndir']+'u.png" alt="[u]" title="'+bbcode_l['u']+'" onclick="return insert_text(\'[u]\',\'[/u]\');" tabindex="'+(cur_index++)+'" />'
-	+'<img src="'+bbcode_l['btndir']+'s.png" alt="[s]" title="'+bbcode_l['s']+'" onclick="return insert_text(\'[s]\',\'[/s]\');" tabindex="'+(cur_index++)+'" />'
-	+'<img src="'+bbcode_l['btndir']+'spacer.png" alt="|" />'
-	+'<img src="'+bbcode_l['btndir']+'center.png" alt="[center]" title="'+bbcode_l['center']+'" onclick="return insert_text(\'[center]\',\'[/center]\');" tabindex="'+(cur_index++)+'" />'
-	+'<img src="'+bbcode_l['btndir']+'right.png" alt="[right]" title="'+bbcode_l['right']+'" onclick="return insert_text(\'[right]\',\'[/right]\');" tabindex="'+(cur_index++)+'" />'
-	+'<img src="'+bbcode_l['btndir']+'justify.png" alt="[justify]" title="'+bbcode_l['justify']+'" onclick="return insert_text(\'[justify]\',\'[/justify]\');" tabindex="'+(cur_index++)+'" />'
-	+'<img src="'+bbcode_l['btndir']+'mono.png" alt="[mono]" title="'+bbcode_l['mono']+'" onclick="return insert_text(\'[mono]\',\'[/mono]\');" tabindex="'+(cur_index++)+'" />'
-	+'<img src="'+bbcode_l['btndir']+'spacer.png" alt="|" />'
-	+'<img src="'+bbcode_l['btndir']+'url.png" alt="[url]" title="'+bbcode_l['url']+'" onclick="return insert_text(\'[url]\',\'[/url]\');" tabindex="'+(cur_index++)+'" />'
-	+'<img src="'+bbcode_l['btndir']+'email.png" alt="[email]" title="'+bbcode_l['email']+'" onclick="return insert_text(\'[email]\',\'[/email]\');" tabindex="'+(cur_index++)+'" />'
-	+'<img src="'+bbcode_l['btndir']+'img.png" alt="[img]" title="'+bbcode_l['img']+'" onclick="return insert_text(\'[img]\',\'[/img]\');" tabindex="'+(cur_index++)+'" />'
-	+'<img src="'+bbcode_l['btndir']+'spacer.png" alt="|" />'
-	+'<img src="'+bbcode_l['btndir']+'list.png" alt="[list]" title="'+bbcode_l['list']+'" onclick="return insert_text(\'[list]\',\'[/list]\');" tabindex="'+(cur_index++)+'" />'
-	+'<img src="'+bbcode_l['btndir']+'li.png" alt="[*]" title="'+bbcode_l['*']+'" onclick="return insert_text(\'[*]\',\'[/*]\');" tabindex="'+(cur_index++)+'" />'
-	+'<img src="'+bbcode_l['btndir']+'spacer.png" alt="|" />'
-	+'<img src="'+bbcode_l['btndir']+'quote.png" alt="[quote]" title="'+bbcode_l['quote']+'" onclick="return insert_text(\'[quote]\',\'[/quote]\');" tabindex="'+(cur_index++)+'" />'
-	+'<img src="'+bbcode_l['btndir']+'code.png" alt="[code]" title="'+bbcode_l['code']+'" onclick="return insert_text(\'[code]\',\'[/code]\');" tabindex="'+(cur_index++)+'" />'
-	+'<img src="'+bbcode_l['btndir']+'hr.png" alt="[hr]" title="'+bbcode_l['hr']+'" onclick="return insert_text(\'\',\'[hr]\');" tabindex="'+(cur_index++)+'" />'
-	+'<img src="'+bbcode_l['btndir']+'color.png" alt="[color=]" title="'+bbcode_l['color']+'" onclick="return overlay(this,\'bbcode_color_map\',\'rightbottom\');" tabindex="'+(cur_index++)+'" />'
-	+'<img src="'+bbcode_l['btndir']+'sp.png" alt="[spoiler]" title="'+bbcode_l['spoiler']+'" onclick="return insert_text(\'[spoiler]\',\'[/spoiler]\');" tabindex="'+(cur_index++)+'" />'
-	+'<img src="'+bbcode_l['btndir']+'spacer.png" alt="|" />'
-	+'<img src="'+bbcode_l['btndir']+'smile.png" alt="smile" title="'+bbcode_l['smileys']+'" onclick="return overlay(this,\'bbcode_smileys\',\'rightbottom\');" tabindex="'+(cur_index++)+'" />'
-	+'</div></div>'
-	+'<div class="clearer"></div>'
-	+'<div id="bbcode_color_map" onclick="overlayclose(\'bbcode_color_map\');"></div>'
-	+'<div id="bbcode_smileys" onclick="overlayclose(\'bbcode_smileys\');"></div>';
+			var blockposts = getCN('blockpost');
+			for (var i in blockposts) {
+				if (blockposts[i].id) {
+					var id = blockposts[i].id.replace('p', '');
+					var dt = blockposts[i].getElementsByTagName('dt')[0];
+					if (typeof(dt) !== 'undefined') {
+						var	a = dt.getElementsByTagName('a')[0];
+						if (typeof(a) === 'undefined') a = dt.getElementsByTagName('strong')[0];
+						var n = a.innerHTML;
+						// Decode html special chars
+						n = n.replace(/&lt;/g, '<');
+						n = n.replace(/&gt;/g, '>');
+						n = n.replace(/&quot;/g, '"');
+						n = n.replace(/&#039;/g, '\'');
+						n = n.replace(/&nbsp;/g, ' ');
+						n = n.replace(/&#160;/g, ' ');
+						nameusers[id] = n.replace(/&amp;/g, '&');
+			      dt.innerHTML = '<strong><a href="#req_message" onclick="return FluxBB.post.insName(' + id + ');">@ </a></strong>' + dt.innerHTML;
 
-	var p = textarea.parentNode;
-	p.insertBefore(div,textarea);
-
-	var blockposts = getElementsByCN('blockpost');
-	for (i in blockposts)
-	{
-		if (blockposts[i].id)
-		{
-			var id = blockposts[i].id.replace('p', '');
-			var dt = blockposts[i].getElementsByTagName('dt')[0];
-			if (typeof(dt) != 'undefined')
-			{
-				var	a = dt.getElementsByTagName('a')[0];
-				if (typeof(a) == 'undefined') a = dt.getElementsByTagName('strong')[0];
-				var n = a.innerHTML;
-				// Decode html special chars
-				n = n.replace(/&lt;/g, '<');
-				n = n.replace(/&gt;/g, '>');
-				n = n.replace(/&quot;/g, '"');
-				n = n.replace(/&#039;/g, '\'');
-				n = n.replace(/&nbsp;/g, ' ');
-				n = n.replace(/&#160;/g, ' ');
-				nameusers[id] = n.replace(/&amp;/g, '&');
-	      dt.innerHTML = '<strong><a href="#req_message" onclick="return insert_name(' + id + ')">@ </a></strong>' + dt.innerHTML;
-      
-				var quote = getElementsByCN('postquote', blockposts[i])[0];
-				if (typeof(quote) != 'undefined')
-				{
-					a = quote.getElementsByTagName('a')[0];
-					p = quote.parentNode;
-					p.innerHTML += '<li class="postquote"><span id="pq' + id + '"><a href="' + a.href.replace(/&/g, '&amp;') + '" onmousedown="get_quote_text()" onclick="Quote(' + id + '); return false;">' + bbcode_l['QQ'] + '</a></span></li>';
+						var quote = getCN('postquote', blockposts[i])[0];
+						if (typeof(quote) !== 'undefined') {
+							a = quote.getElementsByTagName('a')[0];
+							p = quote.parentNode;
+							p.innerHTML += '<li class="postquote"><span id="pq' + id + '"><a href="' + a.href.replace(/&/g, '&amp;') + '" onmousedown="FluxBB.post.getText();" onclick="return FluxBB.post.quote(' + id + ');">' + lang['QQ'] + '</a></span></li>';
+						}
+					}
 				}
 			}
+			
+			if (!!FluxBB.vars.bbFlagUp && !FluxBB.vars.bbGuest) {
+				var all_ul = doc.getElementsByTagName("ul"),
+						i = all_ul.length - 1;
+				while (i > -1) {
+					if (all_ul[i].className == "bblinks") {
+						var ul_html = all_ul[i].innerHTML;
+						ul_html += "<li><span><a href=\"upfiles.php\" onclick=\"return FluxBB.post.popUp(this.href);\"><strong>"+lang['upfiles']+"</strong></a></span></li>";
+						all_ul[i].innerHTML = ul_html;
+						i = 0;
+					}
+					i--;
+				}
+			}
+		},
+
+		insText : function (open, close) {
+			get('bbcode_color_map').style.display = 'none';
+			get('bbcode_smileys').style.display = 'none';
+			textarea.focus();
+			// IE support
+			if (doc.selection && doc.selection.createRange) {
+				sel = doc.selection.createRange();
+				sel.text = open + sel.text + close;
+			}
+			// Moz support
+			else if (textarea.selectionStart || textarea.selectionStart == '0') {
+				var startPos = textarea.selectionStart;
+				var endPos = textarea.selectionEnd;
+				textarea.value = textarea.value.substring(0, startPos) + open + textarea.value.substring(startPos, endPos) + close + textarea.value.substring(endPos);
+				if (startPos == endPos && open == '') {
+					textarea.selectionStart = startPos + close.length;
+					textarea.selectionEnd = endPos + close.length;
+				} else {
+					textarea.selectionStart = startPos + open.length;
+					textarea.selectionEnd = endPos + open.length;
+				}
+			}
+			// Fallback support for other browsers
+			else {
+				textarea.value += open + close;
+			}
+			textarea.focus();
+			return false;
+		},
+		
+    insName: function (id) {
+			return FluxBB.post.insText('', '[b]@' + nameusers[id] + '[/b], ');
+		},
+		
+		getText: function () {
+			if (win.getSelection) quote_text = win.getSelection().toString();
+			else if (doc.selection && doc.selection.createRange) quote_text = doc.selection.createRange().text;
+		},
+		
+		quote: function (id) {
+		  if (typeof(id) !== 'number' || id < 1) return false;
+			if (quote_text != "") {
+				return FluxBB.post.insText('', '[quote="' + nameusers[id] + '"]\n' + quote_text + '\n[/quote]\n');
+			} else if (!FluxBB.vars.bbGuest){
+				check_apq();
+				var req = cr_req();
+				if (req) {
+					apq_user = nameusers[id];
+					apq_id = id;
+					apq_temp = get('pq' + apq_id).innerHTML;
+					get('pq' + apq_id).innerHTML = '<img src="img/loading.gif" />&#160;<a href="#">' + lang['Loading'] + '</a>';
+
+					req.onreadystatechange=function(){orsc(req);};
+					req.open("POST", 'pjq.php?' + id, true);
+					req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+					req.send('action=' + typepost + '&id=' + id);
+				}
+			} else {
+				alert(lang['Must']);
+			}
+			return false;
+		},
+
+		popUp : function (url) {
+		  var h = Math.min(430, screen.height),
+		  w = Math.min(820, screen.width),
+			t = Math.max((screen.height - h) / 3, 0),
+			l = (screen.width - w) / 2;
+			win.open(url, 'gest', "top=" + t + ",left=" + l + ",width=" + w + ",height=" + h + ",resizable=yes,location=no,menubar=no,status=no,scrollbars=yes");
+			return false;
+		},
+		
+		overlay : function (prt, str) {
+			var m = get(str);
+			if (m.style.display != 'block') {
+
+				if (str == 'bbcode_smileys') {
+					get('bbcode_color_map').style.display = 'none';
+					if (flag_sm) {
+						flag_sm = false;
+						m.innerHTML = SmileysMapBB();
+					}
+				}
+
+				if (str == 'bbcode_color_map') {
+					get('bbcode_smileys').style.display = 'none';
+					if (flag_cr) {
+						flag_cr = false;
+						m.innerHTML = ColorMapBB();
+						m.style.overflow = 'hidden';
+					}
+				}
+
+				m.style.display = 'block';
+				m.style.position = 'absolute';
+				m.style.left = Math.max(0, Math.min(textarea.offsetLeft + textarea.offsetParent.offsetLeft + textarea.offsetWidth - m.offsetWidth, prt.offsetLeft + prt.offsetParent.offsetLeft - (m.offsetWidth - prt.offsetWidth) / 2)) + 'px';
+				m.style.top = prt.offsetTop + prt.offsetParent.offsetTop + prt.offsetHeight + 'px';
+			} else {
+				m.style.display = 'none';
+			}
+
+			return false;
+		},
+		
+		showMapColor : function (color) {
+			get("selectedMapColor").style.backgroundColor = color;
+			get("selectedMapColorBox").value = color;
 		}
-	}
+	};
+}(document, window));
 
-}
-
-function ForumPopUp(c,d,a,b,e){window.open(c,d,"top="+(screen.height-b)/3+", left="+(screen.width-a)/2+", width="+a+", height="+b+", "+e);return false};
-
-function ForumUpSet(){var all_ul=document.getElementsByTagName("ul"),i=all_ul.length-1;while (i>-1){if(all_ul[i].className=="bblinks"){var ul_html=all_ul[i].innerHTML;ul_html+="<li><span><a href=\"upfiles.php\" onclick=\"return ForumPopUp(this.href,'gest','820','430','resizable=yes,location=no,menubar=no,status=no,scrollbars=yes');\"><strong>"+bbcode_l['upfiles']+"</strong></a></span></li>";all_ul[i].innerHTML=ul_html;i=0;}i--}};
-
-if (typeof(jQuery) != "undefined") {
+if (typeof(jQuery) !== "undefined") {
 	(function($){var textarea,staticOffset;var iLastMousePos=0;var iMin=64;var grip;$.fn.TextAreaResizer=function(){return this.each(function(){textarea=$(this).addClass('processed'),staticOffset=null;$(this).wrap('<div class="resizable-textarea"><span></span></div>').parent().append($('<div class="grippie"></div>').bind("mousedown",{el:this},startDrag));var grippie=$('div.grippie',$(this).parent())[0];grippie.style.marginRight=(grippie.offsetWidth-$(this)[0].offsetWidth)+'px'})};function startDrag(e){textarea=$(e.data.el);textarea.blur();iLastMousePos=mousePosition(e).y;staticOffset=textarea.height()-iLastMousePos;if(!window.ActiveXObject){textarea.css('opacity',0.25)}$(document).mousemove(performDrag).mouseup(endDrag);return false}function performDrag(e){var iThisMousePos=mousePosition(e).y;var iMousePos=staticOffset+iThisMousePos;if(iLastMousePos>=(iThisMousePos)){iMousePos-=5}iLastMousePos=iThisMousePos;iMousePos=Math.max(iMin,iMousePos);textarea.height(iMousePos+'px');if(iMousePos<iMin){endDrag(e)}return false}function endDrag(e){$(document).unbind('mousemove',performDrag).unbind('mouseup',endDrag);if(!window.ActiveXObject){textarea.css('opacity',1)}textarea.focus();textarea=null;staticOffset=null;iLastMousePos=0}function mousePosition(e){return{x:e.clientX+document.documentElement.scrollLeft,y:e.clientY+document.documentElement.scrollTop}}})(jQuery);
 	$(document).ready(function() {$('textarea:not(.processed)').TextAreaResizer();});
 }
-
-var quote_text = '', apq_id = -1 , apq, apq_user, apq_temp, bbcode_l, bbcode_sm_vis, bbcode_cr_vis, cur_index, nameusers = [];

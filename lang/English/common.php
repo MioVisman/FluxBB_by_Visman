@@ -174,9 +174,6 @@ $lang_common = array(
 'New reports'						=>	'There are new reports',
 'Maintenance mode enabled'			=>	'Maintenance mode is enabled!',
 
-'Must' => 'You must select text before quoting',
-'Loading' => 'Loading...',
-
 // Units for file sizes
 'Size unit B'						=>	'%s B',
 'Size unit KiB'						=>	'%s KiB',

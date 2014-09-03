@@ -859,7 +859,8 @@ else if (isset($_POST['delete_topics']) || isset($_POST['delete_topics_comply'])
 			$result = $db->query('SELECT COUNT(id), poster_id FROM '.$db->prefix.'posts WHERE topic_id IN('.$topics.') GROUP BY poster_id', true) or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());
 			while ($row = $db->fetch_row($result))
 			{
-				$db->query('UPDATE '.$db->prefix.'users SET num_posts=num_posts-'.$row[0].' WHERE id='.$row[1]) or error('Unable to update posters messages count', __FILE__, __LINE__, $db->error());
+				if ($row[1] > 1)
+					$db->query('UPDATE '.$db->prefix.'users SET num_posts=num_posts-'.$row[0].' WHERE id='.$row[1]) or error('Unable to update posters messages count', __FILE__, __LINE__, $db->error());
 			}
 		}
 

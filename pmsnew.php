@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2013 Visman (visman@inbox.ru)
+ * Copyright (C) 2010-2014 Visman (visman@inbox.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -156,8 +156,5 @@ if (!defined('PUN_PMS_LOADED'))
 	<div class="clearer"></div>
 </div>
 <?php
-
-if (isset($page_js['c']['arq']))
-	$page_js['c']['arq'] = 'var apq = {\'Must\':\''.$lang_common['Must'].'\',\'Loading\':\''.$lang_common['Loading'].'\',\'Flag\':\'PM\',\'Guest\':\'\'};';
 
 require PUN_ROOT.'footer.php';

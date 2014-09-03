@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Copyright (C) 2014 Visman (visman@inbox.ru)
+ * Copyright (C) 2012 Daris (daris91@gmail.com)
+ * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
+ */
+
 function ua_get_filename($name, $folder)
 {
 	$name = preg_replace('%[^\w]%', '', strtolower($name));
@@ -22,25 +28,25 @@ function get_useragent_names($usrag)
 	$usrag = strtolower($usrag);
 	
 	// Browser detection
-	$browsers = array('Opera', 'Avant', 'Maxthon', 'MSIE', 'OPR', 'YaBrowser', 'Chromium', 'Chrome', 'Arora', 'Epiphany', 'Galeon', 'iCab', 'Konqueror', 'Safari', 'Flock', 'Iceweasel', 'SeaMonkey', 'Netscape', 'Firefox', 'K-Meleon', 'Camino');
+	$browsers = array('Opera', 'Avant', 'Maxthon', 'MSIE', 'OPR', 'YaBrowser', 'Chromium', 'Chrome', 'Arora', 'Epiphany', 'Galeon', 'iCab', 'Konqueror', 'Safari', 'Flock', 'Iceweasel', 'SeaMonkey', 'Netscape', 'Firefox', 'K-Meleon', 'Camino', 'Trident');
 
 	$browser = ua_search_for_item($browsers, $usrag);
 
-	preg_match('#'.preg_quote(strtolower(($browser == 'Opera' ? 'Version' : $browser))).'[\s/]*([\.0-9]*)#', $usrag, $matches);
+	preg_match('#'.preg_quote(strtolower(($browser == 'Opera' ? 'Version' : ($browser == 'Trident' ? 'rv:' : $browser)))).'[\s/]*([\.0-9]+)#', $usrag, $matches);
 	$browser_version = isset($matches[1]) ? $matches[1] : '';
 
-	if ($browser == 'MSIE')
+	if ($browser == 'Trident' && !empty($browser_version) || $browser == 'MSIE')
 	{
 		if (intval($browser_version) >= 9)
 			$browser_img = 'Internet Explorer 9';
-		else if (intval($browser_version) >= 7)
+		elseif (intval($browser_version) >= 7)
 			$browser_img = 'Internet Explorer 7';
 
 		$browser = 'Internet Explorer';
 	}
 	elseif ($browser == 'OPR')
 		$browser = 'Opera';
-	elseif (!$browser)
+	elseif (empty($browser))
 		$browser = 'Unknown';
 
 	// System detection
@@ -53,33 +59,33 @@ function get_useragent_names($usrag)
 		$systems = array('CentOS', 'Debian', 'Fedora', 'Freespire', 'Gentoo', 'Katonix', 'KateOS', 'Knoppix', 'Kubuntu', 'Linspire', 'Mandriva', 'Mandrake', 'RedHat', 'Slackware', 'Slax', 'Suse', 'Xubuntu', 'Ubuntu', 'Xandros', 'Arch', 'Ark', 'Android');
 
 		$system = ua_search_for_item($systems, $usrag);
-		if ($system == '')
+		if (empty($system))
 			$system = 'Linux';
-		
-		if ($system == 'Mandrake')
+		elseif ($system == 'Mandrake')
 			$system = 'Mandriva';
 	}
 	elseif ($system == 'Windows')
 	{
-		$version = substr($usrag, strpos($usrag, 'windows nt ') + 11);
-		if (substr($version, 0, 3) == '5.1')
+		preg_match('#windows nt ([\.0-9]+)#', $usrag, $matches);
+		$version = isset($matches[1]) ? $matches[1] : 0;
+
+		if ($version == 5.1)
 			$system = 'Windows XP';
-		elseif (substr($version, 0, 1) == '6')
-		{
-			if (substr($version, 0, 3) == '6.0')
-				$system = 'Windows Vista';
-			else if (substr($version, 0, 3) == '6.1')
-				$system = 'Windows 7';
-			else
-				$system = 'Windows 8';
-		}
+		elseif ($version == 6.1)
+			$system = 'Windows 7';
+		elseif ($version == 6.3)
+			$system = 'Windows 8.1';
+		elseif ($version == 6.2)
+			$system = 'Windows 8';
+		elseif ($version == 6.0)
+			$system = 'Windows Vista';
 	}
 	elseif ($system == 'Mac')
 		$system = 'Macintosh';
-	elseif (!$system)
+	elseif (empty($system))
 		$system = 'Unknown';
 
-	if (!$browser_img)
+	if (empty($browser_img))
 		$browser_img = $browser;
 
 	$result = array(

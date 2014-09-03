@@ -174,9 +174,6 @@ $lang_common = array(
 'New reports' => 'Есть новые сигналы',
 'Maintenance mode enabled' => 'Включен режим обслуживания!',
 
-'Must' => 'Вы должны выделить текст для цитирования',
-'Loading' => 'Загрузка...',
-
 // Units for file sizes
 'Size unit B'						=>	'%s байт',
 'Size unit KiB'						=>	'%s Кбайт',

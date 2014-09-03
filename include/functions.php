@@ -677,7 +677,7 @@ function generate_page_title($page_title, $p = null)
 
 	$page_title = array_reverse($page_title);
 
-	if (!is_null($p))
+	if ($p > 1)
 		$page_title[0] .= ' ('.sprintf($lang_common['Page'], forum_number_format($p)).')';
 
 	$crumbs = implode($lang_common['Title separator'], $page_title);
@@ -806,7 +806,8 @@ function delete_topic($topic_id, $flag_f = 1) // not sum - Visman
 		$result = $db->query('SELECT COUNT(id), poster_id FROM '.$db->prefix.'posts WHERE topic_id='.$topic_id.' GROUP BY poster_id') or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());
 		while ($row = $db->fetch_row($result))
 		{
-			$db->query('UPDATE '.$db->prefix.'users SET num_posts = num_posts-'.$row[0].' WHERE id='.$row[1]) or error('Unable to update posters messages count', __FILE__, __LINE__, $db->error());
+			if ($row[1] > 1)
+				$db->query('UPDATE '.$db->prefix.'users SET num_posts = num_posts-'.$row[0].' WHERE id='.$row[1]) or error('Unable to update posters messages count', __FILE__, __LINE__, $db->error());
 		}
 	}
 	

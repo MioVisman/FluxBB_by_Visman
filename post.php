@@ -203,7 +203,7 @@ if (isset($_POST['form_sent']))
 		require PUN_ROOT.'include/search_idx.php';
 
 // START Merge Post
-		if (isset($pun_config['o_merge_timeout']) && !$pun_user['is_guest'] && !$fid && (($is_admmod && isset($_POST['merge']) && intval($_POST['merge'])==1) || !$is_admmod) && $cur_posting['poster_id']!=NULL && $cur_posting['message']!=NULL && ($now - $cur_posting['posted'])<$pun_config['o_merge_timeout'] && (pun_strlen($cur_posting['message'].$message) + 100 < PUN_MAX_POSTSIZE))
+		if (isset($pun_config['o_merge_timeout']) && !$pun_user['is_guest'] && !$fid && (($is_admmod && !empty($_POST['merge'])) || !$is_admmod) && $cur_posting['poster_id']!=NULL && $cur_posting['message']!=NULL && ($now - $cur_posting['posted'])<$pun_config['o_merge_timeout'] && (pun_strlen($cur_posting['message'].$message) + 100 < PUN_MAX_POSTSIZE))
 		{
 			$message= '[after='.($now - $cur_posting['posted']).']'."\n".$message;
 			$merged = true;

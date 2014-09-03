@@ -9,7 +9,7 @@
 // The FluxBB version this script installs
 define('FORUM_VERSION', '1.5.6');
 
-define('FORUM_VER_REVISION', 64);	// номер сборки - Visman
+define('FORUM_VER_REVISION', 65);	// номер сборки - Visman
 
 define('FORUM_DB_REVISION', 20);
 define('FORUM_SI_REVISION', 2);
@@ -109,7 +109,7 @@ function generate_config_file()
 {
 	global $db_type, $db_host, $db_name, $db_username, $db_password, $db_prefix, $cookie_name, $cookie_seed, $salt1;
 
-	return '<?php'."\n\n".'$db_type = \''.$db_type."';\n".'$db_host = \''.$db_host."';\n".'$db_name = \''.addslashes($db_name)."';\n".'$db_username = \''.addslashes($db_username)."';\n".'$db_password = \''.addslashes($db_password)."';\n".'$db_prefix = \''.addslashes($db_prefix)."';\n".'$p_connect = false;'."\n\n".'$cookie_name = '."'".$cookie_name."';\n".'$cookie_domain = '."'';\n".'$cookie_path = '."'/';\n".'$cookie_secure = 0;'."\n".'$cookie_seed = \''.random_key(16, false, true)."';\n\n".'$salt1 = \''.$salt1."';\n\ndefine('PUN', 1);\n"."\ndefine('PUN_DEBUG', 1);\n//define('PUN_SHOW_QUERIES', 1);\ndefine('PUN_MAX_POSTSIZE', 65535);\n".'//define(\'FORUM_EOL\', "\r\n"); // possible values can be PHP_EOL, "\r\n", "\n" or "\r"'."\n//define('FORUM_UA_OFF', 1);\ndefine('FORUM_AJAX_JQUERY', '//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js');\n";
+	return '<?php'."\n\n".'$db_type = \''.$db_type."';\n".'$db_host = \''.$db_host."';\n".'$db_name = \''.addslashes($db_name)."';\n".'$db_username = \''.addslashes($db_username)."';\n".'$db_password = \''.addslashes($db_password)."';\n".'$db_prefix = \''.addslashes($db_prefix)."';\n".'$p_connect = false;'."\n\n".'$cookie_name = '."'".$cookie_name."';\n".'$cookie_domain = '."'';\n".'$cookie_path = '."'/';\n".'$cookie_secure = 0;'."\n".'$cookie_seed = \''.random_key(16, false, true)."';\n\n".'$salt1 = \''.$salt1."';\n\ndefine('PUN', 1);\n"."\ndefine('PUN_DEBUG', 1);\n//define('PUN_SHOW_QUERIES', 1);\ndefine('PUN_MAX_POSTSIZE', 65535);\n".'//define(\'FORUM_EOL\', "\r\n"); // possible values can be PHP_EOL, "\r\n", "\n" or "\r"'."\n//define('FORUM_UA_OFF', 1);\ndefine('FORUM_AJAX_JQUERY', '//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js');\n";
 }
 
 
