@@ -142,7 +142,7 @@ $lang_common = array(
 'Unstick topic'						=>	'Unstick topic',
 'Stick topic'						=>	'Stick topic',
 'Moderate forum'					=>	'Moderate forum',
-'Powered by' => 'Powered by %s<br />Modified by <a href="http://alltes.ru/">&#x56;&#x69;&#x73;&#x6D;&#x61;&#x6E;</a>',
+'Powered by' => 'Powered by %s<br />Modified by &#x56;&#x69;&#x73;&#x6D;&#x61;&#x6E;',
 
 // Debug information
 'Debug table'						=>	'Debug information',
