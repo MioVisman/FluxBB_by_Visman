@@ -570,6 +570,8 @@ function update_users_online($tid = 0, &$witt_us = array())
 					$db->query('UPDATE '.$db->prefix.'online SET idle=1 WHERE user_id='.$cu['user_id']) or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
 					$onl_s[] = $cu['ident'];
 				}
+				else
+					$onl_s[] = $cu['ident'];
 			}
 		}
 		else
@@ -746,6 +748,17 @@ function get_tracked_topics()
 	}
 
 	return $tracked_topics;
+}
+
+
+//
+// Shortcut method for executing all callbacks registered with the addon manager for the given hook
+//
+function flux_hook($name)
+{
+	global $flux_addons;
+
+	$flux_addons->hook($name);
 }
 
 
@@ -983,7 +996,7 @@ function paginate($num_pages, $cur_page, $link)
 	{
 		// Add a previous page link
 		if ($num_pages > 1 && $cur_page > 1)
-			$pages[] = '<a rel="prev"'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.($cur_page == 2 ? '' : '&amp;p='.($cur_page-1)).'">'.$lang_common['Previous'].'</a>';
+			$pages[] = '<a rel="prev"'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.($cur_page == 2 ? '' : '&amp;p='.($cur_page - 1)).'">'.$lang_common['Previous'].'</a>';
 
 		if ($cur_page > 3)
 		{
@@ -1181,6 +1194,10 @@ function validate_redirect($redirect_url, $fallback_url)
 {
 	$referrer = parse_url(strtolower($redirect_url));
 
+	// Make sure the host component exists
+	if (!isset($referrer['host']))
+		$referrer['host'] = '';
+
 	// Remove www subdomain if it exists
 	if (strpos($referrer['host'], 'www.') === 0)
 		$referrer['host'] = substr($referrer['host'], 4);
@@ -1298,7 +1315,7 @@ function pun_strlen($str)
 //
 function pun_linebreaks($str)
 {
-	return str_replace("\r", "\n", str_replace("\r\n", "\n", $str));
+	return str_replace(array("\r\n", "\r"), "\n", $str);
 }
 
 
@@ -2091,11 +2108,9 @@ function url_valid($url)
 			  [0-9A-Za-z]		   # Part last char is alphanum (no dash).
 			  \.				   # Each part followed by literal dot.
 			)*					   # One or more parts before top level domain.
-			(?:					   # Explicitly specify top level domains.
-			  com|edu|gov|int|mil|net|org|biz|
-			  info|name|pro|aero|coop|museum|
-			  asia|cat|jobs|mobi|tel|travel|
-			  [A-Za-z]{2})		   # Country codes are exqactly two alpha chars.
+			(?:					   # Top level domains
+			  [A-Za-z]{2,63}|	   # Country codes are exactly two alpha chars.
+			  xn--[0-9A-Za-z]{4,59})		   # Internationalized Domain Name (IDN)
 			$					   # Anchor to end of string.
 			/ix', $m['host'])) return FALSE;
 	}

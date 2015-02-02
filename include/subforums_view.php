@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (C) 2013 Visman (visman@inbox.ru)
+ * Copyright (C) 2013-2015 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2008-2012 FluxBB
  * based on code by Rickard Andersson copyright (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -11,24 +11,9 @@ if (!defined('PUN'))
 
 function sf_status_new($cur_forum)
 {
-	global $pun_user, $tracked_topics, $new_topics;
-
-//	echo var_export($tracked_topics).'<br />';
-//	echo var_export($new_topics).'<br />';
-
-	// Are there new posts since our last visit?
-	if (!$pun_user['is_guest'] && $cur_forum['last_post'] > $pun_user['last_visit'] && (empty($tracked_topics['forums'][$cur_forum['fid']]) || $cur_forum['last_post'] > $tracked_topics['forums'][$cur_forum['fid']]))
-	{
-		// There are new posts in this forum, but have we read all of them already?
-		foreach ($new_topics[$cur_forum['fid']] as $check_topic_id => $check_last_post)
-		{
-			if ((empty($tracked_topics['topics'][$check_topic_id]) || $tracked_topics['topics'][$check_topic_id] < $check_last_post) && (empty($tracked_topics['forums'][$cur_forum['fid']]) || $tracked_topics['forums'][$cur_forum['fid']] < $check_last_post))
-			{
-				return true;
-			}
-		}
-	}
-	return false;
+	global $new_topics;
+	
+	return isset($new_topics[$cur_forum['fid']]);
 }
 
 function sf_data_forum($result, &$forum, $fid = 0)
@@ -69,15 +54,39 @@ $sf_cur_forum = (isset($cur_forum) && $id > 0) ? (int)$id : 0;
 if (!isset($lang_index))
 	require PUN_ROOT.'lang/'.$pun_user['language'].'/index.php';
 
-// Get list of forums and topics with new posts since last visit
 if (!$pun_user['is_guest'])
 {
-//	$result = $db->query('SELECT t.forum_id, t.id, t.last_post FROM '.$db->prefix.'topics AS t INNER JOIN '.$db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.last_post>'.$pun_user['last_visit'].' AND t.moved_to IS NULL') or error('Unable to fetch new topics', __FILE__, __LINE__, $db->error());
-	$result = $db->query('SELECT t.forum_id, t.id, t.last_post FROM '.$db->prefix.'topics AS t WHERE t.last_post>'.$pun_user['last_visit'].' AND t.moved_to IS NULL AND t.forum_id IN ('.implode(',', $sf_array_asc[$sf_cur_forum]).')') or error('Unable to fetch new topics', __FILE__, __LINE__, $db->error());
+//	$result = $db->query('SELECT f.id, f.last_post FROM '.$db->prefix.'forums AS f LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.last_post>'.$pun_user['last_visit']) or error('Unable to fetch forum list', __FILE__, __LINE__, $db->error());
+	$result = $db->query('SELECT f.id, f.last_post FROM '.$db->prefix.'forums AS f WHERE f.last_post>'.$pun_user['last_visit'].' AND f.id IN ('.implode(',', $sf_array_asc[$sf_cur_forum]).')') or error('Unable to fetch forum list', __FILE__, __LINE__, $db->error());
 
-	$new_topics = array();
-	while ($cur_topic = $db->fetch_assoc($result))
-		$new_topics[$cur_topic['forum_id']][$cur_topic['id']] = $cur_topic['last_post'];
+	if ($db->num_rows($result))
+	{
+		$forums = $new_topics = array();
+		if (!isset($tracked_topics))
+			$tracked_topics = get_tracked_topics();
+
+		while ($cur_forum = $db->fetch_assoc($result))
+		{
+			if (!isset($tracked_topics['forums'][$cur_forum['id']]) || $tracked_topics['forums'][$cur_forum['id']] < $cur_forum['last_post'])
+				$forums[$cur_forum['id']] = $cur_forum['last_post'];
+		}
+
+		if (!empty($forums))
+		{
+			if (empty($tracked_topics['topics']))
+				$new_topics = $forums;
+			else
+			{
+				$result = $db->query('SELECT forum_id, id, last_post FROM '.$db->prefix.'topics WHERE forum_id IN('.implode(',', array_keys($forums)).') AND last_post>'.$pun_user['last_visit'].' AND moved_to IS NULL') or error('Unable to fetch new topics', __FILE__, __LINE__, $db->error());
+
+				while ($cur_topic = $db->fetch_assoc($result))
+				{
+					if (!isset($new_topics[$cur_topic['forum_id']]) && (!isset($tracked_topics['forums'][$cur_topic['forum_id']]) || $tracked_topics['forums'][$cur_topic['forum_id']] < $forums[$cur_topic['forum_id']]) && (!isset($tracked_topics['topics'][$cur_topic['id']]) || $tracked_topics['topics'][$cur_topic['id']] < $cur_topic['last_post']))
+						$new_topics[$cur_topic['forum_id']] = $forums[$cur_topic['forum_id']];
+				}
+			}
+		}
+	}
 }
 
 //$result = $db->query('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name, f.forum_desc, f.redirect_url, f.moderators, f.num_topics, f.num_posts, f.last_post, f.last_post_id, f.last_poster, f.last_topic, f.parent_forum_id FROM '.$db->prefix.'categories AS c INNER JOIN '.$db->prefix.'forums AS f ON c.id=f.cat_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') WHERE fp.read_forum IS NULL OR fp.read_forum=1 ORDER BY c.disp_position, c.id, f.disp_position', true) or error('Unable to fetch category/forum list', __FILE__, __LINE__, $db->error());

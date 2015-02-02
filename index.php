@@ -18,16 +18,16 @@ if ($pun_user['g_read_board'] == '0')
 require PUN_ROOT.'lang/'.$pun_user['language'].'/index.php';
 
 // Get list of forums and topics with new posts since last visit
-if (!$pun_user['is_guest'])
-{
+//if (!$pun_user['is_guest'])
+//{
 //	$result = $db->query('SELECT t.forum_id, t.id, t.last_post FROM '.$db->prefix.'topics AS t INNER JOIN '.$db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.last_post>'.$pun_user['last_visit'].' AND t.moved_to IS NULL') or error('Unable to fetch new topics', __FILE__, __LINE__, $db->error());
 //
 //	$new_topics = array();
 //	while ($cur_topic = $db->fetch_assoc($result))
 //		$new_topics[$cur_topic['forum_id']][$cur_topic['id']] = $cur_topic['last_post'];
 //
-	$tracked_topics = get_tracked_topics();
-}
+//	$tracked_topics = get_tracked_topics();
+//}
 
 if ($pun_config['o_feed_type'] == '1')
 	$page_head = array('feed' => '<link rel="alternate" type="application/rss+xml" href="extern.php?action=feed&amp;type=rss" title="'.$lang_common['RSS active topics feed'].'" />');

@@ -6,6 +6,7 @@ $lang_topic = array(
 'Post reply' => 'Ответить',
 'Topic closed' => 'Тема закрыта',
 'From' => 'Откуда:',				// User location
+'Promote user'		=>	'Переместить пользователя',
 'IP address logged' => 'IP адрес',
 'Note' => 'Замечание',				// Admin note
 'Posts' => 'Сообщений:',

@@ -219,10 +219,10 @@ html, body {
 }
 
 .pun {
-	padding: 12px 20px;
-	margin: 0 auto;
 	max-width: 1100px;
 	min-width: 700px;
+	margin: 0 auto;
+	padding: 12px 20px;
 }
 
 #punredirect, #punmaint, #puninstall, #pundb_update {
@@ -1319,4 +1319,9 @@ span.shlight {
 	font-weight: bold;
 	background-color: #F3BFCC;
 	color: #BC2A4D;
+}
+
+/*--------------*/
+.pun textarea {
+	resize: vertical;
 }

@@ -7,11 +7,11 @@
  */
 
 // The FluxBB version this script updates to
-define('UPDATE_TO', '1.5.7');
+define('UPDATE_TO', '1.5.8');
 
-define('UPDATE_TO_VER_REVISION', 66);	// номер сборки - Visman
+define('UPDATE_TO_VER_REVISION', 67);	// номер сборки - Visman
 
-define('UPDATE_TO_DB_REVISION', 20);
+define('UPDATE_TO_DB_REVISION', 21);
 define('UPDATE_TO_SI_REVISION', 2);
 define('UPDATE_TO_PARSER_REVISION', 2);
 
@@ -1241,7 +1241,7 @@ if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_v
 	  'PUN_MAX_POSTSIZE' => array('65535', true, ''),
 	  'FORUM_EOL' => array('"\r\n"', false, 'possible values can be PHP_EOL, "\r\n", "\n" or "\r"'),
 	  'FORUM_UA_OFF' => array('1', false, ''),
-	  'FORUM_AJAX_JQUERY' => array('\'//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js\'', true, ''),
+	  'FORUM_AJAX_JQUERY' => array('\'//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js\'', true, ''),
 	);
 
 	$conf_add = array();
@@ -1270,6 +1270,11 @@ if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_v
 	@unlink(PUN_ROOT.'lang/English/bbcode.php');
 	@unlink(PUN_ROOT.'lang/Russian/bbcode.php');
 } // rev.65
+if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 67)
+{
+	@unlink(PUN_ROOT.'js/minmax.js');
+	@unlink(PUN_ROOT.'install.php');
+} // rev.67
 // Visman
 
 		// If we don't need to update the database, skip this stage
@@ -1609,6 +1614,9 @@ if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_v
 
 		// Add a field for the per-group permission to post links
 		$db->add_field('groups', 'g_post_links', 'TINYINT(1)', false, 1, 'g_delete_topics') or error('Unable to add per-group permission to post links', __FILE__, __LINE__, $db->error());
+
+		// Add a field for the per-group permission to promote users to the next auto-promote group
+		$db->add_field('groups', 'g_mod_promote_users', 'TINYINT(1)', false, 0, 'g_mod_ban_users') or error('Unable to add per-group permission to promote users', __FILE__, __LINE__, $db->error());
 
 		// In case we had the fulltext search extension installed (1.3-legacy), remove it
 		$db->drop_index('topics', 'subject_idx') or error('Unable to drop subject_idx index', __FILE__, __LINE__, $db->error());

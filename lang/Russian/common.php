@@ -94,7 +94,6 @@ $lang_common = array(
 'BBCode error empty attribute' => 'Тег [%s] с пустым атрибутом',
 'BBCode error tag not allowed'		=>	'Вам нельзя использовать тег [%s]',
 'BBCode error tag url not allowed'	=>	'Вам нельзя использовать ссылки в сообщениях',
-'BBCode code problem' => 'Обнаружены проблемы с тегами [code]',
 'BBCode list size error' => 'Ваш список слишком велик, пожалуйста уменьшите его!',
 
 // Stuff for the navigator (top of every page)

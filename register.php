@@ -68,6 +68,8 @@ $errors = array();
 
 if (isset($_POST['form_sent']))
 {
+	flux_hook('register_before_validation');
+
 	// Check that someone from this IP didn't register a user within the last hour (DoS prevention)
 	$result = $db->query('SELECT 1 FROM '.$db->prefix.'users WHERE registration_ip=\''.$db->escape(get_remote_address()).'\' AND registered>'.(time() - 3600)) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
 
@@ -84,7 +86,7 @@ if (isset($_POST['form_sent']))
 	{
 		$email2 = strtolower(pun_trim($_POST['req_email2']));
 
-		$password1 = random_pass(8);
+		$password1 = random_pass(12);
 		$password2 = $password1;
 	}
 	else
@@ -96,7 +98,7 @@ if (isset($_POST['form_sent']))
 	// Validate username and passwords
 	check_username($username);
 
-	if (pun_strlen($password1) < 4)
+	if (pun_strlen($password1) < 6)
 		$errors[] = $lang_prof_reg['Pass too short'];
 	else if ($password1 != $password2)
 		$errors[] = $lang_prof_reg['Pass not match'];
@@ -166,6 +168,8 @@ if (isset($_POST['form_sent']))
 		$errors = array($lang_sec['You fast']);
 	else if ($cry_time > 3600)
 		$errors = array($lang_sec['You slowly']);
+
+	flux_hook('register_after_validation');
 
 	// Did everything go according to plan?
 	if (empty($errors))
@@ -244,6 +248,7 @@ if (isset($_POST['form_sent']))
 				$mail_message = str_replace('<username>', $username, $mail_message);
 				$mail_message = str_replace('<base_url>', get_base_url().'/', $mail_message);
 				$mail_message = str_replace('<profile_url>', get_base_url().'/profile.php?id='.$new_uid, $mail_message);
+				$mail_message = str_replace('<admin_url>', get_base_url().'/profile.php?section=admin&id='.$new_uid, $mail_message);
 				$mail_message = str_replace('<board_mailer>', $pun_config['o_board_title'], $mail_message);
 
 				pun_mail($pun_config['o_mailing_list'], $mail_subject, $mail_message);
@@ -286,6 +291,9 @@ if (isset($_POST['form_sent']))
 $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_register['Register']);
 $required_fields = array(random_for_crypto('req_user') => $lang_common['Username'], random_for_crypto('req_password1') => $lang_common['Password'], random_for_crypto('req_password2') => $lang_prof_reg['Confirm pass'], random_for_crypto('req_email1') => $lang_common['Email'], random_for_crypto('req_email2') => $lang_common['Email'].' 2');
 $focus_element = array('register', random_for_crypto('req_user'));
+
+flux_hook('register_before_header');
+
 define('PUN_ACTIVE_PAGE', 'register');
 require PUN_ROOT.'header.php';
 
@@ -478,6 +486,7 @@ if (!empty($errors))
 					<input type="hidden" name="cr" value="<?php echo random_for_crypto() ?>" />
 				</fieldset>
 			</div>
+<?php flux_hook('register_before_submit'); ?>
 			<p class="buttons"><input type="submit" name="register" value="<?php echo $lang_register['Register'] ?>" /></p>
 		</form>
 	</div>

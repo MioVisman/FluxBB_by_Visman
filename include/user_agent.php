@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2014 Visman (visman@inbox.ru)
+ * Copyright (C) 2014 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2012 Daris (daris91@gmail.com)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2011-2014 Visman (visman@inbox.ru)
+ * Copyright (C) 2011-2015 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -17,7 +17,7 @@ else
 
 // Tell admin_loader.php that this is indeed a plugin and that it is loaded
 define('PUN_PLUGIN_LOADED', 1);
-define('PLUGIN_VERSION', '1.3.4');
+define('PLUGIN_VERSION', '1.3.5');
 define('PLUGIN_REVISION', 4);
 define('PLUGIN_NAME', 'Fancybox for FluxBB');
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin='.$plugin));
@@ -32,7 +32,7 @@ $arr_files = array(
 	$prefhf,
 );
 $arr_search = array(
-	'// JavaScript tricks for IE6 and older',
+	'if (!empty($page_head))',
 );
 $arr_new = array(
 	$fd_str."\n\n".'%search%',

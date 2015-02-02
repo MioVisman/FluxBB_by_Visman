@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (C) 2011-2013 Visman (visman@inbox.ru)
+ * Copyright (C) 2011-2013 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2007  BN (bnmaster@la-bnbox.info)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */

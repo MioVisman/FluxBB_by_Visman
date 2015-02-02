@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2011-2014 Visman (visman@inbox.ru)
+ * Copyright (C) 2011-2015 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -48,7 +48,7 @@ if (!$pun_user['is_guest'] && !empty($pun_user['g_up_ext']))
 		$bbflagup = 1;
 }
 
-$page_js['j'] = 1;
+//$page_js['j'] = 1;
 $page_js['f']['bbcode'] = 'js/post.js';
 $page_js['c'][] = 'if (typeof FluxBB === \'undefined\' || !FluxBB) {var FluxBB = {};}
 FluxBB.vars = {

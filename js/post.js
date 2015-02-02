@@ -1,5 +1,4 @@
-// post.js v2.0.0 Copyright (C) 2014 Visman (visman@inbox.ru)
-
+// post.js v2.1.0 Copyright (C) 2014-2015 Visman (mio.visman@yandex.ru)
 if (typeof FluxBB === 'undefined' || !FluxBB) {var FluxBB = {};}
 
 FluxBB.post = (function (doc, win) {
@@ -201,9 +200,9 @@ FluxBB.post = (function (doc, win) {
 					var id = blockposts[i].id.replace('p', '');
 					var dt = blockposts[i].getElementsByTagName('dt')[0];
 					if (typeof(dt) !== 'undefined') {
-						var	a = dt.getElementsByTagName('a')[0];
-						if (typeof(a) === 'undefined') a = dt.getElementsByTagName('strong')[0];
-						var n = a.innerHTML;
+						var a = dt.innerHTML;
+						var n = a.replace(/<[^>]+>/g, '');
+						
 						// Decode html special chars
 						n = n.replace(/&lt;/g, '<');
 						n = n.replace(/&gt;/g, '>');
@@ -212,13 +211,13 @@ FluxBB.post = (function (doc, win) {
 						n = n.replace(/&nbsp;/g, ' ');
 						n = n.replace(/&#160;/g, ' ');
 						nameusers[id] = n.replace(/&amp;/g, '&');
-			      dt.innerHTML = '<strong><a href="#req_message" onclick="return FluxBB.post.insName(' + id + ');">@ </a></strong>' + dt.innerHTML;
+			      dt.insertAdjacentHTML('afterBegin', '<strong><a href="#req_message" onclick="return FluxBB.post.insName(' + id + ');">@ </a></strong>');
 
 						var quote = getCN('postquote', blockposts[i])[0];
 						if (typeof(quote) !== 'undefined') {
 							a = quote.getElementsByTagName('a')[0];
 							p = quote.parentNode;
-							p.innerHTML += '<li class="postquote"><span id="pq' + id + '"><a href="' + a.href.replace(/&/g, '&amp;') + '" onmousedown="FluxBB.post.getText();" onclick="return FluxBB.post.quote(' + id + ');">' + lang['QQ'] + '</a></span></li>';
+							p.insertAdjacentHTML('beforeEnd', '<li class="postquote"><span id="pq' + id + '"><a href="' + a.href.replace(/&/g, '&amp;') + '" onmousedown="FluxBB.post.getText();" onclick="return FluxBB.post.quote(' + id + ');">' + lang['QQ'] + '</a></span></li>');
 						}
 					}
 				}
@@ -229,9 +228,7 @@ FluxBB.post = (function (doc, win) {
 						i = all_ul.length - 1;
 				while (i > -1) {
 					if (all_ul[i].className == "bblinks") {
-						var ul_html = all_ul[i].innerHTML;
-						ul_html += "<li><span><a href=\"upfiles.php\" onclick=\"return FluxBB.post.popUp(this.href);\"><strong>"+lang['upfiles']+"</strong></a></span></li>";
-						all_ul[i].innerHTML = ul_html;
+						all_ul[i].insertAdjacentHTML('beforeEnd', '<li><span><a href="upfiles.php" onclick="return FluxBB.post.popUp(this.href);"><strong>' + lang['upfiles'] + '</strong></a></span></li>');
 						i = 0;
 					}
 					i--;
@@ -319,7 +316,7 @@ FluxBB.post = (function (doc, win) {
 					get('bbcode_color_map').style.display = 'none';
 					if (flag_sm) {
 						flag_sm = false;
-						m.innerHTML = SmileysMapBB();
+						m.insertAdjacentHTML('afterBegin', SmileysMapBB());
 					}
 				}
 
@@ -327,7 +324,7 @@ FluxBB.post = (function (doc, win) {
 					get('bbcode_smileys').style.display = 'none';
 					if (flag_cr) {
 						flag_cr = false;
-						m.innerHTML = ColorMapBB();
+						m.insertAdjacentHTML('afterBegin', ColorMapBB());
 						m.style.overflow = 'hidden';
 					}
 				}

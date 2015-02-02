@@ -10,13 +10,13 @@ if (!defined('PUN_ROOT'))
 	exit('The constant PUN_ROOT must be defined and point to a valid FluxBB installation root directory.');
 
 // Define the version and database revision that this code was written for
-define('FORUM_VERSION', '1.5.7');
+define('FORUM_VERSION', '1.5.8');
 
-define('FORUM_VER_REVISION', 66);	// номер сборки - Visman
+define('FORUM_VER_REVISION', 67);	// номер сборки - Visman
 
 $page_js = array();
 
-define('FORUM_DB_REVISION', 20);
+define('FORUM_DB_REVISION', 21);
 define('FORUM_SI_REVISION', 2);
 define('FORUM_PARSER_REVISION', 2);
 
@@ -42,8 +42,18 @@ if (file_exists(PUN_ROOT.'include/config.php'))
 if (defined('FORUM'))
 	define('PUN', FORUM);
 
+// If PUN isn't defined, config.php is missing or corrupt
+if (!defined('PUN'))
+{
+	header('Location: install.php');
+	exit;
+}
+
 // Load the functions script
 require PUN_ROOT.'include/functions.php';
+
+// Load addon functionality
+require PUN_ROOT.'include/addons.php';
 
 // Load UTF-8 functions
 require PUN_ROOT.'include/utf8/utf8.php';
@@ -54,12 +64,8 @@ forum_remove_bad_characters();
 // Reverse the effect of register_globals
 forum_unregister_globals();
 
-// If PUN isn't defined, config.php is missing or corrupt
-if (!defined('PUN'))
-{
-	header('Location: install.php');
-	exit;
-}
+// The addon manager is responsible for storing the hook listeners and communicating with the addons
+$flux_addons = new flux_addon_manager();
 
 // Record the start time (will be used to calculate the generation time for the page)
 $pun_start = get_microtime();

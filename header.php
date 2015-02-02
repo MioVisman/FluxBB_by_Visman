@@ -19,6 +19,9 @@ header('Pragma: no-cache'); // For HTTP/1.0 compatibility
 // Send the Content-type header in case the web server is setup to send something else
 header('Content-type: text/html; charset=utf-8');
 
+// Prevent site from being embedded in a frame
+header('X-Frame-Options: deny');
+
 // Load the template
 if (defined('PUN_ADMIN_CONSOLE'))
 	$tpl_file = 'admin.tpl';
@@ -146,13 +149,10 @@ function process_form(the_form)
 
 require PUN_ROOT.'include/fancybox.php';
 
-// JavaScript tricks for IE6 and older
-echo '<!--[if lte IE 6]><script type="text/javascript" src="js/minmax.js"></script><![endif]-->'."\n";
-
 // New PMS - Visman
 require PUN_ROOT.'include/pms_new/pmsnheader.php';
 
-if (isset($page_head))
+if (!empty($page_head))
 	echo implode("\n", $page_head)."\n";
 
 $tpl_temp = trim(ob_get_contents());

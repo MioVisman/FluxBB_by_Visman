@@ -37,6 +37,18 @@ if ($action == 'check_upgrade')
 	else
 		message(sprintf($lang_admin_index['New version available message'], '<a href="http://fluxbb.org/">FluxBB.org</a>'));
 }
+// Remove install.php
+else if ($action == 'remove_install_file')
+{
+	$deleted = @unlink(PUN_ROOT.'install.php');
+
+	if ($deleted)
+		redirect('admin_index.php', $lang_admin_index['Deleted install.php redirect']);
+	else
+		message($lang_admin_index['Delete install.php failed']);
+}
+
+$install_file_exists = is_file(PUN_ROOT.'install.php');
 
 $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Index']);
 define('PUN_ACTIVE_PAGE', 'admin');
@@ -64,13 +76,20 @@ generate_admin_menu('index');
 			</div>
 		</div>
 
+<?php if ($install_file_exists) : ?>
+		<h2 class="block2"><span><?php echo $lang_admin_index['Alerts head'] ?></span></h2>
+		<div id="adalerts" class="box">
+			<p><?php printf($lang_admin_index['Install file exists'], '<a href="admin_index.php?action=remove_install_file">'.$lang_admin_index['Delete install file'].'</a>') ?></p>
+		</div>
+<?php endif; ?>
+
 		<h2 class="block2"><span><?php echo $lang_admin_index['About head'] ?></span></h2>
 		<div id="adstats" class="box">
 			<div class="inbox">
 				<dl>
 					<dt><?php echo $lang_admin_index['FluxBB version label'] ?></dt>
 					<dd>
-						<?php printf($lang_admin_index['FluxBB version data']."\n", $pun_config['o_cur_version'].'.'.$pun_config['o_cur_ver_revision'], '<a href="http://fluxbb.org/forums/viewtopic.php?id=4941">'.$lang_admin_index['Check for upgrade'].'</a>') ?>
+						<?php printf($lang_admin_index['FluxBB version data']."\n", $pun_config['o_cur_version'].'.'.$pun_config['o_cur_ver_revision'], '<a href="https://fluxbb.org/forums/viewtopic.php?id=4941">'.$lang_admin_index['Check for upgrade'].'</a>') ?>
 					</dd>
 					<dt><?php echo $lang_admin_index['Server statistics label'] ?></dt>
 					<dd>

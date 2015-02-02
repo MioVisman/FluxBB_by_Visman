@@ -1,3 +1,4 @@
+// collapse.js v2.0.1 Copyright (C) 2014-2015 Visman (mio.visman@yandex.ru)
 if (typeof FluxBB === 'undefined' || !FluxBB) {var FluxBB = {};}
 
 FluxBB.collapse = (function (doc) {
@@ -74,12 +75,12 @@ FluxBB.collapse = (function (doc) {
 					var id = blocktables[i].id.replace('idx', '');
 					if (old) { // FluxBB.vars.collapse_old == '1'
 						var h2 = blocktables[i].getElementsByTagName('h2')[0];
-						h2.innerHTML = '<span class="conr"><img src="' + FluxBB.vars.collapse_folder + 'exp_up.png" onclick="FluxBB.collapse.toggle(' + id + ')" alt="-" id="collapse_img_' + id + '" /></span>' + h2.innerHTML;
+						h2.insertAdjacentHTML('afterBegin', '<span class="conr"><img src="' + FluxBB.vars.collapse_folder + 'exp_up.png" onclick="FluxBB.collapse.toggle(' + id + ')" alt="-" id="collapse_img_' + id + '" /></span>');
 						getCN('box', blocktables[i])[0].setAttribute('id', 'collapse_box_' + id);
 					} else {
 						blocktables[i].getElementsByTagName('tbody')[0].setAttribute('id', 'collapse_box_' + id);
 						var ths = blocktables[i].getElementsByTagName('thead')[0].getElementsByTagName('th'), th = ths[ths.length-1];
-						th.innerHTML+= '<span class="conr"><img src="' + FluxBB.vars.collapse_folder + 'exp_up.png" onclick="FluxBB.collapse.toggle(' + id + ')" alt="-" id="collapse_img_' + id + '" /></span>';
+						th.insertAdjacentHTML('beforeEnd', '<span class="conr"><img src="' + FluxBB.vars.collapse_folder + 'exp_up.png" onclick="FluxBB.collapse.toggle(' + id + ')" alt="-" id="collapse_img_' + id + '" /></span>');
 					}
 				}
 			}

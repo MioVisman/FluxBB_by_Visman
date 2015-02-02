@@ -7,11 +7,11 @@
  */
 
 // The FluxBB version this script installs
-define('FORUM_VERSION', '1.5.7');
+define('FORUM_VERSION', '1.5.8');
 
-define('FORUM_VER_REVISION', 66);	// номер сборки - Visman
+define('FORUM_VER_REVISION', 67);	// номер сборки - Visman
 
-define('FORUM_DB_REVISION', 20);
+define('FORUM_DB_REVISION', 21);
 define('FORUM_SI_REVISION', 2);
 define('FORUM_PARSER_REVISION', 2);
 
@@ -70,6 +70,9 @@ if (get_magic_quotes_gpc())
 // If we've been passed a default language, use it
 $install_lang = isset($_REQUEST['install_lang']) ? pun_trim($_REQUEST['install_lang']) : 'English';
 
+// Make sure we got a valid language string
+$install_lang = preg_replace('%[\.\\\/]%', '', $install_lang);
+
 // If such a language pack doesn't exist, or isn't up-to-date enough to translate this page, default to English
 if (!file_exists(PUN_ROOT.'lang/'.$install_lang.'/install.php'))
 	$install_lang = 'English';
@@ -109,7 +112,7 @@ function generate_config_file()
 {
 	global $db_type, $db_host, $db_name, $db_username, $db_password, $db_prefix, $cookie_name, $cookie_seed, $salt1;
 
-	return '<?php'."\n\n".'$db_type = \''.$db_type."';\n".'$db_host = \''.$db_host."';\n".'$db_name = \''.addslashes($db_name)."';\n".'$db_username = \''.addslashes($db_username)."';\n".'$db_password = \''.addslashes($db_password)."';\n".'$db_prefix = \''.addslashes($db_prefix)."';\n".'$p_connect = false;'."\n\n".'$cookie_name = '."'".$cookie_name."';\n".'$cookie_domain = '."'';\n".'$cookie_path = '."'/';\n".'$cookie_secure = 0;'."\n".'$cookie_seed = \''.random_key(16, false, true)."';\n\n".'$salt1 = \''.$salt1."';\n\ndefine('PUN', 1);\n"."\ndefine('PUN_DEBUG', 1);\n//define('PUN_SHOW_QUERIES', 1);\ndefine('PUN_MAX_POSTSIZE', 65535);\n".'//define(\'FORUM_EOL\', "\r\n"); // possible values can be PHP_EOL, "\r\n", "\n" or "\r"'."\n//define('FORUM_UA_OFF', 1);\ndefine('FORUM_AJAX_JQUERY', '//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js');\n";
+	return '<?php'."\n\n".'$db_type = \''.$db_type."';\n".'$db_host = \''.$db_host."';\n".'$db_name = \''.addslashes($db_name)."';\n".'$db_username = \''.addslashes($db_username)."';\n".'$db_password = \''.addslashes($db_password)."';\n".'$db_prefix = \''.addslashes($db_prefix)."';\n".'$p_connect = false;'."\n\n".'$cookie_name = '."'".$cookie_name."';\n".'$cookie_domain = '."'';\n".'$cookie_path = '."'/';\n".'$cookie_secure = 0;'."\n".'$cookie_seed = \''.random_key(16, false, true)."';\n\n".'$salt1 = \''.$salt1."';\n\ndefine('PUN', 1);\n"."\ndefine('PUN_DEBUG', 1);\n//define('PUN_SHOW_QUERIES', 1);\ndefine('PUN_MAX_POSTSIZE', 65535);\n".'//define(\'FORUM_EOL\', "\r\n"); // possible values can be PHP_EOL, "\r\n", "\n" or "\r"'."\n//define('FORUM_UA_OFF', 1);\ndefine('FORUM_AJAX_JQUERY', '//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js');\n";
 }
 
 
@@ -190,7 +193,7 @@ else
 	else if (pun_strlen($salt1) < 10)
 		$alerts[] = 'Salt must be at least 10 characters long.';
 
-	if (pun_strlen($password1) < 4)
+	if (pun_strlen($password1) < 6)
 		$alerts[] = $lang_install['Short password'];
 	else if ($password1 != $password2)
 		$alerts[] = $lang_install['Passwords not match'];
@@ -269,8 +272,8 @@ function process_form(the_form)
 		"req_db_host": "<?php echo $lang_install['Database server hostname'] ?>",
 		"req_db_name": "<?php echo $lang_install['Database name'] ?>",
 		"req_username": "<?php echo $lang_install['Administrator username'] ?>",
-		"req_password1": "<?php echo $lang_install['Administrator password 1'] ?>",
-		"req_password2": "<?php echo $lang_install['Administrator password 2'] ?>",
+		"req_password1": "<?php echo $lang_install['Password'] ?>",
+		"req_password2": "<?php echo $lang_install['Confirm password'] ?>",
 		"req_email": "<?php echo $lang_install['Administrator email'] ?>",
 		"req_title": "<?php echo $lang_install['Board title'] ?>",
 		"req_base_url": "<?php echo $lang_install['Base URL'] ?>"
@@ -861,6 +864,11 @@ else
 				'default'		=> '0'
 			),
 			'g_mod_ban_users'			=> array(
+				'datatype'		=> 'TINYINT(1)',
+				'allow_null'	=> false,
+				'default'		=> '0'
+			),
+			'g_mod_promote_users'			=> array(
 				'datatype'		=> 'TINYINT(1)',
 				'allow_null'	=> false,
 				'default'		=> '0'
@@ -1973,7 +1981,7 @@ else
 	// Insert the four preset groups
 	$db->query('INSERT INTO '.$db->prefix.'groups ('.($db_type != 'pgsql' ? 'g_id, ' : '').'g_title, g_user_title, g_moderator, g_mod_edit_users, g_mod_rename_users, g_mod_change_passwords, g_mod_ban_users, g_read_board, g_view_users, g_post_replies, g_post_topics, g_edit_posts, g_delete_posts, g_delete_topics, g_set_title, g_search, g_search_users, g_send_email, g_post_flood, g_search_flood, g_email_flood, g_report_flood) VALUES('.($db_type != 'pgsql' ? '1, ' : '').'\''.$db->escape($lang_install['Administrators']).'\', \''.$db->escape($lang_install['Administrator']).'\', 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0)') or error('Unable to add group', __FILE__, __LINE__, $db->error());
 
-	$db->query('INSERT INTO '.$db->prefix.'groups ('.($db_type != 'pgsql' ? 'g_id, ' : '').'g_title, g_user_title, g_moderator, g_mod_edit_users, g_mod_rename_users, g_mod_change_passwords, g_mod_ban_users, g_read_board, g_view_users, g_post_replies, g_post_topics, g_edit_posts, g_delete_posts, g_delete_topics, g_set_title, g_search, g_search_users, g_send_email, g_post_flood, g_search_flood, g_email_flood, g_report_flood) VALUES('.($db_type != 'pgsql' ? '2, ' : '').'\''.$db->escape($lang_install['Moderators']).'\', \''.$db->escape($lang_install['Moderator']).'\', 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0)') or error('Unable to add group', __FILE__, __LINE__, $db->error());
+	$db->query('INSERT INTO '.$db->prefix.'groups ('.($db_type != 'pgsql' ? 'g_id, ' : '').'g_title, g_user_title, g_moderator, g_mod_edit_users, g_mod_rename_users, g_mod_change_passwords, g_mod_ban_users, g_mod_promote_users, g_read_board, g_view_users, g_post_replies, g_post_topics, g_edit_posts, g_delete_posts, g_delete_topics, g_set_title, g_search, g_search_users, g_send_email, g_post_flood, g_search_flood, g_email_flood, g_report_flood) VALUES('.($db_type != 'pgsql' ? '2, ' : '').'\''.$db->escape($lang_install['Moderators']).'\', \''.$db->escape($lang_install['Moderator']).'\', 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0)') or error('Unable to add group', __FILE__, __LINE__, $db->error());
 
 	$db->query('INSERT INTO '.$db->prefix.'groups ('.($db_type != 'pgsql' ? 'g_id, ' : '').'g_title, g_user_title, g_moderator, g_mod_edit_users, g_mod_rename_users, g_mod_change_passwords, g_mod_ban_users, g_read_board, g_view_users, g_post_replies, g_post_topics, g_edit_posts, g_delete_posts, g_delete_topics, g_set_title, g_search, g_search_users, g_send_email, g_post_flood, g_search_flood, g_email_flood, g_report_flood) VALUES('.($db_type != 'pgsql' ? '3, ' : '').'\''.$db->escape($lang_install['Guests']).'\', NULL, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 60, 30, 0, 0)') or error('Unable to add group', __FILE__, __LINE__, $db->error());
 

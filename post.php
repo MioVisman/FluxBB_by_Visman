@@ -73,6 +73,8 @@ $errors = array();
 // Did someone just hit "Submit" or "Preview"?
 if (isset($_POST['form_sent']))
 {
+	flux_hook('post_before_validation');
+
 	// Flood protection
 	if (!isset($_POST['preview']) && $pun_user['last_post'] != '' && (time() - $pun_user['last_post']) < $pun_user['g_post_flood'])
 		$errors[] = sprintf($lang_post['Flood start'], $pun_user['g_post_flood'], $pun_user['g_post_flood'] - (time() - $pun_user['last_post']));
@@ -183,6 +185,8 @@ if (isset($_POST['form_sent']))
 	poll_form_validate($tid, $errors);
 
 	// проверка на робота - Visman
+	$errors_old = $errors;
+	
 	if (empty($_POST['cr']))
 		$errors = array('Error 1: '.$lang_sec['You are robot']);
 	else if (empty($_SERVER['HTTP_ACCEPT_CHARSET']) && empty($_SERVER['HTTP_ACCEPT_ENCODING']) && empty($_SERVER['HTTP_ACCEPT_LANGUAGE']))
@@ -196,6 +200,10 @@ if (isset($_POST['form_sent']))
 		else if (!isset($_POST['kluk']) || $_POST['kluk'] != '4')
 			$errors = array('Error 4: '.$lang_sec['You are robot2']);
 	}
+
+	$errors_new = $errors;
+
+	flux_hook('post_after_validation');
 
 	// Did everything go according to plan?
 	if (empty($errors) && !isset($_POST['preview']))
@@ -606,6 +614,8 @@ else
 	$focus_element[] = 'req_username';
 }
 
+flux_hook('post_before_header');
+
 define('PUN_ACTIVE_PAGE', 'index');
 require PUN_ROOT.'header.php';
 
@@ -629,7 +639,8 @@ require PUN_ROOT.'header.php';
 if (!empty($errors))
 {
 	// мод отслеживания ошибок ввода - Visman
-	vsecurity_get(3, 'UserName = '.$username."\n".'Email = '.$email);
+	if ($errors_old !== $errors_new)
+		vsecurity_get(3, 'UserName = '.$username."\n".'Email = '.$email);
 
 ?>
 <div id="posterror" class="block">
@@ -792,6 +803,7 @@ if (!empty($checkboxes))
 				<input type="hidden" name="<?php echo random_for_crypto('csrf_hash') ?>" value="<?php echo csrf_hash() ?>" />
 				<input type="hidden" name="cr" value="<?php echo random_for_crypto() ?>" />
 			</div>
+<?php flux_hook('post_before_submit') ?>
 			<p class="buttons"><input type="submit" name="submit" value="<?php echo $lang_common['Submit'] ?>" tabindex="<?php echo $cur_index++ ?>" accesskey="s" /> <input type="submit" name="preview" value="<?php echo $lang_post['Preview'] ?>" tabindex="<?php echo $cur_index++ ?>" accesskey="p" /> <a href="javascript:history.go(-1)"><?php echo $lang_common['Go back'] ?></a></p>
 		</form>
 	</div>

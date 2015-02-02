@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (C) 2011-2013 Visman (visman@inbox.ru)
+ * Copyright (C) 2011-2013 Visman (mio.visman@yandex.ru)
  * based on code by kg (kg@as-planned.com)
  * Poll Mod for FluxBB, written by As-Planned.com
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
