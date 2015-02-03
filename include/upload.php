@@ -247,7 +247,7 @@ function img_resize ($file, $dir, $name, $type, $width = 0, $height = 0, $qualit
 	
 	$icfunc = 'imagecreatefrom'.$extimageGD[$extimage2[$size[2]][0]]; //  $type;
 	if (!function_exists($icfunc)) return false;
-	
+
 	$xr = ($width == 0) ? 1 : $width / $size[0];
 	$yr = ($height == 0) ? 1 : $height / $size[1];
 	$r = min($xr, $yr, 1);
@@ -256,7 +256,7 @@ function img_resize ($file, $dir, $name, $type, $width = 0, $height = 0, $qualit
 
 	$image = @$icfunc($file);
 	if (!isset($image) || empty($image)) return false;
-  
+
 	if ($gd2)
 	{
 		$idest = imagecreatetruecolor($width, $height);
@@ -283,7 +283,7 @@ function img_resize ($file, $dir, $name, $type, $width = 0, $height = 0, $qualit
 		$icfunc = 'image'.$type1;
 		if (!function_exists($icfunc)) return false;
 	}
-	
+
 	if ($flag) $type = $type1;
 
 	if ($type1 == 'png' && version_compare(PHP_VERSION, '5.1.2', '>='))
@@ -329,17 +329,34 @@ function isXSSattack ($file)
 
 function return_bytes ($val)
 {
-    $val = trim($val);
-    $last = strtolower($val{strlen($val)-1});
-    switch($last) {
-        // The 'G' modifier is available since PHP 5.1.0
-        case 'g':
-            $val *= 1024;
-        case 'm':
-            $val *= 1024;
-        case 'k':
-            $val *= 1024;
-    }
+// Author: Ivo Mandalski
+	if(empty($val))return 0;
 
-    return $val;
+	$val = trim($val);
+
+	preg_match('#([0-9]+)[\s]*([a-z]+)#i', $val, $matches);
+
+	$last = '';
+	if(isset($matches[2])){
+		$last = $matches[2];
+	}
+
+	if(isset($matches[1])){
+		$val = (int)$matches[1];
+	}
+
+	switch (strtolower($last))
+	{
+		case 'g':
+		case 'gb':
+			$val *= 1024;
+		case 'm':
+		case 'mb':
+			$val *= 1024;
+		case 'k':
+		case 'kb':
+			$val *= 1024;
+	}
+
+	return (int)$val;
 }

@@ -325,6 +325,8 @@ else if ($action == 'upload_avatar' || $action == 'upload_avatar2')
 
 	if ($pun_user['id'] != $id && !$pun_user['is_admmod'])
 		message($lang_common['No permission'], false, '403 Forbidden');
+		
+	require PUN_ROOT.'include/upload.php'; // Visman - for easy avatar
 
 	if (isset($_POST['form_sent']))
 	{
@@ -374,14 +376,29 @@ else if ($action == 'upload_avatar' || $action == 'upload_avatar2')
 				message($lang_profile['Bad type']);
 
 			// Make sure the file isn't too big
-			if ($uploaded_file['size'] > $pun_config['o_avatars_size'])
-				message($lang_profile['Too large'].' '.forum_number_format($pun_config['o_avatars_size']).' '.$lang_profile['bytes'].'.');
+			if ($uploaded_file['size'] > ($gd ? min(2097152, return_bytes(ini_get('upload_max_filesize')), return_bytes(ini_get('post_max_size'))) : $pun_config['o_avatars_size'])) // Visman - auto resize avatar
+				message($lang_profile['Too large'].' '.forum_number_format(($gd ? min(2097152, return_bytes(ini_get('upload_max_filesize')), return_bytes(ini_get('post_max_size'))) : $pun_config['o_avatars_size'])).' '.$lang_profile['bytes'].'.'); // Visman - auto resize avatar
 
 			// Move the file to the avatar directory. We do this before checking the width/height to circumvent open_basedir restrictions
 			if (!@move_uploaded_file($uploaded_file['tmp_name'], PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp'))
 				message($lang_profile['Move failed'].' <a href="mailto:'.pun_htmlspecialchars($pun_config['o_admin_email']).'">'.pun_htmlspecialchars($pun_config['o_admin_email']).'</a>.');
 
 			list($width, $height, $type,) = @getimagesize(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp');
+
+// Visman - auto resize avatar
+			if ($gd && !empty($width) && !empty($height) && ($uploaded_file['size'] > $pun_config['o_avatars_size'] || $width > $pun_config['o_avatars_width'] || $height > $pun_config['o_avatars_height'] || $type == IMAGETYPE_BMP))
+			{
+				$result_res = img_resize(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp', $pun_config['o_avatars_dir'].'/', 'temp'.$id, $extimage2[$type][0], $pun_config['o_avatars_width'], $pun_config['o_avatars_height']);
+				if ($result_res !== false)
+				{
+					@unlink(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp');
+					@rename(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$result_res[0].'.'.$result_res[1], PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp');
+
+					list($width, $height, $type,) = @getimagesize(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp');
+				}
+			}
+// Visman - auto resize avatar
+
 
 			// Determine type
 			if ($type == IMAGETYPE_GIF)
@@ -432,7 +449,7 @@ else if ($action == 'upload_avatar' || $action == 'upload_avatar2')
 					<div class="infldset">
 						<input type="hidden" name="form_sent" value="1" />
 						<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
-						<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $pun_config['o_avatars_size'] ?>" />
+						<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo ($gd ? min(2097152, return_bytes(ini_get('upload_max_filesize')), return_bytes(ini_get('post_max_size'))) : $pun_config['o_avatars_size']) ?>" />
 						<label class="required"><strong><?php echo $lang_profile['File'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input name="req_file" type="file" size="40" /><br /></label>
 						<p><?php echo $lang_profile['Avatar desc'].' '.$pun_config['o_avatars_width'].' x '.$pun_config['o_avatars_height'].' '.$lang_profile['pixels'].' '.$lang_common['and'].' '.forum_number_format($pun_config['o_avatars_size']).' '.$lang_profile['bytes'].' ('.file_size($pun_config['o_avatars_size']).').' ?></p>
 					</div>

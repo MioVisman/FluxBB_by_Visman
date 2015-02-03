@@ -11,7 +11,7 @@ if (!defined('PUN'))
 
 // Tell admin_loader.php that this is indeed a plugin and that it is loaded
 define('PUN_PLUGIN_LOADED', 1);
-define('PLUGIN_VERSION', '2.0.2');
+define('PLUGIN_VERSION', '2.0.3');
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin='.$plugin));
 define('PLUGIN_EXTS', 'jpg,jpeg,png,gif,mp3,zip,rar,7z');
 define('PLUGIN_NF', 25);
@@ -38,7 +38,7 @@ if (isset($_POST['installation']))
 	$db->add_field('groups', 'g_up_max', 'INT(10)', false, 0) or error(sprintf($lang_up['Error DB'], 'groups'), __FILE__, __LINE__, $db->error());
 	$db->add_field('groups', 'g_up_limit', 'INT(10)', false, 0) or error(sprintf($lang_up['Error DB'], 'groups'), __FILE__, __LINE__, $db->error());
 
-	$db->query('UPDATE '.$db->prefix.'groups SET g_up_ext=\''.$db->escape(PLUGIN_EXTS).'\', g_up_limit=1073741824, g_up_max='.return_bytes(ini_get('upload_max_filesize')).'  WHERE g_id='.PUN_ADMIN) or error('Unable to update user group list', __FILE__, __LINE__, $db->error());
+	$db->query('UPDATE '.$db->prefix.'groups SET g_up_ext=\''.$db->escape(PLUGIN_EXTS).'\', g_up_limit=1073741824, g_up_max='.min(return_bytes(ini_get('upload_max_filesize')), return_bytes(ini_get('post_max_size'))).'  WHERE g_id='.PUN_ADMIN) or error('Unable to update user group list', __FILE__, __LINE__, $db->error());
 
 	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o_uploadile_%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
 	$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES(\'o_uploadile_other\', \''.$db->escape(serialize($sconf)).'\')') or error($lang_up['Error DB ins-up'], __FILE__, __LINE__, $db->error());
@@ -82,13 +82,13 @@ else if (isset($_POST['update']))
 			if ($cur_group['g_id'] == PUN_ADMIN)
 			{
 				$g_lim = 1073741824;
-				$g_max = return_bytes(ini_get('upload_max_filesize'));
+				$g_max = min(return_bytes(ini_get('upload_max_filesize')), return_bytes(ini_get('post_max_size')));
 			}
 			else
 			{
 				$g_lim = (!isset($g_up_limit[$cur_group['g_id']]) || $g_up_limit[$cur_group['g_id']] < 0) ? 0 : $g_up_limit[$cur_group['g_id']];
 				$g_max = (!isset($g_up_max[$cur_group['g_id']]) || $g_up_max[$cur_group['g_id']] < 0) ? 0 : $g_up_max[$cur_group['g_id']];
-				$g_max = ($g_max > return_bytes(ini_get('upload_max_filesize'))) ? return_bytes(ini_get('upload_max_filesize')) : $g_max;
+				$g_max = min($g_max, return_bytes(ini_get('upload_max_filesize')), return_bytes(ini_get('post_max_size')));
 			}
 
 			$db->query('UPDATE '.$db->prefix.'groups SET g_up_ext=\''.$db->escape($g_ext).'\', g_up_limit='.$g_lim.', g_up_max='.$g_max.'  WHERE g_id='.$cur_group['g_id']) or error('Unable to update user group list', __FILE__, __LINE__, $db->error());
