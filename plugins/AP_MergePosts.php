@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2011-2013 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2011-2015 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -9,18 +9,21 @@
 if (!defined('PUN'))
 	exit;
 
-// Load the language file
-require PUN_ROOT.'lang/'.$admin_language.'/admin_plugin_merge_posts.php';
-
 // Tell admin_loader.php that this is indeed a plugin and that it is loaded
 define('PUN_PLUGIN_LOADED', 1);
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin='.$plugin));
+
+// Load the language file
+if (file_exists(PUN_ROOT.'lang/'.$admin_language.'/admin_plugin_merge_posts.php'))
+	require PUN_ROOT.'lang/'.$admin_language.'/admin_plugin_merge_posts.php';
+else
+	require PUN_ROOT.'lang/English/admin_plugin_merge_posts.php';
 
 // If the "Show text" button was clicked
 if (isset($_POST['show_text']))
 {
 	// Make sure something was entered
-	if (pun_trim($_POST['text_to_show']) == '')
+	if (!isset($_POST['text_to_show']) || pun_trim($_POST['text_to_show']) == '')
 		message($lang_admin_plugin_merge_posts['No text']);
 
 	$merge_timeout = intval($_POST['text_to_show']);
@@ -33,7 +36,6 @@ if (isset($_POST['show_text']))
 	generate_config_cache();
 
 	redirect(PLUGIN_URL, $lang_admin_plugin_merge_posts['Plugin redirect']);
-
 }
 else
 {
@@ -71,7 +73,7 @@ else
 
 		<h2 class="block2"><span><?php echo $lang_admin_plugin_merge_posts['Form title'] ?></span></h2>
 		<div class="box">
-			<form id="example" method="post" action="<?php echo PLUGIN_URL.'&amp;'.time() ?>">
+			<form id="example" method="post" action="<?php echo PLUGIN_URL ?>">
 				<div class="inform">
 					<fieldset>
 						<legend><?php echo $lang_admin_plugin_merge_posts['Legend text'] ?></legend>

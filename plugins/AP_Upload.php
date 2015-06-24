@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright (C) 2011-2013 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2011-2015 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2007  BN (bnmaster@la-bnbox.info)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
@@ -15,8 +16,6 @@ define('PLUGIN_VERSION', '2.0.3');
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin='.$plugin));
 define('PLUGIN_EXTS', 'jpg,jpeg,png,gif,mp3,zip,rar,7z');
 define('PLUGIN_NF', 25);
-
-$tabindex = 1;
 
 require PUN_ROOT.'include/upload.php';
 
@@ -50,6 +49,7 @@ if (isset($_POST['installation']))
 
 	redirect(PLUGIN_URL, $lang_up['Redirect']);
 }
+
 // Обновления параметров
 else if (isset($_POST['update']))
 {
@@ -120,6 +120,7 @@ else if (isset($_POST['update']))
 
 	redirect(PLUGIN_URL, $lang_up['Redirect']);
 }
+
 // Удаление мода
 else if (isset($_POST['restore']))
 {
@@ -209,13 +210,16 @@ $tpl_main = str_replace('</head>', $s."\n</head>", $tpl_main);
 
 // Display the admin navigation menu
 generate_admin_menu($plugin);
+
+$tabindex = 1;
+
 ?>
 	<div id="upf-block" class="plugin blockform">
 		<h2><span>Plugin Upload Files v.<?php echo PLUGIN_VERSION ?></span></h2>
 		<div class="box">
 			<div class="inbox">
 				<p><?php echo $lang_up['plugin_desc'] ?></p>
-				<form action="<?php echo PLUGIN_URL.'&amp;'.time() ?>" method="post">
+				<form action="<?php echo PLUGIN_URL ?>" method="post">
 					<p>
 <?php
 
@@ -223,6 +227,7 @@ $stthumb = '" disabled="disabled';
 	
 if (defined('PLUGIN_OFF'))
 {
+
 ?>
 						<input type="submit" name="installation" value="<?php echo $lang_up['Install'] ?>" />&#160;<?php echo $lang_up['Install info'] ?><br />
 					</p>
@@ -230,7 +235,10 @@ if (defined('PLUGIN_OFF'))
 			</div>
 		</div>
 <?php
-} else {
+
+}
+else
+{
 
 	if ($aconf['thumb'] == 1 && $gd)
 		$stthumb = '';
@@ -255,7 +263,7 @@ if (defined('PLUGIN_OFF'))
 		</div>
 		<h2 class="block2"><span><?php echo $lang_up['configuration'] ?></span></h2>
 		<div class="box">
-			<form method="post" action="<?php echo PLUGIN_URL.'&amp;'.time() ?>">
+			<form method="post" action="<?php echo PLUGIN_URL ?>">
 				<p class="submittop"><input type="submit" name="update" value="<?php echo $lang_up['Update'] ?>" tabindex="<?php echo $tabindex++ ?>" /></p>
 				<div class="inform">
 					<fieldset>
@@ -337,7 +345,9 @@ if (defined('PLUGIN_OFF'))
 									<td class="tcr"><input type="text" name="g_up_limit[<?php echo $cur_group['g_id'] ?>]" value="<?php echo $cur_group['g_up_limit'] ?>"  tabindex="<?php echo $tabindex++ ?>" size="10" maxlength="10" <?php echo ($cur_group['g_id'] == PUN_ADMIN ? 'disabled="disabled" ' : '')?>/></td>
 								</tr>
 <?php
+
 		}
+
 ?>
 							</tbody>
 							</table>
@@ -359,6 +369,7 @@ if (defined('PLUGIN_OFF'))
 			</form>
 		</div>
 <?php
+
 }
 // #############################################################################
 $files = array();
@@ -500,7 +511,7 @@ else
 <?php
 
 		if (is_file(PUN_ROOT.$miniature) && ($size = getimagesize(PUN_ROOT.$miniature)) !== false)
-			echo "\t\t\t\t\t\t\t\t\t".'<td class="upf-c3"><a href="'.pun_htmlspecialchars($file).$fb.'"><img style="width:'.($size[0] > 150 ? 150 : $size[0]).'px" src="'.pun_htmlspecialchars($miniature).'" alt="'.pun_htmlspecialchars($fi[2]).'" /></a></td>'."\n";
+			echo "\t\t\t\t\t\t\t\t\t".'<td class="upf-c3"><a href="'.pun_htmlspecialchars($file).$fb.'"><img style="width:'.min(150, $size[0]).'px" src="'.pun_htmlspecialchars($miniature).'" alt="'.pun_htmlspecialchars($fi[2]).'" /></a></td>'."\n";
 		else
 			echo "\t\t\t\t\t\t\t\t\t".'<td class="upf-c3">'.$lang_up['no_preview'].'</td>'."\n";
 
@@ -509,7 +520,7 @@ else
 								</tr>
 <?php
 
-	} // end forech
+	} // end foreach
 	
 ?>
 							</tbody>

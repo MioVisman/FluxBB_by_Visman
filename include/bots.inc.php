@@ -1,37 +1,45 @@
 <?php
 
 /**
- * Copyright (C) 2011-2013 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2011-2015 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
  
 if (!defined('PUN')) exit;
 
-function isbotex($ra)
+
+function ua_isbot($ua)
 {
-	function isbot($ua)
-	{
-		if ('' == pun_trim($ua)) return false;
+	if ('' == pun_trim($ua)) return false;
 
-		$ual = strtolower($ua);
-		if (strstr($ual, 'bot') || strstr($ual, 'spider') || strstr($ual, 'crawler')) return true;
-		
-		if (strstr($ua, 'Mozilla/'))
-		{
-			if (strstr($ua, 'Gecko')) return false;
-			if (strstr($ua, '(compatible; MSIE ') && strstr($ua, 'Windows')) return false;
-		}
-		else if (strstr($ua, 'Opera/'))
-		{
-			if (strstr($ua, 'Presto/')) return false;
-		}
-
+	$ual = strtolower($ua);
+	if (strstr($ual, 'bot') || strstr($ual, 'spider') || strstr($ual, 'crawler'))
 		return true;
+
+	if (strstr($ua, 'Mozilla/'))
+	{
+		if (strstr($ua, 'Gecko'))
+			return false;
+
+		if (strstr($ua, '(compatible; MSIE ') && strstr($ua, 'Windows'))
+			return false;
 	}
+	else if (strstr($ua, 'Opera/'))
+	{
+		if (strstr($ua, 'Presto/'))
+			return false;
+	}
+
+	return true;
+}
+
+
+function ua_isbotex($ra)
+{
 
 	$ua = getenv('HTTP_USER_AGENT');
 
-	if (!isbot($ua)) return $ra;
+	if (!ua_isbot($ua)) return $ra;
 
 	$pat = array(
 		'%(https?://|www\.).*%i',
@@ -69,4 +77,5 @@ function isbotex($ra)
 	return $ra.'[Bot]'.$ua;
 }
 
-$remote_addr = isbotex($remote_addr);
+
+define('FORUM_BOT_FUNCTIONS_LOADED', true);

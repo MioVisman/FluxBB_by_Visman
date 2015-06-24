@@ -13,22 +13,19 @@ require PUN_ROOT.'include/common.php';
 if ($pun_user['g_read_board'] == '0')
 	message($lang_common['No view'], false, '403 Forbidden');
 
-if ($pun_user['is_bot']) // Visman - на всякий случай ботам запретим
-	message($lang_common['No permission'], false, '403 Forbidden');
-
-require PUN_ROOT.'include/poll.php';
-// мод отслеживания ошибок ввода - Visman
-require PUN_ROOT.'include/security.php';
-vsecurity_get(3);
 
 $tid = isset($_GET['tid']) ? intval($_GET['tid']) : 0;
 $fid = isset($_GET['fid']) ? intval($_GET['fid']) : 0;
 if ($tid < 1 && $fid < 1 || $tid > 0 && $fid > 0)
 	message($lang_common['Bad request'], false, '404 Not Found');
 
-// MOD subforums - Visman
-if (!isset($sf_array_asc[$fid]))
+if (!isset($sf_array_asc[$fid])) // MOD subforums - Visman
 	message($lang_common['Bad request'], false, '404 Not Found');
+
+if ($pun_user['is_bot']) // stop bots - Visman
+	message($lang_common['No permission'], false, '403 Forbidden');
+
+require PUN_ROOT.'include/poll.php'; // Poll Mod - Visman
 
 // Merge Post - Visman
 // not sum - Visman
@@ -78,9 +75,6 @@ if (isset($_POST['form_sent']))
 	// Flood protection
 	if (!isset($_POST['preview']) && $pun_user['last_post'] != '' && (time() - $pun_user['last_post']) < $pun_user['g_post_flood'])
 		$errors[] = sprintf($lang_post['Flood start'], $pun_user['g_post_flood'], $pun_user['g_post_flood'] - (time() - $pun_user['last_post']));
-
-	// шифрование данных - Visman
-	$cry_time = check_for_crypto();
 
 	// Make sure they got here from the site
 	confirm_referrer('post.php');
@@ -144,8 +138,6 @@ if (isset($_POST['form_sent']))
 	// Clean up message from POST
 	$orig_message = $message = pun_linebreaks(pun_trim($_POST['req_message']));
 
-	$merged = false; // Merge Post - Visman
-
 	// Here we use strlen() not pun_strlen() as we want to limit the post to PUN_MAX_POSTSIZE bytes, not characters
 	if (pun_strlen($message) > PUN_MAX_POSTSIZE)
 		$errors[] = sprintf($lang_post['Too long message'], forum_number_format(PUN_MAX_POSTSIZE));
@@ -182,26 +174,9 @@ if (isset($_POST['form_sent']))
 
 	$now = time();
 
-	poll_form_validate($tid, $errors);
+	poll_form_validate($tid, $errors); // Poll Mod - Visman
 
-	// проверка на робота - Visman
-	$errors_old = $errors;
-	
-	if (empty($_POST['cr']))
-		$errors = array('Error 1: '.$lang_sec['You are robot']);
-	else if (empty($_SERVER['HTTP_ACCEPT_CHARSET']) && empty($_SERVER['HTTP_ACCEPT_ENCODING']) && empty($_SERVER['HTTP_ACCEPT_LANGUAGE']))
-		$errors = array('Error 2: '.$lang_sec['You are robot']);
-	else if ($cry_time < 2)
-		$errors = array($lang_sec['You fast']);
-	else if ($pun_user['is_guest'])
-	{
-		if ($pun_config['o_coding_forms'] == '1' && $_POST['form_sent'] != '7')
-			$errors = array($lang_sec['Enable JS']);
-		else if (!isset($_POST['kluk']) || $_POST['kluk'] != '4')
-			$errors = array('Error 4: '.$lang_sec['You are robot2']);
-	}
-
-	$errors_new = $errors;
+	$merged = false; // Merge Post - Visman
 
 	flux_hook('post_after_validation');
 
@@ -638,9 +613,6 @@ require PUN_ROOT.'header.php';
 // If there are errors, we display them
 if (!empty($errors))
 {
-	// мод отслеживания ошибок ввода - Visman
-	if ($errors_old !== $errors_new)
-		vsecurity_get(3, 'UserName = '.$username."\n".'Email = '.$email);
 
 ?>
 <div id="posterror" class="block">
@@ -700,7 +672,7 @@ $cur_index = 1;
 				<fieldset>
 					<legend><?php echo $lang_common['Write message legend'] ?></legend>
 					<div class="infldset txtarea">
-						<input type="hidden" id="form_sent" name="form_sent" value="1" />
+						<input type="hidden" name="form_sent" value="1" />
 <?php
 
 if ($pun_user['is_guest'])
@@ -756,27 +728,14 @@ if (!$pun_user['is_guest'])
 
 		$checkboxes[] = '<label><input type="checkbox" name="subscribe" value="1" tabindex="'.($cur_index++).'"'.($subscr_checked ? ' checked="checked"' : '').' />'.($is_subscribed ? $lang_post['Stay subscribed'] : $lang_post['Subscribe']).'<br /></label>';
 	}
-	// START Merge mod
-	if ($is_admmod && !$fid)
-		$checkboxes[] = '<label><input type="checkbox" name="merge" value="1" tabindex="'.($cur_index++).'"'.((isset($_POST['merge']) || (!isset($_POST['merge']) && !isset($_POST['form_sent']))) ? ' checked="checked"' : '').' />'.$lang_post['Merge posts'].'<br /></label>';
-	// End Merge mod
-	// StickFP - Visman
-	if ($is_admmod && $fid)
-		$checkboxes[] = '<label><input type="checkbox" name="stickfp" value="1" tabindex="'.($cur_index++).'"'.((isset($_POST['stickfp'])) ? ' checked="checked"' : '').' />'.$lang_post['Stick first post'].'<br /></label>';
-	// StickFP - Visman
-}
-else
-{
-	if ($pun_config['o_smilies'] == '1')
-		$checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'"'.(isset($_POST['hide_smilies']) ? ' checked="checked"' : '').' />'.$lang_post['Hide smilies'].'<br /></label>';
 
-	if ($pun_config['o_coding_forms'] == '1')
-	{
-		$page_js['c'][] = 'document.getElementById("form_sent").value="7";';
-		$checkboxes[] = '<noscript><p style="color: red; font-weight: bold">'.$lang_sec['Enable JS'].'</p></noscript>';
-	}
-	$checkboxes[] = '<label><span class="b64">'.encode_for_js('<input type="checkbox" name="'.random_for_crypto('kluk').'" value="4"  tabindex="'.($cur_index++).'" />').'</span>'.$lang_sec['Not robot'].'<br /></label>';
+	if ($is_admmod && !$fid) // Merge mod - Visman
+		$checkboxes[] = '<label><input type="checkbox" name="merge" value="1" tabindex="'.($cur_index++).'"'.((isset($_POST['merge']) || (!isset($_POST['merge']) && !isset($_POST['form_sent']))) ? ' checked="checked"' : '').' />'.$lang_post['Merge posts'].'<br /></label>';
+	if ($is_admmod && $fid) // StickFP - Visman
+		$checkboxes[] = '<label><input type="checkbox" name="stickfp" value="1" tabindex="'.($cur_index++).'"'.((isset($_POST['stickfp'])) ? ' checked="checked"' : '').' />'.$lang_post['Stick first post'].'<br /></label>';
 }
+else if ($pun_config['o_smilies'] == '1')
+		$checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'"'.(isset($_POST['hide_smilies']) ? ' checked="checked"' : '').' />'.$lang_post['Hide smilies'].'<br /></label>';
 
 if (!empty($checkboxes))
 {
@@ -799,11 +758,8 @@ if (!empty($checkboxes))
 ?>
 			</div>
 <?php poll_form_post($tid); ?>
-			<div>
-				<input type="hidden" name="<?php echo random_for_crypto('csrf_hash') ?>" value="<?php echo csrf_hash() ?>" />
-				<input type="hidden" name="cr" value="<?php echo random_for_crypto() ?>" />
-			</div>
 <?php flux_hook('post_before_submit') ?>
+			<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 			<p class="buttons"><input type="submit" name="submit" value="<?php echo $lang_common['Submit'] ?>" tabindex="<?php echo $cur_index++ ?>" accesskey="s" /> <input type="submit" name="preview" value="<?php echo $lang_post['Preview'] ?>" tabindex="<?php echo $cur_index++ ?>" accesskey="p" /> <a href="javascript:history.go(-1)"><?php echo $lang_common['Go back'] ?></a></p>
 		</form>
 	</div>

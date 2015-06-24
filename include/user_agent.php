@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2014 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2014-2015 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2012 Daris (daris91@gmail.com)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
@@ -79,6 +79,8 @@ function get_useragent_names($usrag)
 			$system = 'Windows 8';
 		elseif ($version == 6.0)
 			$system = 'Windows Vista';
+		elseif ($version == 6.4)
+			$system = 'Windows 10';
 	}
 	elseif ($system == 'Mac')
 		$system = 'Macintosh';

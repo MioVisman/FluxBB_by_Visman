@@ -16,7 +16,10 @@ if ($pun_user['g_read_board'] == '0')
 if (!isset($_GET['u']) || $pun_user['is_bot'])
 	message($lang_common['Bad request'], false, '404 Not Found');
 
-require PUN_ROOT.'lang/'.$pun_user['language'].'/re.php';
+if (file_exists(PUN_ROOT.'lang/'.$pun_user['language'].'/re.php'))
+	require PUN_ROOT.'lang/'.$pun_user['language'].'/re.php';
+else
+	require PUN_ROOT.'lang/English/re.php';
 
 $url = str_replace('&amp;', '&', preg_replace(array('%(https?|ftp)___%i', '%([\r\n])|(\%0[ad])|(;\s*data\s*:)%i'), array('$1://', ''), $_GET['u']));
 
@@ -41,4 +44,3 @@ $tpl_main = str_replace('NOINDEX, FOLLOW', 'NOINDEX, NOFOLLOW', $tpl_main);
 <?php
 
 require PUN_ROOT.'footer.php';
-

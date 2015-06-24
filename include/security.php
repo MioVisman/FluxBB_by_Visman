@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright (C) 2013 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2013-2015 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -8,45 +9,259 @@
 if (!defined('PUN'))
 	exit;
 
-require PUN_ROOT.'lang/'.$pun_user['language'].'/security.php';
 
-
-// type 1:register, 2:login, 3:post
-function vsecurity_get ($type, $f = false)
+function security_lang($val, $isset = false)
 {
-	global $db, $pun_user, $pun_config, $lang_sec;
-	static $block_kolvo;
-	
-	if (!$pun_user['is_guest'] || $pun_config['o_blocking_time'] == '0')
-	  return;
+	static $lang_sec;
 
-	if ($f)
+	if (!isset($lang_sec))
 	{
-		$db->query('INSERT INTO '.$db->prefix.'blocking (block_ip, block_log, block_type) VALUES(\''.$db->escape(get_remote_address()).'\', '.time().', '.$type.')') or error('Unable to create blocking', __FILE__, __LINE__, $db->error());
-		$block_kolvo++;
-	}
-	else
-	{
-		$db->query('DELETE FROM '.$db->prefix.'blocking WHERE block_log < '.(time() - 60 * $pun_config['o_blocking_time'])) or error('Unable to delete from blocking list', __FILE__, __LINE__, $db->error());
-	
-		if ($type == 3)
-			$block_q = ($pun_config['o_blocking_guest'] == '1') ? '' : ' AND block_type=3';
+		global $pun_user;
+
+		if (file_exists(PUN_ROOT.'lang/'.$pun_user['language'].'/security.php'))
+			require PUN_ROOT.'lang/'.$pun_user['language'].'/security.php';
 		else
-			$block_q = ($pun_config['o_blocking_reglog'] == '1') ? ' AND (block_type=1 OR block_type=2)' : ' AND block_type='.$type;
-
-		$result = $db->query('SELECT block_ip FROM '.$db->prefix.'blocking WHERE block_ip=\''.$db->escape(get_remote_address()).'\''.$block_q) or error('Unable to fetch blocking info', __FILE__, __LINE__, $db->error());
-		$block_kolvo = $db->num_rows($result);
+			require PUN_ROOT.'lang/English/security.php';
 	}
-
-	if ($block_kolvo > $pun_config['o_blocking_kolvo'])
-	{
-		if ($f && ($type == 2 || $pun_config['o_blocking_user'] != '1'))
-		{
-			$reason = '[MOD] Automatic Lock. Error in '.($type == 1 ? 'register.php' : ($type == 2 ? 'login.php' : 'post.php'))."\n\n".'IP = '.get_remote_address()."\n".$f;
-			// Should we use the internal report handling?
-			if ($pun_config['o_report_method'] == '0' || $pun_config['o_report_method'] == '2')
-				$db->query('INSERT INTO '.$db->prefix.'reports (post_id, topic_id, forum_id, reported_by, created, message) VALUES(0, 0, 0, '.$pun_user['id'].', '.time().', \''.$db->escape($reason).'\')' ) or error('Unable to create report', __FILE__, __LINE__, $db->error());
-		}
-		message($lang_sec['Limit of errors']);
-	}
+	
+	if ($isset)
+		return isset($lang_sec[$val]);
+	else
+		return isset($lang_sec[$val]) ? $lang_sec[$val] : $val;
 }
+
+
+function security_encode_for_js($s)
+{
+	global $pun_config, $page_js;
+
+	if (isset($pun_config['o_coding_forms']) && $pun_config['o_coding_forms'] == '1')
+	{
+		$page_js['f']['decode64'] = 'js/b64.js';
+		return base64_encode($s);
+	}
+	return $s;
+}
+
+
+function security_show_random_value($val)
+{
+	static $random;
+	
+	if ($val === false)
+	{
+		$random = 0;
+		return;
+	}
+
+	if (security_lang('Idx'.$val, true) && is_array(security_lang('Idx'.$val)) && $random < 2)
+	{
+		$arr = security_lang('Idx'.$val);
+		$new = $arr[array_rand($arr)];
+
+		if (pun_strlen($new) > pun_strlen($val))
+			$random++;
+
+		return $new;
+	}
+
+	return $val;
+}
+
+
+function security_random_name($s)
+{
+	global $pun_config;
+	static $s1_ar, $sar;
+
+	if (!isset($pun_config['o_crypto_enable']) || $pun_config['o_crypto_enable'] != '1')
+		return $s;
+
+	if (!isset($sar))
+		$sar = array();
+
+	if (!empty($sar[$s]))
+		return $sar[$s];
+
+	if (!isset($s1_ar))
+		$s1_ar = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+	$key = substr($s1_ar, (mt_rand() % strlen($s1_ar)), 1);
+	$s1_ar = str_replace($key, '', $s1_ar);
+
+	$key .= mt_rand(1, 9);
+
+	$chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+	$len = mt_rand(1, 5);
+
+	for ($i = 0; $i < $len; ++$i)
+		$key .= substr($chars, (mt_rand() % strlen($chars)), 1);
+
+	$sar[$s] = $key;
+	return $key;
+}
+
+
+function security_show_captcha($tabindex, $acaptcha = true, $qcaptcha = false)
+{
+	global $lang_common, $cur_index;
+
+	$result = array();
+
+	if ($acaptcha || $qcaptcha)
+	{
+	
+?>
+			<div class="inform">
+				<fieldset>
+					<legend><?php echo security_lang('Captcha legend') ?></legend>
+					<div class="infldset">
+<?php
+
+		if ($qcaptcha)
+		{
+			global $pun_config, $page_js;
+
+			if (isset($pun_config['o_coding_forms']) && $pun_config['o_coding_forms'] == '1')
+			{
+				$inp_name = 'jst_'.mt_rand(1, 1000);
+				$inp_code = mt_rand(2, 99);
+				$result[$inp_name] = $inp_code;
+
+				$page_js['c'][] = 'document.getElementById("id'.$inp_name.'").value="'.$inp_code.'";';
+
+?>
+						<noscript><p style="color: red; font-weight: bold"><?php echo security_lang('Enable JS') ?></p></noscript>
+						<input type="hidden" id="id<?php echo $inp_name ?>" name="<?php echo $inp_name ?>" value="1" />
+<?php
+
+			}
+			$inp_name = security_random_name('form_qcaptha'.mt_rand(1, 1000));
+			$inp_code = mt_rand(2, 99);
+			$result[$inp_name] = $inp_code;
+
+?>
+						<label class="required"><span class="b64"><?php echo security_encode_for_js('<input type="checkbox" name="'.$inp_name.'" value="'.$inp_code.'"'.($tabindex > 0 ? ' tabindex="'.($tabindex++).'"' : (empty($cur_index) ? '' : ' tabindex="'.($cur_index++).'"')).' />') ?></span><strong> <?php echo security_lang('Not robot') ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /></label>
+<?php
+
+		} // $qcaptcha
+		
+		if ($acaptcha)
+		{
+			$len = mt_rand(2, 3);
+			$c = array('+', '-', '*', '/');
+			$a = $d = array();
+
+			for ($i = 1; $i < $len; $i++)
+				$d[$i] = $c[array_rand($c)];
+
+			$pred = $prea = 0;
+			for ($i = $len; $i > 0; $i--)
+			{
+				if (($i > 1 && strstr('/*', $d[$i - 1])) || ($i < $len && $d[$i] == '*'))
+					$a[$i] = mt_rand(1, 5);
+				else
+					$a[$i] = mt_rand(1, 9);
+
+				if ($i < $len && $d[$i] == '/')
+				{
+					if ($pred == '/')
+					{
+						$f = $a[$i] % $prea;
+
+						if ($f != 0)
+							$a[$i]+= $prea - $f;
+
+						$prea = $a[$i] * $prea;
+					}
+					else
+					{
+						$f = $a[$i] % $a[$i + 1];
+
+						if ($f != 0)
+							$a[$i]+= $a[$i + 1] - $f;
+
+						$prea = $a[$i] * $a[$i + 1];
+					}
+				}
+				else
+					$prea = 0;
+
+				$pred = ($i < $len) ? $d[$i] : '';
+			}
+
+			$str = '';
+			for ($i = 1; $i <= $len; $i++)
+				$str.= $a[$i].($i < $len ? $d[$i] : '');
+
+			eval('$sum = '.$str.';');
+
+			$inp_idx = mt_rand(1, $len + 1);
+			$type = mt_rand(0, 1);
+			$inp_name = security_random_name('form_captha'.mt_rand(1, 1000));
+			$inp_code = '<input type="text" name="'.$inp_name.'" size="4" maxlength="4"'.($tabindex > 0 ? ' tabindex="'.($tabindex++).'"' : (empty($cur_index) ? '' : ' tabindex="'.($cur_index++).'"')).' />';
+			$result[$inp_name] = ($inp_idx > $len ? $sum : $a[$inp_idx]);
+			security_show_random_value(false);
+
+?>
+						<label class="required"><strong><?php echo security_lang('Captcha text') ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><?php
+
+			if (!$type)
+				echo ($inp_idx > $len ? $inp_code : security_show_random_value($sum)).' '.security_show_random_value('=').' ';
+
+			for ($i = 1; $i <= $len; $i++)
+				echo ($i == $inp_idx ? $inp_code : security_show_random_value($a[$i])).($i < $len ? ' '.security_show_random_value($d[$i]).' ' : '');
+
+			if ($type)
+				echo ' '.security_show_random_value('=').' '.($inp_idx > $len ? $inp_code : security_show_random_value($sum));
+
+?></label>
+<?php
+
+		} // $acaptcha
+
+?>
+					</div>
+				</fieldset>
+			</div>
+<?php
+
+	}
+
+	return (count($result) ? serialize($result) : ''); // to $form_captcha
+}
+
+
+function security_test_browser()
+{
+		return empty($_SERVER['HTTP_ACCEPT_CHARSET']) && empty($_SERVER['HTTP_ACCEPT_ENCODING']) && empty($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+}
+
+
+function security_verify_captcha($form_captcha)
+{
+	$form_captcha = unserialize($form_captcha);
+
+	foreach ($form_captcha as $key => $val)
+	{
+		if (!isset($_POST[$key]) || pun_trim($_POST[$key]) != $val)
+		{
+			if (substr($key, 0, 4) == 'jst_')
+				return 8; // js выключен
+
+			return 7; // ошибка captcha
+		}
+	}
+
+	return true;
+}
+
+
+function security_msg($error)
+{
+	return security_lang('Error '.$error, true) ? security_lang('Error '.$error) : 'Error '.$error;
+}
+
+
+define('FORUM_SEC_FUNCTIONS_LOADED', true);

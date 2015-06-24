@@ -22,7 +22,10 @@ define('PLUGIN_VERSION', '1.4.2');
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin='.$plugin));
 
 // Load the smilies language files
-require PUN_ROOT.'lang/'.$admin_language.'/admin_plugin_smilies.php';
+if (file_exists(PUN_ROOT.'lang/'.$admin_language.'/admin_plugin_smilies.php'))
+	require PUN_ROOT.'lang/'.$admin_language.'/admin_plugin_smilies.php';
+else
+	require PUN_ROOT.'lang/English/admin_plugin_smilies.php';
 
 // Retrieve the smiley set
 if (file_exists(FORUM_CACHE_DIR.'cache_smilies.php'))
@@ -268,9 +271,10 @@ else
 {
 	// Display the admin navigation menu
 	generate_admin_menu($plugin);
+
 ?>
 	<div class="block">
-		<h2><span>Plugin Smilies v.<?php echo PLUGIN_VERSION; ?></span></h2>
+		<h2><span>Plugin Smilies v.<?php echo PLUGIN_VERSION ?></span></h2>
 		<div class="box">
 			<div class="inbox">
 				<p><?php echo $lang_smiley['Description'] ?></p>
@@ -281,11 +285,13 @@ else
 		<h2 class="block2"><span><?php echo $lang_smiley['Current Smilies'] ?></span></h2>
 		<div class="box">
 	<?php
+
 	$result = $db->query('SELECT * FROM '.$db->prefix.'smilies ORDER BY disp_position') or error('Unable to retrieve smilies', __FILE__, __LINE__, $db->error());
 	$num_db_smilies = $db->num_rows($result);
 
 	if ($num_db_smilies > 0)
 	{
+
 ?>
 			<form method="post" action="<?php echo PLUGIN_URL ?>">
 				<div class="inform">
@@ -302,13 +308,16 @@ else
 								</tr></thead>
 								<tbody>
 <?php
+
 		while ($db_smilies = $db->fetch_assoc($result))
 		{
+
 ?>
 									<tr>
 										<th scope="row"><input type="text" name="smilies_order[<?php echo $db_smilies['id'] ?>]" value="<?php echo $db_smilies['disp_position'] ?>" size="4" maxlength="4" /></th>
 										<td><select name="smilies_img[<?php echo $db_smilies['id'] ?>]">
 <?php
+
 			foreach ($img_smilies as $img)
 			{
 				echo "\t\t\t\t\t\t\t\t\t\t\t".'<option';
@@ -316,6 +325,7 @@ else
 					echo ' selected="selected"';
 				echo ' value="'.pun_htmlspecialchars($img).'">'.pun_htmlspecialchars($img).'</option>'."\n";
 			}
+
 ?>
 										</select></td>
 										<td><input type="text" name="smilies_code[<?php echo $db_smilies['id'] ?>]" value="<?php echo pun_htmlspecialchars($db_smilies['text']) ?>" size="12" maxlength="60" /></td>
@@ -323,7 +333,9 @@ else
 										<td><input name="rem_smilies[<?php echo $db_smilies['id'] ?>]" type="checkbox" value="1" /></td>
 									</tr>
 <?php
+
 		}
+
 ?>
 								</tbody>
 							</table>
@@ -333,9 +345,11 @@ else
 				<p class="submitend"><input name="reord" type="submit" value="<?php echo $lang_smiley['Edit smilies'] ?>" /> <input name="remove" type="submit" value="<?php echo $lang_smiley['Remove Selected'] ?>" /></p>
 			</form>
 <?php
+
 	}
 	else
 	{
+
 ?>
 			<div class="fakeform">
 				<div class="inbox">
@@ -343,7 +357,9 @@ else
 				</div>
 			</div>
 <?php
+
 	}
+
 ?>
 			<form method="post" action="<?php echo PLUGIN_URL ?>">
 				<div class="inform">
@@ -364,8 +380,10 @@ else
 										<select name="smiley_image">
 											<option selected="selected" value=""><?php echo $lang_smiley['Choose Image'] ?></option>
 <?php
+
 	foreach ($img_smilies as $img)
 		echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.pun_htmlspecialchars($img).'">'.pun_htmlspecialchars($img).'</option>'."\n";
+
 ?>
 										</select>
 										<span><?php echo $lang_smiley['Smiley Image Description'] ?></span>
@@ -385,8 +403,6 @@ else
 					<fieldset>
 						<legend><?php echo $lang_smiley['List Images Smilies'] ?></legend>
 						<div class="infldset">
-<?php
-?>
 							<table>
 								<thead><tr>
 									<th scope="col"><?php echo $lang_smiley['Image Filename']; ?></th>
@@ -395,9 +411,11 @@ else
 								</tr></thead>
 								<tbody>
 <?php
+
 	foreach ($img_smilies as $img)
 	{
 		$img = pun_htmlspecialchars($img);
+
 ?>
 									<tr>
 										<th scope="row"><?php echo $img ?></th>
@@ -405,7 +423,9 @@ else
 										<td><input name="del_smilies[<?php echo $img ?>]" type="checkbox" value="1" /></td>
 									</tr>
 <?php
+
 	}
+
 ?>
 								</tbody>
 							</table>
@@ -414,7 +434,7 @@ else
 				</div>
 				<p class="submitend"><input name="delete" type="submit" value="<?php echo $lang_smiley['Delete Selected'] ?>" /></p>
 			</form>
-			<form method="post" enctype="multipart/form-data"  action="<?php echo PLUGIN_URL ?>">
+			<form method="post" enctype="multipart/form-data" action="<?php echo PLUGIN_URL ?>">
 				<div class="inform">
 					<fieldset>
 						<legend><?php echo $lang_smiley['Add Images Smilies'] ?></legend>

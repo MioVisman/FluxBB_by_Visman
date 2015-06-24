@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright (C) 2013-2015 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2008-2012 FluxBB

@@ -283,7 +283,9 @@ function set_default_user()
 	$remote_addr = get_remote_address();
 	
 	// MOD определения ботов - Visman
-	require PUN_ROOT.'include/bots.inc.php';
+	if (!defined('FORUM_BOT_FUNCTIONS_LOADED'))
+		include PUN_ROOT.'include/bots.inc.php';
+	$remote_addr = ua_isbotex($remote_addr);
 
 	// Кто в этой теме - , o.witt_data - Visman
 	// Fetch guest user
@@ -1153,21 +1155,37 @@ function random_key($len, $readable = false, $hash = false)
 // Make sure that HTTP_REFERER matches base_url/script
 // ********* новые ф-ии проверки подлинности - Visman
 // rev 59 - Variant of functions not depending on Base URL
+function confirm_message($error_msg = false)
+{
+	global $lang_common, $errors;
+
+	if (isset($errors) && is_array($errors))
+		$errors[] = $error_msg ? $error_msg : $lang_common['Bad referrer'];
+	else
+		message($error_msg ? $error_msg : $lang_common['Bad referrer']);
+}
+
+
 function confirm_referrer($script, $error_msg = false)
 {
-	global $pun_config, $lang_common, $pun_user;
+	global $pun_config, $pun_user;
+  
+	$use_errors = isset($errors) && is_array($errors);
 
 	if (isset($_POST['csrf_hash']))
 		$hash = $_POST['csrf_hash'];
 	else if (isset($_GET['csrf_hash']))
 		$hash = $_GET['csrf_hash'];
 	else
-		message($error_msg ? $error_msg : $lang_common['Bad referrer']);
+	{
+		confirm_message($error_msg);
+		return;
+	}
 
 	$new_hash = pun_hash($script.get_remote_address().$pun_user['id'].$pun_config['o_crypto_pas']);
 
 	if ($new_hash != $hash)
-		message($error_msg ? $error_msg : $lang_common['Bad referrer']);
+		confirm_message($error_msg);
 }
 
 
@@ -1900,33 +1918,6 @@ function generate_stopwords_cache_id()
 
 
 //
-// Fetch a list of available admin plugins
-//
-function forum_list_plugins($is_admin)
-{
-	$plugins = array();
-
-	$d = dir(PUN_ROOT.'plugins');
-	while (($entry = $d->read()) !== false)
-	{
-		if ($entry{0} == '.')
-			continue;
-
-		$prefix = substr($entry, 0, strpos($entry, '_'));
-		$suffix = substr($entry, strlen($entry) - 4);
-
-		if ($suffix == '.php' && ((!$is_admin && $prefix == 'AMP') || ($is_admin && ($prefix == 'AP' || $prefix == 'AMP'))))
-			$plugins[$entry] = substr($entry, strpos($entry, '_') + 1, -4);
-	}
-	$d->close();
-
-	natcasesort($plugins);
-
-	return $plugins;
-}
-
-
-//
 // Split text into chunks ($inside contains all text inside $start and $end, and $outside contains all text outside)
 //
 function split_text($text, $start, $end, $retab = true)
@@ -2290,6 +2281,7 @@ function dump()
 	exit;
 }
 
+
 // *** Visman ***
 //
 // генерация javascript в футере
@@ -2307,118 +2299,6 @@ function generation_js($arr)
 	return $res;
 }
 
-//
-// кодируем строку, если включена защита через javascript
-//
-function encode_for_js($s)
-{
-	global $pun_config, $page_js;
-	if ($pun_config['o_coding_forms'] == '1')
-	{
-		$page_js['f']['decode64'] = 'js/b64.js';
-		return base64_encode($s);
-	}
-	return $s;
-}
-
-//
-// PHP функция для обратимого шифрования
-// Вероятно, только 7-битная кодировка!?
-//
-function encode_for_crypto($String)
-{
-	global $pun_config;
-
-	$Seq = $pun_config['o_crypto_pas'];
-	$StrLen = strlen($String);
-	$Gamma = '';
-
-	while (strlen($Gamma)<$StrLen)
-	{
-		$Seq = pack("H*",sha1($Gamma.$Seq.$pun_config['o_crypto_salt']));
-		$Gamma.=substr($Seq,0,8);
-	}
-
-	return $String^$Gamma;
-}
-
-function random_for_crypto($s = NULL)
-{
-	global $pun_config;
-	static $s1_ar, $sar;
-
-	if ($pun_config['o_crypto_enable'] != '1')
-	{
-		if (is_null($s))
-			return time();
-		else
-			return $s;
-	}
-	
-	if (!isset($sar))
-		$sar = array();
-		
-	if (is_null($s))
-	{
-		$sar['time'] = time();
-		$key = base64_encode(encode_for_crypto(serialize($sar)));
-		$sar = array();
-		return $key;
-	}
-
-	if (!empty($sar[$s]))
-		return $sar[$s];
-	
-	if (!isset($s1_ar))
-		$s1_ar = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-
-	$key = substr($s1_ar, (mt_rand() % strlen($s1_ar)), 1);
-	$s1_ar = str_replace($key, '', $s1_ar);
-	
-	$key .= mt_rand(1, 9);
-
-	$chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-	$len = mt_rand(1, 5);
-
-	for ($i = 0; $i < $len; ++$i)
-		$key .= substr($chars, (mt_rand() % strlen($chars)), 1);
-
-	$sar[$s] = $key;
-	return $key;
-}
-
-function check_for_crypto()
-{
-	global $pun_config;
-	$crypto = '';
-
-	if ($pun_config['o_crypto_enable'] != '1')
-	{
-		if (isset($_POST['cr']))
-			return time() - intval($_POST['cr']);
-		else
-			return 0;
-	}
-
-	if (isset($_POST['cr']))
-	{
-		$_POST['cr'] = encode_for_crypto(base64_decode($_POST['cr']));
-		if (preg_match('%^a:\d+:{(s:\d+:"\w+";s:\d+:"\w+";|s:\d+:"\w+";i:\d+;)+}$%', $_POST['cr']))
-			$crypto = unserialize($_POST['cr']);
-	}
-
-	if (empty($crypto) || !isset($crypto['time']))
-		return 0;
-
-	$cry_time = time() - $crypto['time'];
-	unset($crypto['time']);
-	unset($crypto['time']);
-	foreach ($crypto as $ci => $cy)
-		$_POST[$ci] = (isset($_POST[$cy]) ? $_POST[$cy] : '');
-			
-	return $cry_time;
-}
 
 function sf_crumbs($id)
 {

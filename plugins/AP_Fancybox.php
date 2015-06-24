@@ -9,12 +9,6 @@
 if (!defined('PUN'))
 	exit;
 
-// Load language file
-if (file_exists(PUN_ROOT.'lang/'.$admin_language.'/fancybox.php'))
-	require PUN_ROOT.'lang/'.$admin_language.'/fancybox.php';
-else
-	require PUN_ROOT.'lang/English/fancybox.php';
-
 // Tell admin_loader.php that this is indeed a plugin and that it is loaded
 define('PUN_PLUGIN_LOADED', 1);
 define('PLUGIN_VERSION', '1.3.5');
@@ -22,11 +16,15 @@ define('PLUGIN_REVISION', 4);
 define('PLUGIN_NAME', 'Fancybox for FluxBB');
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin='.$plugin));
 define('PLUGIN_FILES', 'viewtopic.php,search.php,pmsnew.php,upfiles.php,AP_Upload.php');
-$tabindex = 1;
+
+// Load language file
+if (file_exists(PUN_ROOT.'lang/'.$admin_language.'/fancybox.php'))
+	require PUN_ROOT.'lang/'.$admin_language.'/fancybox.php';
+else
+	require PUN_ROOT.'lang/English/fancybox.php';
 
 $fd_str = 'require PUN_ROOT.\'include/fancybox.php\';';
 $prefhf = PUN_ROOT.'header.php';
-
 
 $arr_files = array(
 	$prefhf,
@@ -197,6 +195,9 @@ if ($f_inst && !isset($pun_config['o_fbox_files'])) // непредвиденн�
 
 // Display the admin navigation menu
 generate_admin_menu($plugin);
+
+$tabindex = 1;
+
 ?>
 	<div id="loginza" class="plugin blockform">
 		<h2><span><?php echo PLUGIN_NAME.' v.'.PLUGIN_VERSION ?></span></h2>
@@ -206,8 +207,10 @@ generate_admin_menu($plugin);
 				<form action="<?php echo PLUGIN_URL ?>" method="post">
 					<p>
 <?php
+
 if (!$f_inst)
 {
+
 ?>
 						<input type="submit" name="installation" value="<?php echo $lang_fb['installation'] ?>" />&#160;<?php echo $lang_fb['installation_info'] ?><br />
 					</p>
@@ -215,7 +218,11 @@ if (!$f_inst)
 			</div>
 		</div>
 <?php
-} else {
+
+}
+else
+{
+
 ?>
 						<input type="submit" name="delete" value="<?php echo $lang_fb['delete'] ?>" />&#160;<?php echo $lang_fb['delete_info'] ?><br /><br />
 					</p>
@@ -283,7 +290,9 @@ if (!$f_inst)
 			</form>
 		</div>
 <?php
+
 }
+
 ?>
 	</div>
 <?php

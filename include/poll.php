@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright (C) 2011-2013 Visman (mio.visman@yandex.ru)
  * based on code by kg (kg@as-planned.com)
@@ -207,7 +208,8 @@ function poll_form($tid)
 
 	if (poll_noedit($tid))
 	{
-	?>
+
+?>
 		<div class="inform">
 			<fieldset>
 				<legend><?php echo $lang_poll['Form legend'] ?></legend>
@@ -215,11 +217,14 @@ function poll_form($tid)
 					<div class="rbox"><label><input disabled="disabled" type="checkbox" id="poll_enabled" name="poll_enabled" value="1" <?php if ($enabled) echo 'checked="checked"'?> /> <?php echo $lang_poll['Form enable'] ?></label></div>
 					<div id="poll_input">
 <?php
+
 		if ($term > 1)
 		{
+
 ?>
 						<div class="rbox"><label><input disabled="disabled" type="checkbox" name="poll_result"  value="1" <?php if ($resu) echo 'checked="checked"'?> /> <?php printf($lang_poll['Form result'], $term) ?></label></div>
 <?php
+
 		}
 		$fk = true;
 		for ($k = 1; $k <= $pun_config['o_poll_max_ques'] && $fk; $k++)
@@ -231,12 +236,14 @@ function poll_form($tid)
 				break;
 			}
 			$fi = $fk;
+
 ?>
 						<div id="poll_number_<?php echo $k ?>">
 <?php if ($k > 1) echo "\t\t\t\t\t\t\t<br /><hr /><br />\n"; ?>
 							<label><?php printf($lang_poll['Form question'], $k) ?><br /><input disabled="disabled" id="poll_ques_<?php echo $k ?>" class="longinput" type="text" name="poll_question[<?php echo $k ?>]" value="<?php echo $question ?>" size="80" maxlength="250" /></label>
 							<label><?php echo $lang_poll['Form type'] ?>&#160;<input disabled="disabled" type="text" name="poll_type[<?php echo $k ?>]" value="<?php echo ((!isset($type[$k]) || $type[$k]<2) ? '1' : $type[$k]) ?>" size="4" maxlength="2" /></label>
 <?php
+
 			for ($i = 1; $i <= $pun_config['o_poll_max_field'] && $fi; $i++)
 			{
 				$choice = (isset($choices[$k][$i])) ? pun_htmlspecialchars(pun_trim($choices[$k][$i])) : '';
@@ -245,14 +252,19 @@ function poll_form($tid)
 					$fi = false;
 					break;
 				}
+
 ?>
 							<label><?php printf($lang_poll['Form choice'], $i) ?><br /><input disabled="disabled" class="longinput" type="text" name="poll_choice[<?php echo $k ?>][<?php echo $i?>]" value="<?php echo $choice ?>" size="80" maxlength="250" /></label>
 <?php
+
 			}
+
 ?>
 						</div>
 <?php
+
 		}
+
 ?>
 					</div>
 				</div>
@@ -263,7 +275,7 @@ function poll_form($tid)
 		return;
 	}
 
-	?>
+?>
 		<div class="inform">
 			<fieldset>
 				<legend><?php echo $lang_poll['Form legend'] ?></legend>
@@ -271,22 +283,27 @@ function poll_form($tid)
 					<div class="rbox"><label><input type="checkbox" id="poll_enabled" name="poll_enabled" onclick="ForEnabled();" value="1" <?php if ($enabled) echo 'checked="checked"'?> tabindex="<?php echo $cur_index++ ?>" /> <?php echo $lang_poll['Form enable'] ?></label></div>
 					<div id="poll_input">
 <?php
+
 	if ($term > 1)
 	{
+
 ?>
 						<div class="rbox"><label><input type="checkbox" name="poll_result"  value="1" <?php if ($resu) echo 'checked="checked"'?> tabindex="<?php echo $cur_index++ ?>" /> <?php printf($lang_poll['Form result'], $term) ?></label></div>
 <?php
+
 	}
 	$fk = true;
 	for ($k = 1; $k <= $pun_config['o_poll_max_ques']; $k++)
 	{
 		$question = (isset($questions[$k]) && $fk) ? pun_htmlspecialchars($questions[$k]) : '';
+
 ?>
 						<div id="poll_number_<?php echo $k ?>">
 <?php if ($k > 1) echo "\t\t\t\t\t\t\t<br /><hr /><br />\n"; ?>
 							<label><?php printf($lang_poll['Form question'], $k) ?><br /><input id="poll_ques_<?php echo $k ?>" class="longinput" type="text" name="poll_question[<?php echo $k ?>]" value="<?php echo $question ?>" tabindex="<?php echo $cur_index++ ?>" size="80" maxlength="250" onkeyup="ForQues(<?php echo $k ?>)" /></label>
 							<label><?php echo $lang_poll['Form type'] ?>&#160;<input type="text" name="poll_type[<?php echo $k ?>]" value="<?php echo ((!isset($type[$k]) || $type[$k]<2) ? '1' : $type[$k]) ?>" tabindex="<?php echo $cur_index++ ?>" size="4" maxlength="2" /></label>
 <?php
+
 		if (empty($question))
 			$fk = false;
 		$fi = $fk;
@@ -294,16 +311,21 @@ function poll_form($tid)
 		for ($i = 1; $i <= $pun_config['o_poll_max_field']; $i++)
 		{
 			$choice = (isset($choices[$k][$i]) && $fi) ? pun_htmlspecialchars(pun_trim($choices[$k][$i])) : '';
+
 ?>
 							<label><?php printf($lang_poll['Form choice'], $i) ?><br /><input class="longinput" type="text" name="poll_choice[<?php echo $k ?>][<?php echo $i?>]" value="<?php echo $choice ?>" tabindex="<?php echo $cur_index++ ?>" size="80" maxlength="250" onkeyup="ForChoice(<?php echo $k ?>,<?php echo $i?>)" /></label>
 <?php
+
 			if (empty($choice))
 				$fi = false;
 		}
+
 ?>
 						</div>
 <?php
+
 	}
+
 ?>
 					</div>
 				</div>
@@ -318,6 +340,7 @@ function ForQues(num,t){if(num > max_ques){return false}var div=document.getElem
 /* ]]> */
 </script>
 <?php
+
 	$tpl_main = str_replace('<body onload="', '<body onload="ForEnabled();', $tpl_main);
 	$tpl_main = str_replace('<body>', '<body onload="ForEnabled()">', $tpl_main);
 }
@@ -601,10 +624,12 @@ function poll_display($tid, $uid, $info, $top, $prev = false)
 
 	if ($can_vote && !$prev)
 	{
+
 ?>
 <div id="poll_form">
 <form method="post" action="viewtopic.php?id=<?php echo $tid.($top[4] > 1 ? '&amp;p='.$top[4] : '') ?>">
 <?php
+
 	}
 	$amax = array();
 	
@@ -620,6 +645,7 @@ function poll_display($tid, $uid, $info, $top, $prev = false)
 			if ($v > $max) $max = $v;
 		}
 		$maxPercent = ($top[3] == 0 || !$max) ? 1 : 100 * $max / $top[3];
+
 ?>
 <?php if ($can_vote && !$prev): ?>
 	<input type="hidden" name="poll_max[<?php echo $k ?>]" value="<?php echo $amax[$k] ?>" />
@@ -631,14 +657,17 @@ function poll_display($tid, $uid, $info, $top, $prev = false)
 <?php endif ?>
 		<ol>
 <?php
+
 		foreach ($choice as $i => $ch)
 		{
 			if (empty($ch)) continue;
 
 			$percent = ($top[3] == 0) ? 0 : round(100 * $vote[$i] / $top[3],2);
+
 ?>
 			<li>
 <?php
+
 			if ($can_vote)
 			{
 				if ($types[$k] < 2)
@@ -655,26 +684,33 @@ function poll_display($tid, $uid, $info, $top, $prev = false)
 			{
 				echo "\t\t\t\t\t".'<span class="answer">'.pun_htmlspecialchars($ch).'</span>';
 			}
+
 ?>
 
 			</li>
 <?php
+
 		}
+
 ?>
 		</ol>
 		<div class="total"><?php printf($lang_poll['Vote total'], $top[3]) ?></div>
 	</fieldset>
 <?php
+
 	}
 	if ($can_vote && !$prev)
 	{
 		$csrf = pun_hash($tid.(pun_hash($uid.count($questions).implode('0',$types))).get_remote_address().implode('.',$amax));
 		foreach ($types as $i => $type)
 		{
+
 ?>
 	<input type="hidden" name="poll_type[<?php echo $i ?>]" value="<?php echo $type ?>" />
 <?php
+
 		}
+
 ?>
 	<input type="hidden" name="poll_ques" value="<?php echo count($questions) ?>" />
 	<input type="hidden" name="poll_csrf" value="<?php echo $csrf ?>" />
@@ -682,6 +718,7 @@ function poll_display($tid, $uid, $info, $top, $prev = false)
 </form>
 </div>
 <?php
+
 	}
 	else if (!empty($fmess))
 		echo "\t".'<p class="poll_mess">'.$fmess.'</p>'."\n";

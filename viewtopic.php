@@ -730,7 +730,7 @@ $cur_index = 1;
 				<fieldset>
 					<legend><?php echo $lang_common['Write message legend'] ?></legend>
 					<div class="infldset txtarea">
-						<input type="hidden" id="form_sent" name="form_sent" value="1" />
+						<input type="hidden" name="form_sent" value="1" />
 <?php if ($pun_config['o_topic_subscriptions'] == '1' && ($pun_user['auto_notify'] == '1' || $cur_topic['is_subscribed'])): ?>						<input type="hidden" name="subscribe" value="1" />
 <?php endif; ?>
 <?php
@@ -764,20 +764,10 @@ else
 				</fieldset>
 			</div>
 <?php
-	// START Merge mod and Not robot
+// START Merge mod
 	$checkboxes = array();
 	if ($is_admmod)
 		$checkboxes[] = '<label><input type="checkbox" name="merge" value="1" tabindex="'.($cur_index++).'" checked="checked" />'.$lang_post['Merge posts'].'<br /></label>';
-	if ($pun_user['is_guest'])
-	{
-		require PUN_ROOT.'lang/'.$pun_user['language'].'/security.php';
-		if ($pun_config['o_coding_forms'] == '1')
-		{
-			$page_js['c'][] = 'document.getElementById("form_sent").value="7";';
-			$checkboxes[] = '<noscript><p style="color: red; font-weight: bold">'.$lang_sec['Enable JS'].'</p></noscript>';
-		}
-		$checkboxes[] = '<label><span class="b64">'.encode_for_js('<input type="checkbox" name="'.random_for_crypto('kluk').'" value="4"  tabindex="'.($cur_index++).'" />').'</span>'.$lang_sec['Not robot'].'<br /></label>';
-	}
 
 	if (!empty($checkboxes))
 	{
@@ -796,13 +786,10 @@ else
 <?php
 
 	}
-	// End Merge mod and Not robot
+// End Merge mod
 ?>
-			<div>
-				<input type="hidden" name="<?php echo random_for_crypto('csrf_hash') ?>" value="<?php echo csrf_hash('post.php') ?>" />
-				<input type="hidden" name="cr" value="<?php echo random_for_crypto() ?>" />
-			</div>
 <?php flux_hook('quickpost_before_submit') ?>
+			<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash('post.php') ?>" />
 			<p class="buttons"><input type="submit" name="submit" tabindex="<?php echo $cur_index++ ?>" value="<?php echo $lang_common['Submit'] ?>" accesskey="s" /> <input type="submit" name="preview" value="<?php echo $lang_topic['Preview'] ?>" tabindex="<?php echo $cur_index++ ?>" accesskey="p" /></p>
 		</form>
 	</div>

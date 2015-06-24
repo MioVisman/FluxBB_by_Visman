@@ -58,7 +58,7 @@ if ($pun_user['g_id'] != PUN_ADMIN && $limit*$maxsize == 0)
 	message($lang_common['Bad request'], false, '404 Not Found');
 
 $prcent = ($limit == 0) ? 100 : ceil($upload*100/$limit);
-$prcent = ($prcent > 100) ? 100 : $prcent;
+$prcent = min(100, $prcent);
 
 $dir = 'img/members/'.$id.'/';
 $aconf = unserialize($pun_config['o_uploadile_other']);
@@ -270,9 +270,6 @@ if ($fpr)
 	generate_profile_menu('upload');
 }
 
-?>
-<?php
-
 if ($id == $pun_user['id'])
 {
 
@@ -376,7 +373,7 @@ else
 					<ul id="upf-list">
 <?php
 
-	$height = $aconf['thumb_size'] > 100 ? intval($aconf['thumb_size']) : 100;
+	$height = max(intval($aconf['thumb_size']), 100);
 	$regx = '%^img/members/'.$id.'/(.+)\.([0-9a-zA-Z]+)$%i';
 	foreach($files as $file)
 	{

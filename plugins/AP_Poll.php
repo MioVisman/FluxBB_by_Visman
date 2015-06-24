@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2013 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2015 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -9,16 +9,16 @@
 if (!defined('PUN'))
 	exit;
 
+// Tell admin_loader.php that this is indeed a plugin and that it is loaded
+define('PUN_PLUGIN_LOADED', 1);
+define('PLUGIN_VERSION', '1.3.5');
+define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin='.$plugin));
+
 // Load language file
 if (file_exists(PUN_ROOT.'lang/'.$admin_language.'/admin_plugin_poll.php'))
 	require PUN_ROOT.'lang/'.$admin_language.'/admin_plugin_poll.php';
 else
 	require PUN_ROOT.'lang/English/admin_plugin_poll.php';
-
-// Tell admin_loader.php that this is indeed a plugin and that it is loaded
-define('PUN_PLUGIN_LOADED', 1);
-define('PLUGIN_VERSION', '1.3.4');
-define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin='.$plugin));
 
 // If the "Show text" button was clicked
 if (isset($_POST['show_text']))
@@ -35,12 +35,9 @@ if (isset($_POST['show_text']))
 		$poll_max_field = isset($_POST['poll_max_field']) ? $_POST['poll_max_field'] : $pun_config['o_poll_max_field'];
 		$poll_time = isset($_POST['poll_time']) ? $_POST['poll_time'] : $pun_config['o_poll_time'];
 		$poll_term = isset($_POST['poll_term']) ? $_POST['poll_term'] : $pun_config['o_poll_term'];
-		$poll_guest = isset($_POST['poll_guest']) ? $_POST['poll_guest'] : 0;
-		$poll_guest = ($poll_guest == '1') ? 1 : 0;
-		$poll_max_ques = ($poll_max_ques < 1) ? 1 : $poll_max_ques;
-		$poll_max_ques = ($poll_max_ques > 10) ? 10 : $poll_max_ques;
-		$poll_max_field = ($poll_max_field < 2) ? 2 : $poll_max_field;
-		$poll_max_field = ($poll_max_field > 90) ? 90 : $poll_max_field;
+		$poll_guest = isset($_POST['poll_guest']) ? 1 : 0;
+		$poll_max_ques = min(10, max(1, $poll_max_ques));
+		$poll_max_field = min(90, max(2, $poll_max_field));
 
 		$db->query('UPDATE '.$db->prefix.'config SET conf_value=\''.intval($poll_max_ques).'\' WHERE conf_name=\'o_poll_max_ques\'') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
 		$db->query('UPDATE '.$db->prefix.'config SET conf_value=\''.intval($poll_max_field).'\' WHERE conf_name=\'o_poll_max_field\'') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
@@ -55,14 +52,13 @@ if (isset($_POST['show_text']))
 	generate_config_cache();
 
 	redirect(PLUGIN_URL, $lang_admin_plugin_poll['Plugin redirect']);
-
 }
 else
 {
 	// Display the admin navigation menu
 	generate_admin_menu($plugin);
 
-	$cur_index = 1;
+	$tabindex = 1;
 
 ?>
 	<div class="plugin blockform">
@@ -76,8 +72,8 @@ else
 
 		<h2 class="block2"><span><?php echo $lang_admin_plugin_poll['Form title'] ?></span></h2>
 		<div class="box">
-			<form id="example" method="post" action="<?php echo PLUGIN_URL.'&amp;'.time() ?>">
-				<p class="submittop"><input type="submit" name="show_text" value="<?php echo $lang_admin_plugin_poll['Show text button'] ?>" tabindex="<?php echo ($cur_index++) ?>" /></p>
+			<form id="example" method="post" action="<?php echo PLUGIN_URL ?>">
+				<p class="submittop"><input type="submit" name="show_text" value="<?php echo $lang_admin_plugin_poll['Show text button'] ?>" tabindex="<?php echo ($tabindex++) ?>" /></p>
 				<div class="inform">
 					<fieldset>
 						<legend><?php echo $lang_admin_plugin_poll['Legend1'] ?></legend>
@@ -85,7 +81,7 @@ else
 							<table class="aligntop">
 								<tr>
 									<td>
-										<label><input type="checkbox" name="enable_poll" value="1" tabindex="<?php echo ($cur_index++) ?>"<?php echo ($pun_config['o_poll_enabled'] == '1') ? ' checked="checked"' : '' ?> />&#160;&#160;<?php echo $lang_admin_plugin_poll['Q1'] ?></label>
+										<label><input type="checkbox" name="enable_poll" value="1" tabindex="<?php echo ($tabindex++) ?>"<?php echo ($pun_config['o_poll_enabled'] == '1') ? ' checked="checked"' : '' ?> />&#160;&#160;<?php echo $lang_admin_plugin_poll['Q1'] ?></label>
 									</td>
 								</tr>
 							</table>
@@ -93,8 +89,10 @@ else
 					</fieldset>
 				</div>
 <?php
+
 if ($pun_config['o_poll_enabled'] == '1')
 {
+
 ?>
 				<div class="inform">
 					<fieldset>
@@ -103,27 +101,27 @@ if ($pun_config['o_poll_enabled'] == '1')
 							<table class="aligntop">
 								<tr>
 									<td>
-										<span><input type="text" name="poll_max_ques" value="<?php echo pun_htmlspecialchars($pun_config['o_poll_max_ques']) ?>"  tabindex="<?php echo ($cur_index++) ?>" size="4" maxlength="2" />&#160;&#160;<?php echo $lang_admin_plugin_poll['Q2'] ?></span>
+										<span><input type="text" name="poll_max_ques" value="<?php echo pun_htmlspecialchars($pun_config['o_poll_max_ques']) ?>"  tabindex="<?php echo ($tabindex++) ?>" size="4" maxlength="2" />&#160;&#160;<?php echo $lang_admin_plugin_poll['Q2'] ?></span>
 									</td>
 								</tr>
 								<tr>
 									<td>
-										<span><input type="text" name="poll_max_field" value="<?php echo pun_htmlspecialchars($pun_config['o_poll_max_field']) ?>"  tabindex="<?php echo ($cur_index++) ?>" size="4" maxlength="2" />&#160;&#160;<?php echo $lang_admin_plugin_poll['Q3'] ?></span>
+										<span><input type="text" name="poll_max_field" value="<?php echo pun_htmlspecialchars($pun_config['o_poll_max_field']) ?>"  tabindex="<?php echo ($tabindex++) ?>" size="4" maxlength="2" />&#160;&#160;<?php echo $lang_admin_plugin_poll['Q3'] ?></span>
 									</td>
 								</tr>
 								<tr>
 									<td>
-										<span><input type="text" name="poll_time" value="<?php echo pun_htmlspecialchars($pun_config['o_poll_time']) ?>"  tabindex="<?php echo ($cur_index++) ?>" size="8" maxlength="8" />&#160;&#160;<?php echo $lang_admin_plugin_poll['Q4'] ?></span>
+										<span><input type="text" name="poll_time" value="<?php echo pun_htmlspecialchars($pun_config['o_poll_time']) ?>"  tabindex="<?php echo ($tabindex++) ?>" size="8" maxlength="8" />&#160;&#160;<?php echo $lang_admin_plugin_poll['Q4'] ?></span>
 									</td>
 								</tr>
 								<tr>
 									<td>
-										<span><input type="text" name="poll_term" value="<?php echo pun_htmlspecialchars($pun_config['o_poll_term']) ?>"  tabindex="<?php echo ($cur_index++) ?>" size="4" maxlength="2" />&#160;&#160;<?php echo $lang_admin_plugin_poll['Q5'] ?></span>
+										<span><input type="text" name="poll_term" value="<?php echo pun_htmlspecialchars($pun_config['o_poll_term']) ?>"  tabindex="<?php echo ($tabindex++) ?>" size="4" maxlength="2" />&#160;&#160;<?php echo $lang_admin_plugin_poll['Q5'] ?></span>
 									</td>
 								</tr>
 								<tr>
 									<td>
-										<label><input type="checkbox" name="poll_guest" value="1" tabindex="<?php echo ($cur_index++) ?>"<?php echo ($pun_config['o_poll_guest'] == '1') ? ' checked="checked"' : '' ?> />&#160;&#160;<?php echo $lang_admin_plugin_poll['Q6'] ?></label>
+										<label><input type="checkbox" name="poll_guest" value="1" tabindex="<?php echo ($tabindex++) ?>"<?php echo ($pun_config['o_poll_guest'] == '1') ? ' checked="checked"' : '' ?> />&#160;&#160;<?php echo $lang_admin_plugin_poll['Q6'] ?></label>
 									</td>
 								</tr>
 							</table>
@@ -131,9 +129,11 @@ if ($pun_config['o_poll_enabled'] == '1')
 					</fieldset>
 				</div>
 <?php
+
 }
+
 ?>
-				<p class="submitend"><input type="submit" name="show_text" value="<?php echo $lang_admin_plugin_poll['Show text button'] ?>" tabindex="<?php echo ($cur_index++) ?>" /></p>
+				<p class="submitend"><input type="submit" name="show_text" value="<?php echo $lang_admin_plugin_poll['Show text button'] ?>" tabindex="<?php echo ($tabindex++) ?>" /></p>
 			</form>
 		</div>
 	</div>

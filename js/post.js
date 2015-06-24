@@ -211,7 +211,7 @@ FluxBB.post = (function (doc, win) {
 						n = n.replace(/&nbsp;/g, ' ');
 						n = n.replace(/&#160;/g, ' ');
 						nameusers[id] = n.replace(/&amp;/g, '&');
-			      dt.insertAdjacentHTML('afterBegin', '<strong><a href="#req_message" onclick="return FluxBB.post.insName(' + id + ');">@ </a></strong>');
+						dt.insertAdjacentHTML('afterBegin', '<strong><a href="#req_message" onclick="return FluxBB.post.insName(' + id + ');">@ </a></strong>');
 
 						var quote = getCN('postquote', blockposts[i])[0];
 						if (typeof(quote) !== 'undefined') {

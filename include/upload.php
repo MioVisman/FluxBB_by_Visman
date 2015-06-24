@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright (C) 2011-2013 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -298,7 +299,7 @@ function img_resize ($file, $dir, $name, $type, $width = 0, $height = 0, $qualit
 
 	imagedestroy($image);
 	imagedestroy($idest);
-	
+
   if (!file_exists(PUN_ROOT.$dir.$name.'.'.$type)) return false;
 	@chmod(PUN_ROOT.$dir.$name.'.'.$type, 0644);
 

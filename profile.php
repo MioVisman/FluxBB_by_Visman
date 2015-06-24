@@ -326,7 +326,7 @@ else if ($action == 'upload_avatar' || $action == 'upload_avatar2')
 	if ($pun_user['id'] != $id && !$pun_user['is_admmod'])
 		message($lang_common['No permission'], false, '403 Forbidden');
 		
-	require PUN_ROOT.'include/upload.php'; // Visman - for easy avatar
+	require PUN_ROOT.'include/upload.php'; // Visman - auto resize avatar
 
 	if (isset($_POST['form_sent']))
 	{

@@ -9,7 +9,7 @@
 // The FluxBB version this script updates to
 define('UPDATE_TO', '1.5.8');
 
-define('UPDATE_TO_VER_REVISION', 67);	// номер сборки - Visman
+define('UPDATE_TO_VER_REVISION', 68);	// номер сборки - Visman
 
 define('UPDATE_TO_DB_REVISION', 21);
 define('UPDATE_TO_SI_REVISION', 2);
@@ -716,52 +716,11 @@ if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_v
 		if (!array_key_exists('o_merge_timeout', $pun_config))
 			$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_merge_timeout\', \'86400\')') or error('Unable to insert config value \'o_merge_timeout\'', __FILE__, __LINE__, $db->error());
 
-		if (!array_key_exists('o_blocking_kolvo', $pun_config))
-			$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_blocking_kolvo\', \'3\')') or error('Unable to insert config value \'o_blocking_kolvo\'', __FILE__, __LINE__, $db->error());
-
-		if (!array_key_exists('o_blocking_time', $pun_config))
-			$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_blocking_time\', \'60\')') or error('Unable to insert config value \'o_blocking_time\'', __FILE__, __LINE__, $db->error());
-
-		if (!array_key_exists('o_blocking_reglog', $pun_config))
-			$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_blocking_reglog\', \'1\')') or error('Unable to insert config value \'o_blocking_reglog\'', __FILE__, __LINE__, $db->error());
-
-		if (!array_key_exists('o_blocking_guest', $pun_config))
-			$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_blocking_guest\', \'0\')') or error('Unable to insert config value \'o_blocking_guest\'', __FILE__, __LINE__, $db->error());
-
 		if (!array_key_exists('o_coding_forms', $pun_config))
 			$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_coding_forms\', \'0\')') or error('Unable to insert config value \'o_coding_forms\'', __FILE__, __LINE__, $db->error());
 
 		if (!array_key_exists('o_check_ip', $pun_config))
 			$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_check_ip\', \'0\')') or error('Unable to insert config value \'o_check_ip\'', __FILE__, __LINE__, $db->error());
-
-		if (!$db->table_exists('blocking'))
-		{
-			$schema = array(
-				'FIELDS'		=> array(
-					'block_ip'			=> array(
-						'datatype'		=> 'VARCHAR(200)',
-						'allow_null'	=> false,
-						'default'		=> '\'\''
-					),
-					'block_log'		=> array(
-						'datatype'		=> 'INT(10) UNSIGNED',
-						'allow_null'	=> false,
-						'default'		=> '0'
-					),
-					'block_type'			=> array(
-						'datatype'		=> 'SMALLINT(6)',
-						'allow_null'	=> false,
-						'default'		=> '0'
-					),
-				),
-				'INDEXES'		=> array(
-					'block_ip_idx'		=> array('block_ip'),
-					'block_type_idx'	=> array('block_type')
-				)
-			);
-
-			$db->create_table('blocking', $schema) or error('Unable to create blocking table', __FILE__, __LINE__, $db->error());
-    }
 } // rev.16
 
 if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 21)
@@ -1086,8 +1045,6 @@ if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_v
 
  		if (!array_key_exists('o_pms_min_kolvo', $pun_config))
 			$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_pms_min_kolvo\', \'0\')') or error('Unable to insert config value \'o_pms_min_kolvo\'', __FILE__, __LINE__, $db->error());
- 		if (!array_key_exists('o_blocking_user', $pun_config))
-			$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_blocking_user\', \'1\')') or error('Unable to insert config value \'o_blocking_user\'', __FILE__, __LINE__, $db->error());
 } // rev.31
 if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 32)
 {
@@ -1183,11 +1140,7 @@ if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_v
 } // rev.42
 if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 47)
 {
-	// For MySQL(i) without InnoDB, change the engine of the blocking table (for performance reasons)
-	if ($db_type == 'mysql' || $db_type == 'mysqli')
-		$db->query('ALTER TABLE '.$db->prefix.'blocking ENGINE = MyISAM') or error('Unable to change engine type of blocking table to MyISAM', __FILE__, __LINE__, $db->error());
-
-	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o_uploadile_%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
+	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o_uploadile_%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());
 
 	if (!array_key_exists('o_crypto_enable', $pun_config))
 		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_crypto_enable\', \'1\')') or error('Unable to insert config value \'o_crypto_enable\'', __FILE__, __LINE__, $db->error());
@@ -1241,7 +1194,7 @@ if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_v
 	  'PUN_MAX_POSTSIZE' => array('65535', true, ''),
 	  'FORUM_EOL' => array('"\r\n"', false, 'possible values can be PHP_EOL, "\r\n", "\n" or "\r"'),
 	  'FORUM_UA_OFF' => array('1', false, ''),
-	  'FORUM_AJAX_JQUERY' => array('\'//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js\'', true, ''),
+	  'FORUM_AJAX_JQUERY' => array('\'//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js\'', true, ''),
 	);
 
 	$conf_add = array();
@@ -1275,6 +1228,16 @@ if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_v
 	@unlink(PUN_ROOT.'js/minmax.js');
 	@unlink(PUN_ROOT.'install.php');
 } // rev.67
+if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 68)
+{
+	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o_blocking_%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());
+
+	if ($db->table_exists('blocking'))
+		$db->drop_table('blocking') or error('Unable to drop blocking table', __FILE__, __LINE__, $db->error());
+
+	if (!array_key_exists('o_enable_acaptcha', $pun_config))
+		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_enable_acaptcha\', \'1\')') or error('Unable to insert config value \'o_enable_acaptcha\'', __FILE__, __LINE__, $db->error());
+} // rev.68
 // Visman
 
 		// If we don't need to update the database, skip this stage
@@ -2502,4 +2465,3 @@ $db->close();
 
 if ($query_str != '')
 	exit('<script type="text/javascript">window.location="db_update.php'.$query_str.'&uid='.$uid.'"</script><noscript><meta http-equiv="refresh" content="0;url=db_update.php'.$query_str.'&uid='.$uid.'" /></noscript>');
-	

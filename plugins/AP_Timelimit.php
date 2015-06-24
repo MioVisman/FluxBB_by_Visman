@@ -37,13 +37,11 @@ if (isset($_POST['show_text']))
 			}
 
 	redirect(PLUGIN_URL, $lang_admin_plugin_timelimit['Plugin redirect']);
-
 }
 else
 {
 	// Display the admin navigation menu
 	generate_admin_menu($plugin);
-
 
 ?>
 	<div class="plugin blockform">
@@ -72,26 +70,29 @@ else
 							<tbody>
 <?php
 
-	$cur_index = 2;
+	$tabindex = 2;
 	$result = $db->query('SELECT g_id, g_title, g_deledit_interval FROM '.$db->prefix.'groups ORDER BY g_id') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
 
 	while ($cur_group = $db->fetch_assoc($result))
 		if ($cur_group['g_id'] > PUN_ADMIN && $cur_group['g_id'] != PUN_GUEST)
 		{
+
 ?>
 								<tr>
 									<th class="tcl" scope="col"><?php echo pun_htmlspecialchars($cur_group['g_title']) ?></th>
-									<td><input type="text" name="g_order[<?php echo $cur_group['g_id'] ?>]" value="<?php echo $cur_group['g_deledit_interval'] ?>"  tabindex="<?php echo ($cur_index++) ?>" size="10" maxlength="10" /></td>
+									<td><input type="text" name="g_order[<?php echo $cur_group['g_id'] ?>]" value="<?php echo $cur_group['g_deledit_interval'] ?>"  tabindex="<?php echo ($tabindex++) ?>" size="10" maxlength="10" /></td>
 								</tr>
 <?php
+
 		}
+
 ?>
 							</tbody>
 							</table>
 						</div>
 					</fieldset>
 				</div>
-				<p class="submitend"><input type="submit" name="show_text" value="<?php echo $lang_admin_plugin_timelimit['Show text button'] ?>" tabindex="<?php echo ($cur_index++) ?>" /></p>
+				<p class="submitend"><input type="submit" name="show_text" value="<?php echo $lang_admin_plugin_timelimit['Show text button'] ?>" tabindex="<?php echo ($tabindex++) ?>" /></p>
 			</form>
 		</div>
 	</div>

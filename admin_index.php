@@ -89,7 +89,7 @@ generate_admin_menu('index');
 				<dl>
 					<dt><?php echo $lang_admin_index['FluxBB version label'] ?></dt>
 					<dd>
-						<?php printf($lang_admin_index['FluxBB version data']."\n", $pun_config['o_cur_version'].'.'.$pun_config['o_cur_ver_revision'], '<a href="https://fluxbb.org/forums/viewtopic.php?id=4941">'.$lang_admin_index['Check for upgrade'].'</a>') ?>
+						<?php printf($lang_admin_index['FluxBB version data']."\n", $pun_config['o_cur_version'].'.'.$pun_config['o_cur_ver_revision'], '<a href="https://fluxbb.org/forums/viewtopic.php?id=4941">'.$lang_admin_index['Check for upgrade'].'</a>') ?> - <a href="https://github.com/MioVisman/FluxBB_by_Visman">GitHub</a>
 					</dd>
 					<dt><?php echo $lang_admin_index['Server statistics label'] ?></dt>
 					<dd>

@@ -26,9 +26,6 @@ require PUN_ROOT.'lang/'.$pun_user['language'].'/prof_reg.php';
 if ($pun_config['o_regs_allow'] == '0')
 	message($lang_register['No new regs']);
 
-// мод отслеживания ошибок ввода - Visman
-require PUN_ROOT.'include/security.php';
-vsecurity_get(1);
 
 // User pressed the cancel button
 if (isset($_GET['cancel']))
@@ -76,8 +73,6 @@ if (isset($_POST['form_sent']))
 	if ($db->num_rows($result))
 		message($lang_register['Registration flood']);
 
-// шифрование данных - Visman
-	$cry_time = check_for_crypto();
 
 	$username = pun_trim($_POST['req_user']);
 	$email1 = strtolower(pun_trim($_POST['req_email1']));
@@ -154,20 +149,6 @@ if (isset($_POST['form_sent']))
 	$email_setting = intval($_POST['email_setting']);
 	if ($email_setting < 0 || $email_setting > 2)
 		$email_setting = $pun_config['o_default_email_setting'];
-
-	// проверка на робота - Visman
-	if ($pun_config['o_coding_forms'] == '1' && $_POST['form_sent'] != '11')
-		$errors = array($lang_sec['Enable JS']);
-	else if (empty($_POST['csrf_token']) || empty($_POST['cr']) || empty($_POST['req_user']) || empty($_POST['req_email1']) || !isset($_POST['timezone']))
-		$errors = array('Error 1: '.$lang_sec['You are robot']);
-	else if (empty($_SERVER['HTTP_ACCEPT_CHARSET']) && empty($_SERVER['HTTP_ACCEPT_ENCODING']) && empty($_SERVER['HTTP_ACCEPT_LANGUAGE']))
-		$errors = array('Error 2: '.$lang_sec['You are robot']);
-	else if ($_POST['csrf_token'] != csrf_hash() || !isset($_POST['tunt']) || $_POST['tunt'] != '9')
-		$errors = array('Error 3: '.$lang_sec['You are robot2']);
-	else if ($cry_time < 10)
-		$errors = array($lang_sec['You fast']);
-	else if ($cry_time > 3600)
-		$errors = array($lang_sec['You slowly']);
 
 	flux_hook('register_after_validation');
 
@@ -289,8 +270,8 @@ if (isset($_POST['form_sent']))
 
 
 $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_register['Register']);
-$required_fields = array(random_for_crypto('req_user') => $lang_common['Username'], random_for_crypto('req_password1') => $lang_common['Password'], random_for_crypto('req_password2') => $lang_prof_reg['Confirm pass'], random_for_crypto('req_email1') => $lang_common['Email'], random_for_crypto('req_email2') => $lang_common['Email'].' 2');
-$focus_element = array('register', random_for_crypto('req_user'));
+$required_fields = array('req_user' => $lang_common['Username'], 'req_password1' => $lang_common['Password'], 'req_password2' => $lang_prof_reg['Confirm pass'], 'req_email1' => $lang_common['Email'], 'req_email2' => $lang_common['Email'].' 2');
+$focus_element = array('register', 'req_user');
 
 flux_hook('register_before_header');
 
@@ -304,8 +285,6 @@ $email_setting = isset($email_setting) ? $email_setting : $pun_config['o_default
 // If there are errors, we display them
 if (!empty($errors))
 {
-	// мод отслеживания ошибок ввода - Visman
-	vsecurity_get(1, 'UserName = '.$username."\n".'Email = '.$email1);
 
 ?>
 <div id="posterror" class="block">
@@ -341,8 +320,8 @@ if (!empty($errors))
 				<fieldset>
 					<legend><?php echo $lang_register['Username legend'] ?></legend>
 					<div class="infldset">
-						<input type="hidden" id="form_sent" name="form_sent" value="1" />
-						<label class="required"><strong><?php echo $lang_common['Username'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="text" name="<?php echo random_for_crypto('req_user') ?>" value="<?php if (isset($_POST['req_user'])) echo pun_htmlspecialchars($_POST['req_user']); ?>" size="25" maxlength="25" /><br /></label>
+						<input type="hidden" name="form_sent" value="1" />
+						<label class="required"><strong><?php echo $lang_common['Username'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="text" name="req_user" value="<?php if (isset($_POST['req_user'])) echo pun_htmlspecialchars($_POST['req_user']); ?>" size="25" maxlength="25" /><br /></label>
 					</div>
 				</fieldset>
 			</div>
@@ -350,8 +329,8 @@ if (!empty($errors))
 				<fieldset>
 					<legend><?php echo $lang_register['Pass legend'] ?></legend>
 					<div class="infldset">
-						<label class="conl required"><strong><?php echo $lang_common['Password'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="password" name="<?php echo random_for_crypto('req_password1') ?>" value="<?php if (isset($_POST['req_password1'])) echo pun_htmlspecialchars($_POST['req_password1']); ?>" size="16" /><br /></label>
-						<label class="conl required"><strong><?php echo $lang_prof_reg['Confirm pass'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="password" name="<?php echo random_for_crypto('req_password2') ?>" value="<?php if (isset($_POST['req_password2'])) echo pun_htmlspecialchars($_POST['req_password2']); ?>" size="16" /><br /></label>
+						<label class="conl required"><strong><?php echo $lang_common['Password'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="password" name="req_password1" value="<?php if (isset($_POST['req_password1'])) echo pun_htmlspecialchars($_POST['req_password1']); ?>" size="16" /><br /></label>
+						<label class="conl required"><strong><?php echo $lang_prof_reg['Confirm pass'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="password" name="req_password2" value="<?php if (isset($_POST['req_password2'])) echo pun_htmlspecialchars($_POST['req_password2']); ?>" size="16" /><br /></label>
 						<p class="clearb"><?php echo $lang_register['Pass info'] ?></p>
 					</div>
 				</fieldset>
@@ -362,27 +341,10 @@ if (!empty($errors))
 					<div class="infldset">
 <?php if ($pun_config['o_regs_verify'] == '1'): ?>						<p><?php echo $lang_register['Email info'] ?></p>
 <?php endif; ?>						<label class="required"><strong><?php echo $lang_common['Email'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br />
-						<input type="text" name="<?php echo random_for_crypto('req_email1') ?>" value="<?php if (isset($_POST['req_email1'])) echo pun_htmlspecialchars($_POST['req_email1']); ?>" size="50" maxlength="80" /><br /></label>
+						<input type="text" name="req_email1" value="<?php if (isset($_POST['req_email1'])) echo pun_htmlspecialchars($_POST['req_email1']); ?>" size="50" maxlength="80" /><br /></label>
 <?php if ($pun_config['o_regs_verify'] == '1'): ?>						<label class="required"><strong><?php echo $lang_register['Confirm email'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br />
-						<input type="text" name="<?php echo random_for_crypto('req_email2') ?>" value="<?php if (isset($_POST['req_email2'])) echo pun_htmlspecialchars($_POST['req_email2']); ?>" size="50" maxlength="80" /><br /></label>
+						<input type="text" name="req_email2" value="<?php if (isset($_POST['req_email2'])) echo pun_htmlspecialchars($_POST['req_email2']); ?>" size="50" maxlength="80" /><br /></label>
 <?php endif; ?>					</div>
-				</fieldset>
-			</div>
-			<div class="inform">
-				<fieldset>
-					<legend><?php echo $lang_sec['Robot test'] ?></legend>
-					<div class="infldset">
-						<div class="rbox">
-<?php if ($pun_config['o_coding_forms'] == '1') {
-	$page_js['c'][] = 'document.getElementById("form_sent").value="11";';
-?>
-							<noscript><p style="color: red; font-weight: bold"><?php echo $lang_sec['Enable JS'] ?></p></noscript>
-<?php } ?>
-							<label><span class="b64"><?php echo encode_for_js('<input type="checkbox" name="'.random_for_crypto('tunt').'" value="9" />') ?></span><?php echo $lang_sec['Not robot'] ?><br /></label>
-							<span class="b64"><?php echo encode_for_js('<input type="hidden" name="'.random_for_crypto('csrf_token').'" value="'.csrf_hash().'" />') ?></span>
-						</div>
-						<p class="clearb"><?php echo $lang_sec['Robot info'] ?></p>
-					</div>
 				</fieldset>
 			</div>
 			<div class="inform">
@@ -391,7 +353,7 @@ if (!empty($errors))
 					<div class="infldset">
 						<p><?php echo $lang_prof_reg['Time zone info'] ?></p>
 						<label><?php echo $lang_prof_reg['Time zone']."\n" ?>
-						<br /><select id="time_zone" name="<?php echo random_for_crypto('timezone') ?>">
+						<br /><select id="time_zone" name="timezone">
 							<option value="-12"<?php if ($timezone == -12) echo ' selected="selected"' ?>><?php echo $lang_prof_reg['UTC-12:00'] ?></option>
 							<option value="-11"<?php if ($timezone == -11) echo ' selected="selected"' ?>><?php echo $lang_prof_reg['UTC-11:00'] ?></option>
 							<option value="-10"<?php if ($timezone == -10) echo ' selected="selected"' ?>><?php echo $lang_prof_reg['UTC-10:00'] ?></option>
@@ -435,7 +397,7 @@ if (!empty($errors))
 						</select>
 						<br /></label>
 						<div class="rbox">
-							<label><input type="checkbox" name="<?php echo random_for_crypto('dst') ?>" value="1"<?php if ($dst == '1') echo ' checked="checked"' ?> /><?php echo $lang_prof_reg['DST'] ?><br /></label>
+							<label><input type="checkbox" name="dst" value="1"<?php if ($dst == '1') echo ' checked="checked"' ?> /><?php echo $lang_prof_reg['DST'] ?><br /></label>
 						</div>
 <?php
 
@@ -447,7 +409,7 @@ if (!empty($errors))
 
 ?>
 							<label><?php echo $lang_prof_reg['Language'] ?>
-							<br /><select name="<?php echo random_for_crypto('language') ?>">
+							<br /><select name="language">
 <?php
 
 			foreach ($languages as $temp)
@@ -474,16 +436,15 @@ if (!empty($errors))
 					<div class="infldset">
 						<p><?php echo $lang_prof_reg['Email setting info'] ?></p>
 						<div class="rbox">
-							<label><input type="radio" name="<?php echo random_for_crypto('email_setting') ?>" value="0"<?php if ($email_setting == '0') echo ' checked="checked"' ?> /><?php echo $lang_prof_reg['Email setting 1'] ?><br /></label>
-							<label><input type="radio" name="<?php echo random_for_crypto('email_setting') ?>" value="1"<?php if ($email_setting == '1') echo ' checked="checked"' ?> /><?php echo $lang_prof_reg['Email setting 2'] ?><br /></label>
-							<label><input type="radio" name="<?php echo random_for_crypto('email_setting') ?>" value="2"<?php if ($email_setting == '2') echo ' checked="checked"' ?> /><?php echo $lang_prof_reg['Email setting 3'] ?><br /></label>
+							<label><input type="radio" name="email_setting" value="0"<?php if ($email_setting == '0') echo ' checked="checked"' ?> /><?php echo $lang_prof_reg['Email setting 1'] ?><br /></label>
+							<label><input type="radio" name="email_setting" value="1"<?php if ($email_setting == '1') echo ' checked="checked"' ?> /><?php echo $lang_prof_reg['Email setting 2'] ?><br /></label>
+							<label><input type="radio" name="email_setting" value="2"<?php if ($email_setting == '2') echo ' checked="checked"' ?> /><?php echo $lang_prof_reg['Email setting 3'] ?><br /></label>
 						</div>
 <?php if ($pun_config['o_regs_verify'] == '0'): ?>						<p><?php echo $lang_prof_reg['Save user/pass info'] ?></p>
 						<div class="rbox">
-							<label><input type="checkbox" name="<?php echo random_for_crypto('save_pass') ?>" value="1"<?php if (isset($save_pass) && $save_pass == '1') echo ' checked="checked"' ?> /><?php echo $lang_prof_reg['Save user/pass'] ?><br /></label>
+							<label><input type="checkbox" name="save_pass" value="1"<?php if (isset($save_pass) && $save_pass == '1') echo ' checked="checked"' ?> /><?php echo $lang_prof_reg['Save user/pass'] ?><br /></label>
 						</div>
 <?php endif; ?>					</div>
-					<input type="hidden" name="cr" value="<?php echo random_for_crypto() ?>" />
 				</fieldset>
 			</div>
 <?php flux_hook('register_before_submit'); ?>
