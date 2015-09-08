@@ -9,7 +9,7 @@
 // The FluxBB version this script updates to
 define('UPDATE_TO', '1.5.8');
 
-define('UPDATE_TO_VER_REVISION', 68);	// номер сборки - Visman
+define('UPDATE_TO_VER_REVISION', 69);	// номер сборки - Visman
 
 define('UPDATE_TO_DB_REVISION', 21);
 define('UPDATE_TO_SI_REVISION', 2);

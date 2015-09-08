@@ -92,8 +92,6 @@ function check_cookie(&$pun_user)
 		if (!$pun_user['disp_posts'])
 			$pun_user['disp_posts'] = $pun_config['o_disp_posts_default'];
 
-		IF (!defined('WITT_ENABLE')) // Кто в этой теме - Visman
-		{
 		// Define this if you want this visit to affect the online list and the users last visit data
 		if (!defined('PUN_QUIET_VISIT'))
 		{
@@ -110,11 +108,11 @@ function check_cookie(&$pun_user)
 					case 'mysql_innodb':
 					case 'mysqli_innodb':
 					case 'sqlite':
-						$db->query('REPLACE INTO '.$db->prefix.'online (user_id, ident, logged) VALUES('.$pun_user['id'].', \''.$db->escape($pun_user['username']).'\', '.$pun_user['logged'].')') or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
+						witt_query('REPLACE INTO '.$db->prefix.'online (user_id, ident, logged:?comma?::?column?:) VALUES('.$pun_user['id'].', \''.$db->escape($pun_user['username']).'\', '.$pun_user['logged'].':?comma?::?value?:)'); // MOD Кто в этой теме - Visman
 						break;
 
 					default:
-						$db->query('INSERT INTO '.$db->prefix.'online (user_id, ident, logged) SELECT '.$pun_user['id'].', \''.$db->escape($pun_user['username']).'\', '.$pun_user['logged'].' WHERE NOT EXISTS (SELECT 1 FROM '.$db->prefix.'online WHERE user_id='.$pun_user['id'].')') or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
+						witt_query('INSERT INTO '.$db->prefix.'online (user_id, ident, logged:?comma?::?column?:) SELECT '.$pun_user['id'].', \''.$db->escape($pun_user['username']).'\', '.$pun_user['logged'].':?comma?::?value?: WHERE NOT EXISTS (SELECT 1 FROM '.$db->prefix.'online WHERE user_id='.$pun_user['id'].')'); // MOD Кто в этой теме - Visman
 						break;
 				}
 
@@ -131,7 +129,7 @@ function check_cookie(&$pun_user)
 				}
 
 				$idle_sql = ($pun_user['idle'] == '1') ? ', idle=0' : '';
-				$db->query('UPDATE '.$db->prefix.'online SET logged='.$now.$idle_sql.' WHERE user_id='.$pun_user['id']) or error('Unable to update online list', __FILE__, __LINE__, $db->error());
+				witt_query('UPDATE '.$db->prefix.'online SET logged='.$now.$idle_sql.':?comma?::?column?::?equal?::?value?: WHERE user_id='.$pun_user['id']); // MOD Кто в этой теме - Visman
 
 				// Update tracked topics with the current expire time
 				if (isset($_COOKIE[$cookie_name.'_track']))
@@ -143,7 +141,6 @@ function check_cookie(&$pun_user)
 			if (!$pun_user['logged'])
 				$pun_user['logged'] = $pun_user['last_visit'];
 		}
-		} // Кто в этой теме - Visman
 
 		$pun_user['is_guest'] = false;
 		$pun_user['is_admmod'] = $pun_user['g_id'] == PUN_ADMIN || $pun_user['g_moderator'] == '1';
@@ -278,7 +275,7 @@ function get_admin_ids()
 //
 function set_default_user()
 {
-	global $db, $db_type, $pun_user, $pun_config, $cookie_name;
+	global $db, $db_type, $pun_user, $pun_config, $cookie_name, $languages;
 
 	$remote_addr = get_remote_address();
 	
@@ -295,8 +292,6 @@ function set_default_user()
 
 	$pun_user = $db->fetch_assoc($result);
 
-	IF (!defined('WITT_ENABLE')) // Кто в этой теме - Visman
-	{
 	// Update online list
 	if (!$pun_user['logged'])
 	{
@@ -310,17 +305,16 @@ function set_default_user()
 			case 'mysql_innodb':
 			case 'mysqli_innodb':
 			case 'sqlite':
-				$db->query('REPLACE INTO '.$db->prefix.'online (user_id, ident, logged) VALUES(1, \''.$db->escape($remote_addr).'\', '.$pun_user['logged'].')') or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
+				witt_query('REPLACE INTO '.$db->prefix.'online (user_id, ident, logged:?comma?::?column?:) VALUES(1, \''.$db->escape($remote_addr).'\', '.$pun_user['logged'].':?comma?::?value?:)'); // MOD Кто в этой теме - Visman
 				break;
 
 			default:
-				$db->query('INSERT INTO '.$db->prefix.'online (user_id, ident, logged) SELECT 1, \''.$db->escape($remote_addr).'\', '.$pun_user['logged'].' WHERE NOT EXISTS (SELECT 1 FROM '.$db->prefix.'online WHERE ident=\''.$db->escape($remote_addr).'\')') or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
+				witt_query('INSERT INTO '.$db->prefix.'online (user_id, ident, logged:?comma?::?column?:) SELECT 1, \''.$db->escape($remote_addr).'\', '.$pun_user['logged'].':?comma?::?value?: WHERE NOT EXISTS (SELECT 1 FROM '.$db->prefix.'online WHERE ident=\''.$db->escape($remote_addr).'\')'); // MOD Кто в этой теме - Visman
 				break;
 		}
 	}
 	else
-		$db->query('UPDATE '.$db->prefix.'online SET logged='.time().' WHERE ident=\''.$db->escape($remote_addr).'\'') or error('Unable to update online list', __FILE__, __LINE__, $db->error());
-	} // Кто в этой теме - Visman
+		witt_query('UPDATE '.$db->prefix.'online SET logged='.time().':?comma?::?column?::?equal?::?value?: WHERE ident=\''.$db->escape($remote_addr).'\''); // MOD Кто в этой теме - Visman
 
 	$pun_user['disp_topics'] = $pun_config['o_disp_topics_default'];
 	$pun_user['disp_posts'] = $pun_config['o_disp_posts_default'];
@@ -335,8 +329,9 @@ function set_default_user()
 
 	if (!empty($_COOKIE[$cookie_name.'_glang'])) // быстрое переключение языка - Visman
 	{
-		$language = preg_replace('%[^\w]%', '', pun_trim($_COOKIE[$cookie_name.'_glang']));
-		if (file_exists(PUN_ROOT.'lang/'.$language.'/common.php'))
+		$language = preg_replace('%[^\w]%', '', $_COOKIE[$cookie_name.'_glang']);
+		$languages = forum_list_langs();
+		if (in_array($language, $languages))
 			$pun_user['language'] = $language;
 	}
 
@@ -1042,6 +1037,8 @@ function paginate($num_pages, $cur_page, $link)
 function message($message, $no_back_link = false, $http_status = null)
 {
 	global $db, $lang_common, $pun_config, $pun_start, $tpl_main, $pun_user;
+
+  witt_query(); // MOD Кто в этой теме - Visman
 
 	// Did we receive a custom header?
 	if(!is_null($http_status)) {
@@ -2300,6 +2297,43 @@ function generation_js($arr)
 }
 
 
+//
+// MOD Кто в этой теме
+// Отложенное выполнение запроса
+//
+function witt_query($var = NULL)
+{
+	global $db;
+	static $query;
+
+	if (!defined('WITT_ENABLE'))
+	{
+		if (is_string($var))
+			$db->query(str_replace(array(':?comma?:', ':?equal?:', ':?column?:', ':?value?:'), '', $var)) or error('Unable to insert/update into online list', __FILE__, __LINE__, $db->error());
+	}
+	else
+	{
+		if (is_string($var))
+			$query = $var;
+
+		elseif (!empty($query))
+		{
+			if (is_array($var) && isset($var['column']) && isset($var['value']))
+				$query = str_replace(array(':?comma?:', ':?equal?:', ':?column?:', ':?value?:'), array(', ', '=', $var['column'], '\''.$db->escape($var['value']).'\''), $query);
+			else
+				$query = str_replace(array(':?comma?:', ':?equal?:', ':?column?:', ':?value?:'), '', $query);
+
+			$db->query($query) or error('Unable to insert/update into online list', __FILE__, __LINE__, $db->error());
+
+			$query = NULL;
+		}
+	}
+}
+
+
+//
+// MOD Subforums
+//
 function sf_crumbs($id)
 {
 	global $sf_array_desc;

@@ -28,7 +28,7 @@ function get_useragent_names($usrag)
 	$usrag = strtolower($usrag);
 	
 	// Browser detection
-	$browsers = array('Opera', 'Avant', 'Maxthon', 'MSIE', 'OPR', 'YaBrowser', 'Chromium', 'Chrome', 'Arora', 'Epiphany', 'Galeon', 'iCab', 'Konqueror', 'Safari', 'Flock', 'Iceweasel', 'SeaMonkey', 'Netscape', 'Firefox', 'K-Meleon', 'Camino', 'Trident');
+	$browsers = array('Opera', 'Avant', 'Maxthon', 'Edge', 'MSIE', 'OPR', 'YaBrowser', 'Chromium', 'Chrome', 'Arora', 'Epiphany', 'Galeon', 'iCab', 'Konqueror', 'Safari', 'Flock', 'Iceweasel', 'SeaMonkey', 'Netscape', 'K-Meleon', 'Firefox', 'Camino', 'Trident');
 
 	$browser = ua_search_for_item($browsers, $usrag);
 
@@ -39,51 +39,71 @@ function get_useragent_names($usrag)
 	{
 		if (intval($browser_version) >= 9)
 			$browser_img = 'Internet Explorer 9';
+
 		elseif (intval($browser_version) >= 7)
 			$browser_img = 'Internet Explorer 7';
 
 		$browser = 'Internet Explorer';
 	}
+
+	elseif ($browser == 'Edge')
+		$browser = 'Microsoft Edge';
+
 	elseif ($browser == 'OPR')
 		$browser = 'Opera';
+
 	elseif (empty($browser))
 		$browser = 'Unknown';
 
 	// System detection
-	$systems = array('Amiga', 'BeOS', 'FreeBSD', 'HP-UX', 'Linux', 'NetBSD', 'OS/2', 'SunOS', 'Symbian', 'Unix', 'Windows', 'Samsung', 'Sun', 'Macintosh', 'Mac', 'J2ME/MIDP');
+	$systems = array('Windows', 'Linux', 'Macintosh', 'Mac', 'Amiga', 'BeOS', 'FreeBSD', 'HP-UX', 'NetBSD', 'OS/2', 'SunOS', 'Symbian', 'Unix', 'Samsung', 'Sun', 'J2ME/MIDP');
 	
 	$system = ua_search_for_item($systems, $usrag);
 	
 	if ($system == 'Linux')
 	{
-		$systems = array('CentOS', 'Debian', 'Fedora', 'Freespire', 'Gentoo', 'Katonix', 'KateOS', 'Knoppix', 'Kubuntu', 'Linspire', 'Mandriva', 'Mandrake', 'RedHat', 'Slackware', 'Slax', 'Suse', 'Xubuntu', 'Ubuntu', 'Xandros', 'Arch', 'Ark', 'Android');
+		$systems = array('Android', 'CentOS', 'Debian', 'Fedora', 'Freespire', 'Gentoo', 'Katonix', 'KateOS', 'Knoppix', 'Kubuntu', 'Linspire', 'Mandriva', 'Mandrake', 'RedHat', 'Slackware', 'Slax', 'Suse', 'Xubuntu', 'Ubuntu', 'Xandros', 'Arch', 'Ark');
 
 		$system = ua_search_for_item($systems, $usrag);
+
 		if (empty($system))
 			$system = 'Linux';
+
 		elseif ($system == 'Mandrake')
 			$system = 'Mandriva';
 	}
+
 	elseif ($system == 'Windows')
 	{
 		preg_match('#windows nt ([\.0-9]+)#', $usrag, $matches);
-		$version = isset($matches[1]) ? $matches[1] : 0;
+		$version = isset($matches[1]) ? $matches[1] : '';
 
-		if ($version == 5.1)
-			$system = 'Windows XP';
-		elseif ($version == 6.1)
-			$system = 'Windows 7';
-		elseif ($version == 6.3)
-			$system = 'Windows 8.1';
-		elseif ($version == 6.2)
-			$system = 'Windows 8';
-		elseif ($version == 6.0)
-			$system = 'Windows Vista';
-		elseif ($version == 6.4)
-			$system = 'Windows 10';
+		switch ($version) {
+			case '6.1':
+				$system = 'Windows 7';
+				break;
+			case '6.3':
+				$system = 'Windows 8.1';
+				break;
+			case '5.1':
+			case '5.2':
+				$system = 'Windows XP';
+				break;
+			case '6.2':
+				$system = 'Windows 8';
+				break;
+			case '6.0':
+				$system = 'Windows Vista';
+				break;
+			case '10.0':
+				$system = 'Windows 10';
+				break;
+		}
 	}
+
 	elseif ($system == 'Mac')
 		$system = 'Macintosh';
+
 	elseif (empty($system))
 		$system = 'Unknown';
 
@@ -91,10 +111,10 @@ function get_useragent_names($usrag)
 		$browser_img = $browser;
 
 	$result = array(
-		'system'			=> $system,
-		'browser_img'		=> $browser_img,
+		'system'					=> $system,
+		'browser_img'			=> $browser_img,
 		'browser_version'	=> $browser_version,
-		'browser_name'		=> ($browser != 'Unknown') ? $browser.' '.$browser_version : $browser
+		'browser_name'		=> $browser.' '.$browser_version
 	);
 
 	return $result;

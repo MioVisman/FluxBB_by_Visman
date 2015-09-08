@@ -20,9 +20,11 @@ ob_end_clean();
 ob_start();
 
 // START быстрое переключение языка - Visman
-require PUN_ROOT.'lang/languages.php';
+if (!isset($languages) || !is_array($languages))
+	$languages = forum_list_langs();
+
 $lang_temp = '';
-if (isset($languages) && count($languages) > 1)
+if (count($languages) > 1)
 {
 	$lang_temp .= "\t\t\t\t".'<form id="qjump2" action="misc.php" method="get">'."\n\t\t\t\t\t".'<div><label>'."\n\t\t\t\t\t\t".'<input type="hidden" name="action" value="lang" />'."\n\t\t\t\t\t\t".'<select name="lang" onchange="this.form.submit()">'."\n";
 	foreach ($languages as $temp)

@@ -172,11 +172,11 @@ html, body, .pun table, .pun div, .pun form, .pun p, .pun h1, .pun h2, .pun h3, 
 }
 
 #punredirect, #punmaint {
-	padding: 60px 20% 12px 20%;
+	padding: 60px 40px 12px;
 }
 
 #puninstall, #pundb_update {
-	padding: 20px 10%;
+	padding: 20px 40px;
 }
 
 .pun .punwrap {
@@ -1817,4 +1817,48 @@ span.shlight {
 	font-weight: bold;
 	background-color: #F3BFCC;
 	color: #BC2A4D;
+}
+
+/*---- адаптивная верстка ----*/
+@media only screen and (max-width: 1024px) {
+.pun {
+	padding: 10px 20px;
+}
+}
+
+@media only screen and (max-width: 960px) {
+.pun {
+	padding: 10px;
+}
+}
+
+@media only screen and (max-width: 800px) {
+.pun {
+	padding: 5px;
+}
+
+.pun .punwrap {
+	padding: 18px 5px;
+}
+
+.pun .quotebox {
+	margin: 0.5em;
+	padding: 0 0.5em;
+}
+
+.pun .block2col .blockform, .pun .block2col .block {
+    margin-left: 13.5em;
+}
+
+.pun .inform {
+    padding: 0 5px;
+}
+
+.pun form .buttons {
+    padding-left: 21px;
+}
+
+#adintro, #adstats, #adalerts {
+    padding: 5px;
+}
 }

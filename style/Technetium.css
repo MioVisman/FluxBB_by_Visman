@@ -246,8 +246,7 @@ body {
 }
 
 #punredirect, #punmaint, #puninstall, #pundb_update {
-	margin: 50px 20% 12px 20%;
-	width: auto;
+	padding: 50px 40px 12px;
 }
 
 

@@ -117,12 +117,26 @@ if (isset($_GET['search_hl']))
 }
 // search HL - Visman
 
-// *****************************************************************************
-// Кто в этой теме - Visman
+// StickFP - ADD t.stick_fp, - ADD t.poll_type, t.poll_time, t.poll_term, t.poll_kol, - Visman
+// Fetch some info about the topic
+if (!$pun_user['is_guest'])
+	$result = $db->query('SELECT t.stick_fp, t.subject, t.closed, t.num_replies, t.sticky, t.first_post_id, t.poll_type, t.poll_time, t.poll_term, t.poll_kol, f.id AS forum_id, f.forum_name, f.moderators, fp.post_replies, s.user_id AS is_subscribed FROM '.$db->prefix.'topics AS t INNER JOIN '.$db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$db->prefix.'topic_subscriptions AS s ON (t.id=s.topic_id AND s.user_id='.$pun_user['id'].') LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.id='.$id.' AND t.moved_to IS NULL') or error('Unable to fetch topic info', __FILE__, __LINE__, $db->error());
+else
+	$result = $db->query('SELECT t.stick_fp, t.subject, t.closed, t.num_replies, t.sticky, t.first_post_id, t.poll_type, t.poll_time, t.poll_term, t.poll_kol, f.id AS forum_id, f.forum_name, f.moderators, fp.post_replies, 0 AS is_subscribed FROM '.$db->prefix.'topics AS t INNER JOIN '.$db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.id='.$id.' AND t.moved_to IS NULL') or error('Unable to fetch topic info', __FILE__, __LINE__, $db->error());
+
+if (!$db->num_rows($result))
+	message($lang_common['Bad request'], false, '404 Not Found');
+
+$cur_topic = $db->fetch_assoc($result);
+
+// MOD subforums - Visman
+if (!isset($sf_array_asc[$cur_topic['forum_id']]))
+	message($lang_common['Bad request'], false, '404 Not Found');
+
+// MOD Кто в этой теме - Visman
 if (defined('WITT_ENABLE'))
 {
 	$now = time();
-	$remote_addr = get_remote_address();
 
 	// подготовка массива посещений
 	if (empty($pun_user['witt_data']))
@@ -145,111 +159,20 @@ if (defined('WITT_ENABLE'))
 			$i++;
 		}
 		$pun_user['witt_data'] = serialize($witt_du);
+
+		unset($witt_du);
 	}
 
-	// оставим о себе данные в online
-	if ($pun_user['is_guest'])
-	{
-		// Update online list
-		if (!$pun_user['logged'])
-		{
-			$pun_user['logged'] = time();
+	unset($witt_ar);
 
-			// With MySQL/MySQLi/SQLite, REPLACE INTO avoids a user having two rows in the online table
-			switch ($db_type)
-			{
-				case 'mysql':
-				case 'mysqli':
-				case 'mysql_innodb':
-				case 'mysqli_innodb':
-				case 'sqlite':
-					$db->query('REPLACE INTO '.$db->prefix.'online (user_id, ident, logged, witt_data) VALUES(1, \''.$db->escape($pun_user['ident']).'\', '.$pun_user['logged'].', \''.$db->escape($pun_user['witt_data']).'\')') or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
-					break;
-
-				default:
-					$db->query('INSERT INTO '.$db->prefix.'online (user_id, ident, logged, witt_data) SELECT 1, \''.$db->escape($pun_user['ident']).'\', '.$pun_user['logged'].', \''.$db->escape($pun_user['witt_data']).'\' WHERE NOT EXISTS (SELECT 1 FROM '.$db->prefix.'online WHERE ident=\''.$db->escape($pun_user['ident']).'\')') or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
-					break;
-			}
-		}
-		else
-			$db->query('UPDATE '.$db->prefix.'online SET logged='.$now.', witt_data=\''.$db->escape($pun_user['witt_data']).'\' WHERE ident=\''.$db->escape($pun_user['ident']).'\'') or error('Unable to update online list', __FILE__, __LINE__, $db->error());
-	}
-	else
-	{
-		// Define this if you want this visit to affect the online list and the users last visit data
-		if (!defined('PUN_QUIET_VISIT'))
-		{
-			// Update the online list
-			if (!$pun_user['logged'])
-			{
-				$pun_user['logged'] = $now;
-
-				// With MySQL/MySQLi/SQLite, REPLACE INTO avoids a user having two rows in the online table
-				switch ($db_type)
-				{
-					case 'mysql':
-					case 'mysqli':
-					case 'mysql_innodb':
-					case 'mysqli_innodb':
-					case 'sqlite':
-						$db->query('REPLACE INTO '.$db->prefix.'online (user_id, ident, logged, witt_data) VALUES('.$pun_user['id'].', \''.$db->escape($pun_user['username']).'\', '.$pun_user['logged'].', \''.$db->escape($pun_user['witt_data']).'\')') or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
-						break;
-
-					default:
-						$db->query('INSERT INTO '.$db->prefix.'online (user_id, ident, logged, witt_data) SELECT '.$pun_user['id'].', \''.$db->escape($pun_user['username']).'\', '.$pun_user['logged'].', \''.$db->escape($pun_user['witt_data']).'\' WHERE NOT EXISTS (SELECT 1 FROM '.$db->prefix.'online WHERE user_id='.$pun_user['id'].')') or error('Unable to insert into online list', __FILE__, __LINE__, $db->error());
-						break;
-				}
-
-				// Reset tracked topics
-				set_tracked_topics(null);
-			}
-			else
-			{
-				// Special case: We've timed out, but no other user has browsed the forums since we timed out
-				if ($pun_user['logged'] < ($now-$pun_config['o_timeout_visit']))
-				{
-					$db->query('UPDATE '.$db->prefix.'users SET last_visit='.$pun_user['logged'].' WHERE id='.$pun_user['id']) or error('Unable to update user visit data', __FILE__, __LINE__, $db->error());
-					$pun_user['last_visit'] = $pun_user['logged'];
-				}
-
-				$idle_sql = ($pun_user['idle'] == '1') ? ', idle=0' : '';
-				$db->query('UPDATE '.$db->prefix.'online SET logged='.$now.$idle_sql.', witt_data=\''.$db->escape($pun_user['witt_data']).'\' WHERE user_id='.$pun_user['id']) or error('Unable to update online list', __FILE__, __LINE__, $db->error());
-
-				// Update tracked topics with the current expire time
-				if (isset($_COOKIE[$cookie_name.'_track']))
-					forum_setcookie($cookie_name.'_track', $_COOKIE[$cookie_name.'_track'], $now + $pun_config['o_timeout_visit']);
-			}
-		}
-		else
-		{
-			if (!$pun_user['logged'])
-				$pun_user['logged'] = $pun_user['last_visit'];
-		}
-	}
+	// Отложенное выполнение запроса обновления таблицы online
+	witt_query(array('column' => 'witt_data', 'value' => $pun_user['witt_data']));
 
 	// смотрим кто в online
 	$witt_us = array(1 => array());
 	update_users_online($id, $witt_us);
-	
 }
-// Кто в этой теме - Visman
-// *****************************************************************************
-
-// StickFP - ADD t.stick_fp, - ADD t.poll_type, t.poll_time, t.poll_term, t.poll_kol, - Visman
-// Fetch some info about the topic
-if (!$pun_user['is_guest'])
-	$result = $db->query('SELECT t.stick_fp, t.subject, t.closed, t.num_replies, t.sticky, t.first_post_id, t.poll_type, t.poll_time, t.poll_term, t.poll_kol, f.id AS forum_id, f.forum_name, f.moderators, fp.post_replies, s.user_id AS is_subscribed FROM '.$db->prefix.'topics AS t INNER JOIN '.$db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$db->prefix.'topic_subscriptions AS s ON (t.id=s.topic_id AND s.user_id='.$pun_user['id'].') LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.id='.$id.' AND t.moved_to IS NULL') or error('Unable to fetch topic info', __FILE__, __LINE__, $db->error());
-else
-	$result = $db->query('SELECT t.stick_fp, t.subject, t.closed, t.num_replies, t.sticky, t.first_post_id, t.poll_type, t.poll_time, t.poll_term, t.poll_kol, f.id AS forum_id, f.forum_name, f.moderators, fp.post_replies, 0 AS is_subscribed FROM '.$db->prefix.'topics AS t INNER JOIN '.$db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.id='.$id.' AND t.moved_to IS NULL') or error('Unable to fetch topic info', __FILE__, __LINE__, $db->error());
-
-if (!$db->num_rows($result))
-	message($lang_common['Bad request'], false, '404 Not Found');
-
-$cur_topic = $db->fetch_assoc($result);
-
-// MOD subforums - Visman
-if (!isset($sf_array_asc[$cur_topic['forum_id']]))
-	message($lang_common['Bad request'], false, '404 Not Found');
+// MOD Кто в этой теме - Visman
 
 // Sort out who the moderators are and if we are currently a moderator (or an admin)
 $mods_array = ($cur_topic['moderators'] != '') ? unserialize($cur_topic['moderators']) : array();
