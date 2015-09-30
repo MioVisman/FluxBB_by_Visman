@@ -1324,3 +1324,9 @@ span.shlight {
 .pun textarea {
 	resize: vertical;
 }
+
+/* Адаптивная верстка
+----------------------------------------------------------------*/
+#brdmenu-button {
+	display: none;
+}

@@ -32,7 +32,7 @@ function get_useragent_names($usrag)
 
 	$browser = ua_search_for_item($browsers, $usrag);
 
-	preg_match('#'.preg_quote(strtolower(($browser == 'Opera' ? 'Version' : ($browser == 'Trident' ? 'rv:' : $browser)))).'[\s/]*([\.0-9]+)#', $usrag, $matches);
+	preg_match('#'.preg_quote(strtolower((in_array($browser, array('Safari', 'Opera')) ? 'Version' : ($browser == 'Trident' ? 'rv:' : $browser)))).'[\s/]*([\.0-9]+)#', $usrag, $matches);
 	$browser_version = isset($matches[1]) ? $matches[1] : '';
 
 	if ($browser == 'Trident' && !empty($browser_version) || $browser == 'MSIE')
