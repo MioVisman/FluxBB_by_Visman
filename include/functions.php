@@ -1167,8 +1167,6 @@ function confirm_referrer($script, $error_msg = false)
 {
 	global $pun_config, $pun_user;
   
-	$use_errors = isset($errors) && is_array($errors);
-
 	if (isset($_POST['csrf_hash']))
 		$hash = $_POST['csrf_hash'];
 	else if (isset($_GET['csrf_hash']))
@@ -2287,7 +2285,7 @@ function generation_js($arr)
 {
 	$res = '';
 	if (!empty($arr['j']))
-		array_unshift($arr['f'], FORUM_AJAX_JQUERY);
+		$res.= '<script type="text/javascript" src="'.FORUM_AJAX_JQUERY.'"></script>'."\n";
 	if (!empty($arr['f']))
 		$res.= '<script type="text/javascript" src="'.implode('"></script>'."\n".'<script type="text/javascript" src="', $arr['f']).'"></script>'."\n";
 	if (!empty($arr['c']))

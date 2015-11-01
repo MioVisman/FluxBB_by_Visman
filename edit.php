@@ -141,31 +141,37 @@ if (isset($_POST['form_sent']))
 	// Did everything go according to plan?
 	if (empty($errors) && !isset($_POST['preview']))
 	{
-		// MOD warnings - Visman
-		$is_modified = $subject != $cur_post['subject'] || $message != $cur_post['message'] || $hide_smilies != $cur_post['hide_smilies'] || $edit_post != $cur_post['edit_post'];
-		$is_modified_s = $subject != $cur_post['subject'] || $stick_fp != $cur_post['stick_fp'] || $stick_topic != $cur_post['sticky'];
+		$is_modified = ($subject != $cur_post['subject'] ||
+										$message != $cur_post['message'] ||
+										$hide_smilies != $cur_post['hide_smilies'] ||
+										$edit_post != $cur_post['edit_post'] ||
+										$stick_fp != $cur_post['stick_fp'] ||
+										$stick_topic != $cur_post['sticky']); // MOD warnings - Visman
 
 		$edited_sql = (!isset($_POST['silent']) || !$is_admmod) ? ', edited='.time().', edited_by=\''.$db->escape($pun_user['username']).'\'' : '';
-		$edited_sql .= ', edit_post='.$edit_post; // Visman
+		$edited_sql.= ', edit_post='.$edit_post; // Visman
 
 		require PUN_ROOT.'include/search_idx.php';
 
-// MOD warnings - Visman
-		if ($can_edit_subject && $is_modified_s)
+		// MOD warnings - Visman
+		if ($is_modified)
 		{
-			// Update the topic and any redirect topics
-			$db->query('UPDATE '.$db->prefix.'topics SET stick_fp='.$stick_fp.', subject=\''.$db->escape($subject).'\', sticky='.$stick_topic.' WHERE id='.$cur_post['tid'].' OR moved_to='.$cur_post['tid']) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
+			if ($can_edit_subject)
+			{
+				// Update the topic and any redirect topics
+				$db->query('UPDATE '.$db->prefix.'topics SET stick_fp='.$stick_fp.', subject=\''.$db->escape($subject).'\', sticky='.$stick_topic.' WHERE id='.$cur_post['tid'].' OR moved_to='.$cur_post['tid']) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
 			
-			// Is the current topic last? - last topic on index - Visman
-			$result = $db->query('SELECT 1 FROM '.$db->prefix.'posts WHERE id='.$cur_post['last_post_id'].' AND topic_id='.$cur_post['tid']);
-			if ($db->num_rows($result))
-				$db->query('UPDATE '.$db->prefix.'forums SET last_topic=\''.$db->escape($subject).'\' WHERE id='.$cur_post['fid']) or error('Unable to update last topic', __FILE__, __LINE__, $db->error());
+				// Is the current topic last? - last topic on index - Visman
+				$result = $db->query('SELECT 1 FROM '.$db->prefix.'posts WHERE id='.$cur_post['last_post_id'].' AND topic_id='.$cur_post['tid']);
+				if ($db->num_rows($result))
+					$db->query('UPDATE '.$db->prefix.'forums SET last_topic=\''.$db->escape($subject).'\' WHERE id='.$cur_post['fid']) or error('Unable to update last topic', __FILE__, __LINE__, $db->error());
 
-			// We changed the subject, so we need to take that into account when we update the search words
-			update_search_index('edit', $id, $message, $subject);
+				// We changed the subject, so we need to take that into account when we update the search words
+				update_search_index('edit', $id, $message, $subject);
+			}
+			else
+				update_search_index('edit', $id, $message);
 		}
-		else if ($is_modified)
-			update_search_index('edit', $id, $message);
 
 		if ($is_admmod)
 		{
@@ -190,9 +196,12 @@ if (isset($_POST['form_sent']))
 			// Update the post
 			$db->query('UPDATE '.$db->prefix.'posts SET message=\''.$db->escape($message).'\', hide_smilies='.$hide_smilies.$edited_sql.' WHERE id='.$id) or error('Unable to update post', __FILE__, __LINE__, $db->error());
 		}
-// MOD warnings - Visman
+		// MOD warnings - Visman
+
+		// Poll MOD - Visman
 		if ($can_edit_subject)
 			poll_save($cur_post['tid']);
+		// Poll MOD - Visman
 
 		redirect('viewtopic.php?pid='.$id.'#p'.$id, $lang_post['Edit redirect']);
 	}

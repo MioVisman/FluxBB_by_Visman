@@ -41,6 +41,62 @@ define('PUN_CJK_HANGUL_REGEX', '['.
 ']');
 
 
+function split_words_clear_link_minor($arr)
+{
+	$res = '';
+
+	foreach ($arr as $text)
+	{
+		if (is_array($text))
+		{
+			$res.= split_words_clear_link_minor($text);
+			continue;
+		}
+		$text = utf8_strtolower(rawurldecode($text));
+		$text = ucp_preg_replace('%[^\p{L}\p{N}]+%u', ' ', $text);
+		$text = preg_replace('%(?<=\b)((\d+(?=[a-z])|[a-z]+(?=\d)){3,}\w*)(?=\b)%u', ' ', $text);
+		$text = preg_replace('%(?<=\b)\d+|\d+(?=\b)%u', '', $text);
+		$res.= $text.' ';
+	}
+
+	return $res;
+}
+
+
+function split_words_clear_link($url)
+{
+	$text = '';
+	$arr = parse_url($url);
+
+	if (isset($arr['host']))
+	{
+		$harr = explode('.', $arr['host']);
+		$k = count($harr) - 1;
+		for ($i = 0; $i < $k; $i++)
+		{
+			if ($k - $i == 1)
+				$text.= $harr[$i].' ';
+			else
+				$text.= preg_replace('%(^\d+|\d+$)%u', '', $harr[$i]).' ';
+		}
+	}
+
+	if (isset($arr['path']))
+		$text.= split_words_clear_link_minor(explode('/', $arr['path']));
+
+	if (isset($arr['query']))
+	{
+	  parse_str($arr['query'], $qarr);
+		$text.= split_words_clear_link_minor($qarr);
+	}
+
+	if (isset($arr['fragment']))
+		$text.= split_words_clear_link_minor(array($arr['fragment']));
+
+	return $text;
+}
+
+
 //
 // "Cleans up" a text string and returns an array of unique words
 // This function depends on the current locale setting
@@ -50,8 +106,33 @@ function split_words($text, $idx)
 	// Remove BBCode
 	$text = preg_replace('%\[/?(b|u|s|ins|del|em|i|h|colou?r|quote|code|img|url|email|list|topic|post|forum|user|imgr|imgl|hr|size|after|spoiler|right|center|justify|mono)(?:\=[^\]]*)?\]%', ' ', $text);
 
+	$text = str_replace(array('`', '’', 'ё'), array('\'', '\'', 'е'), $text); // Visman - for russian language
+
+	// Visman - for clear local url
+	if (strpos($text, '/img/members/') !== false)
+		$text = preg_replace_callback('%[:/\w\.\-]*/img/members/\d+(/[^\s]+)%u', create_function('$matches', 'return split_words_clear_link($matches[1]);'), $text);
+
+	// Visman - for clear url
+	if (strpos($text, 'http') !== false)
+		$text = preg_replace_callback('%(?<=\b)https?://((?:[\p{L}\p{N}\-]+\.)+(?:xn\-\-)?[\p{L}\p{N}]+[^\s]*)%u', create_function('$matches', 'return split_words_clear_link(\'http://\'.$matches[1]);'), $text);
+
+	// Visman - for clear url
+	if (strpos($text, 'www.') !== false)
+		$text = preg_replace_callback('%(?<=\b)www\.((?:[\p{L}\p{N}\-]+\.)+(?:xn\-\-)?[\p{L}\p{N}]+[^\s]*)%u', create_function('$matches', 'return split_words_clear_link(\'http://\'.$matches[1]);'), $text);
+
 	// Remove any apostrophes or dashes which aren't part of words
 	$text = substr(ucp_preg_replace('%((?<=[^\p{L}\p{N}])[\'\-]|[\'\-](?=[^\p{L}\p{N}]))%u', '', ' '.$text.' '), 1, -1);
+
+	// Visman - for russian language
+	if (strpos($text, '-') !== false)
+	{
+		$text = ucp_preg_replace('%(?<=\b)([\p{L}\p{N}\-\']+\-(?:либо|нибу[дт]ь|нить))(?![\p{L}\p{N}\'\-])%u', '', $text); // удаляем слова целиком с хвостом -либо|нибу[дт]ь|нить
+		$text = ucp_preg_replace('%(?<=[\p{L}\p{N}])(-(?:таки|чуть|[а-яё]{1,2}))+(?![\p{L}\p{N}\'\-])%u', '', $text); // удаляет из слова все хвосты с 1 или 2 русскими буквами или -таки|чуть
+		$text = ucp_preg_replace('%(?<=\p{L}{3})\-(?=\p{L}{3,}\b)%u', ' ', $text); // слова с дефисом разбиваются на части если с каждой стороны от дефиса минимум по 3 буквы
+	}
+
+	// Visman - for all language
+	$text = preg_replace('%([[:alpha:]])\1{3,}%u', '\1', $text); // 4 и больше одинаковых букв меняем на одну
 
 	// Remove punctuation and symbols (actually anything that isn't a letter or number), allow apostrophes and dashes (and % * if we aren't indexing)
 	$text = ucp_preg_replace('%(?![\'\-'.($idx ? '' : '\%\*').'])[^\p{L}\p{N}]+%u', ' ', $text);
@@ -145,11 +226,11 @@ function strip_bbcode($text)
 	if (!isset($patterns))
 	{
 		$patterns = array(
-			'%\[img=([^\]]*+)\]([^[]*+)\[/img\]%'									=>	'$2 $1',	// Keep the url and description
-			'%\[imgr=([^\]]*+)\]([^[]*+)\[/imgr\]%'									=>	'$2 $1',	// Keep the url and description
-			'%\[imgl=([^\]]*+)\]([^[]*+)\[/imgl\]%'									=>	'$2 $1',	// Keep the url and description
-			'%\[(url|email)=([^\]]*+)\]([^[]*+(?:(?!\[/\1\])\[[^[]*+)*)\[/\1\]%'	=>	'$2 $3',	// Keep the url and text
-			'%\[(img|imgr|imgl|url|email)\]([^[]*+(?:(?!\[/\1\])\[[^[]*+)*)\[/\1\]%'			=>	'$2',		// Keep the url
+			'%\[img=([^\]]*+)\]([^[]*+)\[/img\]%'									=>	' $2 $1 ',	// Keep the url and description
+			'%\[imgr=([^\]]*+)\]([^[]*+)\[/imgr\]%'									=>	' $2 $1 ',	// Keep the url and description
+			'%\[imgl=([^\]]*+)\]([^[]*+)\[/imgl\]%'									=>	' $2 $1 ',	// Keep the url and description
+			'%\[(url|email)=([^\]]*+)\]([^[]*+(?:(?!\[/\1\])\[[^[]*+)*)\[/\1\]%'	=>	' $2 $3 ',	// Keep the url and text
+			'%\[(img|imgr|imgl|url|email)\]([^[]*+(?:(?!\[/\1\])\[[^[]*+)*)\[/\1\]%'			=>	' $2 ',		// Keep the url
 			'%\[(topic|post|forum|user)\][1-9]\d*\[/\1\]%'							=>	' ',		// Do not index topic/post/forum/user ID
 		);
 	}

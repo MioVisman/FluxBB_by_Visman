@@ -9,10 +9,10 @@
 // The FluxBB version this script updates to
 define('UPDATE_TO', '1.5.8');
 
-define('UPDATE_TO_VER_REVISION', 70);	// номер сборки - Visman
+define('UPDATE_TO_VER_REVISION', 71);	// номер сборки - Visman
 
 define('UPDATE_TO_DB_REVISION', 21);
-define('UPDATE_TO_SI_REVISION', 2);
+define('UPDATE_TO_SI_REVISION', 2.1);
 define('UPDATE_TO_PARSER_REVISION', 2);
 
 define('MIN_PHP_VERSION', '4.4.0');
