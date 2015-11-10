@@ -48,6 +48,8 @@ if ($action == 'rules')
 // START быстрое переключение языка - Visman
 else if ($action == 'lang')
 {
+	confirm_referrer('misc.php');
+
 	$language = isset($_GET['lang']) ? preg_replace('%[^\w]%', '', pun_trim($_GET['lang'])) : '';
 	if (empty($language) || !file_exists(PUN_ROOT.'lang/'.$language.'/common.php'))
 		message($lang_common['Bad request'], false, '404 Not Found');
@@ -77,6 +79,8 @@ else if ($action == 'markread')
 	if ($pun_user['is_guest'])
 		message($lang_common['No permission'], false, '403 Forbidden');
 
+	confirm_referrer('misc.php');
+
 	$db->query('UPDATE '.$db->prefix.'users SET last_visit='.$pun_user['logged'].' WHERE id='.$pun_user['id']) or error('Unable to update user last visit data', __FILE__, __LINE__, $db->error());
 
 	// Reset tracked topics
@@ -91,6 +95,8 @@ else if ($action == 'markforumread')
 {
 	if ($pun_user['is_guest'])
 		message($lang_common['No permission'], false, '403 Forbidden');
+
+	confirm_referrer('viewforum.php');
 
 	$fid = isset($_GET['fid']) ? intval($_GET['fid']) : 0;
 	if ($fid < 1)
@@ -345,6 +351,8 @@ else if ($action == 'subscribe')
 	if ($pun_user['is_guest'])
 		message($lang_common['No permission'], false, '403 Forbidden');
 
+	confirm_referrer('misc.php');
+
 	$topic_id = isset($_GET['tid']) ? intval($_GET['tid']) : 0;
 	$forum_id = isset($_GET['fid']) ? intval($_GET['fid']) : 0;
 	if ($topic_id < 1 && $forum_id < 1)
@@ -394,6 +402,8 @@ else if ($action == 'unsubscribe')
 {
 	if ($pun_user['is_guest'])
 		message($lang_common['No permission'], false, '403 Forbidden');
+
+	confirm_referrer('misc.php');
 
 	$topic_id = isset($_GET['tid']) ? intval($_GET['tid']) : 0;
 	$forum_id = isset($_GET['fid']) ? intval($_GET['fid']) : 0;

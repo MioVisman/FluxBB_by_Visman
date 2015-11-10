@@ -263,7 +263,7 @@ else
 			$ar_file[] = $entry;
 	}
 	$d->close();
-  if (file_exists(PUN_ROOT.'plugins/AP_Upload.php'))
+	if (file_exists(PUN_ROOT.'plugins/AP_Upload.php'))
 		$ar_file[] = 'AP_Upload.php';
 
 	natcasesort($ar_file);

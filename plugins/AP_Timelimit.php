@@ -32,8 +32,8 @@ if (isset($_POST['show_text']))
 		if ($cur_group['g_id'] > PUN_ADMIN && $cur_group['g_id'] != PUN_GUEST)
 			if ($g_order[$cur_group['g_id']] != '')
 			{
-        $g_time = intval($g_order[$cur_group['g_id']]);
-        $db->query('UPDATE '.$db->prefix.'groups SET g_deledit_interval='.$g_time.' WHERE g_id='.$cur_group['g_id']) or error('Unable to update user group list', __FILE__, __LINE__, $db->error());
+				$g_time = intval($g_order[$cur_group['g_id']]);
+				$db->query('UPDATE '.$db->prefix.'groups SET g_deledit_interval='.$g_time.' WHERE g_id='.$cur_group['g_id']) or error('Unable to update user group list', __FILE__, __LINE__, $db->error());
 			}
 
 	redirect(PLUGIN_URL, $lang_admin_plugin_timelimit['Plugin redirect']);

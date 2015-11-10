@@ -368,11 +368,11 @@ function poll_form_validate($tid, &$errors)
 		{
 			$question = (isset($questions[$k]) && $fk) ? $questions[$k] : '';
 			if ($question == '')
-    		$fk = false;
+				$fk = false;
 			else
 			{
 				$kol++;
-    		if (pun_strlen($question) > 250)
+				if (pun_strlen($question) > 250)
 					$errors[] = sprintf($lang_poll['Question too long'], $k);
 
 				$koc = 0;
@@ -391,7 +391,7 @@ function poll_form_validate($tid, &$errors)
 				}
 				if ($koc < 2)
 					$errors[] = sprintf($lang_poll['Not enough choices'], $k);
-        else if (!isset($type[$k]) || $type[$k] < 1 || $type[$k] >= $koc)
+				else if (!isset($type[$k]) || $type[$k] < 1 || $type[$k] >= $koc)
 					$errors[] = sprintf($lang_poll['Max variant'], $k);
 			}
 		}
@@ -452,7 +452,7 @@ function poll_save($tid)
 		{
 			$question = (isset($questions[$k]) && $fk) ? $questions[$k] : '';
 			if ($question == '')
-    		$fk = false;
+				$fk = false;
 			else
 			{
 				if (isset($cur_ch[$k][0]))
@@ -540,7 +540,7 @@ function poll_display_post($tid, $uid)
 	else // а тут опрос еще можно редактировать
 	{
 		if (poll_post('poll_enabled', 0) != 1) return;
-   
+
 		$top = poll_topic($tid);
 
 		$questions = poll_post('poll_question', array());
@@ -780,7 +780,7 @@ function poll_vote($tid, $uid)
 			if ($type[$k] < 2) $j = $vo;
 			else $j = $i;
 			$arr[] = '(question='.$k.' AND field='.$j.')';
-    }
+		}
 	}
 
 	if (!empty($arr))

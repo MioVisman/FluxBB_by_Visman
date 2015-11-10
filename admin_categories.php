@@ -233,7 +233,7 @@ generate_admin_menu('categories');
 					<fieldset>
 						<legend><?php echo $lang_admin_categories['Edit categories subhead'] ?></legend>
 						<div class="infldset">
-							<table id="categoryedit" >
+							<table id="categoryedit">
 							<thead>
 								<tr>
 									<th class="tcl" scope="col"><?php echo $lang_admin_categories['Category name label'] ?></th>

@@ -16,6 +16,7 @@ $lang_common = array(
 'No view'							=>	'You do not have permission to view these forums.',
 'No permission'						=>	'You do not have permission to access this page.',
 'Bad referrer'						=>	'Bad csrf_hash. You were referred to this page from an unauthorized source.',
+'Bad csrf hash'						=>	'Bad CSRF hash. You were referred to this page from an unauthorized source.',
 'No cookie'							=>	'You appear to have logged in successfully, however a cookie has not been set. Please check your settings and if applicable, enable cookies for this website.',
 'Pun include extension'  			=>	'Unable to process user include %s from template %s. "%s" files are not allowed',
 'Pun include directory'				=>	'Unable to process user include %s from template %s. Directory traversal is not allowed',

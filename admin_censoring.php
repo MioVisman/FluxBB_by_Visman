@@ -33,9 +33,9 @@ if (isset($_POST['add_word']))
 
 	$db->query('INSERT INTO '.$db->prefix.'censoring (search_for, replace_with) VALUES (\''.$db->escape($search_for).'\', \''.$db->escape($replace_with).'\')') or error('Unable to add censor word', __FILE__, __LINE__, $db->error());
 
-	$slovo = $db->escape($search_for);
-	$result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'censoring WHERE search_for IN (\''.$slovo.'\',\'*'.$slovo.'\',\''.$slovo.'*\',\'*'.$slovo.'*\')') or error('Unable to fetch censor word', __FILE__, __LINE__, $db->error());
-	$num_slov = $db->result($result);
+	$word = $db->escape($search_for);
+	$result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'censoring WHERE search_for IN (\''.$word.'\',\'*'.$word.'\',\''.$word.'*\',\'*'.$word.'*\')') or error('Unable to fetch censor word', __FILE__, __LINE__, $db->error());
+	$nwords = $db->result($result);
 	
 	// Regenerate the censoring cache
 	if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
@@ -43,7 +43,7 @@ if (isset($_POST['add_word']))
 
 	generate_censoring_cache();
 
-	redirect('admin_censoring.php'.(($num_slov > 1) ? '?censorflag=1' : ''), $lang_admin_censoring['Word added redirect']);
+	redirect('admin_censoring.php'.(($nwords > 1) ? '?censorflag=1' : ''), $lang_admin_censoring['Word added redirect']);
 }
 
 // Update a censor word
@@ -61,9 +61,9 @@ else if (isset($_POST['update']))
 
 	$db->query('UPDATE '.$db->prefix.'censoring SET search_for=\''.$db->escape($search_for).'\', replace_with=\''.$db->escape($replace_with).'\' WHERE id='.$id) or error('Unable to update censor word', __FILE__, __LINE__, $db->error());
 
-	$slovo = $db->escape($search_for);
-	$result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'censoring WHERE search_for IN (\''.$slovo.'\',\'*'.$slovo.'\',\''.$slovo.'*\',\'*'.$slovo.'*\')') or error('Unable to fetch censor word', __FILE__, __LINE__, $db->error());
-	$num_slov = $db->result($result);
+	$word = $db->escape($search_for);
+	$result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'censoring WHERE search_for IN (\''.$word.'\',\'*'.$word.'\',\''.$word.'*\',\'*'.$word.'*\')') or error('Unable to fetch censor word', __FILE__, __LINE__, $db->error());
+	$nwords = $db->result($result);
 
 	// Regenerate the censoring cache
 	if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
@@ -71,7 +71,7 @@ else if (isset($_POST['update']))
 
 	generate_censoring_cache();
 
-	redirect('admin_censoring.php'.(($num_slov > 1) ? '?censorflag=1' : ''), $lang_admin_censoring['Word updated redirect']);
+	redirect('admin_censoring.php'.(($nwords > 1) ? '?censorflag=1' : ''), $lang_admin_censoring['Word updated redirect']);
 }
 
 // Remove a censor word

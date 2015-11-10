@@ -116,7 +116,7 @@ foreach ($sf_array[$sf_cur_forum] as $cur_subforum)
 	{
 		foreach ($sf_array[$cur_subforum['fid']] as $cur)
 		{
-		  $sf_list[] = '<a class="subforum_name" href="viewforum.php?id='.$cur['fid'].'">'.pun_htmlspecialchars($cur['forum_name']).'</a>';
+			$sf_list[] = '<a class="subforum_name" href="viewforum.php?id='.$cur['fid'].'">'.pun_htmlspecialchars($cur['forum_name']).'</a>';
 		}
 	}
 	sf_data_forum($sf_array, $cur_subforum);

@@ -50,6 +50,8 @@ $lang_update = array(
 'Converting item'				=>	'Конвертируется %1$s %2$s …',
 'Preparsing item'				=>	'Препарсинг %1$s %2$s …',
 'Rebuilding index item'			=>	'Восстановление индекса для %1$s %2$s',
+'Click here'					=>	'Кликните здесь',
+'Automatic redirect failed'		=>	'Автоматическая переадресация выключена. %s чтобы продолжить …',
 
 'ban'							=>	'БАН',
 'categories'					=>	'КАТЕГОРИИ',

@@ -26,7 +26,7 @@ if (!isset($languages) || !is_array($languages))
 $lang_temp = '';
 if (count($languages) > 1)
 {
-	$lang_temp .= "\t\t\t\t".'<form id="qjump2" action="misc.php" method="get">'."\n\t\t\t\t\t".'<div><label>'."\n\t\t\t\t\t\t".'<input type="hidden" name="action" value="lang" />'."\n\t\t\t\t\t\t".'<select name="lang" onchange="this.form.submit()">'."\n";
+	$lang_temp .= "\t\t\t\t".'<form id="qjump2" action="misc.php" method="get">'."\n\t\t\t\t\t".'<div><label>'."\n\t\t\t\t\t\t".'<input type="hidden" name="csrf_hash" value="'.csrf_hash('misc.php').'" />'."\n\t\t\t\t\t\t".'<input type="hidden" name="action" value="lang" />'."\n\t\t\t\t\t\t".'<select name="lang" onchange="this.form.submit()">'."\n";
 	foreach ($languages as $temp)
 	{
 		if ($pun_user['language'] == $temp)

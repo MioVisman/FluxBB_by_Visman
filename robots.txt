@@ -13,3 +13,4 @@ Disallow: /u
 Disallow: /*pid=
 Crawl-delay: 5
 Clean-param: search_hl
+Clean-param: csrf_hash

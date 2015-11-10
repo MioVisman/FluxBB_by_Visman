@@ -29,7 +29,7 @@ if (isset($_POST['form_sent']) && $action == 'in')
 
 	$username_sql = ($db_type == 'mysql' || $db_type == 'mysqli' || $db_type == 'mysql_innodb' || $db_type == 'mysqli_innodb') ? 'username=\''.$db->escape($form_username).'\'' : 'LOWER(username)=LOWER(\''.$db->escape($form_username).'\')';
 
-// проверка IP админов и модераторов - Visman
+	// проверка IP админов и модераторов - Visman
 	if ($pun_config['o_check_ip'] == '1')
 		$result = $db->query('SELECT u.*, g.g_id, g.g_moderator FROM '.$db->prefix.'users AS u LEFT JOIN '.$db->prefix.'groups AS g ON u.group_id=g.g_id WHERE '.$username_sql) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
 	else
@@ -45,7 +45,8 @@ if (isset($_POST['form_sent']) && $action == 'in')
 		// If there is a salt in the database we have upgraded from 1.3-legacy though haven't yet logged in
 		if (!empty($cur_user['salt']))
 		{
-			if (sha1($cur_user['salt'].sha1($form_password)) == $cur_user['password']) // 1.3 used sha1(salt.sha1(pass))
+			$is_salt_authorized = pun_hash_equals(sha1($cur_user['salt'].sha1($form_password)), $cur_user['password']);
+			if ($is_salt_authorized) // 1.3 used sha1(salt.sha1(pass))
 			{
 				$authorized = true;
 
@@ -55,7 +56,8 @@ if (isset($_POST['form_sent']) && $action == 'in')
 		// If the length isn't 40 then the password isn't using sha1, so it must be md5 from 1.2
 		else if (strlen($cur_user['password']) != 40)
 		{
-			if (md5($form_password.$salt1) == $cur_user['password']) // Visman
+			$is_md5_authorized = pun_hash_equals(md5($form_password.$salt1), $cur_user['password']); // Visman
+			if ($is_md5_authorized)
 			{
 				$authorized = true;
 
@@ -64,7 +66,7 @@ if (isset($_POST['form_sent']) && $action == 'in')
 		}
 		// Otherwise we should have a normal sha1 password
 		else
-			$authorized = ($cur_user['password'] == $form_password_hash);
+			$authorized = pun_hash_equals($cur_user['password'], $form_password_hash);
 	}
 
 	if (!$authorized)
@@ -113,11 +115,13 @@ if (isset($_POST['form_sent']) && $action == 'in')
 
 else if ($action == 'out')
 {
-	if ($pun_user['is_guest'] || !isset($_GET['id']) || $_GET['id'] != $pun_user['id'] || !isset($_GET['csrf_token']) || $_GET['csrf_token'] != pun_hash($pun_user['id'].pun_hash(get_remote_address())))
+	if ($pun_user['is_guest'] || !isset($_GET['id']) || $_GET['id'] != $pun_user['id'])
 	{
 		header('Location: index.php');
 		exit;
 	}
+
+	confirm_referrer('login.php');
 
 	// Remove user from "users online" list
 	$db->query('DELETE FROM '.$db->prefix.'online WHERE user_id='.$pun_user['id']) or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());

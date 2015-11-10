@@ -7,9 +7,9 @@
  */
 
 // The FluxBB version this script updates to
-define('UPDATE_TO', '1.5.8');
+define('UPDATE_TO', '1.5.9');
 
-define('UPDATE_TO_VER_REVISION', 71);	// номер сборки - Visman
+define('UPDATE_TO_VER_REVISION', 72);	// номер сборки - Visman
 
 define('UPDATE_TO_DB_REVISION', 21);
 define('UPDATE_TO_SI_REVISION', 2.1);
@@ -1223,11 +1223,6 @@ if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_v
 	@unlink(PUN_ROOT.'lang/English/bbcode.php');
 	@unlink(PUN_ROOT.'lang/Russian/bbcode.php');
 } // rev.65
-if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 67)
-{
-	@unlink(PUN_ROOT.'js/minmax.js');
-	@unlink(PUN_ROOT.'install.php');
-} // rev.67
 if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 68)
 {
 	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o_blocking_%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());
@@ -1238,6 +1233,11 @@ if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_v
 	if (!array_key_exists('o_enable_acaptcha', $pun_config))
 		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_enable_acaptcha\', \'1\')') or error('Unable to insert config value \'o_enable_acaptcha\'', __FILE__, __LINE__, $db->error());
 } // rev.68
+if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 72)
+{
+	@unlink(PUN_ROOT.'js/minmax.js');
+	@unlink(PUN_ROOT.'install.php');
+} // rev.72
 // Visman
 
 		// If we don't need to update the database, skip this stage
@@ -2464,4 +2464,4 @@ $db->end_transaction();
 $db->close();
 
 if ($query_str != '')
-	exit('<script type="text/javascript">window.location="db_update.php'.$query_str.'&uid='.$uid.'"</script><noscript><meta http-equiv="refresh" content="0;url=db_update.php'.$query_str.'&uid='.$uid.'" /></noscript>');
+	exit('<meta http-equiv="refresh" content="0;url=db_update.php'.$query_str.'&uid='.$uid.'" /><hr /><p>'.sprintf($lang_update['Automatic redirect failed'], '<a href="db_update.php'.$query_str.'&uid='.$uid.'">'.$lang_update['Click here'].'</a>').'</p>');
