@@ -1168,7 +1168,7 @@ function confirm_message($error_msg = false)
 }
 
 
-function confirm_referrer($script, $error_msg = false)
+function confirm_referrer($script, $error_msg = false, $use_ip = true)
 {
 	$hash = '';
 
@@ -1177,23 +1177,26 @@ function confirm_referrer($script, $error_msg = false)
 	else if (isset($_GET['csrf_hash']))
 		$hash = $_GET['csrf_hash'];
 
-	if (empty($hash) || !pun_hash_equals(csrf_hash($script), $hash))
+	if (empty($hash) || !pun_hash_equals(csrf_hash($script, $use_ip), $hash))
 		confirm_message($error_msg);
 }
 
 
-function csrf_hash($script = false)
+function csrf_hash($script = false, $use_ip = true, $user = false)
 {
 	global $pun_config, $pun_user;
 	static $arr = array();
 	
 	$script = $script ? $script : basename($_SERVER['SCRIPT_NAME']);
+	$ip = $use_ip ? get_remote_address() : '';
+	$user = is_array($user) ? $user : $pun_user;
 
-	if (isset($arr[$script])) return $arr[$script];
+	$key = $script.$ip.$user['id'];
 
-	$arr[$script] = pun_hash($script.$pun_user['id'].pun_hash(get_remote_address().$pun_user['password'].$pun_config['o_crypto_pas']));
+	if (!isset($arr[$key]))
+		$arr[$key] = pun_hash($script.$user['id'].pun_hash($ip.$user['password'].$pun_config['o_crypto_pas']));
 
-	return $arr[$script];
+	return $arr[$key];
 }
 // ********* новые ф-ии проверки подлинности - Visman
 

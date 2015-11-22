@@ -247,18 +247,13 @@ if (isset($_POST['form_sent']))
 				$previous_post_time = $db->result($result);
 
 				// Get any subscribed users that should be notified (banned users are excluded)
-				$result = $db->query('SELECT u.id, u.email, u.notify_with_post, u.language FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'topic_subscriptions AS s ON u.id=s.user_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id='.$cur_posting['id'].' AND fp.group_id=u.group_id) LEFT JOIN '.$db->prefix.'online AS o ON u.id=o.user_id LEFT JOIN '.$db->prefix.'bans AS b ON u.username=b.username WHERE b.username IS NULL AND COALESCE(o.logged, u.last_visit)>'.$previous_post_time.' AND (fp.read_forum IS NULL OR fp.read_forum=1) AND s.topic_id='.$tid.' AND u.id!='.$pun_user['id']) or error('Unable to fetch subscription info', __FILE__, __LINE__, $db->error());
+				$result = $db->query('SELECT u.id, u.password, u.email, u.notify_with_post, u.language FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'topic_subscriptions AS s ON u.id=s.user_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id='.$cur_posting['id'].' AND fp.group_id=u.group_id) LEFT JOIN '.$db->prefix.'online AS o ON u.id=o.user_id LEFT JOIN '.$db->prefix.'bans AS b ON u.username=b.username WHERE b.username IS NULL AND COALESCE(o.logged, u.last_visit)>'.$previous_post_time.' AND (fp.read_forum IS NULL OR fp.read_forum=1) AND s.topic_id='.$tid.' AND u.id!='.$pun_user['id']) or error('Unable to fetch subscription info', __FILE__, __LINE__, $db->error());
 				if ($db->num_rows($result))
 				{
 					require_once PUN_ROOT.'include/email.php';
 
 					$notification_emails = array();
 					$languages = forum_list_langs();
-
-					if ($pun_config['o_censoring'] == '1')
-						$cleaned_message = bbcode2email($censored_message, -1);
-					else
-						$cleaned_message = bbcode2email($message, -1);
 
 					// Loop through subscribed users and send emails
 					while ($cur_subscriber = $db->fetch_assoc($result))
@@ -271,6 +266,11 @@ if (isset($_POST['form_sent']))
 						{
 							if (file_exists(PUN_ROOT.'lang/'.$cur_subscriber['language'].'/mail_templates/new_reply.tpl'))
 							{
+								if ($pun_config['o_censoring'] == '1')
+									$cleaned_message = bbcode2email($censored_message, -1, $cur_subscriber['language']);
+								else
+									$cleaned_message = bbcode2email($message, -1, $cur_subscriber['language']);
+
 								// Load the "new reply" template
 								$mail_tpl = trim(file_get_contents(PUN_ROOT.'lang/'.$cur_subscriber['language'].'/mail_templates/new_reply.tpl'));
 
@@ -290,7 +290,7 @@ if (isset($_POST['form_sent']))
 								$mail_message = str_replace('<topic_subject>', $cur_posting['subject'], $mail_message);
 								$mail_message = str_replace('<replier>', $username, $mail_message);
 								$mail_message = str_replace('<post_url>', get_base_url().'/viewtopic.php?pid='.$new_pid.'#p'.$new_pid, $mail_message);
-								$mail_message = str_replace('<unsubscribe_url>', get_base_url().'/misc.php?action=unsubscribe&tid='.$tid, $mail_message);
+								$mail_message = str_replace('<unsubscribe_url>', get_base_url().'/misc.php?action=unsubscribe&tid='.$tid.'&csrf_hash=<csrf_hash>', $mail_message);
 								$mail_message = str_replace('<board_mailer>', $pun_config['o_board_title'], $mail_message);
 
 								$mail_subject_full = str_replace('<topic_subject>', $cur_posting['subject'], $mail_subject_full);
@@ -298,7 +298,7 @@ if (isset($_POST['form_sent']))
 								$mail_message_full = str_replace('<replier>', $username, $mail_message_full);
 								$mail_message_full = str_replace('<message>', $cleaned_message, $mail_message_full);
 								$mail_message_full = str_replace('<post_url>', get_base_url().'/viewtopic.php?pid='.$new_pid.'#p'.$new_pid, $mail_message_full);
-								$mail_message_full = str_replace('<unsubscribe_url>', get_base_url().'/misc.php?action=unsubscribe&tid='.$tid, $mail_message_full);
+								$mail_message_full = str_replace('<unsubscribe_url>', get_base_url().'/misc.php?action=unsubscribe&tid='.$tid.'&csrf_hash=<csrf_hash>', $mail_message_full);
 								$mail_message_full = str_replace('<board_mailer>', $pun_config['o_board_title'], $mail_message_full);
 
 								$notification_emails[$cur_subscriber['language']][0] = $mail_subject;
@@ -307,6 +307,8 @@ if (isset($_POST['form_sent']))
 								$notification_emails[$cur_subscriber['language']][3] = $mail_message_full;
 
 								$mail_subject = $mail_message = $mail_subject_full = $mail_message_full = null;
+
+								unset($cleaned_message);
 							}
 						}
 
@@ -314,13 +316,11 @@ if (isset($_POST['form_sent']))
 						if (isset($notification_emails[$cur_subscriber['language']]))
 						{
 							if ($cur_subscriber['notify_with_post'] == '0')
-								pun_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][0], $notification_emails[$cur_subscriber['language']][1]);
+								pun_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][0], str_replace('<csrf_hash>', csrf_hash('misc.php', false, $cur_subscriber), $notification_emails[$cur_subscriber['language']][1]));
 							else
-								pun_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][2], $notification_emails[$cur_subscriber['language']][3]);
+								pun_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][2], str_replace('<csrf_hash>', csrf_hash('misc.php', false, $cur_subscriber), $notification_emails[$cur_subscriber['language']][3]));
 						}
 					}
-
-					unset($cleaned_message);
 				}
 			}
 		}
@@ -361,18 +361,13 @@ if (isset($_POST['form_sent']))
 			if ($pun_config['o_forum_subscriptions'] == '1')
 			{
 				// Get any subscribed users that should be notified (banned users are excluded)
-				$result = $db->query('SELECT u.id, u.email, u.notify_with_post, u.language FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'forum_subscriptions AS s ON u.id=s.user_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id='.$cur_posting['id'].' AND fp.group_id=u.group_id) LEFT JOIN '.$db->prefix.'bans AS b ON u.username=b.username WHERE b.username IS NULL AND (fp.read_forum IS NULL OR fp.read_forum=1) AND s.forum_id='.$cur_posting['id'].' AND u.id!='.$pun_user['id']) or error('Unable to fetch subscription info', __FILE__, __LINE__, $db->error());
+				$result = $db->query('SELECT u.id, u.password, u.email, u.notify_with_post, u.language FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'forum_subscriptions AS s ON u.id=s.user_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id='.$cur_posting['id'].' AND fp.group_id=u.group_id) LEFT JOIN '.$db->prefix.'bans AS b ON u.username=b.username WHERE b.username IS NULL AND (fp.read_forum IS NULL OR fp.read_forum=1) AND s.forum_id='.$cur_posting['id'].' AND u.id!='.$pun_user['id']) or error('Unable to fetch subscription info', __FILE__, __LINE__, $db->error());
 				if ($db->num_rows($result))
 				{
 					require_once PUN_ROOT.'include/email.php';
 
 					$notification_emails = array();
 					$languages = forum_list_langs();
-
-					if ($pun_config['o_censoring'] == '1')
-						$cleaned_message = bbcode2email($censored_message, -1);
-					else
-						$cleaned_message = bbcode2email($message, -1);
 
 					// Loop through subscribed users and send emails
 					while ($cur_subscriber = $db->fetch_assoc($result))
@@ -385,6 +380,11 @@ if (isset($_POST['form_sent']))
 						{
 							if (file_exists(PUN_ROOT.'lang/'.$cur_subscriber['language'].'/mail_templates/new_topic.tpl'))
 							{
+								if ($pun_config['o_censoring'] == '1')
+									$cleaned_message = bbcode2email($censored_message, -1, $cur_subscriber['language']);
+								else
+									$cleaned_message = bbcode2email($message, -1, $cur_subscriber['language']);
+
 								// Load the "new topic" template
 								$mail_tpl = trim(file_get_contents(PUN_ROOT.'lang/'.$cur_subscriber['language'].'/mail_templates/new_topic.tpl'));
 
@@ -405,7 +405,7 @@ if (isset($_POST['form_sent']))
 								$mail_message = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_message);
 								$mail_message = str_replace('<poster>', $username, $mail_message);
 								$mail_message = str_replace('<topic_url>', get_base_url().'/viewtopic.php?id='.$new_tid, $mail_message);
-								$mail_message = str_replace('<unsubscribe_url>', get_base_url().'/misc.php?action=unsubscribe&fid='.$cur_posting['id'], $mail_message);
+								$mail_message = str_replace('<unsubscribe_url>', get_base_url().'/misc.php?action=unsubscribe&fid='.$cur_posting['id'].'&csrf_hash=<csrf_hash>', $mail_message);
 								$mail_message = str_replace('<board_mailer>', $pun_config['o_board_title'], $mail_message);
 
 								$mail_subject_full = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_subject_full);
@@ -414,7 +414,7 @@ if (isset($_POST['form_sent']))
 								$mail_message_full = str_replace('<poster>', $username, $mail_message_full);
 								$mail_message_full = str_replace('<message>', $cleaned_message, $mail_message_full);
 								$mail_message_full = str_replace('<topic_url>', get_base_url().'/viewtopic.php?id='.$new_tid, $mail_message_full);
-								$mail_message_full = str_replace('<unsubscribe_url>', get_base_url().'/misc.php?action=unsubscribe&fid='.$cur_posting['id'], $mail_message_full);
+								$mail_message_full = str_replace('<unsubscribe_url>', get_base_url().'/misc.php?action=unsubscribe&fid='.$cur_posting['id'].'&csrf_hash=<csrf_hash>', $mail_message_full);
 								$mail_message_full = str_replace('<board_mailer>', $pun_config['o_board_title'], $mail_message_full);
 
 								$notification_emails[$cur_subscriber['language']][0] = $mail_subject;
@@ -423,6 +423,8 @@ if (isset($_POST['form_sent']))
 								$notification_emails[$cur_subscriber['language']][3] = $mail_message_full;
 
 								$mail_subject = $mail_message = $mail_subject_full = $mail_message_full = null;
+
+								unset($cleaned_message);
 							}
 						}
 
@@ -430,13 +432,11 @@ if (isset($_POST['form_sent']))
 						if (isset($notification_emails[$cur_subscriber['language']]))
 						{
 							if ($cur_subscriber['notify_with_post'] == '0')
-								pun_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][0], $notification_emails[$cur_subscriber['language']][1]);
+								pun_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][0], str_replace('<csrf_hash>', csrf_hash('misc.php', false, $cur_subscriber), $notification_emails[$cur_subscriber['language']][1]));
 							else
-								pun_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][2], $notification_emails[$cur_subscriber['language']][3]);
+								pun_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][2], str_replace('<csrf_hash>', csrf_hash('misc.php', false, $cur_subscriber), $notification_emails[$cur_subscriber['language']][3]));
 						}
 					}
-
-					unset($cleaned_message);
 				}
 			}
 		}

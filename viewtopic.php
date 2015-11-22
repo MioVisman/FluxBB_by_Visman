@@ -247,7 +247,7 @@ if (!$pun_user['is_guest'] && $pun_config['o_topic_subscriptions'] == '1')
 {
 	if ($cur_topic['is_subscribed'])
 		// I apologize for the variable naming here. It's a mix of subscription and action I guess :-)
-		$subscraction = "\t\t".'<p class="subscribelink clearb"><span>'.$lang_topic['Is subscribed'].' - </span><a href="misc.php?action=unsubscribe&amp;tid='.$id.'&amp;csrf_hash='.csrf_hash('misc.php').'">'.$lang_topic['Unsubscribe'].'</a></p>'."\n";
+		$subscraction = "\t\t".'<p class="subscribelink clearb"><span>'.$lang_topic['Is subscribed'].' - </span><a href="misc.php?action=unsubscribe&amp;tid='.$id.'&amp;csrf_hash='.csrf_hash('misc.php', false).'">'.$lang_topic['Unsubscribe'].'</a></p>'."\n";
 	else
 		$subscraction = "\t\t".'<p class="subscribelink clearb"><a href="misc.php?action=subscribe&amp;tid='.$id.'&amp;csrf_hash='.csrf_hash('misc.php').'">'.$lang_topic['Subscribe'].'</a></p>'."\n";
 }

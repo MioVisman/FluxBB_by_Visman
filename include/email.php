@@ -62,9 +62,24 @@ function encode_mail_text($str)
 //
 // Make a post email safe
 //
-function bbcode2email($text, $wrap_length = 72)
+function bbcode2email($text, $wrap_length = 72, $language = null)
 {
 	static $base_url;
+	static $wtotes = array();
+
+	$wrote = 'wrote:';
+
+	if (isset($language))
+	{
+		if (isset($wtotes[$language]))
+			$wrote = $wtotes[$language];
+
+		else if (file_exists(PUN_ROOT.'lang/'.$language.'/common.php'))
+		{
+			require PUN_ROOT.'lang/'.$language.'/common.php';
+			$wrote = $wtotes[$language] = $lang_common['wrote'];
+		}
+	}
 
 	if (!isset($base_url))
 		$base_url = get_base_url();
@@ -113,7 +128,7 @@ function bbcode2email($text, $wrap_length = 72)
 			$replacement = preg_replace(
 				array('%^(?=\>)%m', '%^(?!\>)%m'),
 				array('>', '> '),
-				$matches[2]." said:\n".$matches[3]);
+				$matches[2]." ".$wrote."\n".$matches[3]);
 		}
 
 		// List items

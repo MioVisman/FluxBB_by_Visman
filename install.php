@@ -9,7 +9,7 @@
 // The FluxBB version this script installs
 define('FORUM_VERSION', '1.5.9');
 
-define('FORUM_VER_REVISION', 72);	// номер сборки - Visman
+define('FORUM_VER_REVISION', 73);	// номер сборки - Visman
 
 define('FORUM_DB_REVISION', 21);
 define('FORUM_SI_REVISION', 2.1);
