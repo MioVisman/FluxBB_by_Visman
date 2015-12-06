@@ -105,7 +105,7 @@ $lang_pmsn = array(
 'InfoDeleteQTop' => 'Confirm removing of this dialogue',
 'InfoSend' => 'Sending dialogue &rdquo;%s&rdquo;',
 'InfoSendQ' => 'Send dialogue to user <strong>%s</strong>?',
-'Attention' =>  'Attention!!!',
+'Attention' => 'Attention!!!',
 'Delete dialog' => 'Remove dialogues between you and this user',
 
 'Modul failed message' => 'The module &rdquo;%s&rdquo; failed to load.',

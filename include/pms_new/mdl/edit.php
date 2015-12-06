@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2013 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2015 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2008-2010 FluxBB
  * based on code by Rickard Andersson copyright (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -16,7 +16,7 @@ $pid = isset($_GET['pid']) ? intval($_GET['pid']) : 0;
 if ($pid < 1)
 	message($lang_common['Bad request'], false, '404 Not Found');
 
-$result = $db->query('SELECT t.id AS tid, t.topic, t.starter, t.starter_id, t.to_user, t.to_id, t.see_to, t.topic_st, t.topic_to, p.poster, p.poster_id, p.message, p.hide_smilies, p.post_seen, p.post_new FROM '.$db->prefix.'pms_new_posts AS p INNER JOIN '.$db->prefix.'pms_new_topics AS t ON t.id=p.topic_id WHERE p.id='.$pid) or error('Unable to fetch pms_new_posts info', __FILE__, __LINE__, $db->error());
+$result = $db->query('SELECT t.id AS tid, t.topic, t.starter, t.starter_id, t.to_user, t.to_id, t.see_to, t.topic_st, t.topic_to, p.poster, p.poster_id, p.message, p.hide_smilies, p.post_new FROM '.$db->prefix.'pms_new_posts AS p INNER JOIN '.$db->prefix.'pms_new_topics AS t ON t.id=p.topic_id WHERE p.id='.$pid) or error('Unable to fetch pms_new_posts info', __FILE__, __LINE__, $db->error());
 if (!$db->num_rows($result))
 	message($lang_common['Bad request'], false, '404 Not Found');
 
@@ -90,10 +90,8 @@ if (isset($_POST['csrf_hash']))
 	// Did everything go according to plan?
 	if (empty($errors) && !isset($_POST['preview']))
 	{
-		$edited_sql = (!isset($_POST['silent']) || !$is_admmod) ? $edited_sql = ', edited='.time().', edited_by=\''.$db->escape($pun_user['username']).'\'' : '';
-
 		// Update the post
-		$db->query('UPDATE '.$db->prefix.'pms_new_posts SET message=\''.$db->escape($message).'\', hide_smilies='.$hide_smilies.$edited_sql.' WHERE id='.$pid) or error('Unable to update pms_new_posts', __FILE__, __LINE__, $db->error());
+		$db->query('UPDATE '.$db->prefix.'pms_new_posts SET message=\''.$db->escape($message).'\', hide_smilies='.$hide_smilies.', edited='.time().', edited_by=\''.$db->escape($pun_user['username']).'\' WHERE id='.$pid) or error('Unable to update pms_new_posts', __FILE__, __LINE__, $db->error());
 
 		redirect('pmsnew.php?mdl=topic'.$sidamp.'&amp;pid='.$pid.'#p'.$pid, $lang_post['Edit redirect']);
 	}
@@ -208,7 +206,7 @@ $cur_index = 1;
 
 $checkboxes = array();
 if ($pun_config['o_smilies'] == '1')
-	$checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'"'.(isset($_POST['hide_smilies']) ? ' checked="checked"' : '').' />'.$lang_post['Hide smilies'].'<br /></label>';
+	$checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'"'.((isset($hide_smilies) && $hide_smilies || !isset($hide_smilies) && $cur_post['hide_smilies']) ? ' checked="checked"' : '').' />'.$lang_post['Hide smilies'].'<br /></label>';
 if (!empty($checkboxes))
 {
 ?>
@@ -231,4 +229,5 @@ if (!empty($checkboxes))
 		</div>
 	</div>
 <?php
+
 require PUN_ROOT.'include/bbcode.inc.php';

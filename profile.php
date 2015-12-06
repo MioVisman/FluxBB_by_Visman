@@ -1012,7 +1012,6 @@ else if (isset($_POST['form_sent']))
 		$db->query('UPDATE '.$db->prefix.'pms_new_topics SET to_user=\''.$db->escape($form['username']).'\' WHERE to_id='.$id) or error('Unable to update pms_new_topics', __FILE__, __LINE__, $db->error());
 		$db->query('UPDATE '.$db->prefix.'pms_new_posts SET poster=\''.$db->escape($form['username']).'\' WHERE poster_id='.$id) or error('Unable to update pms_new_posts', __FILE__, __LINE__, $db->error());
 		$db->query('UPDATE '.$db->prefix.'pms_new_posts SET edited_by=\''.$db->escape($form['username']).'\' WHERE edited_by=\''.$db->escape($old_username).'\'') or error('Unable to update pms_new_posts', __FILE__, __LINE__, $db->error());
-		$db->query('UPDATE '.$db->prefix.'pms_new_block SET bl_user=\''.$db->escape($form['username']).'\' WHERE bl_user_id='.$id) or error('Unable to update ms_new_block', __FILE__, __LINE__, $db->error());
 // New PMS - Visman
 		$db->query('UPDATE '.$db->prefix.'bans SET username=\''.$db->escape($form['username']).'\' WHERE username=\''.$db->escape($old_username).'\'') or error('Unable to update bans', __FILE__, __LINE__, $db->error());
 		// If any bans were updated, we will need to know because the cache will need to be regenerated.

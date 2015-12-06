@@ -9,7 +9,7 @@
 // The FluxBB version this script updates to
 define('UPDATE_TO', '1.5.9');
 
-define('UPDATE_TO_VER_REVISION', 73);	// номер сборки - Visman
+define('UPDATE_TO_VER_REVISION', 74);	// номер сборки - Visman
 
 define('UPDATE_TO_DB_REVISION', 21);
 define('UPDATE_TO_SI_REVISION', 2.1);
@@ -752,12 +752,7 @@ if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_v
 						'datatype'		=> 'INT(10) UNSIGNED',
 						'allow_null'	=> false,
 						'default'		=> '0'
-					),
-					'bl_user'		=> array(
-						'datatype'		=> 'VARCHAR(200)',
-						'allow_null'	=> false,
-						'default'		=> '\'\''
-					),
+					)
 				),
 				'INDEXES'		=> array(
 					'bl_id_idx'	=> array('bl_id'),
@@ -811,11 +806,6 @@ if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_v
 					'edited_by'		=> array(
 						'datatype'		=> 'VARCHAR(200)',
 						'allow_null'	=> true
-					),
-					'post_seen'		=> array(
-						'datatype'		=> 'TINYINT(1)',
-						'allow_null'	=> false,
-						'default'		=> '0'
 					),
 					'post_new'		=> array(
 						'datatype'		=> 'TINYINT(1)',
@@ -1238,6 +1228,11 @@ if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_v
 	@unlink(PUN_ROOT.'js/minmax.js');
 	@unlink(PUN_ROOT.'install.php');
 } // rev.72
+if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 74)
+{
+		$db->drop_field('pms_new_block', 'bl_user') or error('Unable to drop bl_user field', __FILE__, __LINE__, $db->error());
+		$db->drop_field('pms_new_posts', 'post_seen') or error('Unable to drop post_seen field', __FILE__, __LINE__, $db->error());
+} // rev.74
 // Visman
 
 		// If we don't need to update the database, skip this stage

@@ -1194,7 +1194,7 @@ function csrf_hash($script = false, $use_ip = true, $user = false)
 	$key = $script.$ip.$user['id'];
 
 	if (!isset($arr[$key]))
-		$arr[$key] = pun_hash($script.$user['id'].pun_hash($ip.$user['password'].$pun_config['o_crypto_pas']));
+		$arr[$key] = pun_hash(PUN_ROOT.$script.$user['id'].pun_hash($ip.$user['password'].$pun_config['o_crypto_pas']));
 
 	return $arr[$key];
 }

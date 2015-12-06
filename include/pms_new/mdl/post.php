@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2013 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2015 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2008-2010 FluxBB
  * based on code by Rickard Andersson copyright (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -82,7 +82,7 @@ else
 
 if (!isset($_POST['req_addressee']) && (isset($_GET['uid']) || $sid))
 {
-  if ($sid)
+	if ($sid)
 		$uid = $sid;
 	else
 		$uid = intval($_GET['uid']);
@@ -103,7 +103,7 @@ if (!isset($_POST['req_addressee']) && (isset($_GET['uid']) || $sid))
 		else if ($cur_user['messages_all'] >= $cur_user['g_pm_limit'] && $cur_user['g_pm_limit'] != 0)
 			message($lang_pmsn['More maximum']);
 	}
-  
+
 	$result = $db->query('SELECT bl_id FROM '.$db->prefix.'pms_new_block WHERE (bl_id='.$pun_user['id'].' AND bl_user_id='.$cur_user['id'].') OR (bl_id='.$cur_user['id'].' AND bl_user_id='.$pun_user['id'].')') or error('Unable to fetch pms_new_block', __FILE__, __LINE__, $db->error());
 	$tmp_bl = $db->fetch_assoc($result);
 	if ($tmp_bl['bl_id'] == $pun_user['id'])
@@ -151,42 +151,31 @@ if (isset($_POST['csrf_hash']))
 		$result = $db->query('SELECT u.*, g.* FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'groups AS g ON u.group_id=g.g_id WHERE u.username=\''.$db->escape($addressee).'\'') or error('Unable to fetch user information', __FILE__, __LINE__, $db->error());
 		$cur_addressee = $db->fetch_assoc($result);
 
-		if (!isset($cur_addressee['id']) || $cur_addressee['id'] < 2)
+		if (empty($cur_addressee['id']) || $cur_addressee['id'] < 2)
 			$errors[] = $lang_pmsn['No addressee'];
+		else if ($cur_addressee['id'] == $pun_user['id'])
+			$errors[] = $lang_pmsn['No for itself'];
 		else
 		{
 			$to_user['id'] = $cur_addressee['id'];
 			$to_user['username'] = $cur_addressee['username'];
-		}
-		if ($cur_addressee['id'] == $pun_user['id'])
-			$errors[] = $lang_pmsn['No for itself'];
 
-		if ($pun_user['g_id'] != PUN_ADMIN && !isset($_POST['preview']) && isset($cur_addressee['id']))
-		{
-			if (isset($_POST['save']))
+			if ($pun_user['g_id'] != PUN_ADMIN && !isset($_POST['preview']))
 			{
-				if ($pmsn_kol_save >= $pun_user['g_pm_limit'] && $pun_user['g_pm_limit'] != 0)
-					$errors[] = $lang_pmsn['More maximum user'];
-			}
-			else
-			{
-				if ($cur_addressee['messages_enable'] == 0 || $cur_addressee['g_pm'] == 0)
-					$errors[] = $lang_pmsn['Off messages'];
-				else if ($cur_addressee['messages_all'] >= $cur_addressee['g_pm_limit'] && $cur_addressee['g_pm_limit'] > 0)
-					$errors[] = $lang_pmsn['More maximum'];
+				if (isset($_POST['save']))
+				{
+					if ($pmsn_kol_save >= $pun_user['g_pm_limit'] && $pun_user['g_pm_limit'] != 0)
+						$errors[] = $lang_pmsn['More maximum user'];
+				}
+				else
+				{
+					if ($cur_addressee['messages_enable'] == 0 || $cur_addressee['g_pm'] == 0)
+						$errors[] = $lang_pmsn['Off messages'];
+					else if ($cur_addressee['messages_all'] >= $cur_addressee['g_pm_limit'] && $cur_addressee['g_pm_limit'] > 0)
+						$errors[] = $lang_pmsn['More maximum'];
+				}
 			}
 		}
-
-		if (isset($cur_addressee['id']))
-		{
-			$result = $db->query('SELECT bl_id FROM '.$db->prefix.'pms_new_block WHERE (bl_id='.$pun_user['id'].' AND bl_user_id='.$cur_addressee['id'].') OR (bl_id='.$cur_addressee['id'].' AND bl_user_id='.$pun_user['id'].')') or error('Unable to fetch pms_new_block', __FILE__, __LINE__, $db->error());
-			$tmp_bl = $db->fetch_assoc($result);
-
-			if ($tmp_bl['bl_id'] == $pun_user['id'])
-				$errors[] = $lang_pmsn['You block addr'];
-			else if ($pun_user['g_id'] != PUN_ADMIN && $tmp_bl['bl_id'] == $cur_addressee['id'])
-				$errors[] = $lang_pmsn['Addr block you'];
-    }
 	}
 	else if (!isset($_POST['preview']))
 	{
@@ -198,15 +187,19 @@ if (isset($_POST['csrf_hash']))
 		$result = $db->query('SELECT u.*, g.* FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'groups AS g ON u.group_id=g.g_id WHERE u.id='.$mid) or error('Unable to fetch user information', __FILE__, __LINE__, $db->error());
 		$cur_addressee = $db->fetch_assoc($result);
 
-		if (!isset($cur_addressee['id']))
+		if (empty($cur_addressee['id']) || $cur_addressee['id'] < 2)
 			$errors[] = $lang_pmsn['No addressee'];
 		else if ($pun_user['g_id'] != PUN_ADMIN && !isset($_POST['save']) && ($cur_addressee['messages_enable'] == 0 || $cur_addressee['g_pm'] == 0))
 			$errors[] = $lang_pmsn['Off messages'];
+ 	}
 
-		if (isset($cur_addressee['id']))
+	if (empty($errors) && !empty($cur_addressee['id']))
+	{
+		$result = $db->query('SELECT bl_id FROM '.$db->prefix.'pms_new_block WHERE (bl_id='.$pun_user['id'].' AND bl_user_id='.$cur_addressee['id'].') OR (bl_id='.$cur_addressee['id'].' AND bl_user_id='.$pun_user['id'].')') or error('Unable to fetch pms_new_block', __FILE__, __LINE__, $db->error());
+		$tmp_bl = $db->fetch_assoc($result);
+
+		if (isset($tmp_bl['bl_id']))
 		{
-			$result = $db->query('SELECT bl_id FROM '.$db->prefix.'pms_new_block WHERE (bl_id='.$pun_user['id'].' AND bl_user_id='.$cur_addressee['id'].') OR (bl_id='.$cur_addressee['id'].' AND bl_user_id='.$pun_user['id'].')') or error('Unable to fetch pms_new_block', __FILE__, __LINE__, $db->error());
-			$tmp_bl = $db->fetch_assoc($result);
 			if ($tmp_bl['bl_id'] == $pun_user['id'])
 				$errors[] = $lang_pmsn['You block addr'];
 			else if ($pun_user['g_id'] != PUN_ADMIN && $tmp_bl['bl_id'] == $cur_addressee['id'])
@@ -241,7 +234,7 @@ if (isset($_POST['csrf_hash']))
 		if ($tid) // new post
 		{
 			// создаем новое сообщение
-			$db->query('INSERT INTO '.$db->prefix.'pms_new_posts (poster, poster_id, poster_ip, message, hide_smilies, posted, post_seen, post_new, topic_id) VALUES(\''.$db->escape($pun_user['username']).'\', '.$pun_user['id'].', \''.$db->escape(get_remote_address()).'\',  \''.$db->escape($message).'\', '.$hide_smilies.', '.$now.', 0, 1, '.$tid.')') or error('Unable to create pms_new_posts', __FILE__, __LINE__, $db->error());
+			$db->query('INSERT INTO '.$db->prefix.'pms_new_posts (poster, poster_id, poster_ip, message, hide_smilies, posted, post_new, topic_id) VALUES(\''.$db->escape($pun_user['username']).'\', '.$pun_user['id'].', \''.$db->escape(get_remote_address()).'\', \''.$db->escape($message).'\', '.$hide_smilies.', '.$now.', 1, '.$tid.')') or error('Unable to create pms_new_posts', __FILE__, __LINE__, $db->error());
 			$new_pid = $db->insert_id();
 
 			// обновляем тему
@@ -283,7 +276,7 @@ if (isset($_POST['csrf_hash']))
 				$flag2 = 2;
 				$m_all = $pmsn_kol_list;
 			}
-      else
+			else
 			{
 				$flag1 = 0;
 				$flag2 = 1;
@@ -294,7 +287,7 @@ if (isset($_POST['csrf_hash']))
 			$new_tid = $db->insert_id();
 			
 			// создаем новое сообщение
-			$db->query('INSERT INTO '.$db->prefix.'pms_new_posts (poster, poster_id, poster_ip, message, hide_smilies, posted, post_seen, post_new, topic_id) VALUES(\''.$db->escape($pun_user['username']).'\', '.$pun_user['id'].', \''.$db->escape(get_remote_address()).'\',  \''.$db->escape($message).'\', '.$hide_smilies.', '.$now.', 0, 1, '.$new_tid.')') or error('Unable to create pms_new_posts', __FILE__, __LINE__, $db->error());
+			$db->query('INSERT INTO '.$db->prefix.'pms_new_posts (poster, poster_id, poster_ip, message, hide_smilies, posted, post_new, topic_id) VALUES(\''.$db->escape($pun_user['username']).'\', '.$pun_user['id'].', \''.$db->escape(get_remote_address()).'\', \''.$db->escape($message).'\', '.$hide_smilies.', '.$now.', 1, '.$new_tid.')') or error('Unable to create pms_new_posts', __FILE__, __LINE__, $db->error());
 			$new_pid = $db->insert_id();
 
 			// update users
@@ -340,7 +333,7 @@ $focus_element = array('post');
 if ($tid)
 {
 	$action1 = $lang_post['Post a reply'];
-	$action0 =  $lang_pmsn[$pmsn_modul];
+	$action0 = $lang_pmsn[$pmsn_modul];
 	if (isset($to_user['id']) && $to_user['id'] != $sid)
 		$form = '<form id="post" method="post" action="pmsnew.php?mdl=post&amp;tid='.$tid.'" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">'."\n";
 	else
@@ -396,7 +389,7 @@ if ($tid)
 else
 {
 	$action1 = $lang_pmsn['Post new topic'];
-	$action0 =  $lang_pmsn['New dialog'];
+	$action0 = $lang_pmsn['New dialog'];
 	if (isset($to_user['id']) && $to_user['id'] != $sid)
 		$form = '<form id="post" method="post" action="pmsnew.php?mdl=post" onsubmit="return process_form(this)">'."\n";
 	else
@@ -555,6 +548,7 @@ if (!empty($checkboxes))
 		</div>
 	</div>
 <?php
+
 require PUN_ROOT.'include/bbcode.inc.php';
 
 // Check to see if the topic review is to be displayed

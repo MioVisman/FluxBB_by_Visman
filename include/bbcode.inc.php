@@ -48,7 +48,7 @@ if (!$pun_user['is_guest'] && !empty($pun_user['g_up_ext']))
 		$bbflagup = 1;
 }
 
-//$page_js['j'] = 1;
+$page_js['j'] = 1; // for resize textarea :(
 $page_js['f']['bbcode'] = 'js/post.js';
 $page_js['c'][] = 'if (typeof FluxBB === \'undefined\' || !FluxBB) {var FluxBB = {};}
 FluxBB.vars = {

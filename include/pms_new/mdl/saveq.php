@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2013 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2015 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2008-2010 FluxBB
  * based on code by Rickard Andersson copyright (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -38,7 +38,7 @@ if (defined('PUN_PMS_NEW_CONFIRM'))
 	}
 
 	$kolvo = count($topics);
-  
+
 	if ($kolvo == 0)
 		message($lang_pmsn['No dialogs']);
 	if (count(array_diff($topics, $pmsn_arr_save)) > 0)

@@ -9,7 +9,7 @@
 // The FluxBB version this script installs
 define('FORUM_VERSION', '1.5.9');
 
-define('FORUM_VER_REVISION', 73);	// номер сборки - Visman
+define('FORUM_VER_REVISION', 74);	// номер сборки - Visman
 
 define('FORUM_DB_REVISION', 21);
 define('FORUM_SI_REVISION', 2.1);
@@ -1396,11 +1396,6 @@ else
 				'datatype'		=> 'INT(10) UNSIGNED',
 				'allow_null'	=> false,
 				'default'		=> '0'
-			),
-			'bl_user'		=> array(
-				'datatype'		=> 'VARCHAR(200)',
-				'allow_null'	=> false,
-				'default'		=> '\'\''
 			)
 		),
 		'INDEXES'		=> array(
@@ -1452,11 +1447,6 @@ else
 			'edited_by'		=> array(
 				'datatype'		=> 'VARCHAR(200)',
 				'allow_null'	=> true
-			),
-			'post_seen'		=> array(
-				'datatype'		=> 'TINYINT(1)',
-				'allow_null'	=> false,
-				'default'		=> '0'
 			),
 			'post_new'		=> array(
 				'datatype'		=> 'TINYINT(1)',

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2013 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2015 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -15,7 +15,7 @@ else
 
 function generate_pmsn_menu($page = '')
 {
-	global $pun_config, $pun_user, $lang_pmsn, $lang_common, $pmsn_kol_list, $pmsn_kol_new, $pmsn_kol_save;
+	global $pun_user, $lang_pmsn, $pmsn_kol_list, $pmsn_kol_new, $pmsn_kol_save;
 	global $sidamp, $sidvop;
 
 ?>
@@ -49,14 +49,14 @@ function generate_pmsn_menu($page = '')
 			</div>
 		</div>
 <?php
-    }
+		}
 ?>
 		<h2 class="block2"><span><?php echo $lang_pmsn['Options'] ?></span></h2>
 		<div class="box">
 			<div class="inbox">
 				<ul>
-					<li><a href="pmsnew.php?action=onoff"><?php echo $lang_pmsn['Off'] ?></a></li>
-					<li><a href="pmsnew.php?action=email"><?php echo (($pun_user['messages_email'] == 1) ? $lang_pmsn['Email on'] : $lang_pmsn['Email off']) ?></a></li>
+					<li><a href="pmsnew.php?action=onoff&amp;csrf_token=<?php echo pmsn_csrf_token('onoff') ?>"><?php echo $lang_pmsn['Off'] ?></a></li>
+					<li><a href="pmsnew.php?action=email&amp;csrf_token=<?php echo pmsn_csrf_token('email') ?>"><?php echo (($pun_user['messages_email'] == 1) ? $lang_pmsn['Email on'] : $lang_pmsn['Email off']) ?></a></li>
 					<li<?php if ($page == 'blocked') echo ' class="isactive"'; ?>><a href="pmsnew.php?mdl=blocked"><?php echo $lang_pmsn['blocked'] ?></a></li>
 				</ul>
 			</div>
@@ -72,7 +72,7 @@ function generate_pmsn_menu($page = '')
 		<div class="box">
 			<div class="inbox">
 				<ul>
-					<li><a href="pmsnew.php?action=onoff"><?php echo $lang_pmsn['On'] ?></a></li>
+					<li><a href="pmsnew.php?action=onoff&amp;csrf_token=<?php echo pmsn_csrf_token('onoff') ?>"><?php echo $lang_pmsn['On'] ?></a></li>
 				</ul>
 			</div>
 		</div>
@@ -110,9 +110,9 @@ function pmsn_user_delete($user, $mflag, $topics = array())
 	$tf_st = $tf_to = $tm_st = $tm_to = array();
 
 	if (empty($topics))
-		$result = $db->query('SELECT id, starter_id, to_id, see_to, topic_st, topic_to  FROM '.$db->prefix.'pms_new_topics WHERE starter_id='.$user.' OR to_id='.$user) or error('Unable to fetch pms topics IDs', __FILE__, __LINE__, $db->error());
+		$result = $db->query('SELECT id, starter_id, to_id, see_to, topic_st, topic_to FROM '.$db->prefix.'pms_new_topics WHERE starter_id='.$user.' OR to_id='.$user) or error('Unable to fetch pms topics IDs', __FILE__, __LINE__, $db->error());
 	else
-		$result = $db->query('SELECT id, starter_id, to_id, see_to, topic_st, topic_to  FROM '.$db->prefix.'pms_new_topics WHERE id IN ('.implode(',', $topics).')') or error('Unable to fetch pms topics IDs', __FILE__, __LINE__, $db->error());
+		$result = $db->query('SELECT id, starter_id, to_id, see_to, topic_st, topic_to FROM '.$db->prefix.'pms_new_topics WHERE id IN ('.implode(',', $topics).')') or error('Unable to fetch pms topics IDs', __FILE__, __LINE__, $db->error());
 
 	while ($cur_topic = $db->fetch_assoc($result))
 	{
@@ -165,4 +165,25 @@ function pmsn_user_delete($user, $mflag, $topics = array())
 	// обновляем юзеров
 	foreach ($user_up as $i => $s)
 		pmsn_user_update($user_up[$i]);
+}
+
+function pmsn_get_var($name, $default = NULL)
+{
+	if (isset($_POST[$name]))
+		return $_POST[$name];
+	else if (isset($_GET[$name]))
+		return $_GET[$name];
+	else
+		return $default;
+}
+
+function pmsn_csrf_token($key)
+{
+	global $pun_config, $pun_user;
+	static $arr = array();
+
+	if (!isset($arr[$key]))
+		$arr[$key] = pun_hash(PUN_ROOT.$pun_user['id'].$pun_user['password'].pun_hash($pun_config['o_crypto_pas'].$key.get_remote_address()));
+
+	return $arr[$key];
 }

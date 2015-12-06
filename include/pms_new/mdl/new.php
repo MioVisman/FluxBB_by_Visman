@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2013 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2015 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2008-2010 FluxBB
  * based on code by Rickard Andersson copyright (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -61,9 +61,9 @@ else
 	// Generate paging links
 	$paging_links = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.paginate($num_pages, $p, 'pmsnew.php?mdl=new'.$sidamp);
 
-  if ($pun_user['g_pm_limit'] != 0 && $pmsn_kol_save >= $pun_user['g_pm_limit'])
+	if ($pun_user['g_pm_limit'] != 0 && $pmsn_kol_save >= $pun_user['g_pm_limit'])
 		$pmsn_f_savedel = '';
-  else
+	else
 		$pmsn_f_savedel = '<input type="submit" name="save" value="'.$lang_pmsn['Save_'].'" />&#160;';
 	$pmsn_f_savedel .= '<input type="submit" name="delete" value="'.$lang_pmsn['Delete'].'" />';
 

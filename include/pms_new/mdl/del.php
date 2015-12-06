@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2013 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2015 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2008-2010 FluxBB
  * based on code by Rickard Andersson copyright (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -12,8 +12,8 @@ if (!defined('PUN') || !defined('PUN_PMS_NEW'))
 
 define('PUN_PMS_LOADED', 1);
 
-$tid = isset($_REQUEST['tid']) ? intval($_REQUEST['tid']) : 0;
-$pid = isset($_REQUEST['pid']) ? intval($_REQUEST['pid']) : 0;
+$tid = intval(pmsn_get_var('tid', 0));
+$pid = intval(pmsn_get_var('pid', 0));
 if ($tid < 1 && $pid < 1)
 	message($lang_common['Bad request'], false, '404 Not Found');
 

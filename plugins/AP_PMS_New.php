@@ -11,7 +11,7 @@ if (!defined('PUN'))
 
 // Tell admin_loader.php that this is indeed a plugin and that it is loaded
 define('PUN_PLUGIN_LOADED', 1);
-define('PLUGIN_VERSION', '1.7.2');
+define('PLUGIN_VERSION', '1.8.0');
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin='.$plugin));
 
 // Load language file
@@ -103,7 +103,7 @@ if ($pun_config['o_pms_enabled'] == '1')
 							<table class="aligntop">
 								<tr>
 									<td>
-										<span><input type="text" name="min_kolvo" value="<?php echo pun_htmlspecialchars($pun_config['o_pms_min_kolvo']) ?>"  tabindex="<?php echo ($tabindex++) ?>" size="10" maxlength="10" />&#160;&#160;<?php echo $lang_apmsn['Q3'] ?></span>
+										<span><input type="text" name="min_kolvo" value="<?php echo pun_htmlspecialchars($pun_config['o_pms_min_kolvo']) ?>" tabindex="<?php echo ($tabindex++) ?>" size="10" maxlength="10" />&#160;&#160;<?php echo $lang_apmsn['Q3'] ?></span>
 									</td>
 								</tr>
 								<tr>
@@ -140,7 +140,7 @@ if ($pun_config['o_pms_enabled'] == '1')
 								<tr>
 									<td class="tcl"><?php echo pun_htmlspecialchars($cur_group['g_title']) ?></td>
 									<td class="tc2"><input type="checkbox" name="g_pm[<?php echo $cur_group['g_id'] ?>]" value="1" tabindex="<?php echo ($tabindex++) ?>"<?php echo ($cur_group['g_pm'] == 1 ? ' checked="checked"' : '')?> /></td>
-									<td class="tcr"><input type="text" name="g_limit[<?php echo $cur_group['g_id'] ?>]" value="<?php echo $cur_group['g_pm_limit'] ?>"  tabindex="<?php echo ($tabindex++) ?>" size="10" maxlength="10" /></td>
+									<td class="tcr"><input type="text" name="g_limit[<?php echo $cur_group['g_id'] ?>]" value="<?php echo $cur_group['g_pm_limit'] ?>" tabindex="<?php echo ($tabindex++) ?>" size="10" maxlength="10" /></td>
 								</tr>
 <?php
 

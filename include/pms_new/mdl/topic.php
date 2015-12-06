@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2013 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2015 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2008-2010 FluxBB
  * based on code by Rickard Andersson copyright (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -178,11 +178,10 @@ for ($i = 0;$cur_post_id = $db->result($result, $i);$i++)
 	$post_ids[] = $cur_post_id;
 	
 $post_view_new = array();
-$a_token = array();
 
 // мод пола, добавлен u.gender
 // убран запрос к таблице online
-$result = $db->query('SELECT u.gender, u.email, u.title, u.url, u.location, u.signature, u.email_setting, u.num_posts, u.registered, u.admin_note, p.id, p.poster AS username, p.poster_id, p.message, p.hide_smilies, p.posted, p.edited, p.edited_by, p.post_seen, p.post_new, g.g_id, g.g_user_title FROM '.$db->prefix.'pms_new_posts AS p LEFT JOIN '.$db->prefix.'users AS u ON u.id=p.poster_id LEFT JOIN '.$db->prefix.'groups AS g ON g.g_id=u.group_id WHERE p.id IN ('.implode(',', $post_ids).') ORDER BY p.id', true) or error('Unable to fetch pms_new_posts info', __FILE__, __LINE__, $db->error());
+$result = $db->query('SELECT u.gender, u.email, u.title, u.url, u.location, u.signature, u.email_setting, u.num_posts, u.registered, u.admin_note, p.id, p.poster AS username, p.poster_id, p.message, p.hide_smilies, p.posted, p.edited, p.edited_by, p.post_new, g.g_id, g.g_user_title FROM '.$db->prefix.'pms_new_posts AS p LEFT JOIN '.$db->prefix.'users AS u ON u.id=p.poster_id LEFT JOIN '.$db->prefix.'groups AS g ON g.g_id=u.group_id WHERE p.id IN ('.implode(',', $post_ids).') ORDER BY p.id', true) or error('Unable to fetch pms_new_posts info', __FILE__, __LINE__, $db->error());
 while ($cur_post = $db->fetch_assoc($result))
 {
 	$post_count++;
@@ -214,12 +213,7 @@ while ($cur_post = $db->fetch_assoc($result))
 			$post_view_new[] = $cur_post['id'];
 
 		if ($cur_post['g_id'] != PUN_GUEST && $cur_post['g_id'] != PUN_ADMIN)
-		{
-			if (!isset($a_token[$cur_post['poster_id']]))
-				$a_token[$cur_post['poster_id']] = pun_hash($pun_user['id'].pun_hash($pun_config['o_crypto_pas'].$cur_post['poster_id']).PUN_ROOT);
-		  
-			$post_actions[] = '<li class="postreport"><span><a href="pmsnew.php?mdl=blocking&amp;uid='.$cur_post['poster_id'].'&amp;csrf_token='.$a_token[$cur_post['poster_id']].'">'.$lang_pmsn['Block'].'</a></span></li>';
-		}
+			$post_actions[] = '<li class="postreport"><span><a href="pmsnew.php?mdl=blocking&amp;uid='.$cur_post['poster_id'].'&amp;csrf_token='.pmsn_csrf_token($cur_post['poster_id']).'">'.$lang_pmsn['Block'].'</a></span></li>';
 	}
 	else if ($cur_post['post_new'] == 1 && $newpost)
 	{
@@ -344,7 +338,7 @@ while ($cur_post = $db->fetch_assoc($result))
 		</div>
 <?php
 
-}  // while
+} // while
 
 ?>
 		<div class="pagepost">
@@ -358,7 +352,7 @@ if ($status)
 {
 	if (count($post_view_new) > 0 )
 	{
-		$db->query('UPDATE '.$db->prefix.'pms_new_posts SET post_seen=1, post_new=0 WHERE id IN ('.implode(',', $post_view_new).')') or error('Unable to update pms_new_posts', __FILE__, __LINE__, $db->error());
+		$db->query('UPDATE '.$db->prefix.'pms_new_posts SET post_new=0 WHERE id IN ('.implode(',', $post_view_new).')') or error('Unable to update pms_new_posts', __FILE__, __LINE__, $db->error());
 
 		$result = $db->query('SELECT MIN(id) FROM '.$db->prefix.'pms_new_posts WHERE poster_id!='.$pun_user['id'].' AND topic_id='.$tid.' AND post_new=1') or error('Unable to fetch pms_new_posts info', __FILE__, __LINE__, $db->error());
 		$first_new_post_id = $db->result($result);
@@ -388,7 +382,7 @@ if ($quickpost)
 						<legend><?php echo $lang_common['Write message legend'] ?></legend>
 						<div class="infldset txtarea">
 							<input type="hidden" name="csrf_hash" value="<?php echo $pmsn_csrf_hash ?>" />
-							<label><textarea name="req_message" rows="7" cols="75"  tabindex="<?php echo $cur_index++ ?>"></textarea></label>
+							<label><textarea name="req_message" rows="7" cols="75" tabindex="<?php echo $cur_index++ ?>"></textarea></label>
 							<ul class="bblinks">
 								<li><span><a href="help.php#bbcode" onclick="window.open(this.href); return false;"><?php echo $lang_common['BBCode'] ?></a> <?php echo ($pun_config['p_message_bbcode'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
 								<li><span><a href="help.php#url" onclick="window.open(this.href); return false;"><?php echo $lang_common['url tag'] ?></a> <?php echo ($pun_config['p_message_bbcode'] == '1' && $pun_user['g_post_links'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
@@ -403,6 +397,6 @@ if ($quickpost)
 		</div>
 	</div>
 <?php
-require PUN_ROOT.'include/bbcode.inc.php';
 
+	require PUN_ROOT.'include/bbcode.inc.php';
 }

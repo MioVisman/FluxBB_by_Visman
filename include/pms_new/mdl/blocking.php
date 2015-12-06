@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2013 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2015 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2008-2010 FluxBB
  * based on code by Rickard Andersson copyright (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -12,12 +12,12 @@ if (!defined('PUN') || !defined('PUN_PMS_NEW'))
 
 define('PUN_PMS_LOADED', 1);
 
-$uid = isset($_REQUEST['uid']) ? intval($_REQUEST['uid']) : 0;
+$uid = intval(pmsn_get_var('uid', 0));
 if ($uid < 2)
 	message($lang_common['Bad request'], false, '404 Not Found');
 
-$csrf_token = pun_hash($pun_user['id'].pun_hash($pun_config['o_crypto_pas'].$uid).PUN_ROOT);
-if (!isset($_REQUEST['csrf_token']) || $_REQUEST['csrf_token'] != $csrf_token)
+$csrf_token = pmsn_csrf_token($uid);
+if (!pun_hash_equals($csrf_token, pmsn_get_var('csrf_token', '')))
 	message($lang_common['Bad request'], false, '404 Not Found');
 
 $result = $db->query('SELECT id, group_id, username FROM '.$db->prefix.'users WHERE id='.$uid) or error('Unable to fetch user information', __FILE__, __LINE__, $db->error());
@@ -53,9 +53,9 @@ if (isset($_POST['action2']))
 
 	if ($mfl)
 	{
-		$db->query('INSERT INTO '.$db->prefix.'pms_new_block (bl_id, bl_user_id, bl_user) VALUES('.$pun_user['id'].', '.$uid.', \''.$db->escape($cur_user['username']).'\')') or error('Unable to create line in pms_new_block', __FILE__, __LINE__, $db->error());
+		$db->query('INSERT INTO '.$db->prefix.'pms_new_block (bl_id, bl_user_id) VALUES('.$pun_user['id'].', '.$uid.')') or error('Unable to create line in pms_new_block', __FILE__, __LINE__, $db->error());
 
-		if (isset($_POST['delete_dlg']) && $_POST['delete_dlg'] == '1') // удаление диалогов
+		if (isset($_POST['delete_dlg'])) // удаление диалогов
 		{
 			$result = $db->query('SELECT id FROM '.$db->prefix.'pms_new_topics WHERE (starter_id = '.$pun_user['id'].' AND topic_st < 2 AND to_id='.$uid.') OR (to_id = '.$pun_user['id'].' AND topic_to < 2 AND starter_id='.$uid.')') or error('Unable to fetch pms topics IDs', __FILE__, __LINE__, $db->error());
 			if ($db->num_rows($result))
@@ -71,7 +71,7 @@ if (isset($_POST['action2']))
 	else
 		$db->query('DELETE FROM '.$db->prefix.'pms_new_block WHERE bl_id='.$pun_user['id'].' AND bl_user_id='.$uid) or error('Unable to remove line in pms_new_block', __FILE__, __LINE__, $db->error());;
 
-	redirect('pmsnew.php', $mbm);   // ???
+	redirect('pmsnew.php', $mbm); // ???
 }
 
 define('PUN_ACTIVE_PAGE', 'pms_new');

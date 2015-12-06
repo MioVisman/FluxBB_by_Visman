@@ -65,19 +65,19 @@ function encode_mail_text($str)
 function bbcode2email($text, $wrap_length = 72, $language = null)
 {
 	static $base_url;
-	static $wtotes = array();
+	static $wrotes = array();
 
 	$wrote = 'wrote:';
 
 	if (isset($language))
 	{
-		if (isset($wtotes[$language]))
-			$wrote = $wtotes[$language];
+		if (isset($wrotes[$language]))
+			$wrote = $wrotes[$language];
 
 		else if (file_exists(PUN_ROOT.'lang/'.$language.'/common.php'))
 		{
 			require PUN_ROOT.'lang/'.$language.'/common.php';
-			$wrote = $wtotes[$language] = $lang_common['wrote'];
+			$wrote = $wrotes[$language] = $lang_common['wrote'];
 		}
 	}
 

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2014 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2015 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -29,9 +29,13 @@ if (isset($_POST['csrf_hash']) || isset($_GET['csrf_hash']))
 	define('PUN_PMS_NEW_CONFIRM', 1);
 }
 
-$action = isset($_REQUEST['action']) ? pun_trim($_REQUEST['action']) : '';
+$action = pmsn_get_var('action', '');
 if ($action == 'onoff')
 {
+	$csrf_token = pmsn_csrf_token('onoff');
+	if (!pun_hash_equals($csrf_token, pmsn_get_var('csrf_token', '')))
+		message($lang_common['Bad request'], false, '404 Not Found');
+
 	if ($pun_user['messages_enable'] == 0 || ($pun_user['messages_enable'] == 1 && isset($_POST['action2']) && defined('PUN_PMS_NEW_CONFIRM')))
 	{
 		// удаляем сообщения пользователя
@@ -44,12 +48,16 @@ if ($action == 'onoff')
 		redirect('pmsnew.php', $lang_pmsn['Options redirect']);
 	}
 	else if ($pun_user['messages_enable'] == 1 && isset($_POST['action2']))
-		message($lang_common['Bad referrer']);
+		message($lang_common['Bad request'], false, '404 Not Found');
 	else
 		$pmsn_modul = 'closeq';
 }
 else if ($action == 'email')
 {
+	$csrf_token = pmsn_csrf_token('email');
+	if (!pun_hash_equals($csrf_token, pmsn_get_var('csrf_token', '')))
+		message($lang_common['Bad request'], false, '404 Not Found');
+
 	if ($pun_user['messages_email'] == 1)
 	{
 		$action = $lang_pmsn['Email off Red'];
@@ -67,7 +75,7 @@ else if ($pun_user['messages_enable'] == 0 && $pun_user['messages_new'] == 0) //
 	$pmsn_modul = 'close';
 else
 {
-	$pmsn_modul = isset($_REQUEST['mdl']) ? pun_trim($_REQUEST['mdl']) : 'new';
+	$pmsn_modul = pmsn_get_var('mdl', 'new');
 	
 	if ($pun_user['g_pm'] == 0 || $pun_user['messages_enable'] == 0)
 		if (!in_array($pmsn_modul, array('new','topic','close','closeq')))
@@ -96,7 +104,7 @@ if ($sid < 2)
 
 if ($sid)
 {
-	$result = $db->query('SELECT id, starter, to_user, starter_id, topic_st, topic_to  FROM '.$db->prefix.'pms_new_topics WHERE (starter_id = '.$pun_user['id'].' AND topic_st != 2 AND to_id='.$sid.') OR (to_id = '.$pun_user['id'].' AND topic_to != 2 AND starter_id='.$sid.') ORDER BY last_posted DESC') or error('Unable to fetch pms topics IDs', __FILE__, __LINE__, $db->error());
+	$result = $db->query('SELECT id, starter, to_user, starter_id, topic_st, topic_to FROM '.$db->prefix.'pms_new_topics WHERE (starter_id = '.$pun_user['id'].' AND topic_st != 2 AND to_id='.$sid.') OR (to_id = '.$pun_user['id'].' AND topic_to != 2 AND starter_id='.$sid.') ORDER BY last_posted DESC') or error('Unable to fetch pms topics IDs', __FILE__, __LINE__, $db->error());
 	if (!$db->num_rows($result))
 		$sid = 0;
 	else
@@ -106,7 +114,7 @@ if ($sid)
 	}
 }
 if ($sid == 0)
-	$result = $db->query('SELECT id, starter, to_user, starter_id, topic_st, topic_to  FROM '.$db->prefix.'pms_new_topics WHERE (starter_id = '.$pun_user['id'].' AND topic_st != 2) OR (to_id = '.$pun_user['id'].' AND topic_to != 2) ORDER BY last_posted DESC') or error('Unable to fetch pms topics IDs', __FILE__, __LINE__, $db->error());
+	$result = $db->query('SELECT id, starter, to_user, starter_id, topic_st, topic_to FROM '.$db->prefix.'pms_new_topics WHERE (starter_id = '.$pun_user['id'].' AND topic_st != 2) OR (to_id = '.$pun_user['id'].' AND topic_to != 2) ORDER BY last_posted DESC') or error('Unable to fetch pms topics IDs', __FILE__, __LINE__, $db->error());
 
 while ($ttmp = $db->fetch_assoc($result))
 {
@@ -132,9 +140,9 @@ $pmsn_kol_save = count($pmsn_arr_save);
 
 // можно ли создать новый диалог
 if ($pun_user['g_pm'] == 0 || $pun_user['messages_enable'] == 0 || ($pun_user['g_pm_limit'] != 0 && $pmsn_kol_list >= $pun_user['g_pm_limit'] && $pmsn_kol_save >= $pun_user['g_pm_limit']))
-  $pmsn_f_cnt = '';
+	$pmsn_f_cnt = '';
 else
-  $pmsn_f_cnt = '<span><a href="pmsnew.php?mdl=post'.$sidamp.'">'.$lang_pmsn['New dialog'].'</a></span>';
+	$pmsn_f_cnt = '<span><a href="pmsnew.php?mdl=post'.$sidamp.'">'.$lang_pmsn['New dialog'].'</a></span>';
 
 if (!isset($page_head))
 	$page_head = array();

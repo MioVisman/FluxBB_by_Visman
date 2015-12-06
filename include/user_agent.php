@@ -19,6 +19,8 @@ function ua_search_for_item($items, $usrag)
 		if (strpos($usrag, strtolower($item)) !== false)
 			return $item;
 	}
+
+	return 'Unknown';
 }
 
 function get_useragent_names($usrag)
@@ -32,8 +34,11 @@ function get_useragent_names($usrag)
 
 	$browser = ua_search_for_item($browsers, $usrag);
 
-	preg_match('#'.preg_quote(strtolower((in_array($browser, array('Safari', 'Opera')) ? 'Version' : ($browser == 'Trident' ? 'rv:' : $browser)))).'[\s/]*([\.0-9]+)#', $usrag, $matches);
-	$browser_version = isset($matches[1]) ? $matches[1] : '';
+	if (preg_match('#'.preg_quote(strtolower((in_array($browser, array('Safari', 'Opera')) ? 'Version' : ($browser == 'Trident' ? 'rv:' : $browser)))).'[\s/]*([\.0-9]+)#', $usrag, $matches))
+	{
+		$matches = explode('.', $matches[1]);
+		$browser_version = $matches[0].(isset($matches[1]) ? '.'.$matches[1] : '');
+	}
 
 	if ($browser == 'Trident' && !empty($browser_version) || $browser == 'MSIE')
 	{
@@ -52,11 +57,8 @@ function get_useragent_names($usrag)
 	elseif ($browser == 'OPR')
 		$browser = 'Opera';
 
-	elseif (empty($browser))
-		$browser = 'Unknown';
-
 	// System detection
-	$systems = array('Windows', 'Linux', 'Macintosh', 'Mac', 'Amiga', 'BeOS', 'FreeBSD', 'HP-UX', 'NetBSD', 'OS/2', 'SunOS', 'Symbian', 'Unix', 'Samsung', 'Sun', 'J2ME/MIDP');
+	$systems = array('Windows', 'Linux', 'Mac', 'Amiga', 'BeOS', 'FreeBSD', 'HP-UX', 'NetBSD', 'OS/2', 'SunOS', 'Symbian', 'Unix', 'J2ME/MIDP');
 	
 	$system = ua_search_for_item($systems, $usrag);
 	
@@ -66,7 +68,7 @@ function get_useragent_names($usrag)
 
 		$system = ua_search_for_item($systems, $usrag);
 
-		if (empty($system))
+		if ($system == 'Unknown')
 			$system = 'Linux';
 
 		elseif ($system == 'Mandrake')
@@ -104,16 +106,12 @@ function get_useragent_names($usrag)
 	elseif ($system == 'Mac')
 		$system = 'Macintosh';
 
-	elseif (empty($system))
-		$system = 'Unknown';
-
 	if (empty($browser_img))
 		$browser_img = $browser;
 
 	$result = array(
 		'system'					=> $system,
 		'browser_img'			=> $browser_img,
-		'browser_version'	=> $browser_version,
 		'browser_name'		=> $browser.' '.$browser_version
 	);
 

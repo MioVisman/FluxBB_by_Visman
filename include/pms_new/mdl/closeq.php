@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2013 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2015 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2008-2010 FluxBB
  * based on code by Rickard Andersson copyright (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -36,6 +36,7 @@ generate_pmsn_menu($pmsn_modul);
 		<div class="box">
 			<form method="post" action="pmsnew.php?action=onoff">
 				<div class="inform">
+					<input type="hidden" name="csrf_token" value="<?php echo pmsn_csrf_token('onoff') ?>" />
 					<input type="hidden" name="csrf_hash" value="<?php echo $pmsn_csrf_hash; ?>" />
 					<fieldset>
 						<legend><?php echo $lang_pmsn['Attention'] ?></legend>
