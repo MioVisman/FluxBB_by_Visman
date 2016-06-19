@@ -41,7 +41,7 @@ class addon_security_for_post extends flux_addon
 		if (empty($pun_config['o_sec_of_post']) || $pun_config['o_sec_of_post'] != $this->version)
 		{
 			$db->drop_table('sec_of_post') or error('Unable to drop sec_of_post table', __FILE__, __LINE__, $db->error());
-			$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o_sec_of_post%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
+			$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o\_sec\_of\_post%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
 
 			$schema = array
 			(
@@ -94,7 +94,7 @@ class addon_security_for_post extends flux_addon
 		$this->hook_post_before_header();
 
 		if (!defined('FORUM_SEC_FUNCTIONS_LOADED'))
-	    include PUN_ROOT.'include/security.php';
+			include PUN_ROOT.'include/security.php';
 
 		$now = time();
 		$ip = get_remote_address();
@@ -117,7 +117,7 @@ class addon_security_for_post extends flux_addon
 		global $db, $pun_config, $errors;
 		
 		if (!defined('FORUM_SEC_FUNCTIONS_LOADED'))
-	    include PUN_ROOT.'include/security.php';
+			include PUN_ROOT.'include/security.php';
 
 		$now = time();
 

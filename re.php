@@ -23,7 +23,7 @@ else
 
 $url = str_replace('&amp;', '&', preg_replace(array('%(https?|ftp)___%i', '%([\r\n])|(\%0[ad])|(;\s*data\s*:)%i'), array('$1://', ''), $_GET['u']));
 
-$page_js['c']['re']  = 'function fluxrdr() {if(history.length<2){window.close()}else{history.go(-1)}return false}';
+$page_js['c']['re'] = 'function fluxrdr() {if(history.length<2){window.close()}else{history.go(-1)}return false}';
 
 $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_re['Redirect']);
 define('PUN_ACTIVE_PAGE', 'redirect');

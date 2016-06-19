@@ -55,6 +55,14 @@ if (!$pun_user['is_guest'])
 
 		$db->query('UPDATE '.$db->prefix.'users SET messages_flag=0 WHERE id='.$pun_user['id']) or error('Unable to update user', __FILE__, __LINE__, $db->error());
 	}
+	else if (!empty($pun_config['o_pms_flasher']) && $pun_config['o_pms_enabled'] == '1' && $pun_user['messages_new'] > 0)
+	{
+		$te_flag = true;
+	}
+	else if (PUN_ACTIVE_PAGE == 'admin' && !empty($plugin) && $plugin == 'AP_PMS_New.php')
+	{
+		$te_flag = true;
+	}
 
 	if ($te_flag)
 	{

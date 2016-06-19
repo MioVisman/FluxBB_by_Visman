@@ -16,6 +16,6 @@ $lang_apmsn = array(
 'Legend3' => 'Additional options',
 'Q1' => 'Enable PMS.',
 'Q3' => 'Minimum number of posts a user must have made to send private messages.',
-'Q2' => 'For notification of new private messages, use <img style="border: 0 none; vertical-align: middle;" src="img/flasher.gif" alt="flasher" /> instead of popup window.',
+'Q2' => 'For notification of new private messages, use <span class="remflasher">&#160;</span> instead of popup window.',
 
 );

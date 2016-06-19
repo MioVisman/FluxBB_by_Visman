@@ -86,7 +86,7 @@ function split_words_clear_link($url)
 
 	if (isset($arr['query']))
 	{
-	  parse_str($arr['query'], $qarr);
+		parse_str($arr['query'], $qarr);
 		$text.= split_words_clear_link_minor($qarr);
 	}
 

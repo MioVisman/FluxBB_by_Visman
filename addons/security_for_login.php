@@ -41,7 +41,7 @@ class addon_security_for_login extends flux_addon
 		if (empty($pun_config['o_sec_of_login']) || $pun_config['o_sec_of_login'] != $this->version)
 		{
 			$db->drop_table('sec_of_login') or error('Unable to drop sec_of_login table', __FILE__, __LINE__, $db->error());
-			$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o_sec_of_login%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
+			$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o\_sec\_of\_login%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
 
 			$schema = array
 			(
@@ -100,7 +100,7 @@ class addon_security_for_login extends flux_addon
 		if ($db->num_rows($result) == $this->att_max)
 		{
 			if (!defined('FORUM_SEC_FUNCTIONS_LOADED'))
-		    include PUN_ROOT.'include/security.php';
+				include PUN_ROOT.'include/security.php';
 
 			$form_captcha = security_show_captcha(4);
 		}
@@ -116,7 +116,7 @@ class addon_security_for_login extends flux_addon
 		global $db, $errors;
 		
 		if (!defined('FORUM_SEC_FUNCTIONS_LOADED'))
-	    include PUN_ROOT.'include/security.php';
+			include PUN_ROOT.'include/security.php';
 
 		$now = time();
 

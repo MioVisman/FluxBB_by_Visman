@@ -210,7 +210,7 @@ if (isset($_POST['form_sent']))
 				else
 				{
 					$message = $cur_posting['message'] . "\n\n" . $message;
-					$db->query('UPDATE '.$db->prefix.'posts SET message=\''.$db->escape($message).'\' WHERE  id='.$cur_posting['post_id']) or error('Unable to merge post', __FILE__, __LINE__, $db->error());
+					$db->query('UPDATE '.$db->prefix.'posts SET message=\''.$db->escape($message).'\' WHERE id='.$cur_posting['post_id']) or error('Unable to merge post', __FILE__, __LINE__, $db->error());
 					$new_pid = $cur_posting['post_id'];
 				}
 // END Merge Post
@@ -290,7 +290,7 @@ if (isset($_POST['form_sent']))
 								$mail_message = str_replace('<topic_subject>', $cur_posting['subject'], $mail_message);
 								$mail_message = str_replace('<replier>', $username, $mail_message);
 								$mail_message = str_replace('<post_url>', get_base_url().'/viewtopic.php?pid='.$new_pid.'#p'.$new_pid, $mail_message);
-								$mail_message = str_replace('<unsubscribe_url>', get_base_url().'/misc.php?action=unsubscribe&tid='.$tid.'&csrf_hash=<csrf_hash>', $mail_message);
+								$mail_message = str_replace('<unsubscribe_url>', get_base_url().'/viewtopic.php?id='.$tid.'#unsubscribe', $mail_message);
 								$mail_message = str_replace('<board_mailer>', $pun_config['o_board_title'], $mail_message);
 
 								$mail_subject_full = str_replace('<topic_subject>', $cur_posting['subject'], $mail_subject_full);
@@ -298,7 +298,7 @@ if (isset($_POST['form_sent']))
 								$mail_message_full = str_replace('<replier>', $username, $mail_message_full);
 								$mail_message_full = str_replace('<message>', $cleaned_message, $mail_message_full);
 								$mail_message_full = str_replace('<post_url>', get_base_url().'/viewtopic.php?pid='.$new_pid.'#p'.$new_pid, $mail_message_full);
-								$mail_message_full = str_replace('<unsubscribe_url>', get_base_url().'/misc.php?action=unsubscribe&tid='.$tid.'&csrf_hash=<csrf_hash>', $mail_message_full);
+								$mail_message_full = str_replace('<unsubscribe_url>', get_base_url().'/viewtopic.php?id='.$tid.'#unsubscribe', $mail_message_full);
 								$mail_message_full = str_replace('<board_mailer>', $pun_config['o_board_title'], $mail_message_full);
 
 								$notification_emails[$cur_subscriber['language']][0] = $mail_subject;
@@ -316,9 +316,9 @@ if (isset($_POST['form_sent']))
 						if (isset($notification_emails[$cur_subscriber['language']]))
 						{
 							if ($cur_subscriber['notify_with_post'] == '0')
-								pun_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][0], str_replace('<csrf_hash>', csrf_hash('misc.php', false, $cur_subscriber), $notification_emails[$cur_subscriber['language']][1]));
+								pun_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][0], $notification_emails[$cur_subscriber['language']][1]);
 							else
-								pun_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][2], str_replace('<csrf_hash>', csrf_hash('misc.php', false, $cur_subscriber), $notification_emails[$cur_subscriber['language']][3]));
+								pun_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][2], $notification_emails[$cur_subscriber['language']][3]);
 						}
 					}
 				}
@@ -405,7 +405,7 @@ if (isset($_POST['form_sent']))
 								$mail_message = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_message);
 								$mail_message = str_replace('<poster>', $username, $mail_message);
 								$mail_message = str_replace('<topic_url>', get_base_url().'/viewtopic.php?id='.$new_tid, $mail_message);
-								$mail_message = str_replace('<unsubscribe_url>', get_base_url().'/misc.php?action=unsubscribe&fid='.$cur_posting['id'].'&csrf_hash=<csrf_hash>', $mail_message);
+								$mail_message = str_replace('<unsubscribe_url>', get_base_url().'/viewforum.php?id='.$cur_posting['id'].'#unsubscribe', $mail_message);
 								$mail_message = str_replace('<board_mailer>', $pun_config['o_board_title'], $mail_message);
 
 								$mail_subject_full = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_subject_full);
@@ -414,7 +414,7 @@ if (isset($_POST['form_sent']))
 								$mail_message_full = str_replace('<poster>', $username, $mail_message_full);
 								$mail_message_full = str_replace('<message>', $cleaned_message, $mail_message_full);
 								$mail_message_full = str_replace('<topic_url>', get_base_url().'/viewtopic.php?id='.$new_tid, $mail_message_full);
-								$mail_message_full = str_replace('<unsubscribe_url>', get_base_url().'/misc.php?action=unsubscribe&fid='.$cur_posting['id'].'&csrf_hash=<csrf_hash>', $mail_message_full);
+								$mail_message_full = str_replace('<unsubscribe_url>', get_base_url().'/viewforum.php?id='.$cur_posting['id'].'#unsubscribe', $mail_message_full);
 								$mail_message_full = str_replace('<board_mailer>', $pun_config['o_board_title'], $mail_message_full);
 
 								$notification_emails[$cur_subscriber['language']][0] = $mail_subject;
@@ -432,9 +432,9 @@ if (isset($_POST['form_sent']))
 						if (isset($notification_emails[$cur_subscriber['language']]))
 						{
 							if ($cur_subscriber['notify_with_post'] == '0')
-								pun_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][0], str_replace('<csrf_hash>', csrf_hash('misc.php', false, $cur_subscriber), $notification_emails[$cur_subscriber['language']][1]));
+								pun_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][0], $notification_emails[$cur_subscriber['language']][1]);
 							else
-								pun_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][2], str_replace('<csrf_hash>', csrf_hash('misc.php', false, $cur_subscriber), $notification_emails[$cur_subscriber['language']][3]));
+								pun_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][2], $notification_emails[$cur_subscriber['language']][3]);
 						}
 					}
 				}
@@ -608,7 +608,7 @@ require PUN_ROOT.'header.php';
 		<ul class="crumbs">
 			<li><a href="index.php"><?php echo $lang_common['Index'] ?></a></li>
 			<li><span>»&#160;</span><a href="viewforum.php?id=<?php echo $cur_posting['id'] ?>"><?php echo pun_htmlspecialchars($cur_posting['forum_name']) ?></a></li>
-<?php if (isset($_POST['req_subject'])): ?>      <li><span>»&#160;</span><?php echo pun_htmlspecialchars($_POST['req_subject']) ?></li>
+<?php if (isset($_POST['req_subject'])): ?>			<li><span>»&#160;</span><?php echo pun_htmlspecialchars($_POST['req_subject']) ?></li>
 <?php endif; ?>
 <?php if (isset($cur_posting['subject'])): ?>			<li><span>»&#160;</span><a href="viewtopic.php?id=<?php echo $tid ?>"><?php echo pun_htmlspecialchars($cur_posting['subject']) ?></a></li>
 <?php endif; ?>			<li><span>»&#160;</span><strong><?php echo $action ?></strong></li>

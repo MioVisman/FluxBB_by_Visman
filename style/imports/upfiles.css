@@ -30,8 +30,8 @@ ul#upf-list {
 }
 
 .upf-file img {
-  height: 100%;
-  border: none;
+	height: 100%;
+	border: none;
 }
 
 #upf-list .upf-name {
@@ -120,9 +120,9 @@ ul#upf-list {
 }
 
 #upf-table .upf-c3 img {
-  border: none;
+	border: none;
 }
 
 #upf-block #upf-table td {
-    vertical-align: middle;
+	vertical-align: middle;
 }

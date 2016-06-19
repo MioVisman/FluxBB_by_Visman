@@ -169,7 +169,7 @@ else if (isset($_GET['edit_forum']))
 		// MOD subforums - Visman
 		$parent_forum_id = $i = intval($_POST['parent_forum']);
 		while (isset($sf_array_desc[$i][0]))
-		  $i = $sf_array_desc[$i][0];
+			$i = $sf_array_desc[$i][0];
 
 		if ($i > 0 && (!isset($sf_array_tree[0][$i]) || $sf_array_tree[0][$i]['cid'] != $cat_id))
 			message($lang_common['Bad request'], false, '404 Not Found');
@@ -261,7 +261,7 @@ else if (isset($_GET['edit_forum']))
 		<h2><span><?php echo $lang_admin_forums['Edit forum head'] ?></span></h2>
 		<div class="box">
 			<form id="edit_forum" method="post" action="admin_forums.php?edit_forum=<?php echo $forum_id ?>">
-			  <input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
+				<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 				<p class="submittop"><input type="submit" name="save" value="<?php echo $lang_admin_common['Save changes'] ?>" tabindex="6" /></p>
 				<div class="inform">
 					<fieldset>

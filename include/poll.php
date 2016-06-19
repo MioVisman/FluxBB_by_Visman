@@ -79,8 +79,8 @@ function poll_info($tid, $uid = NULL)
 	{
 		$result = $db->query('SELECT question, field, choice, votes FROM '.$db->prefix.'poll WHERE tid='.$tid.' ORDER BY question, field') or error('Unable to fetch poll info', __FILE__, __LINE__, $db->error());
 
-	  $kol = 0;
-	  $questions = $type = $choices = $votes = array();
+		$kol = 0;
+		$questions = $type = $choices = $votes = array();
 		while ($cur = $db->fetch_assoc($result))
 		{
 			$kol = $cur['question'];
@@ -201,7 +201,7 @@ function poll_form($tid)
 			$choices = $info['choices'];
 			$type = $info['type'];
 		}
-  }
+	}
 
 	$questions = array_map('pun_trim', $questions);
 	$type = array_map('intval', $type);
@@ -222,7 +222,7 @@ function poll_form($tid)
 		{
 
 ?>
-						<div class="rbox"><label><input disabled="disabled" type="checkbox" name="poll_result"  value="1" <?php if ($resu) echo 'checked="checked"'?> /> <?php printf($lang_poll['Form result'], $term) ?></label></div>
+						<div class="rbox"><label><input disabled="disabled" type="checkbox" name="poll_result" value="1" <?php if ($resu) echo 'checked="checked"'?> /> <?php printf($lang_poll['Form result'], $term) ?></label></div>
 <?php
 
 		}
@@ -288,7 +288,7 @@ function poll_form($tid)
 	{
 
 ?>
-						<div class="rbox"><label><input type="checkbox" name="poll_result"  value="1" <?php if ($resu) echo 'checked="checked"'?> tabindex="<?php echo $cur_index++ ?>" /> <?php printf($lang_poll['Form result'], $term) ?></label></div>
+						<div class="rbox"><label><input type="checkbox" name="poll_result" value="1" <?php if ($resu) echo 'checked="checked"'?> tabindex="<?php echo $cur_index++ ?>" /> <?php printf($lang_poll['Form result'], $term) ?></label></div>
 <?php
 
 	}
@@ -491,7 +491,7 @@ function poll_save($tid)
 		{
 			foreach($ch as $i => $c)
 			{
-				$db->query('DELETE FROM '.$db->prefix.'poll  WHERE tid='.$tid.' AND question='.$k.' AND field='.$i) or error('Unable to delete poll choice', __FILE__, __LINE__, $db->error());
+				$db->query('DELETE FROM '.$db->prefix.'poll WHERE tid='.$tid.' AND question='.$k.' AND field='.$i) or error('Unable to delete poll choice', __FILE__, __LINE__, $db->error());
 			}
 		}
 		poll_cache_delete($tid);
@@ -556,7 +556,7 @@ function poll_display_post($tid, $uid)
 		{
 			$question = (isset($questions[$k]) && $fk) ? $questions[$k] : '';
 			if ($question == '')
-	   		$fk = false;
+		 		$fk = false;
 			else
 			{
 				$q[$k] = $question;

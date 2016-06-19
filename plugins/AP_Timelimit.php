@@ -80,7 +80,7 @@ else
 ?>
 								<tr>
 									<th class="tcl" scope="col"><?php echo pun_htmlspecialchars($cur_group['g_title']) ?></th>
-									<td><input type="text" name="g_order[<?php echo $cur_group['g_id'] ?>]" value="<?php echo $cur_group['g_deledit_interval'] ?>"  tabindex="<?php echo ($tabindex++) ?>" size="10" maxlength="10" /></td>
+									<td><input type="text" name="g_order[<?php echo $cur_group['g_id'] ?>]" value="<?php echo $cur_group['g_deledit_interval'] ?>" tabindex="<?php echo ($tabindex++) ?>" size="10" maxlength="10" /></td>
 								</tr>
 <?php
 

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2014-2015 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2014-2016 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2012 Daris (daris91@gmail.com)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
@@ -30,7 +30,7 @@ function get_useragent_names($usrag)
 	$usrag = strtolower($usrag);
 	
 	// Browser detection
-	$browsers = array('Opera', 'Avant', 'Maxthon', 'Edge', 'MSIE', 'OPR', 'YaBrowser', 'Chromium', 'Chrome', 'Arora', 'Epiphany', 'Galeon', 'iCab', 'Konqueror', 'Safari', 'Flock', 'Iceweasel', 'SeaMonkey', 'Netscape', 'K-Meleon', 'Firefox', 'Camino', 'Trident');
+	$browsers = array('Opera', 'Avant', 'Maxthon', 'Edge', 'MSIE', 'OPR', 'YaBrowser', 'Chromium', 'Vivaldi', 'Chrome', 'Arora', 'Epiphany', 'Galeon', 'iCab', 'Konqueror', 'Safari', 'Flock', 'Iceweasel', 'SeaMonkey', 'Netscape', 'K-Meleon', 'Firefox', 'Camino', 'Trident');
 
 	$browser = ua_search_for_item($browsers, $usrag);
 
@@ -58,7 +58,7 @@ function get_useragent_names($usrag)
 		$browser = 'Opera';
 
 	// System detection
-	$systems = array('Windows', 'Linux', 'Mac', 'Amiga', 'BeOS', 'FreeBSD', 'HP-UX', 'NetBSD', 'OS/2', 'SunOS', 'Symbian', 'Unix', 'J2ME/MIDP');
+	$systems = array('Windows', 'Linux', 'Mac', 'Android', 'Amiga', 'BeOS', 'FreeBSD', 'HP-UX', 'NetBSD', 'OS/2', 'SunOS', 'Symbian', 'Unix', 'J2ME/MIDP', 'BlackBerry', 'BB10');
 	
 	$system = ua_search_for_item($systems, $usrag);
 	
@@ -105,6 +105,9 @@ function get_useragent_names($usrag)
 
 	elseif ($system == 'Mac')
 		$system = 'Macintosh';
+
+	elseif ($system == 'BB10')
+		$system = 'BlackBerry';
 
 	if (empty($browser_img))
 		$browser_img = $browser;

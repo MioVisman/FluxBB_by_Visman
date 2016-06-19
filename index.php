@@ -116,19 +116,21 @@ if ($pun_config['o_users_online'] == '1')
 	{
 		if (strpos($online_name, '[Bot]') !== false)
 		{
-		   ++$num_bots;
-		   $arr_o_name = explode('[Bot]', $online_name);
-		   if (empty($bots[$arr_o_name[1]])) $bots[$arr_o_name[1]] = 1;
-		   else ++$bots[$arr_o_name[1]];
+			++$num_bots;
+			$arr_o_name = explode('[Bot]', $online_name);
+			if (empty($bots[$arr_o_name[1]]))
+				$bots[$arr_o_name[1]] = 1;
+			else
+				++$bots[$arr_o_name[1]];
 		}
 	}
 	foreach ($bots as $online_name => $online_id)
 	{
-		   $users[] = "\n\t\t\t\t".'<dd>[Bot] '.pun_htmlspecialchars($online_name.($online_id > 1 ? ' ('.$online_id.')' : ''));
+		$users[] = "\n\t\t\t\t".'<dd>[Bot] '.pun_htmlspecialchars($online_name.($online_id > 1 ? ' ('.$online_id.')' : ''));
 	}
 	echo "\t\t\t\t".'<dd><span>'.sprintf($lang_index['Users online'], '<strong>'.forum_number_format($num_users).'</strong>').', '.sprintf($lang_index['Guests online'], '<strong>'.forum_number_format($num_guests).'</strong>').'</span></dd>'."\n";
 
-  // max users - Visman
+	// max users - Visman
 	echo "\t\t\t\t".'<dd><span>'. $lang_index['Most online1'].' ('.$pun_config['st_max_users'].') '.$lang_index['Most online2'].' '.format_time($pun_config['st_max_users_time']).'</span></dd>'."\n\t\t\t".'</dl>'."\n";
 
 	if ($num_users + $num_bots > 0)

@@ -64,3 +64,11 @@
 	background-color: #F1F1F1;
 	color: #333333;
 }
+
+#brdmenu ul span.remflasher, #adminconsole fieldset td span.remflasher {
+	background: url(../../img/flasher.gif) right 65% no-repeat;
+	display: inline-block;
+	line-height: normal;
+	margin-left: 1px;
+	padding-right: 18px;
+}

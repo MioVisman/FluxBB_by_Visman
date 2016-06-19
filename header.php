@@ -19,9 +19,15 @@ header('Pragma: no-cache'); // For HTTP/1.0 compatibility
 // Send the Content-type header in case the web server is setup to send something else
 header('Content-type: text/html; charset=utf-8');
 
-// Prevent site from being embedded in a frame
-$frame_options = defined('FORUM_FRAME_OPTIONS') ? FORUM_FRAME_OPTIONS : 'deny';
-header('X-Frame-Options: '.$frame_options);
+// Prevent site from being embedded in a frame unless FORUM_FRAME_OPTIONS is set
+// to a valid X-Frame-Options header value or false
+if (defined('FORUM_FRAME_OPTIONS'))
+{
+	if (preg_match('/^(?:allow-from|deny|sameorigin)/i', FORUM_FRAME_OPTIONS))
+		header('X-Frame-Options: '.FORUM_FRAME_OPTIONS);
+}
+else
+	header('X-Frame-Options: deny');
 
 // Load the template
 if (defined('PUN_ADMIN_CONSOLE'))
@@ -172,7 +178,7 @@ if (isset($focus_element))
 
 
 // START SUBST - <pun_page>
-$tpl_main = str_replace('<pun_page>', htmlspecialchars(basename($_SERVER['PHP_SELF'], '.php')), $tpl_main);
+$tpl_main = str_replace('<pun_page>', htmlspecialchars(basename($_SERVER['SCRIPT_NAME'], '.php')), $tpl_main);
 // END SUBST - <pun_page>
 
 
@@ -211,7 +217,7 @@ else
 	$links[] = '<li id="navprofile"'.((PUN_ACTIVE_PAGE == 'profile') ? ' class="isactive"' : '').'><a href="profile.php?id='.$pun_user['id'].'">'.$lang_common['Profile'].'</a></li>';
 // New PMS
 	if ($pun_config['o_pms_enabled'] == '1' && ($pun_user['g_pm'] == 1 || $pun_user['messages_new'] > 0))
-		$links[] = '<li id="navpmsnew"'.(((PUN_ACTIVE_PAGE == 'pms_new') || ($pun_user['messages_new'] > 0)) ? ' class="isactive"' : '').'><a href="pmsnew.php">'.$lang_common['PM'].(($pun_user['messages_new'] > 0) ? ' ('.$pun_user['messages_new'].((empty($pun_config['o_pms_flasher']) || PUN_ACTIVE_PAGE == 'pms_new') ? '' : '&#160;<img style="border: 0 none; vertical-align: middle;" src="img/flasher.gif" alt="flasher" />' ).')' : '').'</a></li>';
+		$links[] = '<li id="navpmsnew"'.((PUN_ACTIVE_PAGE == 'pms_new' || $pun_user['messages_new'] > 0) ? ' class="isactive"' : '').'><a href="pmsnew.php">'.$lang_common['PM'].(($pun_user['messages_new'] > 0) ? ' (<span'.((empty($pun_config['o_pms_flasher']) || PUN_ACTIVE_PAGE == 'pms_new') ? '' : ' class="remflasher"' ).'>'.$pun_user['messages_new'].'</span>)' : '').'</a></li>';
 // New PMS
 
 	if ($pun_user['is_admmod'])
@@ -233,7 +239,7 @@ if ($pun_user['g_read_board'] == '1' && $pun_config['o_additional_navlinks'] != 
 }
 
 $tpl_temp = '<div id="brdmenu" class="inbox">'."\n\t\t\t".'<ul>'."\n\t\t\t\t".implode("\n\t\t\t\t", $links)."\n\t\t\t".'</ul>'."\n\t\t".'</div>';
-$tpl_temp = str_replace('<div id="brdmenu" class="inbox">'."\n\t\t\t".'<ul>', '<div id="brdmenu" class="inbox">'."\n\t\t\t".'<input type="checkbox" id="brdmenu-checkbox" style="display: none;" />'."\n\t\t\t".'<ul>'.'<label for="brdmenu-checkbox" id="brdmenu-button" data-open="&#9776;" data-close="&#10006;" onclick></label>'."\n\t\t\t\t", $tpl_temp);  // Visman - Responsive Menu, only html+css
+$tpl_temp = str_replace('<div id="brdmenu" class="inbox">'."\n\t\t\t".'<ul>', '<div id="brdmenu" class="inbox">'."\n\t\t\t".'<input type="checkbox" id="brdmenu-checkbox" style="display: none;" />'."\n\t\t\t".'<ul>'.'<label for="brdmenu-checkbox" id="brdmenu-button" data-open="&#9776;" data-close="&#10006;" onclick></label>'."\n\t\t\t\t", $tpl_temp); // Visman - Responsive Menu, only html+css
 $tpl_main = str_replace('<pun_navlinks>', $tpl_temp, $tpl_main);
 // END SUBST - <pun_navlinks>
 

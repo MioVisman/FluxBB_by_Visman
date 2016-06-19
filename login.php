@@ -95,7 +95,7 @@ if (isset($_POST['form_sent']) && $action == 'in')
 			if ($cur_user['g_id'] == PUN_ADMIN || $cur_user['g_moderator'] == '1')
 				$db->query('UPDATE '.$db->prefix.'users SET registration_ip=\''.$db->escape(get_remote_address()).'\' WHERE id='.$cur_user['id']) or error('Unable to update user IP', __FILE__, __LINE__, $db->error());
 		}
-    
+
 		// Remove this users guest entry from the online list
 		$db->query('DELETE FROM '.$db->prefix.'online WHERE ident=\''.$db->escape(get_remote_address()).'\'') or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
 

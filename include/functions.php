@@ -330,7 +330,7 @@ function set_default_user()
 	$pun_user['is_guest'] = true;
 	$pun_user['is_admmod'] = false;
 	$pun_user['is_bot'] = (strpos($remote_addr, '[Bot]') !== false); // MOD определения ботов - Visman
-	$pun_user['ident'] = $remote_addr;                             // Кто в этой теме - Visman
+	$pun_user['ident'] = $remote_addr; // Кто в этой теме - Visman
 
 	if (!empty($_COOKIE[$cookie_name.'_glang'])) // быстрое переключение языка - Visman
 	{
@@ -955,12 +955,12 @@ function get_title($user)
 			$ban_list[] = utf8_strtolower($cur_ban['username']);
 	}
 
-	// If the user has a custom title
-	if ($user['title'] != '')
-		$user_title = pun_htmlspecialchars($user['title']);
 	// If the user is banned
-	else if (in_array(utf8_strtolower($user['username']), $ban_list))
+	if (in_array(utf8_strtolower($user['username']), $ban_list))
 		$user_title = $lang_common['Banned'];
+	// If the user has a custom title
+	else if ($user['title'] != '')
+		$user_title = pun_htmlspecialchars($user['title']);
 	// If the user group has a default user title
 	else if ($user['g_user_title'] != '')
 		$user_title = pun_htmlspecialchars($user['g_user_title']);
@@ -1148,7 +1148,7 @@ function random_key($len, $readable = false, $hash = false)
 
 		return $result;
 	}
-  	
+
 	return $key;
 }
 
@@ -1253,8 +1253,8 @@ function random_pass($len)
 function pun_hash($str)
 {
 	global $salt1;
-  
-	return sha1($str.$salt1);  // соль на пароль - Visman
+
+	return sha1($str.$salt1); // соль на пароль - Visman
 }
 
 
@@ -1265,7 +1265,7 @@ function pun_hash($str)
 function pun_hash_equals($a, $b)
 {
 	if (function_exists('hash_equals'))
-		return hash_equals($a, $b);
+		return hash_equals((string) $a, (string) $b);
 
 	$a_length = strlen($a);
 
@@ -1744,6 +1744,8 @@ H2 {MARGIN: 0; COLOR: #FFFFFF; BACKGROUND-COLOR: #B84623; FONT-SIZE: 1.1em; PADD
 
 	if (defined('PUN_DEBUG') && !is_null($file) && !is_null($line))
 	{
+		$file = str_replace(realpath(PUN_ROOT), '', $file);
+
 		echo "\t\t".'<strong>File:</strong> '.$file.'<br />'."\n\t\t".'<strong>Line:</strong> '.$line.'<br /><br />'."\n\t\t".'<strong>FluxBB reported</strong>: '.$message."\n";
 
 		if ($db_error)

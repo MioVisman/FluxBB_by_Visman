@@ -101,22 +101,22 @@ if ($pun_config['o_poll_enabled'] == '1')
 							<table class="aligntop">
 								<tr>
 									<td>
-										<span><input type="text" name="poll_max_ques" value="<?php echo pun_htmlspecialchars($pun_config['o_poll_max_ques']) ?>"  tabindex="<?php echo ($tabindex++) ?>" size="4" maxlength="2" />&#160;&#160;<?php echo $lang_admin_plugin_poll['Q2'] ?></span>
+										<span><input type="text" name="poll_max_ques" value="<?php echo pun_htmlspecialchars($pun_config['o_poll_max_ques']) ?>" tabindex="<?php echo ($tabindex++) ?>" size="4" maxlength="2" />&#160;&#160;<?php echo $lang_admin_plugin_poll['Q2'] ?></span>
 									</td>
 								</tr>
 								<tr>
 									<td>
-										<span><input type="text" name="poll_max_field" value="<?php echo pun_htmlspecialchars($pun_config['o_poll_max_field']) ?>"  tabindex="<?php echo ($tabindex++) ?>" size="4" maxlength="2" />&#160;&#160;<?php echo $lang_admin_plugin_poll['Q3'] ?></span>
+										<span><input type="text" name="poll_max_field" value="<?php echo pun_htmlspecialchars($pun_config['o_poll_max_field']) ?>" tabindex="<?php echo ($tabindex++) ?>" size="4" maxlength="2" />&#160;&#160;<?php echo $lang_admin_plugin_poll['Q3'] ?></span>
 									</td>
 								</tr>
 								<tr>
 									<td>
-										<span><input type="text" name="poll_time" value="<?php echo pun_htmlspecialchars($pun_config['o_poll_time']) ?>"  tabindex="<?php echo ($tabindex++) ?>" size="8" maxlength="8" />&#160;&#160;<?php echo $lang_admin_plugin_poll['Q4'] ?></span>
+										<span><input type="text" name="poll_time" value="<?php echo pun_htmlspecialchars($pun_config['o_poll_time']) ?>" tabindex="<?php echo ($tabindex++) ?>" size="8" maxlength="8" />&#160;&#160;<?php echo $lang_admin_plugin_poll['Q4'] ?></span>
 									</td>
 								</tr>
 								<tr>
 									<td>
-										<span><input type="text" name="poll_term" value="<?php echo pun_htmlspecialchars($pun_config['o_poll_term']) ?>"  tabindex="<?php echo ($tabindex++) ?>" size="4" maxlength="2" />&#160;&#160;<?php echo $lang_admin_plugin_poll['Q5'] ?></span>
+										<span><input type="text" name="poll_term" value="<?php echo pun_htmlspecialchars($pun_config['o_poll_term']) ?>" tabindex="<?php echo ($tabindex++) ?>" size="4" maxlength="2" />&#160;&#160;<?php echo $lang_admin_plugin_poll['Q5'] ?></span>
 									</td>
 								</tr>
 								<tr>

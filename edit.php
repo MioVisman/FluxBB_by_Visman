@@ -316,7 +316,7 @@ else if (isset($_POST['preview']))
 $checkboxes = array();
 if ($can_edit_subject && $is_admmod)
 {
-	if (isset($_POST['stick_topic']) || $cur_post['sticky'] == '1')
+	if (isset($_POST['stick_topic']) || !isset($_POST['form_sent']) && $cur_post['sticky'] == '1')
 		$checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" checked="checked" tabindex="'.($cur_index++).'" />'.$lang_common['Stick topic'].'<br /></label>';
 	else
 		$checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" tabindex="'.($cur_index++).'" />'.$lang_common['Stick topic'].'<br /></label>';
@@ -324,7 +324,7 @@ if ($can_edit_subject && $is_admmod)
 
 if ($pun_config['o_smilies'] == '1')
 {
-	if (isset($_POST['hide_smilies']) || $cur_post['hide_smilies'] == '1')
+	if (isset($_POST['hide_smilies']) || !isset($_POST['form_sent']) && $cur_post['hide_smilies'] == '1')
 		$checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" checked="checked" tabindex="'.($cur_index++).'" />'.$lang_post['Hide smilies'].'<br /></label>';
 	else
 		$checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'" />'.$lang_post['Hide smilies'].'<br /></label>';
@@ -332,14 +332,14 @@ if ($pun_config['o_smilies'] == '1')
 
 if ($is_admmod)
 {
-	if ((isset($_POST['form_sent']) && isset($_POST['silent'])) || !isset($_POST['form_sent']))
+	if (isset($_POST['silent']) || !isset($_POST['form_sent']))
 		$checkboxes[] = '<label><input type="checkbox" name="silent" value="1" tabindex="'.($cur_index++).'" checked="checked" />'.$lang_post['Silent edit'].'<br /></label>';
 	else
 		$checkboxes[] = '<label><input type="checkbox" name="silent" value="1" tabindex="'.($cur_index++).'" />'.$lang_post['Silent edit'].'<br /></label>';
 	// StickFP - Visman
 	if ($can_edit_subject)
 	{
-		if ((isset($_POST['form_sent']) && isset($_POST['stickfp'])) || (!isset($_POST['form_sent']) && $cur_post['stick_fp'] != 0))
+		if (isset($_POST['stickfp']) || !isset($_POST['form_sent']) && $cur_post['stick_fp'] == '1')
 			$checkboxes[] = '<label><input type="checkbox" name="stickfp" value="1" tabindex="'.($cur_index++).'" checked="checked" />'.$lang_post['Stick first post'].'<br /></label>';
 		else
 			$checkboxes[] = '<label><input type="checkbox" name="stickfp" value="1" tabindex="'.($cur_index++).'" />'.$lang_post['Stick first post'].'<br /></label>';
@@ -349,10 +349,10 @@ if ($is_admmod)
 // мод ограничения времени редактирвания - Visman
 if ($pun_user['g_id'] == PUN_ADMIN)
 {
-	if ((isset($_POST['form_sent']) && !isset($_POST['editpost'])) || (!isset($_POST['form_sent']) && $cur_post['edit_post'] != 1))
-		$checkboxes[] = '<label><input type="checkbox" name="editpost" value="1" tabindex="'.($cur_index++).'" />'.$lang_post['EditPost edit'].'<br /></label>';
-	else
+	if (isset($_POST['editpost']) || !isset($_POST['form_sent']) && $cur_post['edit_post'] == '1')
 		$checkboxes[] = '<label><input type="checkbox" name="editpost" value="1" tabindex="'.($cur_index++).'" checked="checked" />'.$lang_post['EditPost edit'].'<br /></label>';
+	else
+		$checkboxes[] = '<label><input type="checkbox" name="editpost" value="1" tabindex="'.($cur_index++).'" />'.$lang_post['EditPost edit'].'<br /></label>';
 }
 
 if (!empty($checkboxes))

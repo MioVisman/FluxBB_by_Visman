@@ -7,9 +7,9 @@
  */
 
 // The FluxBB version this script installs
-define('FORUM_VERSION', '1.5.9');
+define('FORUM_VERSION', '1.5.10');
 
-define('FORUM_VER_REVISION', 74);	// номер сборки - Visman
+define('FORUM_VER_REVISION', 75);	// номер сборки - Visman
 
 define('FORUM_DB_REVISION', 21);
 define('FORUM_SI_REVISION', 2.1);
@@ -112,7 +112,7 @@ function generate_config_file()
 {
 	global $db_type, $db_host, $db_name, $db_username, $db_password, $db_prefix, $cookie_name, $cookie_seed, $salt1;
 
-	return '<?php'."\n\n".'$db_type = \''.$db_type."';\n".'$db_host = \''.$db_host."';\n".'$db_name = \''.addslashes($db_name)."';\n".'$db_username = \''.addslashes($db_username)."';\n".'$db_password = \''.addslashes($db_password)."';\n".'$db_prefix = \''.addslashes($db_prefix)."';\n".'$p_connect = false;'."\n\n".'$cookie_name = '."'".$cookie_name."';\n".'$cookie_domain = '."'';\n".'$cookie_path = '."'/';\n".'$cookie_secure = 0;'."\n".'$cookie_seed = \''.random_key(16, false, true)."';\n\n".'$salt1 = \''.$salt1."';\n\ndefine('PUN', 1);\n"."\ndefine('PUN_DEBUG', 1);\n//define('PUN_SHOW_QUERIES', 1);\ndefine('PUN_MAX_POSTSIZE', 65535);\n".'//define(\'FORUM_EOL\', "\r\n"); // possible values can be PHP_EOL, "\r\n", "\n" or "\r"'."\n//define('FORUM_UA_OFF', 1);\ndefine('FORUM_AJAX_JQUERY', '//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js');\n";
+	return '<?php'."\n\n".'$db_type = \''.$db_type."';\n".'$db_host = \''.$db_host."';\n".'$db_name = \''.addslashes($db_name)."';\n".'$db_username = \''.addslashes($db_username)."';\n".'$db_password = \''.addslashes($db_password)."';\n".'$db_prefix = \''.addslashes($db_prefix)."';\n".'$p_connect = false;'."\n\n".'$cookie_name = '."'".$cookie_name."';\n".'$cookie_domain = '."'';\n".'$cookie_path = '."'/';\n".'$cookie_secure = 0;'."\n".'$cookie_seed = \''.random_key(16, false, true)."';\n\n".'$salt1 = \''.$salt1."';\n\ndefine('PUN', 1);\n"."\ndefine('PUN_DEBUG', 1);\n//define('PUN_SHOW_QUERIES', 1);\ndefine('PUN_MAX_POSTSIZE', 65535);\n".'//define(\'FORUM_EOL\', "\r\n"); // possible values can be PHP_EOL, "\r\n", "\n" or "\r"'."\n//define('FORUM_UA_OFF', 1);\ndefine('FORUM_AJAX_JQUERY', '//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js');\n";
 }
 
 
@@ -129,7 +129,7 @@ if (isset($_POST['generate_config']))
 	$db_prefix = $_POST['db_prefix'];
 	$cookie_name = $_POST['cookie_name'];
 	$cookie_seed = $_POST['cookie_seed'];
-	$salt1 = $_POST['req_salt'];  // cоль для паролей - Visman
+	$salt1 = $_POST['req_salt']; // cоль для паролей - Visman
 
 	echo generate_config_file();
 	exit;
@@ -170,7 +170,7 @@ else
 	$base_url = pun_trim($_POST['req_base_url']);
 	$default_lang = pun_trim($_POST['req_default_lang']);
 	$default_style = pun_trim($_POST['req_default_style']);
-	$salt1 = pun_trim($_POST['req_salt']);  // cоль для паролей - Visman
+	$salt1 = pun_trim($_POST['req_salt']); // cоль для паролей - Visman
 	$alerts = array();
 
 	// Make sure base_url doesn't end with a slash
@@ -583,9 +583,9 @@ else
 	// Check if InnoDB is available
 	if ($db_type == 'mysql_innodb' || $db_type == 'mysqli_innodb')
 	{
-		$result = $db->query('SHOW VARIABLES LIKE \'have_innodb\'');
-		list (, $result) = $db->fetch_row($result);
-		if ((strtoupper($result) != 'YES'))
+		$result = $db->query('SELECT SUPPORT FROM INFORMATION_SCHEMA.ENGINES WHERE ENGINE=\'InnoDB\'');
+		$result = $db->result($result);
+		if (!in_array($result, array('YES', 'DEFAULT')))
 			error($lang_install['InnoDB off']);
 	}
 
@@ -782,7 +782,7 @@ else
 				'datatype'		=> 'VARCHAR(200)',
 				'allow_null'	=> true
 			),
-			'last_topic'	=> array(               // last topic on index - Visman
+			'last_topic'	=> array( // last topic on index - Visman
 				'datatype'		=> 'VARCHAR(255)',
 				'allow_null'	=> true
 			),
@@ -801,12 +801,12 @@ else
 				'allow_null'	=> false,
 				'default'		=>	'0'
 			),
-			'no_sum_mess'		=> array(             // no sum - Visman
+			'no_sum_mess'		=> array( // no sum - Visman
 				'datatype'		=> 'TINYINT(1)',
 				'allow_null'	=> false,
 				'default'		=> '0'
 			),
-			'parent_forum_id' => array(           // subforums - Visman
+			'parent_forum_id' => array( // subforums - Visman
 				'datatype'		=> 'INT(10) UNSIGNED',
 				'allow_null'	=> false,
 				'default'		=>	'0'
@@ -953,12 +953,12 @@ else
 				'allow_null'	=> false,
 				'default'		=> '60'
 			),
-			'g_deledit_interval' => array(   // мод ограничения времени - Visman
+			'g_deledit_interval' => array( // мод ограничения времени - Visman
 				'datatype'		=> 'INT(10)',
 				'allow_null'	=> false,
 				'default'		=> '0'
 			),
-			'g_pm' => array(                 // New PMS - Visman
+			'g_pm' => array( // New PMS - Visman
 				'datatype'		=> 'TINYINT(1)',
 				'allow_null'	=> false,
 				'default'		=> '1'
@@ -1065,7 +1065,7 @@ else
 				'allow_null'	=> false,
 				'default'		=> '0'
 			),
-			'edit_post'	=> array(                    // мод ограничения времени - Visman
+			'edit_post'	=> array( // мод ограничения времени - Visman
 				'datatype'		=> 'TINYINT(1)',
 				'allow_null'	=> false,
 				'default'		=> '0'
@@ -1083,8 +1083,8 @@ else
 				'datatype'		=> 'VARCHAR(200)',
 				'allow_null'	=> true
 			),
-			'user_agent'		=> array(
-				'datatype'		=> 'VARCHAR(255)',      // MOD user agent - Visman
+			'user_agent'		=> array( // MOD user agent - Visman
+				'datatype'		=> 'VARCHAR(255)',
 				'allow_null'	=> true
 			),
 			'topic_id'		=> array(
@@ -1338,7 +1338,7 @@ else
 				'allow_null'	=> false,
 				'default'		=> '0'
 			),
-			'stick_fp'		=> array(                     // StickFP - Visman
+			'stick_fp'		=> array( // StickFP - Visman
 				'datatype'		=> 'TINYINT(1)',
 				'allow_null'	=> false,
 				'default'		=> '0'
@@ -1352,7 +1352,7 @@ else
 				'allow_null'	=> false,
 				'default'		=> '0'
 			),
-			'poll_type'		=> array(                     // POLL - Visman
+			'poll_type'		=> array( // POLL - Visman
 				'datatype'		=> 'TINYINT(4)',
 				'allow_null'	=> false,
 				'default'		=> '0'
@@ -1737,7 +1737,7 @@ else
 				'datatype'		=> 'VARCHAR(8)',
 				'allow_null'	=> true
 			),
-			'messages_enable'		=> array(                 // New PMS - Visman
+			'messages_enable'		=> array( // New PMS - Visman
 				'datatype'		=> 'TINYINT(1)',
 				'allow_null'	=> false,
 				'default'		=> '1'
@@ -1766,7 +1766,7 @@ else
 				'datatype'		=> 'INT(10) UNSIGNED',
 				'allow_null'	=> true
 			),
-			'warning_flag'		=> array(                    // MOD warnings - Visman
+			'warning_flag'		=> array( // MOD warnings - Visman
 				'datatype'		=> 'TINYINT(1)',
 				'allow_null'	=> false,
 				'default'		=> '0'
@@ -1776,7 +1776,7 @@ else
 				'allow_null'	=> false,
 				'default'		=> '0'
 			),
-			'gender'			=> array(                       // поле для пола - Visman
+			'gender'			=> array( // поле для пола - Visman
 				'datatype'		=> 'TINYINT(4) UNSIGNED',
 				'allow_null'	=> false,
 				'default'		=> '0'
@@ -1847,7 +1847,7 @@ else
 	$i = 0;
 	foreach ($smilies as $text => $img)
 	{
-		$db->query('INSERT INTO '.$db->prefix.'smilies (image, text, disp_position)  VALUES(\''.$img.'\', \''.$db->escape($text).'\', '.$i.')') or error('Unable to add smiley', __FILE__, __LINE__, $db->error());
+		$db->query('INSERT INTO '.$db->prefix.'smilies (image, text, disp_position) VALUES(\''.$img.'\', \''.$db->escape($text).'\', '.$i.')') or error('Unable to add smiley', __FILE__, __LINE__, $db->error());
 		$i++;
 	}
 	// Create "smilies" table - Visman
@@ -1888,28 +1888,28 @@ else
 	$schema = array(
 			'FIELDS'			=> array(
 					'tid'				=> array(
-							'datatype'			=> 'INT(10) UNSIGNED',
-							'allow_null'    	=> false,
+							'datatype'		=> 'INT(10) UNSIGNED',
+							'allow_null'	=> false,
 							'default'			=> '0'
 					),
 					'question'			=> array(
-							'datatype'			=> 'TINYINT(4)',
-							'allow_null'    	=> false,
+							'datatype'		=> 'TINYINT(4)',
+							'allow_null'	=> false,
 							'default'			=> '0'
 					),
 					'field'			=> array(
-							'datatype'			=> 'TINYINT(4)',
-							'allow_null'    	=> false,
+							'datatype'		=> 'TINYINT(4)',
+							'allow_null'	=> false,
 							'default'			=> '0'
 					),
 					'choice'			=> array(
-							'datatype'			=> 'VARCHAR(255)',
-							'allow_null'    	=> false,
+							'datatype'		=> 'VARCHAR(255)',
+							'allow_null'	=> false,
 							'default'			=> '\'\''
 					),
 					'votes'				=> array(
-							'datatype'			=> 'INT(10) UNSIGNED',
-							'allow_null'    	=> false,
+							'datatype'		=> 'INT(10) UNSIGNED',
+							'allow_null'	=> false,
 							'default'			=> '0'
 					)
 
@@ -1921,16 +1921,16 @@ else
 	$schema = array(
 			'FIELDS'			=> array(
 					'tid'				=> array(
-							'datatype'			=> 'INT(10) UNSIGNED',
-							'allow_null'    	=> false
+							'datatype'		=> 'INT(10) UNSIGNED',
+							'allow_null'	=> false
 					),
 					'uid'			=> array(
-							'datatype'			=> 'INT(10) UNSIGNED',
-							'allow_null'		=> false
+							'datatype'		=> 'INT(10) UNSIGNED',
+							'allow_null'	=> false
 					),
 					'rez'			=> array(
-							'datatype'			=> 'TEXT',
-							'allow_null'    	=> true
+							'datatype'		=> 'TEXT',
+							'allow_null'	=> true
 					)
 			),
 			'PRIMARY KEY'		=> array('tid', 'uid')
@@ -1966,7 +1966,7 @@ else
 	// Insert config data
 	$pun_config = array(
 		'o_cur_version'				=> FORUM_VERSION,
-		'o_cur_ver_revision'	=> FORUM_VER_REVISION,     // номер сборки - Visman
+		'o_cur_ver_revision'	=> FORUM_VER_REVISION, // номер сборки - Visman
 		'o_database_revision'		=> FORUM_DB_REVISION,
 		'o_searchindex_revision'	=> FORUM_SI_REVISION,
 		'o_parser_revision'			=> FORUM_PARSER_REVISION,
@@ -2061,9 +2061,9 @@ else
 		'o_crypto_enable'			=> 1,	// случайные имена полей форм - Visman
 		'o_crypto_pas'				=> random_pass(25),
 		'o_crypto_salt'				=> random_pass(13),
-		'o_enable_acaptcha'   => 1, // математическая каптча
-		'st_max_users'        => 1,	// статистика по максимуму юзеров - Visman
-		'st_max_users_time'   => time(),
+		'o_enable_acaptcha'		=> 1, // математическая каптча
+		'st_max_users'				=> 1,	// статистика по максимуму юзеров - Visman
+		'st_max_users_time'		=> time(),
 	);
 
 	foreach ($pun_config as $conf_name => $conf_value)

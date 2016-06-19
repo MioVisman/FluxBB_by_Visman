@@ -2,7 +2,7 @@
 
 /**
  * Copyright (C) 2011-2015 Visman (mio.visman@yandex.ru)
- * Copyright (C) 2007  BN (bnmaster@la-bnbox.info)
+ * Copyright (C) 2007 BN (bnmaster@la-bnbox.info)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -37,9 +37,9 @@ if (isset($_POST['installation']))
 	$db->add_field('groups', 'g_up_max', 'INT(10)', false, 0) or error(sprintf($lang_up['Error DB'], 'groups'), __FILE__, __LINE__, $db->error());
 	$db->add_field('groups', 'g_up_limit', 'INT(10)', false, 0) or error(sprintf($lang_up['Error DB'], 'groups'), __FILE__, __LINE__, $db->error());
 
-	$db->query('UPDATE '.$db->prefix.'groups SET g_up_ext=\''.$db->escape(PLUGIN_EXTS).'\', g_up_limit=1073741824, g_up_max='.min(return_bytes(ini_get('upload_max_filesize')), return_bytes(ini_get('post_max_size'))).'  WHERE g_id='.PUN_ADMIN) or error('Unable to update user group list', __FILE__, __LINE__, $db->error());
+	$db->query('UPDATE '.$db->prefix.'groups SET g_up_ext=\''.$db->escape(PLUGIN_EXTS).'\', g_up_limit=1073741824, g_up_max='.min(return_bytes(ini_get('upload_max_filesize')), return_bytes(ini_get('post_max_size'))).' WHERE g_id='.PUN_ADMIN) or error('Unable to update user group list', __FILE__, __LINE__, $db->error());
 
-	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o_uploadile_%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
+	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o\_uploadile\_%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
 	$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES(\'o_uploadile_other\', \''.$db->escape(serialize($sconf)).'\')') or error($lang_up['Error DB ins-up'], __FILE__, __LINE__, $db->error());
 
 	if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
@@ -91,7 +91,7 @@ else if (isset($_POST['update']))
 				$g_max = min($g_max, return_bytes(ini_get('upload_max_filesize')), return_bytes(ini_get('post_max_size')));
 			}
 
-			$db->query('UPDATE '.$db->prefix.'groups SET g_up_ext=\''.$db->escape($g_ext).'\', g_up_limit='.$g_lim.', g_up_max='.$g_max.'  WHERE g_id='.$cur_group['g_id']) or error('Unable to update user group list', __FILE__, __LINE__, $db->error());
+			$db->query('UPDATE '.$db->prefix.'groups SET g_up_ext=\''.$db->escape($g_ext).'\', g_up_limit='.$g_lim.', g_up_max='.$g_max.' WHERE g_id='.$cur_group['g_id']) or error('Unable to update user group list', __FILE__, __LINE__, $db->error());
 		}
 
 	if (isset($_POST['thumb']))
@@ -110,7 +110,7 @@ else if (isset($_POST['update']))
 	if (isset($_POST['pic_h']) && $_POST['pic_h'] >= 100)
 		$sconf['pic_h'] = intval($_POST['pic_h']);
 
-	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o_uploadile_%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
+	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o\_uploadile\_%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
 	$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES(\'o_uploadile_other\', \''.$db->escape(serialize($sconf)).'\')') or error($lang_up['Error DB ins-up'], __FILE__, __LINE__, $db->error());
 
 	if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
@@ -129,7 +129,7 @@ else if (isset($_POST['restore']))
 	$db->drop_field('groups', 'g_up_max') or error('Unable to drop g_up_max field', __FILE__, __LINE__, $db->error());
 	$db->drop_field('groups', 'g_up_limit') or error('Unable to drop g_up_limit field', __FILE__, __LINE__, $db->error());
 
-	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o_uploadile_%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
+	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o\_uploadile\_%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
 
 	if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
 		require PUN_ROOT.'include/cache.php';
@@ -341,8 +341,8 @@ else
 								<tr>
 									<td class="tcl"><?php echo pun_htmlspecialchars($cur_group['g_title']) ?></td>
 									<td class="tc2"><input type="text" name="g_up_ext[<?php echo $cur_group['g_id'] ?>]" value="<?php echo pun_htmlspecialchars($cur_group['g_up_ext']) ?>" tabindex="<?php echo $tabindex++ ?>" size="40" maxlength="255" /></td>
-									<td class="tcr"><input type="text" name="g_up_max[<?php echo $cur_group['g_id'] ?>]" value="<?php echo $cur_group['g_up_max'] ?>"  tabindex="<?php echo $tabindex++ ?>" size="10" maxlength="10" <?php echo ($cur_group['g_id'] == PUN_ADMIN ? 'disabled="disabled" ' : '')?>/></td>
-									<td class="tcr"><input type="text" name="g_up_limit[<?php echo $cur_group['g_id'] ?>]" value="<?php echo $cur_group['g_up_limit'] ?>"  tabindex="<?php echo $tabindex++ ?>" size="10" maxlength="10" <?php echo ($cur_group['g_id'] == PUN_ADMIN ? 'disabled="disabled" ' : '')?>/></td>
+									<td class="tcr"><input type="text" name="g_up_max[<?php echo $cur_group['g_id'] ?>]" value="<?php echo $cur_group['g_up_max'] ?>" tabindex="<?php echo $tabindex++ ?>" size="10" maxlength="10" <?php echo ($cur_group['g_id'] == PUN_ADMIN ? 'disabled="disabled" ' : '')?>/></td>
+									<td class="tcr"><input type="text" name="g_up_limit[<?php echo $cur_group['g_id'] ?>]" value="<?php echo $cur_group['g_up_limit'] ?>" tabindex="<?php echo $tabindex++ ?>" size="10" maxlength="10" <?php echo ($cur_group['g_id'] == PUN_ADMIN ? 'disabled="disabled" ' : '')?>/></td>
 								</tr>
 <?php
 

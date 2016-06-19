@@ -403,7 +403,7 @@ else if ($action == 'unsubscribe')
 	if ($pun_user['is_guest'])
 		message($lang_common['No permission'], false, '403 Forbidden');
 
-	confirm_referrer('misc.php', false, false);
+	confirm_referrer('misc.php');
 
 	$topic_id = isset($_GET['tid']) ? intval($_GET['tid']) : 0;
 	$forum_id = isset($_GET['fid']) ? intval($_GET['fid']) : 0;

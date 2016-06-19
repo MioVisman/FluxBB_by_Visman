@@ -7,9 +7,9 @@
  */
 
 // The FluxBB version this script updates to
-define('UPDATE_TO', '1.5.9');
+define('UPDATE_TO', '1.5.10');
 
-define('UPDATE_TO_VER_REVISION', 74);	// номер сборки - Visman
+define('UPDATE_TO_VER_REVISION', 75);	// номер сборки - Visman
 
 define('UPDATE_TO_DB_REVISION', 21);
 define('UPDATE_TO_SI_REVISION', 2.1);
@@ -24,7 +24,7 @@ define('PUN_SEARCH_MAX_WORD', 20);
 // The MySQL connection character set that was used for FluxBB 1.2 - in 99% of cases this should be detected automatically,
 // but can be overridden using the below constant if required.
 //define('FORUM_DEFAULT_CHARSET', 'latin1');
-define('FORUM_DEFAULT_CHARSET', 'cp1251');  // For RUSSIAN - Visman
+define('FORUM_DEFAULT_CHARSET', 'cp1251'); // For RUSSIAN - Visman
 
 
 // The number of items to process per page view (lower this if the update script times out during UTF-8 conversion)
@@ -685,7 +685,7 @@ if (isset($_POST['req_db_pass']))
 else if (isset($_GET['uid']))
 {
 	$uid = pun_trim($_GET['uid']);
-	if (!$lock || $lock != $uid) // The lock doesn't exist or doesn't match the given UID
+	if (!$lock || $lock !== $uid) // The lock doesn't exist or doesn't match the given UID
 		$lock_error = true;
 }
 else
@@ -972,7 +972,7 @@ if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_v
 			$i = 0;
 			foreach ($smilies as $text => $img)
 			{
-				$db->query('INSERT INTO '.$db->prefix.'smilies (image, text, disp_position)  VALUES(\''.$img.'\', \''.$db->escape($text).'\', '.$i.')') or error('Unable to add smiley', __FILE__, __LINE__, $db->error());
+				$db->query('INSERT INTO '.$db->prefix.'smilies (image, text, disp_position) VALUES(\''.$img.'\', \''.$db->escape($text).'\', '.$i.')') or error('Unable to add smiley', __FILE__, __LINE__, $db->error());
 				$i++;
 			}
 		}
@@ -1053,28 +1053,28 @@ if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_v
 	$schema = array(
 			'FIELDS'			=> array(
 					'tid'				=> array(
-							'datatype'			=> 'INT(10) UNSIGNED',
-							'allow_null'    	=> false,
+							'datatype'		=> 'INT(10) UNSIGNED',
+							'allow_null'	=> false,
 							'default'			=> '0'
 					),
 					'question'			=> array(
-							'datatype'			=> 'TINYINT(4)',
-							'allow_null'    	=> false,
+							'datatype'		=> 'TINYINT(4)',
+							'allow_null'	=> false,
 							'default'			=> '0'
 					),
 					'field'			=> array(
-							'datatype'			=> 'TINYINT(4)',
-							'allow_null'    	=> false,
+							'datatype'		=> 'TINYINT(4)',
+							'allow_null'	=> false,
 							'default'			=> '0'
 					),
 					'choice'			=> array(
-							'datatype'			=> 'VARCHAR(255)',
-							'allow_null'    	=> false,
+							'datatype'		=> 'VARCHAR(255)',
+							'allow_null'	=> false,
 							'default'			=> '\'\''
 					),
 					'votes'				=> array(
-							'datatype'			=> 'INT(10) UNSIGNED',
-							'allow_null'    	=> false,
+							'datatype'		=> 'INT(10) UNSIGNED',
+							'allow_null'	=> false,
 							'default'			=> '0'
 					)
 			),
@@ -1087,7 +1087,7 @@ if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_v
 			'FIELDS'			=> array(
 					'tid'				=> array(
 							'datatype'			=> 'INT(10) UNSIGNED',
-							'allow_null'    	=> false
+							'allow_null'		=> false
 					),
 					'uid'			=> array(
 							'datatype'			=> 'INT(10) UNSIGNED',
@@ -1095,7 +1095,7 @@ if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_v
 					),
 					'rez'			=> array(
 							'datatype'			=> 'TEXT',
-							'allow_null'    	=> true
+							'allow_null'		=> true
 					)
 			),
 			'PRIMARY KEY'		=> array('tid', 'uid')
@@ -1130,7 +1130,7 @@ if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_v
 } // rev.42
 if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 47)
 {
-	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o_uploadile_%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());
+	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o\_uploadile\_%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());
 
 	if (!array_key_exists('o_crypto_enable', $pun_config))
 		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_crypto_enable\', \'1\')') or error('Unable to insert config value \'o_crypto_enable\'', __FILE__, __LINE__, $db->error());
@@ -1179,12 +1179,12 @@ if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_v
 		error('Unable to read config file include/config.php.', __FILE__, __LINE__);
 
 	$conf_define = array(
-	  'PUN_DEBUG' => array('1', true, ''),
-	  'PUN_SHOW_QUERIES' => array('1', false, ''),
-	  'PUN_MAX_POSTSIZE' => array('65535', true, ''),
-	  'FORUM_EOL' => array('"\r\n"', false, 'possible values can be PHP_EOL, "\r\n", "\n" or "\r"'),
-	  'FORUM_UA_OFF' => array('1', false, ''),
-	  'FORUM_AJAX_JQUERY' => array('\'//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js\'', true, ''),
+		'PUN_DEBUG' => array('1', true, ''),
+		'PUN_SHOW_QUERIES' => array('1', false, ''),
+		'PUN_MAX_POSTSIZE' => array('65535', true, ''),
+		'FORUM_EOL' => array('"\r\n"', false, 'possible values can be PHP_EOL, "\r\n", "\n" or "\r"'),
+		'FORUM_UA_OFF' => array('1', false, ''),
+		'FORUM_AJAX_JQUERY' => array('\'//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js\'', true, ''),
 	);
 
 	$conf_add = array();
@@ -1202,7 +1202,7 @@ if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_v
 		if (!$fn)
 			error('Unable to write config file include/config.php.', __FILE__, __LINE__);
 
-    if (fwrite($fn, pun_trim($conf_contents, " \n\r")."\n\n".implode("\n", $conf_add)."\n") === false)
+		if (fwrite($fn, pun_trim($conf_contents, " \n\r")."\n\n".implode("\n", $conf_add)."\n") === false)
 			error('Unable to write config file include/config.php.', __FILE__, __LINE__);
 
 		fclose($fn);
@@ -1215,7 +1215,7 @@ if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_v
 } // rev.65
 if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 68)
 {
-	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o_blocking_%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());
+	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o\_blocking\_%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());
 
 	if ($db->table_exists('blocking'))
 		$db->drop_table('blocking') or error('Unable to drop blocking table', __FILE__, __LINE__, $db->error());

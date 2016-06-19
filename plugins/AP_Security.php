@@ -104,7 +104,7 @@ else
 								<tr>
 									<td>
 										<span><?php echo $lang_admin_plugin_security['Board red help'] ?></span>
-										<input type="text" name="board_redirect" size="50" maxlength="255" value="<?php echo pun_htmlspecialchars($pun_config['o_board_redirect']) ?>"  tabindex="<?php echo ($tabindex++) ?>"/>
+										<input type="text" name="board_redirect" size="50" maxlength="255" value="<?php echo pun_htmlspecialchars($pun_config['o_board_redirect']) ?>" tabindex="<?php echo ($tabindex++) ?>"/>
 									</td>
 								</tr>
 								<tr>

@@ -18,7 +18,7 @@ Technitium theme CSS
 }
 
 .pun ul, .pun ol {
-	list-style: none
+	list-style: none;
 }
 
 
@@ -34,11 +34,11 @@ body {
 	width: 0;
 	line-height: 0;
 	font-size: 0;
-	overflow: hidden
+	overflow: hidden;
 }
 
 .pun .clearer, .pun .clearb {
-	clear: both
+	clear: both;
 }
 
 .pun .nosize {
@@ -49,11 +49,11 @@ body {
 }
 
 * html .inbox, * html .inform, * html .pun, * html .tclcon, * html .codebox {
-	height: 1px
+	height: 1px;
 }
 
 .pun, .pun .inbox, .pun .inform, .pun .tclcon, .pun .codebox {
-	min-height: 1px
+	min-height: 1px;
 }
 
 .clearl {
@@ -81,7 +81,7 @@ body {
 ----------------------------------------------------------------*/
 
 .pun {
-	font: 10pt Georgia, Times, "Times New Roman", serif
+	font: 10pt Georgia, Times, "Times New Roman", serif;
 }
 
 .pun table, .pun td, .pun th, .pun input, .pun select, .pun optgroup, .pun textarea, .pun samp, .pun legend {
@@ -91,7 +91,7 @@ body {
 
 .pun pre, .pun code {
 	font-size: 1.182em;
-	font-family: consolas, monaco, "bitstream vera sans mono", "courier new", courier, monospace
+	font-family: consolas, monaco, "bitstream vera sans mono", "courier new", courier, monospace;
 }
 
 .pun pre code {
@@ -146,7 +146,7 @@ body {
 }
 
 .pun span.warntext, .pun p.warntext {
-	font-weight: bold
+	font-weight: bold;
 }
 
 .pun .postleft dl dt {
@@ -163,58 +163,58 @@ body {
 
 .pun .usercontent ul, .pun .postmsg ul {
 	padding: 0.75em 1em 0.75em 2.5em;
-	list-style: disc
+	list-style: disc;
 }
 
 .pun .usercontent ol, .pun .postmsg ol {
 	padding: 0.75em 1em 0.75em 2.5em;
-	list-style: decimal
+	list-style: decimal;
 }
 
 .pun .usercontent ol.alpha, .pun .postmsg ol.alpha {
-	list-style: lower-alpha
+	list-style: lower-alpha;
 }
 
 .pun .usercontent li ol, .pun .usercontent li ul, .pun .postmsg li ol, .pun .postmsg li ul {
-	padding: 0.25em 1em 0.75em 2.5em
+	padding: 0.25em 1em 0.75em 2.5em;
 }
 
 .pun .usercontent li p, .pun .postmsg li p {
-	padding: 0
+	padding: 0;
 }
 
 .pun .usercontent h1 {
 	font-size: 1.4em;
 	font-weight: bold;
-	padding: 0.75em 0 0 0
+	padding: 0.75em 0 0 0;
 }
 
 .pun .usercontent h2 {
 	font-size: 1.2em;
 	font-weight: bold;
-	padding: 0.75em 0 0 0
+	padding: 0.75em 0 0 0;
 }
 
 .pun .usercontent h3 {
 	font-size: 1.1em;
 	font-weight: bold;
-	padding: 0.75em 0 0 0
+	padding: 0.75em 0 0 0;
 }
 
 .pun .usercontent h4, .pun .usercontent h5, .pun .usercontent h6 {
 	font-size: 1em;
 	font-weight: bold;
-	padding: 0.75em 0 0 0
+	padding: 0.75em 0 0 0;
 }
 
 .pun .quotebox cite {
 	font-weight: bold;
 	font-style: normal;
-	padding: 0.75em 0.75em 0 0.75em
+	padding: 0.75em 0.75em 0 0.75em;
 }
 
 .pun span.bbu {
-	text-decoration: underline
+	text-decoration: underline;
 }
 
 .pun span.bbs, .pun del {
@@ -262,11 +262,11 @@ body {
 }
 
 .pun .blocktable, .pun .block, .pun .blockform, .pun .block2col, #postreview {
-	margin-bottom: 12px
+	margin-bottom: 12px;
 }
 
 #punindex .blocktable, .pun .blockpost {
-	margin-bottom: 6px
+	margin-bottom: 6px;
 }
 
 #postreview .box {
@@ -274,15 +274,15 @@ body {
 }
 
 .pun .block2col .blockform, .pun .block2col .block {
-	margin-bottom: 0px
+	margin-bottom: 0px;
 }
 
 .pun .linkst, .pun .linksb {
-	margin-top: -12px
+	margin-top: -12px;
 }
 
 .pun .postlinksb {
-	margin-top: -6px
+	margin-top: -6px;
 }
 
 
@@ -306,7 +306,7 @@ body {
 ----------------------------------------------------------------*/
 
 .pun .block .inbox, .pun .blockmenu .inbox {
-	padding: 3px 6px
+	padding: 3px 6px;
 }
 
 /*****************************************************************
@@ -323,7 +323,7 @@ body {
 }
 
 #brdmenu {
-	font-size:1.2em;
+	font-size: 1.2em;
 }
 
 #brddesc {
@@ -356,13 +356,13 @@ body {
 }
 
 #brdwelcome li {
-	float:left;
-	margin-right:8px;
-	white-space:nowrap;
+	float: left;
+	margin-right: 8px;
+	white-space: nowrap;
 }
 
 #brdwelcome .conl li strong:after {
-	content: '.'
+	content: '.';
 }
 
 #brdwelcome .conr {
@@ -379,11 +379,11 @@ body {
 ----------------------------------------------------------------*/
 
 .pun .linkst {
-	padding: 8px 6px 3px 6px
+	padding: 8px 6px 3px 6px;
 }
 
 .pun .linksb, .pun .postlinksb {
-	padding: 3px 6px 8px 6px
+	padding: 3px 6px 8px 6px;
 }
 
 .pun .crumbs {
@@ -469,8 +469,8 @@ body {
 }
 
 #brdfooter #feedlinks span {
-	background:url("Technetium/feed.png") no-repeat scroll left center transparent;
-	padding-left:18px;
+	background: url("Technetium/feed.png") no-repeat scroll left center transparent;
+	padding-left: 18px;
 	display: inline;
 }
 
@@ -540,11 +540,11 @@ body {
 }
 
 .pun .tcl span.newtext, .pun .tcl span.pagestext {
-	white-space: nowrap
+	white-space: nowrap;
 }
 
 .pun .tcl p {
-	padding: 5px 0 0 0
+	padding: 5px 0 0 0;
 }
 
 #punsearch #vf .tc2 {
@@ -554,7 +554,7 @@ body {
 }
 
 #users1 .tcr {
-	width: 25%
+	width: 25%;
 }
 
 #users1 .tc2 {
@@ -564,16 +564,16 @@ body {
 }
 
 #debug .tcl {
-	width: 10%
+	width: 10%;
 }
 
 #debug .tcr {
 	width: 90%;
-	white-space: normal
+	white-space: normal;
 }
 
 #punindex .tcr .byuser {
-	display: block
+	display: block;
 }
 
 .pun .blocktable .tclcon {
@@ -697,13 +697,13 @@ body {
 
 .pun label {
 	display: block;
-	padding: 3px 0
+	padding: 3px 0;
 }
 
 .pun label.conl {
 	float: left;
 	overflow: visible;
-	margin-right: 10px
+	margin-right: 10px;
 }
 
 .pun select {
@@ -733,21 +733,21 @@ body {
 }
 
 .pun .txtarea {
-	width: 90%
+	width: 90%;
 }
 
 .pun .txtarea textarea, .pun input.longinput {
-	width: 100%
+	width: 100%;
 }
 
 .pun .bblinks {
 	padding-bottom: 10px;
-	padding-left: 4px
+	padding-left: 4px;
 }
 
 .pun .bblinks li {
 	display: inline;
-	padding-right: 20px
+	padding-right: 20px;
 }
 
 .pun .blockform .buttons {
@@ -799,16 +799,16 @@ body {
 *****************************************************************/
 
 .pun .block2col {
-	padding-bottom: 1px
+	padding-bottom: 1px;
 }
 
 .pun .block2col .blockform, .pun .block2col .block {
-	margin-left: 14em
+	margin-left: 14em;
 }
 
 .pun .blockmenu {
-	float:left;
-	width: 13em
+	float: left;
+	width: 13em;
 }
 
 .pun .blockmenu li {
@@ -817,17 +817,17 @@ body {
 }
 
 .pun .blockmenu a:link, .pun .blockmenu a:visited {
-	text-decoration: none
+	text-decoration: none;
 }
 
 .pun .blockmenu a:hover, .pun .blockmenu a:active {
-	text-decoration: underline
+	text-decoration: underline;
 }
 
 #viewprofile dl {
 	float: left;
 	width: 100%;
-	overflow: hidden
+	overflow: hidden;
 }
 
 #viewprofile dd {
@@ -843,7 +843,7 @@ body {
 
 #profileavatar img {
 	float: right;
-	margin-left: 1em
+	margin-left: 1em;
 }
 
 /*****************************************************************
@@ -872,7 +872,7 @@ body {
 }
 
 .pun .postleft, .pun .postfootleft {
-	float:left;
+	float: left;
 	width: 18em;
 	overflow: hidden;
 	position: relative;
@@ -896,7 +896,7 @@ body {
 }
 
 .pun .postleft .usercontacts, .pun .postleft .icon {
-	margin-top: 6px
+	margin-top: 6px;
 }
 
 .pun .postleft .postavatar, .pun .postleft .usertitle {
@@ -919,11 +919,11 @@ body {
 
 .pun .postright, .pun .postfootright {
 	border-left-width: 18em;
-	border-left-style: solid
+	border-left-style: solid;
 }
 
 #postpreview .postright {
-	border-left: 0
+	border-left: 0;
 }
 
 .pun .postright {
@@ -931,11 +931,11 @@ body {
 }
 
 .pun .postfootright, .pun .multidelete {
-	text-align: right
+	text-align: right;
 }
 
 .pun .postmsg {
-	width:98%;
+	width: 98%;
 	overflow: hidden;
 	padding-bottom: 6px;
 	word-wrap: break-word;
@@ -959,11 +959,11 @@ body {
 }
 
 .pun .postfootright a:link, .pun .postfootright a:visited {
-	text-decoration: none
+	text-decoration: none;
 }
 
 .pun .postfootright a:hover, .pun .postfootright a:active {
-	text-decoration: underline
+	text-decoration: underline;
 }
 
 
@@ -982,13 +982,13 @@ body {
 
 .pun .quotebox blockquote {
 	width: 100%;
-	overflow: hidden
+	overflow: hidden;
 }
 
 .pun .codebox pre {
 	overflow: auto;
 	width: 100%;
-	overflow-y:hidden
+	overflow-y: hidden;
 }
 
 * html .pun .codebox pre {
@@ -996,7 +996,7 @@ body {
 }
 
 *+html .pun .codebox pre {
-	padding-bottom: 10px
+	padding-bottom: 10px;
 }
 
 .pun .codebox pre code {
@@ -1007,7 +1007,7 @@ body {
 .pun .codebox pre.vscroll {
 	height: 32em;
 	overflow: auto;
-	overflow-y: auto
+	overflow-y: auto;
 }
 
 .pun .postmsg .postimg img, .pun .postmsg a .postimg img {
@@ -1024,7 +1024,7 @@ body {
 	width: 200px;
 	text-align: left;
 	height: 1px;
-	border:none
+	border: none;
 }
 
 .pun .blockpost label {
@@ -1047,11 +1047,11 @@ body {
 /****************************************************************/
 
 #punhelp h2 {
-	margin-top: 12px
+	margin-top: 12px;
 }
 
 #punhelp div.box {
-	padding: 10px
+	padding: 10px;
 }
 
 /*****************************************************************
@@ -1063,11 +1063,11 @@ COLOUR SCHEME
 
 body {
 	background: #fff url("Technetium/bg.png") repeat-x top;
-	color: #122434
+	color: #122434;
 }
 
 .pun {
-	color: #122434
+	color: #122434;
 }
 
 .pun .box, #adminconsole fieldset th {
@@ -1093,7 +1093,7 @@ body {
 	background-position: top;
 }
 
-.pun h2  {
+.pun h2 {
 	background-color: #C5D8EB;
 	background-image: url("Technetium/inv-shade.png");
 	background-repeat: repeat-x;
@@ -1101,7 +1101,7 @@ body {
 	text-shadow: #FFF 1px -1px 0.7em;
 }
 
-.pun #announce h2  {
+.pun #announce h2 {
 	display: none;
 }
 
@@ -1127,7 +1127,7 @@ body {
 }
 
 .pun .iclosed td {
-	background-color: #ECEEF0
+	background-color: #ECEEF0;
 }
 
 .pun .iclosed.isticky td {
@@ -1135,28 +1135,28 @@ body {
 }
 
 .pun legend {
-	color: #122434
+	color: #122434;
 }
 
 .pun .blockmenu li.isactive a, #posterror li strong {
-	color: #333
+	color: #333;
 }
 
 .pun .usercontent * {
 	background: transparent;
-	color: #333
+	color: #333;
 }
 
 #adminmenu .box {
 	background: #FBFCFD;
 }
 
-.pun .postlink a:link, .pun .postlink a:visited, .pun .postlink a:active  {
-	background-color:#F0F5FA;
-	background-image:url(Technetium/inv-shade.png);
-	background-repeat:repeat-x;
+.pun .postlink a:link, .pun .postlink a:visited, .pun .postlink a:active {
+	background-color: #F0F5FA;
+	background-image: url(Technetium/inv-shade.png);
+	background-repeat: repeat-x;
 	border: 1px solid;
-	color:#2B3037;
+	color: #2B3037;
 	text-shadow: #FFF 1px -1px 0.4em;
 	padding: 0.3em;
 	border-radius: 0.4em;
@@ -1169,11 +1169,11 @@ body {
 }
 
 #brdheader .box {
-	background-color:#F0F5FA;
-	background-image:url(Technetium/light-shade.png);
-	background-repeat:repeat-x;
+	background-color: #F0F5FA;
+	background-image: url(Technetium/light-shade.png);
+	background-repeat: repeat-x;
 	background-position: top;
-	color:#122434;
+	color: #122434;
 	border-radius: 0.4em;
 }
 
@@ -1213,11 +1213,11 @@ body {
 }
 
 .pun .postright, .pun .postfootright {
-	border-left-color: #F0F5FA
+	border-left-color: #F0F5FA;
 }
 
 .pun .postleft, .pun .postfootleft, .pun .blockpost label, .pun .codebox, .pun .quotebox {
-	background-color: #F0F5FA
+	background-color: #F0F5FA;
 }
 
 #punhelp .codebox, #punhelp .quotebox {
@@ -1229,12 +1229,12 @@ body {
 }
 
 .pun .blockpost h2 span.conr {
-	color: #aabdcd
+	color: #aabdcd;
 }
 
 .pun hr {
 	background-color: #333;
-	color: #333
+	color: #333;
 }
 
 .pun .quotebox {
@@ -1265,8 +1265,8 @@ body {
 }
 
 #adminconsole td, #adminconsole th {
-	border-style:solid;
-	border-width:1px 0px !important;
+	border-style: solid;
+	border-width: 1px 0px !important;
 }
 
 #adminconsole th {
@@ -1286,7 +1286,7 @@ body {
 }
 
 .pun .postlink a:link, .pun .postlink a:visited {
-	border-color: #C0D6E9
+	border-color: #C0D6E9;
 }
 
 
@@ -1299,7 +1299,7 @@ body {
 }
 
 .pun a:hover, .pun a:active, .pun a:focus {
-	color: #9E1D00
+	color: #9E1D00;
 }
 
 #brdmenu li a:active, #brdmenu li a:link, #brdmenu li a:visited {
@@ -1317,7 +1317,7 @@ body {
 
 .pun .postreport a:link, .pun .postreport a:visited,
 .pun .iclosed td.tcl a:link, .pun .iclosed td.tcl a:visited {
-	color: #888
+	color: #888;
 }
 
 .pun .isticky.iclosed td.tcl a:link, .pun .isticky.iclosed td.tcl a:visited {
@@ -1331,15 +1331,15 @@ body {
 
 .pun .postreport a:hover, .pun .postreport a:active,
 .pun .iclosed td.tcl a:hover, .pun .iclosed td.tcl a:active {
-	color: #aaa
+	color: #aaa;
 }
 
 .pun .maintenancelink a:link, .pun .maintenancelink a:visited {
-	color: #b42000
+	color: #b42000;
 }
 
 .pun .maintenancelink a:hover, .pun .maintenancelink a:active {
-	color: #b42000
+	color: #b42000;
 }
 
 
@@ -1347,35 +1347,35 @@ body {
 ----------------------------------------------------------------*/
 
 .pun .icon {
-	background-image:url(Technetium/icon-nonew.png);
+	background-image: url(Technetium/icon-nonew.png);
 }
 
 .pun .iredirect .icon {
-	background-image:url(Technetium/icon-moved.png);
+	background-image: url(Technetium/icon-moved.png);
 }
 
 .pun .inew .icon{
-	background-image:url(Technetium/icon-new.png);
+	background-image: url(Technetium/icon-new.png);
 }
 
-.pun .iclosed .icon  {
-	background-image:url(Technetium/icon-closed.png);
+.pun .iclosed .icon {
+	background-image: url(Technetium/icon-closed.png);
 }
 
 .pun .isticky .icon {
-	background-image:url(Technetium/icon-nonew-sticky.png);
+	background-image: url(Technetium/icon-nonew-sticky.png);
 }
 
 .pun .isticky.inew .icon {
-	background-image:url(Technetium/icon-new-sticky.png);
+	background-image: url(Technetium/icon-new-sticky.png);
 }
 
 .pun .iclosed.isticky .icon {
-	background-image:url(Technetium/icon-closed-sticky.png);
+	background-image: url(Technetium/icon-closed-sticky.png);
 }
 
 .pun .imoved .icon {
-	background-image:url(Technetium/icon-moved.png);
+	background-image: url(Technetium/icon-moved.png);
 }
 
 /* ---------- BBCODE TOOLBAR ------------- */

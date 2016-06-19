@@ -107,13 +107,24 @@ if (isset($_GET['search_hl']))
 		{
 			$string_shl = implode('|', $temp['array_shl']);
 
-		  $url_shl = '&amp;search_hl='.$search_hl;
+			$url_shl = '&amp;search_hl='.$search_hl;
 		}
 
 		unset($temp);
 	}
-	else
-		message($lang_common['Bad request'], false, '404 Not Found'); // запрос устарел или от другого юзера
+	else // запрос устарел или от другого юзера
+	{
+		if ($id > 0)
+		{
+			$p = isset($_GET['p']) && $_GET['p'] > 1 ? '&p='.intval($_GET['p']) : '';
+
+			header('Location: viewtopic.php?id='.$id.$p.($pid > 0 ? '#p'.$pid : ''), true, 301);
+		}
+		else
+			header('Location: viewtopic.php?pid='.$pid.'#p'.$pid, true, 301);
+
+		exit;
+	}
 }
 // search HL - Visman
 
@@ -247,7 +258,7 @@ if (!$pun_user['is_guest'] && $pun_config['o_topic_subscriptions'] == '1')
 {
 	if ($cur_topic['is_subscribed'])
 		// I apologize for the variable naming here. It's a mix of subscription and action I guess :-)
-		$subscraction = "\t\t".'<p class="subscribelink clearb"><span>'.$lang_topic['Is subscribed'].' - </span><a href="misc.php?action=unsubscribe&amp;tid='.$id.'&amp;csrf_hash='.csrf_hash('misc.php', false).'">'.$lang_topic['Unsubscribe'].'</a></p>'."\n";
+		$subscraction = "\t\t".'<p class="subscribelink clearb"><span>'.$lang_topic['Is subscribed'].' - </span><a id="unsubscribe" href="misc.php?action=unsubscribe&amp;tid='.$id.'&amp;csrf_hash='.csrf_hash('misc.php').'">'.$lang_topic['Unsubscribe'].'</a></p>'."\n";
 	else
 		$subscraction = "\t\t".'<p class="subscribelink clearb"><a href="misc.php?action=subscribe&amp;tid='.$id.'&amp;csrf_hash='.csrf_hash('misc.php').'">'.$lang_topic['Subscribe'].'</a></p>'."\n";
 }
@@ -612,15 +623,17 @@ if (defined('WITT_ENABLE'))
 	{
 		if (strpos($online_name, '[Bot]') !== false)
 		{
-		   ++$num_bots;
-		   $arr_o_name = explode('[Bot]', $online_name);
-		   if (empty($bots[$arr_o_name[1]])) $bots[$arr_o_name[1]] = 1;
-		   else ++$bots[$arr_o_name[1]];
+			++$num_bots;
+			$arr_o_name = explode('[Bot]', $online_name);
+			if (empty($bots[$arr_o_name[1]]))
+				$bots[$arr_o_name[1]] = 1;
+			else
+				++$bots[$arr_o_name[1]];
 		}
 	}
 	foreach ($bots as $online_name => $online_id)
 	{
-		   $users[] = "\n\t\t\t\t".'<dd>[Bot] '.pun_htmlspecialchars($online_name.($online_id > 1 ? ' ('.$online_id.')' : ''));
+		$users[] = "\n\t\t\t\t".'<dd>[Bot] '.pun_htmlspecialchars($online_name.($online_id > 1 ? ' ('.$online_id.')' : ''));
 	}
 	echo "\t\t\t\t".'<dd><span>'.sprintf($lang_topic['Users online'], '<strong>'.forum_number_format($num_users).'</strong>').', '.sprintf($lang_topic['Guests online'], '<strong>'.forum_number_format($num_guests).'</strong>').'</span></dd>'."\n\t\t\t".'</dl>'."\n";;
 
@@ -676,7 +689,7 @@ else
 
 ?>
 
-						<textarea name="req_message" rows="7" cols="75"  tabindex="<?php echo $cur_index++ ?>"></textarea></label>
+						<textarea name="req_message" rows="7" cols="75" tabindex="<?php echo $cur_index++ ?>"></textarea></label>
 						<ul class="bblinks">
 							<li><span><a href="help.php#bbcode" onclick="window.open(this.href); return false;"><?php echo $lang_common['BBCode'] ?></a> <?php echo ($pun_config['p_message_bbcode'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>
 							<li><span><a href="help.php#url" onclick="window.open(this.href); return false;"><?php echo $lang_common['url tag'] ?></a> <?php echo ($pun_config['p_message_bbcode'] == '1' && $pun_user['g_post_links'] == '1') ? $lang_common['on'] : $lang_common['off']; ?></span></li>

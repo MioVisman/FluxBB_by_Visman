@@ -19,7 +19,7 @@ $gd  = extension_loaded('gd');
 $gd2 = ($gd && function_exists('imagecreatetruecolor'));
 
 $extimage = array('gif', 'jpeg', 'jpg', 'jpe', 'png', 'bmp', 'tiff', 'tif', 'swf', 'psd', 'iff', 'wbmp', 'wbm', 'xbm');
-$extforno = array('phtml','php','php3','php4','php5','php6','phps','cgi','exe','pl','asp','aspx','shtml','shtm','fcgi','fpl','jsp','htm','html','wml','htaccess');
+$extforno = array('phtml','php','php3','php4','php5','php6','php7','phps','cgi','exe','pl','asp','aspx','shtml','shtm','fcgi','fpl','jsp','htm','html','wml','htaccess');
 
 $extimage2 = array(
 	1 => array('gif'),
@@ -303,7 +303,7 @@ function img_resize ($file, $dir, $name, $type, $width = 0, $height = 0, $qualit
 	if (!file_exists(PUN_ROOT.$dir.$name.'.'.$type)) return false;
 	@chmod(PUN_ROOT.$dir.$name.'.'.$type, 0644);
 
-  return array($name, $type);
+	return array($name, $type);
 }
 
 function isXSSattack ($file)

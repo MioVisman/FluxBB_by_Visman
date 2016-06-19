@@ -765,8 +765,9 @@ function handle_time_tag($after_time)
 {
 	global $lang_common;
 
-	if ($after_time == 0) return '';
-    
+	if ($after_time == 0)
+		return '';
+
 	$content = array();
 	$merged_sec = $after_time % 60;
 	$merged_min = ($after_time/60) % 60;
@@ -799,7 +800,7 @@ function do_bbcode($text, $is_signature = false)
 		$text = preg_replace('%\s*\[\/quote\]%S', '</p></div></blockquote></div><p>', $text);
 	}
 
-  // Обрабатываем спойлер - Visman
+	// Обрабатываем спойлер - Visman
 	if (strpos($text, '[spoiler') !== false)
 	{
 		$text = str_replace('[spoiler]', "</p><div class=\"quotebox\" style=\"padding: 0px;\"><div onclick=\"var e,d,c=this.parentNode,a=c.getElementsByTagName('div')[1],b=this.getElementsByTagName('span')[0];if(a.style.display!=''){while(c.parentNode&&(!d||!e||d==e)){e=d;d=(window.getComputedStyle?getComputedStyle(c, null):c.currentStyle)['backgroundColor'];if(d=='transparent'||d=='rgba(0, 0, 0, 0)')d=e;c=c.parentNode;}a.style.display='';a.style.backgroundColor=d;b.innerHTML='&#9650;';}else{a.style.display='none';b.innerHTML='&#9660;';}\" style=\"font-weight: bold; cursor: pointer; font-size: 0.9em;\"><span style=\"padding: 0 5px;\">&#9660;</span>".$lang_common['Hidden text']."</div><div style=\"padding: 6px; margin: 0; display: none;\"><p>", $text);

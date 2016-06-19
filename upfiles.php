@@ -76,7 +76,7 @@ if (isset($_GET['delete']))
 	if (is_dir(PUN_ROOT.$dir))
 	{
 		$file = parse_file(pun_trim($_GET['delete']));
-		$ext = strtolower(substr(strrchr($file,  "." ), 1)); // берем расширение файла
+		$ext = strtolower(substr(strrchr($file, '.'), 1)); // берем расширение файла
 		if ($file[0] != '.' && $ext != '' && !in_array($ext, $extforno) && is_file(PUN_ROOT.$dir.$file))
 		{
 			if (unlink(PUN_ROOT.$dir.$file))
@@ -104,8 +104,10 @@ if (isset($_GET['delete']))
 
 		header('Content-type: text/html; charset=utf-8');
 		
-	  if ($error) exit('not ok');
-	  exit('ok');
+		if ($error)
+			exit('not ok');
+
+		exit('ok');
 	}
 	
 	$s = $lang_up['Redirect delete'];
@@ -312,7 +314,7 @@ if (is_dir(PUN_ROOT.$dir))
 		if (is_file(PUN_ROOT.$dir.$file))
 		{
 			$ext = strtolower(substr(strrchr($file, '.'), 1));
-			if (!in_array($ext, $extforno) && $file[0] != '#'  && substr($file, 0, 5) != 'mini_')
+			if (!in_array($ext, $extforno) && $file[0] != '#' && substr($file, 0, 5) != 'mini_')
 			{
 				$time = filemtime(PUN_ROOT.$dir.$file).$file;
 				$filesvar[$time] = $dir.$file;
@@ -451,7 +453,7 @@ FluxBB.upfile = (function (doc, win) {
 	function get_us(li) {
 		url = '';
 		src = '';
-	  var div = li.getElementsByTagName("div")[1];
+		var div = li.getElementsByTagName("div")[1];
 		if (!!div) {
 			var a = div.getElementsByTagName("a")[0];
 			if (!!a) {
@@ -519,10 +521,10 @@ FluxBB.upfile = (function (doc, win) {
 		{
 			ref.className = "";
 			
-		  if (req.status == 200 && req.responseText == "ok") {
+			if (req.status == 200 && req.responseText == "ok") {
 				ref.parentNode.parentNode.parentNode.removeChild(ref.parentNode.parentNode);
 				if (get("upf-list").getElementsByTagName("li").length == 0) {
-				  win.location.reload(true);
+					win.location.reload(true);
 				}
 			}
 		}
@@ -531,11 +533,11 @@ FluxBB.upfile = (function (doc, win) {
 	return {
 
 		del : function (ref) {
-		  if (ref.className) return !1;
+			if (ref.className) return !1;
 			ref.className = "upf-loading";
 			
-		  var req = cr_req();
-		  if (req) {
+			var req = cr_req();
+			if (req) {
 				req.onreadystatechange=function(){orsc(req, ref);};
 				req.open("GET", ref.href + "&ajx=1", true);
 				req.send();
@@ -551,20 +553,20 @@ FluxBB.upfile = (function (doc, win) {
 			get_us(ref.parentNode.parentNode);
 
 			if (f && is_img(src) && src != url) {
-			  insr("", "[url=" + url + "][img]" + src + "[/img][/url]", "");
+				insr("", "[url=" + url + "][img]" + src + "[/img][/url]", "");
 			} else if (is_img(url)) {
-			  insr("", "[img]" + url + "[/img]", "");
+				insr("", "[img]" + url + "[/img]", "");
 			} else {
 				if (f = url.match(/.*\/img\/members\/\d+\/(.+)$/)) f = f[1];
 				else f = "<?php echo $lang_up['texte'] ?>";
 
-			  insr("[url=" + url + "]", "[/url]", f);
+				insr("[url=" + url + "]", "[/url]", f);
 			}
 			return !1;
 		},
 
 		run : function () {
-		  if (!win.opener) return;
+			if (!win.opener) return;
 			var li = get("upf-list").getElementsByTagName("li");
 			for (var i in li) {
 				if (!!li[i].getElementsByTagName) set_button(li[i]);
@@ -572,7 +574,7 @@ FluxBB.upfile = (function (doc, win) {
 		},
 
 		init : function () {
-		  if (!doc.addEventListener) {
+			if (!doc.addEventListener) {
 				/in/.test(doc.readyState) ? setTimeout(FluxBB.upfile.init, 100) : FluxBB.upfile.run();
 			} else doc.addEventListener("DOMContentLoaded", FluxBB.upfile.run(), false);
 		}

@@ -36,7 +36,7 @@ if (isset($_GET['get_host']))
 	// Load the misc.php language file
 	require PUN_ROOT.'lang/'.$pun_user['language'].'/misc.php';
 
-	message(sprintf($lang_misc['Host info 1'], $ip).'<br />'.sprintf($lang_misc['Host info 2'], @gethostbyaddr($ip)).'<br /><br /><a href="admin_users.php?show_users='.$ip.'">'.$lang_misc['Show more users'].'</a>');
+	message(sprintf($lang_misc['Host info 1'], $ip).'<br />'.sprintf($lang_misc['Host info 2'], pun_htmlspecialchars(@gethostbyaddr($ip))).'<br /><br /><a href="admin_users.php?show_users='.$ip.'">'.$lang_misc['Show more users'].'</a>');
 }
 
 
@@ -323,7 +323,7 @@ if (isset($_GET['tid']))
 
 				// перемещаем
 				$add_text = '[color=#808080][i] '.$lang_misc['Post from topic'].' "'.$cur_topic['subject'].'"[/i]. '.$pun_user['username'].'[/color][hr]';
-				$db->query('UPDATE '.$db->prefix.'posts  SET topic_id='.$move_to_topic.', message=CONCAT(\''.$db->escape($add_text).'\', message) WHERE topic_id='.$tid.' AND id IN('.$posts.')') or error('Unable to update posts/topic', __FILE__, __LINE__, $db->error());
+				$db->query('UPDATE '.$db->prefix.'posts SET topic_id='.$move_to_topic.', message=CONCAT(\''.$db->escape($add_text).'\', message) WHERE topic_id='.$tid.' AND id IN('.$posts.')') or error('Unable to update posts/topic', __FILE__, __LINE__, $db->error());
 
 				// обновим темы
 				$num_posts_deleted = substr_count($posts, ',') + 1;
@@ -406,7 +406,7 @@ if (isset($_GET['tid']))
 		$cur_category = 0;
 		while ($cur_forum = $db->fetch_assoc($result))
 		{
-			if ($cur_forum['cid'] != $cur_category)    // A new category since last iteration?
+			if ($cur_forum['cid'] != $cur_category) // A new category since last iteration?
 			{
 				if ($cur_category)
 					echo "\t\t\t\t\t\t\t".'</optgroup>'."\n";
@@ -447,7 +447,7 @@ if (isset($_GET['tid']))
 
 	if (isset($_GET['action']) && $_GET['action'] == 'all')
 		$pun_user['disp_posts'] = $cur_topic['num_replies'] + 1;
-        
+
 	// Determine the post offset (based on $_GET['p'])
 	$num_pages = ceil(($cur_topic['num_replies'] + 1) / $pun_user['disp_posts']);
 
