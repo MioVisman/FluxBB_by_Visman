@@ -1901,17 +1901,17 @@ span.shlight {
 }
 
 #brdmenu-button:after {
-	content: attr(data-open);
+	content: "\2630";
 	display: block;
 	padding: 12px 16px 6px 8px;
 }
 
-#brdmenu #brdmenu-checkbox:checked + ul li {
+#brdmenu #brdmenu-checkbox:checked ~ ul li {
 	display: block;
 }
 
-#brdmenu #brdmenu-checkbox:checked + ul #brdmenu-button:after {
-	content: attr(data-close);
+#brdmenu #brdmenu-checkbox:checked + #brdmenu-button:after {
+	content: "\2716";
 }
 
 #brdwelcome .conl + .conr {
