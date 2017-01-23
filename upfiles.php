@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2011-2013 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2011-2016 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -436,7 +436,7 @@ if (typeof FluxBB === 'undefined' || !FluxBB) {var FluxBB = {};}
 FluxBB.upfile = (function (doc, win) {
 	'use strict';
 
-	var url, src;
+	var url, src, par, area;
 
 	function get(elem) {
 		return doc.getElementById(elem);
@@ -453,12 +453,12 @@ FluxBB.upfile = (function (doc, win) {
 	function get_us(li) {
 		url = '';
 		src = '';
-		var div = li.getElementsByTagName("div")[1];
+		var div = li.getElementsByTagName('div')[1];
 		if (!!div) {
-			var a = div.getElementsByTagName("a")[0];
+			var a = div.getElementsByTagName('a')[0];
 			if (!!a) {
 				url = a.href;
-				var	img = a.getElementsByTagName("img")[0];
+				var	img = a.getElementsByTagName('img')[0];
 				if (!!img) src = img.src;
 			}
 		}
@@ -468,15 +468,15 @@ FluxBB.upfile = (function (doc, win) {
 		get_us(li);
 		
 		if (!!url) {
-			var div = createElement("div");
-			div.className = "upf-but upf-insert";
-			div.innerHTML = "<a title=\"<?php echo $lang_up['insert'] ?>\" href=\"#\" onclick=\"return FluxBB.upfile.ins(this);\"><span></span></a>";
+			var div = createElement('div');
+			div.className = 'upf-but upf-insert';
+			div.innerHTML = '<a title="<?php echo $lang_up['insert'] ?>" href="#" onclick="return FluxBB.upfile.ins(this);"><span></span></a>';
 			li.appendChild(div);
 
 			if (is_img(src) && src != url) {
-				div = createElement("div");
-				div.className = "upf-but upf-insert-t";
-				div.innerHTML = "<a title=\"<?php echo $lang_up['insert_thumb'] ?>\" href=\"#\" onclick=\"return FluxBB.upfile.ins(this, 1);\"><span></span></a>";
+				div = createElement('div');
+				div.className = 'upf-but upf-insert-t';
+				div.innerHTML = '<a title="<?php echo $lang_up['insert_thumb'] ?>" href="#" onclick="return FluxBB.upfile.ins(this, 1);"><span></span></a>';
 				li.appendChild(div);
 			}
 		}
@@ -484,23 +484,18 @@ FluxBB.upfile = (function (doc, win) {
 
 	function insr(s, e, t)
 	{
-		var par = win.opener.document,
-				area = par.getElementsByName("req_message")[0];
-		if (!area) return;
-
 		area.focus();
-		if (par.selection && par.selection.createRange) { // IE
-			var sel = par.selection.createRange();
-			sel.text = s + (!sel.text ? t : sel.text) + e;
-			sel.select();
-		} else if ("selectionStart" in area) { // all new
-			var sp = area.selectionStart,
-					ep = area.selectionEnd;
+		if ('selectionStart' in area) { // all new
+			var len = area.value.length,
+				sp = Math.min(area.selectionStart, len), // IE bug
+				ep = Math.min(area.selectionEnd, len); // IE bug
 			area.value = area.value.substring(0, sp) + s + (sp == ep ? t : area.value.substring(sp, ep)) + e + area.value.substring(ep);
 			area.selectionStart = ep + e.length + s.length + (sp == ep ? t.length : 0);
 			area.selectionEnd = area.selectionStart;
-		} else { // other
-			area.value += s + t + e;
+		} else if (par.selection && par.selection.createRange) { // IE
+			var sel = par.selection.createRange();
+			sel.text = s + (!sel.text ? t : sel.text) + e;
+			sel.select();
 		}
 		win.focus();
 	}
@@ -519,11 +514,11 @@ FluxBB.upfile = (function (doc, win) {
 	function orsc(req, ref) {
 		if (req.readyState == 4)
 		{
-			ref.className = "";
+			ref.className = '';
 			
-			if (req.status == 200 && req.responseText == "ok") {
+			if (req.status == 200 && req.responseText == 'ok') {
 				ref.parentNode.parentNode.parentNode.removeChild(ref.parentNode.parentNode);
-				if (get("upf-list").getElementsByTagName("li").length == 0) {
+				if (get('upf-list').getElementsByTagName('li').length == 0) {
 					win.location.reload(true);
 				}
 			}
@@ -534,12 +529,12 @@ FluxBB.upfile = (function (doc, win) {
 
 		del : function (ref) {
 			if (ref.className) return !1;
-			ref.className = "upf-loading";
+			ref.className = 'upf-loading';
 			
 			var req = cr_req();
 			if (req) {
 				req.onreadystatechange=function(){orsc(req, ref);};
-				req.open("GET", ref.href + "&ajx=1", true);
+				req.open('GET', ref.href + '&ajx=1', true);
 				req.send();
 
 				return !1;
@@ -553,21 +548,26 @@ FluxBB.upfile = (function (doc, win) {
 			get_us(ref.parentNode.parentNode);
 
 			if (f && is_img(src) && src != url) {
-				insr("", "[url=" + url + "][img]" + src + "[/img][/url]", "");
+				insr('', '[url=' + url + '][img]' + src + '[/img][/url]', '');
 			} else if (is_img(url)) {
-				insr("", "[img]" + url + "[/img]", "");
+				insr('', '[img]' + url + '[/img]', '');
 			} else {
 				if (f = url.match(/.*\/img\/members\/\d+\/(.+)$/)) f = f[1];
-				else f = "<?php echo $lang_up['texte'] ?>";
+				else f = '<?php echo $lang_up['texte'] ?>';
 
-				insr("[url=" + url + "]", "[/url]", f);
+				insr('[url=' + url + ']', '[/url]', f);
 			}
 			return !1;
 		},
 
 		run : function () {
 			if (!win.opener) return;
-			var li = get("upf-list").getElementsByTagName("li");
+
+			par = win.opener.document;
+			area = par.getElementsByName('req_message')[0];
+			if (!area) return;
+
+			var li = get('upf-list').getElementsByTagName('li');
 			for (var i in li) {
 				if (!!li[i].getElementsByTagName) set_button(li[i]);
 			}
@@ -576,7 +576,7 @@ FluxBB.upfile = (function (doc, win) {
 		init : function () {
 			if (!doc.addEventListener) {
 				/in/.test(doc.readyState) ? setTimeout(FluxBB.upfile.init, 100) : FluxBB.upfile.run();
-			} else doc.addEventListener("DOMContentLoaded", FluxBB.upfile.run(), false);
+			} else doc.addEventListener('DOMContentLoaded', FluxBB.upfile.run(), false);
 		}
 	};
 }(document, window));

@@ -19,7 +19,7 @@ if (!$pun_user['is_admmod'])
 
 // The plugin to load should be supplied via GET
 $plugin = isset($_GET['plugin']) ? $_GET['plugin'] : '';
-if (!preg_match('%^AM?P_(\w*?)\.php$%i', $plugin))
+if (!preg_match('%^AM?P_(\w*?)\.php$%iD', $plugin))
 	message($lang_common['Bad request'], false, '404 Not Found');
 
 // AP_ == Admins only, AMP_ == admins and moderators

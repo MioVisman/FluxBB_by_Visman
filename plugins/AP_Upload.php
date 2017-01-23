@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2011-2015 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2011-2016 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2007 BN (bnmaster@la-bnbox.info)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
@@ -12,7 +12,7 @@ if (!defined('PUN'))
 
 // Tell admin_loader.php that this is indeed a plugin and that it is loaded
 define('PUN_PLUGIN_LOADED', 1);
-define('PLUGIN_VERSION', '2.0.3');
+define('PLUGIN_VERSION', '2.0.4');
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin='.$plugin));
 define('PLUGIN_EXTS', 'jpg,jpeg,png,gif,mp3,zip,rar,7z');
 define('PLUGIN_NF', 25);
@@ -72,7 +72,7 @@ else if (isset($_POST['update']))
 			{
 				$g_ext = str_replace(' ', '', $g_up_ext[$cur_group['g_id']]);
 				$g_ext = preg_replace('%[,]+%u', ',', $g_ext);
-				if (preg_match('%^[0-9a-zA-Z][0-9a-zA-Z,]*[0-9a-zA-Z]$%u', $g_ext) == 0)
+				if (preg_match('%^[0-9a-zA-Z][0-9a-zA-Z,]*[0-9a-zA-Z]$%uD', $g_ext) == 0)
 					$g_ext = PLUGIN_EXTS;
 				$g_ext = strtolower($g_ext);
 			}
@@ -501,7 +501,7 @@ else
 		$dir = $mem.$fi[1].'/';
 		$size_file = file_size(filesize(PUN_ROOT.$file));
 		$miniature = $dir.'mini_'.$fi[2].'.'.$fi[3];
-		if (isset($_POST['update_thumb']) && $_POST['update_thumb'] != NULL && $aconf['thumb'] == 1 && array_key_exists(strtolower($fi[3]),$extimageGD))
+		if (isset($_POST['update_thumb']) && $aconf['thumb'] == 1 && array_key_exists(strtolower($fi[3]),$extimageGD))
 			img_resize(PUN_ROOT.$file, $dir, 'mini_'.$fi[2], $fi[3], 0, $aconf['thumb_size'], $aconf['thumb_perc']);
 
 ?>

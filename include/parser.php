@@ -217,7 +217,7 @@ function preparse_tags($text, &$errors, $is_signature = false)
 	// Inline tags, we do not allow new lines in these
 	$tags_inline = array('b', 'i', 'u', 's', 'ins', 'del', 'em', 'color', 'colour', 'h', 'topic', 'post', 'forum', 'user');
 	// Tags we trim interior space
-	$tags_trim = array('img', 'imgl', 'imgr');
+	$tags_trim = array('img', 'imgl', 'imgr', 'url', 'email');
 	// Tags we remove quotes from the argument
 	$tags_quotes = array('url', 'email', 'img', 'imgl', 'imgr', 'topic', 'post', 'forum', 'user');
 	// Tags we limit bbcode in
@@ -796,6 +796,7 @@ function do_bbcode($text, $is_signature = false)
 	if (strpos($text, '[quote') !== false)
 	{
 		$text = preg_replace('%\[quote\]\s*%', '</p><div class="quotebox"><blockquote><div><p>', $text);
+//		$text = preg_replace('%\[quote=(?P<quote>(?:&quot;|&\#039;|"|\'))?((?(quote)[^\r\n]+?|[^\r\n\]]++))(?(quote)(?P=quote))\]\s*%', '</p><div class="quotebox"><cite>$2 '.$lang_common['wrote'].'</cite><blockquote><div><p>', $text);
 		$text = preg_replace_callback('%\[quote=(&quot;|&\#039;|"|\'|)([^\r\n]*?)\\1\]%s', create_function('$matches', 'global $lang_common; return "</p><div class=\"quotebox\"><cite>".str_replace(array(\'[\', \'\\"\'), array(\'&#91;\', \'"\'), $matches[2])." ".$lang_common[\'wrote\']."</cite><blockquote><div><p>";'), $text);
 		$text = preg_replace('%\s*\[\/quote\]%S', '</p></div></blockquote></div><p>', $text);
 	}
@@ -804,7 +805,7 @@ function do_bbcode($text, $is_signature = false)
 	if (strpos($text, '[spoiler') !== false)
 	{
 		$text = str_replace('[spoiler]', "</p><div class=\"quotebox\" style=\"padding: 0px;\"><div onclick=\"var e,d,c=this.parentNode,a=c.getElementsByTagName('div')[1],b=this.getElementsByTagName('span')[0];if(a.style.display!=''){while(c.parentNode&&(!d||!e||d==e)){e=d;d=(window.getComputedStyle?getComputedStyle(c, null):c.currentStyle)['backgroundColor'];if(d=='transparent'||d=='rgba(0, 0, 0, 0)')d=e;c=c.parentNode;}a.style.display='';a.style.backgroundColor=d;b.innerHTML='&#9650;';}else{a.style.display='none';b.innerHTML='&#9660;';}\" style=\"font-weight: bold; cursor: pointer; font-size: 0.9em;\"><span style=\"padding: 0 5px;\">&#9660;</span>".$lang_common['Hidden text']."</div><div style=\"padding: 6px; margin: 0; display: none;\"><p>", $text);
-		$text = preg_replace('%\[spoiler=([^\r\n]*?)\]%s', '</p><div class="quotebox" style="padding: 0px;"><div onclick="var e,d,c=this.parentNode,a=c.getElementsByTagName(\'div\')[1],b=this.getElementsByTagName(\'span\')[0];if(a.style.display!=\'\'){while(c.parentNode&&(!d||!e||d==e)){e=d;d=(window.getComputedStyle?getComputedStyle(c, null):c.currentStyle)[\'backgroundColor\'];if(d==\'transparent\'||d==\'rgba(0, 0, 0, 0)\')d=e;c=c.parentNode;}a.style.display=\'\';a.style.backgroundColor=d;b.innerHTML=\'&#9650;\';}else{a.style.display=\'none\';b.innerHTML=\'&#9660;\';}" style="font-weight: bold; cursor: pointer; font-size: 0.9em;"><span style="padding: 0 5px;">&#9660;</span>$1</div><div style="padding: 6px; margin: 0; display: none;"><p>', $text);
+		$text = preg_replace('%\[spoiler=(?P<quote>(?:&quot;|&\#039;|"|\'))?((?(quote)[^\r\n]+?|[^\r\n\]]++))(?(quote)(?P=quote))\]%', '</p><div class="quotebox" style="padding: 0px;"><div onclick="var e,d,c=this.parentNode,a=c.getElementsByTagName(\'div\')[1],b=this.getElementsByTagName(\'span\')[0];if(a.style.display!=\'\'){while(c.parentNode&&(!d||!e||d==e)){e=d;d=(window.getComputedStyle?getComputedStyle(c, null):c.currentStyle)[\'backgroundColor\'];if(d==\'transparent\'||d==\'rgba(0, 0, 0, 0)\')d=e;c=c.parentNode;}a.style.display=\'\';a.style.backgroundColor=d;b.innerHTML=\'&#9650;\';}else{a.style.display=\'none\';b.innerHTML=\'&#9660;\';}" style="font-weight: bold; cursor: pointer; font-size: 0.9em;"><span style="padding: 0 5px;">&#9660;</span>$2</div><div style="padding: 6px; margin: 0; display: none;"><p>', $text);
 		$text = str_replace('[/spoiler]', '</p></div></div><p>', $text);
 	}
 
@@ -814,22 +815,22 @@ function do_bbcode($text, $is_signature = false)
 		$replace_callback[] = 'handle_list_tag($matches[2], $matches[1])';
 	}
 
-	$pattern[] = '%\[b\](.*?)\[/b\]%ms';
-	$pattern[] = '%\[i\](.*?)\[/i\]%ms';
-	$pattern[] = '%\[u\](.*?)\[/u\]%ms';
-	$pattern[] = '%\[s\](.*?)\[/s\]%ms';
-	$pattern[] = '%\[del\](.*?)\[/del\]%ms';
-	$pattern[] = '%\[ins\](.*?)\[/ins\]%ms';
-	$pattern[] = '%\[em\](.*?)\[/em\]%ms';
-	$pattern[] = '%\[colou?r=([a-zA-Z]{3,20}|\#[0-9a-fA-F]{6}|\#[0-9a-fA-F]{3})](.*?)\[/colou?r\]%ms';
-	$pattern[] = '%\[h\](.*?)\[/h\]%ms';
+	$pattern[] = '%\[b\](.*?)\[/b\]%s';
+	$pattern[] = '%\[i\](.*?)\[/i\]%s';
+	$pattern[] = '%\[u\](.*?)\[/u\]%s';
+	$pattern[] = '%\[s\](.*?)\[/s\]%s';
+	$pattern[] = '%\[del\](.*?)\[/del\]%s';
+	$pattern[] = '%\[ins\](.*?)\[/ins\]%s';
+	$pattern[] = '%\[em\](.*?)\[/em\]%s';
+	$pattern[] = '%\[colou?r=([a-zA-Z]{3,20}|\#[0-9a-fA-F]{6}|\#[0-9a-fA-F]{3})](.*?)\[/colou?r\]%s';
+	$pattern[] = '%\[h\](.*?)\[/h\]%s';
 	// дополнительные ббкоды - Visman
 	$pattern[] = '%\[hr\]%';
-	$pattern[] = '%\[size=([0-9]*)](.*?)\[/size\]%s';
-	$pattern[] = '%\[right\](.*?)\[/right\]%ms';
-	$pattern[] = '%\[center\](.*?)\[/center\]%ms';
-	$pattern[] = '%\[justify\](.*?)\[/justify\]%ms';
-	$pattern[] = '%\[mono\](.*?)\[/mono\]%ms';
+	$pattern[] = '%\[size=([1-9]\d{0,2})](.*?)\[/size\]%s';
+	$pattern[] = '%\[right\](.*?)\[/right\]%s';
+	$pattern[] = '%\[center\](.*?)\[/center\]%s';
+	$pattern[] = '%\[justify\](.*?)\[/justify\]%s';
+	$pattern[] = '%\[mono\](.*?)\[/mono\]%s';
 
 	$replace[] = '<strong>$1</strong>';
 	$replace[] = '<em>$1</em>';
@@ -874,11 +875,11 @@ function do_bbcode($text, $is_signature = false)
 		}
 	}
 
-	$pattern_callback[] = '%\[after=(\d*)\]%';
-	$pattern_callback[] = '%\[url\]([^\[]*?)\[/url\]%';
-	$pattern_callback[] = '%\[url=([^\[]+?)\](.*?)\[/url\]%';
-	$pattern[] = '%\[email\]([^\[]*?)\[/email\]%';
-	$pattern[] = '%\[email=([^\[]+?)\](.*?)\[/email\]%';
+	$pattern_callback[] = '%\[after=(\d+)\]%';
+	$pattern_callback[] = '%\[url\]([^\[\r\n\t]*?)\[/url\]%';
+	$pattern_callback[] = '%\[url=([^\[\r\n\t]+?)\](.*?)\[/url\]%';
+	$pattern[] = '%\[email\]([^\[\r\n\t]+?@[^\[\r\n\t]+?)\[/email\]%';
+	$pattern[] = '%\[email=([^\[\r\n\t]+?@[^\[\r\n\t]+?)\](.*?)\[/email\]%';
 	$pattern_callback[] = '%\[topic\]([1-9]\d*)\[/topic\]%';
 	$pattern_callback[] = '%\[topic=([1-9]\d*)\](.*?)\[/topic\]%';
 	$pattern_callback[] = '%\[post\]([1-9]\d*)\[/post\]%';

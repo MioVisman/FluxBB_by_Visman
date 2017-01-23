@@ -86,7 +86,7 @@ else
 }
 
 // проверка модуля
-if (!preg_match('%^[a-z]+$%', $pmsn_modul))
+if (preg_match('%[^a-z]%', $pmsn_modul))
 	message($lang_common['Bad request'], false, '404 Not Found');
 
 if (!file_exists(PUN_ROOT.'include/pms_new/mdl/'.$pmsn_modul.'.php'))

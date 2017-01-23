@@ -167,7 +167,7 @@ function pmsn_user_delete($user, $mflag, $topics = array())
 		pmsn_user_update($user_up[$i]);
 }
 
-function pmsn_get_var($name, $default = NULL)
+function pmsn_get_var($name, $default = null)
 {
 	if (isset($_POST[$name]))
 		return $_POST[$name];

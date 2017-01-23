@@ -66,7 +66,7 @@ function poll_can_vote($tid, $uid)
 }
 
 // получение информации по опросу **********************************************
-function poll_info($tid, $uid = NULL)
+function poll_info($tid, $uid = null)
 {
 	global $db;
 
@@ -599,7 +599,7 @@ function poll_display($tid, $uid, $info, $top, $prev = false)
 
 	if (is_null($info)) return;
 	
-	$can_vote = ($info['canVote'] && $top[0] != 2 && poll_post('poll_view') == null);
+	$can_vote = ($info['canVote'] && $top[0] != 2 && poll_post('poll_view') === null);
 	$can_visi = ((($info['isGuest'] && $pun_config['o_poll_guest'] == '1') || !$info['isGuest']) && $top[2] <= $top[3]);
 	$fmess = '';
 	if ($prev)
@@ -612,7 +612,7 @@ function poll_display($tid, $uid, $info, $top, $prev = false)
 		$fmess = $lang_poll['M3'];
 	else if ($info['isGuest'])
 		$fmess = $lang_poll['M4'];
-	else if (poll_post('poll_view') != null)
+	else if (poll_post('poll_view') !== null)
 		$fmess = '<a href="javascript:history.go(-1)">'.$lang_common['Go back'].'</a>';
 	else if (!$can_vote)
 		$fmess = $lang_poll['M0'];

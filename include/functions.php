@@ -424,7 +424,10 @@ function check_bans()
 	// Add a dot or a colon (depending on IPv4/IPv6) at the end of the IP address to prevent banned address
 	// 192.168.0.5 from matching e.g. 192.168.0.50
 	$user_ip = get_remote_address();
-	$user_ip .= (strpos($user_ip, '.') !== false) ? '.' : ':';
+	$add = strpos($user_ip, '.') !== false ? '.' : ':';
+	$user_ip .= $add;
+
+	$username = utf8_strtolower($pun_user['username']);
 
 	$bans_altered = false;
 	$is_banned = false;
@@ -439,7 +442,7 @@ function check_bans()
 			continue;
 		}
 
-		if ($cur_ban['username'] != '' && utf8_strtolower($pun_user['username']) == utf8_strtolower($cur_ban['username']))
+		if ($cur_ban['username'] != '' && $username == utf8_strtolower($cur_ban['username']))
 			$is_banned = true;
 
 		if ($cur_ban['ip'] != '')
@@ -450,10 +453,7 @@ function check_bans()
 			for ($i = 0; $i < $num_ips; ++$i)
 			{
 				// Add the proper ending to the ban
-				if (strpos($user_ip, '.') !== false)
-					$cur_ban_ips[$i] = $cur_ban_ips[$i].'.';
-				else
-					$cur_ban_ips[$i] = $cur_ban_ips[$i].':';
+				$cur_ban_ips[$i] .= $add;
 
 				if (substr($user_ip, 0, strlen($cur_ban_ips[$i])) == $cur_ban_ips[$i])
 				{
@@ -499,7 +499,7 @@ function check_username($username, $exclude_id = null)
 		$errors[] = $lang_prof_reg['Username too short'];
 	else if (pun_strlen($username) > 25) // This usually doesn't happen since the form element only accepts 25 characters
 		$errors[] = $lang_prof_reg['Username too long'];
-	else if (!preg_match('%^\p{L}[\p{L}\p{N}_ ]+$%u', $username)) // строгая проверка имени пользователя - Visman
+	else if (!preg_match('%^\p{L}[\p{L}\p{N}_ ]+$%uD', $username)) // строгая проверка имени пользователя - Visman
 		$errors[] = $lang_prof_reg['Username Error'];
 	else if (!strcasecmp($username, 'Guest') || !utf8_strcasecmp($username, $lang_common['Guest']))
 		$errors[] = $lang_prof_reg['Username guest'];
@@ -1041,7 +1041,7 @@ function paginate($num_pages, $cur_page, $link)
 //
 function message($message, $no_back_link = false, $http_status = null)
 {
-	global $db, $lang_common, $pun_config, $pun_start, $tpl_main, $pun_user;
+	global $db, $lang_common, $pun_config, $pun_start, $tpl_main, $pun_user, $page_js;
 
 	witt_query(); // MOD Кто в этой теме - Visman
 
@@ -1870,7 +1870,10 @@ function remove_bad_characters($array)
 		return array_map('remove_bad_characters', $array);
 
 	// Strip out any invalid characters
-	$array = utf8_bad_strip($array);
+	if (version_compare(PHP_VERSION, '5.4.0', '>='))
+		$array = htmlspecialchars_decode(htmlspecialchars((string) $array, ENT_SUBSTITUTE, 'UTF-8')); // Visman
+	else
+		$array = utf8_bad_strip($array);
 
 	// Remove control characters
 	$array = preg_replace('%[\x00-\x08\x0b-\x0c\x0e-\x1f]%', '', $array);

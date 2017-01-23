@@ -121,6 +121,7 @@ else if ($action == 'out')
 		exit;
 	}
 
+    unset($errors);
 	confirm_referrer('login.php');
 
 	// Remove user from "users online" list

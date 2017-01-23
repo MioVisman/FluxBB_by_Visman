@@ -196,7 +196,7 @@ while ($cur_post = $db->fetch_assoc($result))
 	{
 		$cur_post['g_id'] = PUN_GUEST;
 		// мод пола - Visman
-		$cur_post['gender'] = NULL;
+		$cur_post['gender'] = null;
 	}
 
 	// мод пола - Visman
@@ -205,7 +205,7 @@ while ($cur_post = $db->fetch_assoc($result))
 	else if ($cur_post['gender'] == 2)
 		$cur_post['gender'] = 'female';
 	else
-		$cur_post['gender'] = NULL;
+		$cur_post['gender'] = null;
 
 	if ($pun_user['id'] != $cur_post['poster_id'])
 	{
