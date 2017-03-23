@@ -114,7 +114,18 @@ if (!$pun_user['is_guest'])
 	$forum_actions[] = '<a href="misc.php?action=markforumread&amp;fid='.$id.'&amp;csrf_hash='.csrf_hash().'">'.$lang_common['Mark forum read'].'</a>';
 }
 
-$page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), pun_htmlspecialchars($cur_forum['forum_name']));
+$page_title = [];
+$cur = $id;
+while (true) {
+	$page_title[] = pun_htmlspecialchars($sf_array_desc[$cur]['forum_name']);
+	if (empty($sf_array_desc[$cur][0])) {
+		break;
+	}
+	$cur = $sf_array_desc[$cur][0];
+}
+$page_title[] = pun_htmlspecialchars($pun_config['o_board_title']);
+$page_title = array_reverse($page_title);
+
 define('PUN_ALLOW_INDEX', 1);
 define('PUN_ACTIVE_PAGE', 'index');
 require PUN_ROOT.'header.php';
