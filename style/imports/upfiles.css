@@ -30,8 +30,9 @@ ul#upf-list {
 }
 
 .upf-file img {
-	height: 100%;
+	max-height: 100%;
 	border: none;
+	max-width: 100%;
 }
 
 #upf-list .upf-name {
