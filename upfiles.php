@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2011-2016 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2011-2017 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -529,6 +529,8 @@ FluxBB.upfile = (function (doc, win) {
 
 		del : function (ref) {
 			if (ref.className) return !1;
+			if (!confirm('<?php echo addslashes($lang_up['delete file']) ?>')) return !1;
+
 			ref.className = 'upf-loading';
 			
 			var req = cr_req();

@@ -63,6 +63,7 @@ $lang_up = array(
 'o'									=> 'Value in B',
 'texte'							=> 'Your text here',
 'delete'						=> 'Delete',
+'delete file'					=> 'Do you want to delete this file?',
 'insert'						=> 'Insert',
 'insert_thumb'			=> 'Insert thumbnail',
 'update_thumb'			=> 'Update thumbs',

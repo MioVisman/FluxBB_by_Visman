@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2011-2016 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2011-2017 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2007 BN (bnmaster@la-bnbox.info)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
@@ -12,7 +12,7 @@ if (!defined('PUN'))
 
 // Tell admin_loader.php that this is indeed a plugin and that it is loaded
 define('PUN_PLUGIN_LOADED', 1);
-define('PLUGIN_VERSION', '2.0.4');
+define('PLUGIN_VERSION', '2.1.0');
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin='.$plugin));
 define('PLUGIN_EXTS', 'jpg,jpeg,png,gif,mp3,zip,rar,7z');
 define('PLUGIN_NF', 25);
