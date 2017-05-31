@@ -75,12 +75,6 @@ class DBLayer
 	}
 	
 
-	function DBLayer($db_host, $db_username, $db_password, $db_name, $db_prefix, $p_connect)
-	{
-		$this->__construct($db_host, $db_username, $db_password, $db_name, $db_prefix, $p_connect);
-	}
-
-
 	function start_transaction()
 	{
 		++$this->in_transaction;
