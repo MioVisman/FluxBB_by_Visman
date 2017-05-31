@@ -76,14 +76,14 @@ class DBLayer
 	function query($sql, $unbuffered = false)
 	{
 		if (defined('PUN_SHOW_QUERIES'))
-			$q_start = get_microtime();
+			$q_start = microtime(true);
 
 		$this->query_result = @mysqli_query($this->link_id, $sql);
 
 		if ($this->query_result)
 		{
 			if (defined('PUN_SHOW_QUERIES'))
-				$this->saved_queries[] = array($sql, sprintf('%.5f', get_microtime() - $q_start));
+				$this->saved_queries[] = array($sql, sprintf('%.5f', microtime(true) - $q_start));
 
 			++$this->num_queries;
 
