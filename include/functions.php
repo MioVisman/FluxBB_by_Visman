@@ -1856,10 +1856,7 @@ function remove_bad_characters($array)
 		return array_map('remove_bad_characters', $array);
 
 	// Strip out any invalid characters
-	if (version_compare(PHP_VERSION, '5.4.0', '>='))
-		$array = htmlspecialchars_decode(htmlspecialchars((string) $array, ENT_SUBSTITUTE, 'UTF-8')); // Visman
-	else
-		$array = utf8_bad_strip($array);
+	$array = htmlspecialchars_decode(htmlspecialchars((string) $array, ENT_SUBSTITUTE, 'UTF-8')); // Visman
 
 	// Remove control characters
 	$array = preg_replace('%[\x00-\x08\x0b-\x0c\x0e-\x1f]%', '', $array);
