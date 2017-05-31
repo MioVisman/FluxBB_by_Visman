@@ -145,6 +145,9 @@ else if ($footer_style == 'viewtopic')
 </div>
 <?php
 
+// End the transaction
+$db->end_transaction();
+
 // Display debug info (if enabled/defined)
 if (defined('PUN_DEBUG'))
 {
@@ -164,10 +167,6 @@ if (defined('PUN_DEBUG'))
 
 	echo ' ]</p>'."\n";
 }
-
-
-// End the transaction
-$db->end_transaction();
 
 // Display executed queries (if enabled)
 if (defined('PUN_SHOW_QUERIES'))
