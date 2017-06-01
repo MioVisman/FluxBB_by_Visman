@@ -1101,7 +1101,7 @@ function random_key($len, $readable = false, $hash = false)
 		return substr(bin2hex($key), 0, $len);
 	else if ($readable)
 	{
-		$chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+		$chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
 
 		$result = '';
 		for ($i = 0; $i < $len; ++$i)
