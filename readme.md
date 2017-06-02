@@ -11,7 +11,7 @@ of the other forums have whilst not sacrificing essential functionality or usabi
 
 * A webserver
 * PHP 5.4.0 or later
-* A database such as MySQL 4.1.2 or later, PostgreSQL 7.0 or later, or SQLite 2
+* A database such as MySQL 5.0.7 or later, PostgreSQL 7.0 or later, or SQLite 2
 
 ## Recommendations
 
