@@ -52,8 +52,6 @@ class DBLayer
 			if (!$this->set_names('utf8'))
 				error('Unable to set the character set.', __FILE__, __LINE__);
 		}
-
-		return $this->link_id;
 	}
 	
 	
