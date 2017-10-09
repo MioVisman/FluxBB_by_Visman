@@ -2315,4 +2315,3 @@ function sf_crumbs($id)
 
 	return $str;
 }
-
