@@ -100,6 +100,7 @@ function check_cookie(&$pun_user)
 					case 'mysql_innodb':
 					case 'mysqli_innodb':
 					case 'sqlite':
+					case 'sqlite3':
 						witt_query('REPLACE INTO '.$db->prefix.'online (user_id, ident, logged:?comma?::?column?:) VALUES('.$pun_user['id'].', \''.$db->escape($pun_user['username']).'\', '.$pun_user['logged'].':?comma?::?value?:)'); // MOD Кто в этой теме - Visman
 						break;
 
@@ -300,10 +301,11 @@ function set_default_user()
 			case 'mysql_innodb':
 			case 'mysqli_innodb':
 			case 'sqlite':
+			case 'sqlite3':
 				witt_query('REPLACE INTO '.$db->prefix.'online (user_id, ident, logged:?comma?::?column?:) VALUES(1, \''.$db->escape($remote_addr).'\', '.$pun_user['logged'].':?comma?::?value?:)'); // MOD Кто в этой теме - Visman
 				break;
 
-			default:
+                        default:
 				witt_query('INSERT INTO '.$db->prefix.'online (user_id, ident, logged:?comma?::?column?:) SELECT 1, \''.$db->escape($remote_addr).'\', '.$pun_user['logged'].':?comma?::?value?: WHERE NOT EXISTS (SELECT 1 FROM '.$db->prefix.'online WHERE ident=\''.$db->escape($remote_addr).'\')'); // MOD Кто в этой теме - Visman
 				break;
 		}
@@ -2313,3 +2315,4 @@ function sf_crumbs($id)
 
 	return $str;
 }
+
