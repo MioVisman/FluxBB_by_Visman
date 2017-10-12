@@ -40,7 +40,7 @@ $lang_admin_bans = array(
 'Submit search'				=>	'Submit search',
 
 'E-mail label'				=>	'Email',
-'E-mail help'				=>	'The email or email domain you wish to ban (e.g. someone@somewhere.com or somewhere.com). See "Allow banned email addresses" in Permissions for more info.',
+'E-mail help'				=>	'The email or email domain you wish to ban (e.g. someone@somewhere.com, somewhere.com, .com or com). See "Allow banned email addresses" in Permissions for more info.',
 'IP label'					=>	'IP address/IP-ranges',
 'IP help'					=>	'The IP address or IP-ranges you wish to ban (e.g. 150.11.110.1 or 150.11.110). Separate addresses with spaces. If an IP is entered already it is the last known IP of this user in the database.',
 'IP help link'				=>	'Click %s to see IP statistics for this user.',

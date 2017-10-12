@@ -37,10 +37,25 @@ function is_banned_email($email)
 
 	foreach ($pun_bans as $cur_ban)
 	{
-		if ($cur_ban['email'] != '' &&
-			($email == $cur_ban['email'] ||
-			(strpos($cur_ban['email'], '@') === false && stristr($email, '@'.$cur_ban['email']))))
+		if (empty($cur_ban['email'])) {
+			continue;
+		}
+
+		if (false === strpos($cur_ban['email'], '@')) {
+			$len = strlen($cur_ban['email']);
+			if ($cur_ban['email'][0] == '.') {
+				if (substr($email, -$len) == $cur_ban['email']) {
+					return true;
+				}
+			} else {
+				$tmp = substr($email, -1-$len);
+				if ($tmp == '.'.$cur_ban['email'] || $tmp == '@'.$cur_ban['email']) {
+					return true;
+				}
+			}
+		} else if ($email == $cur_ban['email']) {
 			return true;
+		}
 	}
 
 	return false;
