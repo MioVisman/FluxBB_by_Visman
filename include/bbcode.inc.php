@@ -64,4 +64,3 @@ FluxBB.post.init();';
 $cur_index += 19;
 
 unset($smil_g, $smil_i, $smil_t);
-
