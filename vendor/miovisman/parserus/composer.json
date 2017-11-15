@@ -1,0 +1,21 @@
+{
+    "name": "miovisman/parserus",
+    "description": "BBCode parser.",
+    "keywords": ["bbcode", "parser"],
+    "homepage": "https://github.com/MioVisman/Parserus",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Visman",
+            "email": "mio.visman@yandex.ru",
+            "homepage": "https://github.com/MioVisman"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0"
+    },
+    "autoload": {
+        "psr-0": {"Parserus": ""}
+    }
+}

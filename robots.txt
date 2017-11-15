@@ -3,6 +3,7 @@ Disallow: /a
 Disallow: /d
 Disallow: /c
 Disallow: /e
+Disallow: /inc
 Disallow: /j
 Disallow: /l
 Disallow: /m
@@ -10,6 +11,7 @@ Disallow: /p
 Disallow: /r
 Disallow: /s
 Disallow: /u
+Disallow: /ve
 Disallow: /*pid=
 
 User-agent: Yandex
@@ -17,6 +19,7 @@ Disallow: /a
 Disallow: /d
 Disallow: /c
 Disallow: /e
+Disallow: /inc
 Disallow: /j
 Disallow: /l
 Disallow: /m
@@ -24,6 +27,7 @@ Disallow: /p
 Disallow: /r
 Disallow: /s
 Disallow: /u
+Disallow: /ve
 Disallow: /*pid=
 Crawl-delay: 5
 Clean-param: search_hl

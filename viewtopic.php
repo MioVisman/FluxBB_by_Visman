@@ -317,8 +317,7 @@ require PUN_ROOT.'header.php';
 
 <?php
 
-
-require PUN_ROOT.'include/parser.php';
+$parser = new FbV\Parser($pun_config, $pun_user, $lang_common);
 
 $post_count = 0; // Keep track of post numbers
 
@@ -343,7 +342,7 @@ if ($stick_fp_flag)
 $result = $db->query('SELECT id, message, poster, posted FROM '.$db->prefix.'warnings WHERE id IN ('.implode(',', $post_ids).')', true) or error('Unable to fetch warnings', __FILE__, __LINE__, $db->error());
 $warnings = array();
 while ($warning = $db->fetch_assoc($result))
-	$warnings[$warning['id']] = '<cite>'.format_time($warning['posted']).' '.pun_htmlspecialchars($warning['poster']).' '.$lang_common['wrote'].'</cite>'.parse_message($warning['message'], false).'';
+	$warnings[$warning['id']] = '<cite>'.format_time($warning['posted']).' '.pun_htmlspecialchars($warning['poster']).' '.$lang_common['wrote'].'</cite>'.$parser->parseMessage($warning['message'], false).'';
 // MOD warnings - Visman
 
 // Poll MOD - Visman
@@ -525,7 +524,7 @@ while ($cur_post = $db->fetch_assoc($result))
 	}
 
 	// Perform the main parsing of the message (BBCode, smilies, censor words etc)
-	$cur_post['message'] = parse_message($cur_post['message'], $cur_post['hide_smilies']);
+	$cur_post['message'] = $parser->parseMessage($cur_post['message'], (bool) $cur_post['hide_smilies']);
 
 	// Do signature parsing/caching
 	if ($pun_config['o_signatures'] == '1' && $cur_post['signature'] != '' && $pun_user['show_sig'] != '0')
@@ -534,7 +533,7 @@ while ($cur_post = $db->fetch_assoc($result))
 			$signature = $signature_cache[$cur_post['poster_id']];
 		else
 		{
-			$signature = parse_signature($cur_post['signature']);
+			$signature = $parser->parseSignature($cur_post['signature']);
 			$signature_cache[$cur_post['poster_id']] = $signature;
 		}
 	}

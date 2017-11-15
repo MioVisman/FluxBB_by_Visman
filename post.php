@@ -149,8 +149,9 @@ if (isset($_POST['form_sent']))
 	// Validate BBCode syntax
 	if ($pun_config['p_message_bbcode'] == '1')
 	{
-		require PUN_ROOT.'include/parser.php';
-		$message = preparse_bbcode($message, $errors);
+		$parser = new FbV\Parser($pun_config, $pun_user, $lang_common);
+		$message = $parser->prepare($message);
+		$errors = $parser->getErrors($lang_common['errors'], $errors);
 	}
 
 	if (empty($errors))
@@ -646,8 +647,10 @@ if (!empty($errors))
 }
 else if (isset($_POST['preview']))
 {
-	require_once PUN_ROOT.'include/parser.php';
-	$preview_message = parse_message($message, $hide_smilies);
+	if (! isset($parser)) {
+		$parser = new FbV\Parser($pun_config, $pun_user, $lang_common);
+	}
+	$preview_message = $parser->parseMessage($message, (bool) $hide_smilies);
 
 ?>
 <div id="postpreview" class="blockpost">
@@ -781,7 +784,10 @@ require PUN_ROOT.'include/bbcode.inc.php';
 // Check to see if the topic review is to be displayed
 if ($tid && $pun_config['o_topic_review'] != '0')
 {
-	require_once PUN_ROOT.'include/parser.php';
+	if (! isset($parser)) {
+		$parser = new FbV\Parser($pun_config, $pun_user, $lang_common);
+	}
+
 
 	$result = $db->query('SELECT poster, message, hide_smilies, posted FROM '.$db->prefix.'posts WHERE topic_id='.$tid.' ORDER BY id DESC LIMIT '.$pun_config['o_topic_review']) or error('Unable to fetch topic review', __FILE__, __LINE__, $db->error());
 
@@ -798,7 +804,7 @@ if ($tid && $pun_config['o_topic_review'] != '0')
 	{
 		$post_count++;
 
-		$cur_post['message'] = parse_message($cur_post['message'], $cur_post['hide_smilies']);
+		$cur_post['message'] = $parser->parseMessage($cur_post['message'], (bool) $cur_post['hide_smilies']);
 
 ?>
 	<div class="blockpost">

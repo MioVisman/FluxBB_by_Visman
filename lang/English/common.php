@@ -87,16 +87,6 @@ $lang_common = array(
 'Banned'							=>	'Banned',
 'Guest'								=>	'Guest',
 
-// Stuff for include/parser.php
-'BBCode error no opening tag'		=>	'[/%1$s] was found without a matching [%1$s]',
-'BBCode error invalid nesting'		=>	'[%1$s] was opened within [%2$s], this is not allowed',
-'BBCode error invalid self-nesting'	=>	'[%s] was opened within itself, this is not allowed',
-'BBCode error no closing tag'		=>	'[%1$s] was found without a matching [/%1$s]',
-'BBCode error empty attribute'		=>	'[%s] tag had an empty attribute section',
-'BBCode error tag not allowed'		=>	'You are not allowed to use [%s] tags',
-'BBCode error tag url not allowed'	=>	'You are not allowed to post links',
-'BBCode list size error'			=>	'Your list was too long to parse, please make it smaller!',
-
 // Stuff for the navigator (top of every page)
 'Index'								=>	'Index',
 'User list'							=>	'User list',
@@ -183,4 +173,22 @@ $lang_common = array(
 'Size unit PiB'						=>	'%s PiB',
 'Size unit EiB'						=>	'%s EiB',
 
+'errors' => [
+	1 => '[%1$s] is in the black list',
+	2 => '[%1$s] is absent in the white list',
+	3 => '[%1$s] can\'t be opened in the [%2$s]',
+	4 => '[/%1$s] was found without a matching [%1$s]',
+	5 => '[/%1$s] is found for single [%1$s]',
+	6 => 'There are no attributes in [%1$s]',
+	7 => 'Primary attribute is forbidden in [%1$s=...]',
+	8 => 'Secondary attributes are forbidden in [%1$s ...]',
+	9 => 'The attribute \'%2$s\' doesn\'t correspond to a template in the [%1$s]',
+	10 => '[%1$s ...] contains unknown secondary attribute \'%2$s\'',
+	11 => 'The body of [%1$s] doesn\'t correspond to a template',
+	12 => '[%1$s] was opened within itself, this is not allowed',
+	13 => 'In the [%1$s] is absent mandatory attribute \'%2$s\'',
+	14 => 'All tags are empty',
+	15 => 'The depth of the tag tree is greater than %1$s',
+	16 => '[%1$s] is enclosed in itself more than %2$s times',
+],
 );

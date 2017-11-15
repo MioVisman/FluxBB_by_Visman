@@ -112,7 +112,7 @@ $lang_admin_options = array(
 'Indent label'						=>	'Indent size',
 'Indent help'						=>	'If set to 8, a regular tab will be used when displaying text within the [code][/code] tag. Otherwise this many spaces will be used to indent the text.',
 'Quote depth label'					=>	'Maximum [quote] depth',
-'Quote depth help'					=>	'The maximum times a [quote] tag can go inside other [quote] tags, any tags deeper than this will be discarded.',
+'Quote depth help'					=>	'The maximum times a [quote] tag can go inside other [quote] tags.',
 
 // Features section
 'Features subhead'					=>	'Features',

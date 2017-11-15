@@ -166,7 +166,7 @@ generate_pmsn_menu($pmsn_modul);
 		</div>
 <?php
 
-require PUN_ROOT.'include/parser.php';
+$parser = new FbV\Parser($pun_config, $pun_user, $lang_common);
 
 $post_count = 0; // Keep track of post numbers
 
@@ -294,14 +294,14 @@ while ($cur_post = $db->fetch_assoc($result))
 				$signature = $signature_cache[$cur_post['poster_id']];
 			else
 			{
-				$signature = parse_signature($cur_post['signature']);
+				$signature = $parser->parseSignature($cur_post['signature']);
 				$signature_cache[$cur_post['poster_id']] = $signature;
 			}
 		}
 	}
 	
 	// Perform the main parsing of the message (BBCode, smilies, censor words etc)
-	$cur_post['message'] = parse_message($cur_post['message'], $cur_post['hide_smilies']);
+	$cur_post['message'] = $parser->parseMessage($cur_post['message'], (bool) $cur_post['hide_smilies']);
 	
 ?>
 		<div id="p<?php echo $cur_post['id'] ?>" class="blockpost<?php echo ($post_count % 2 == 0) ? ' roweven' : ' rowodd' ?><?php if ($post_count == 1) echo ' blockpost1'; ?>">

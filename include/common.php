@@ -52,6 +52,8 @@ if (!defined('PUN'))
 	exit;
 }
 
+require PUN_ROOT.'vendor/autoload.php';
+
 // Load the functions script
 require PUN_ROOT.'include/functions.php';
 

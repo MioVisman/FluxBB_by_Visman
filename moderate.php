@@ -505,7 +505,7 @@ if (isset($_GET['tid']))
 <form method="post" action="moderate.php?fid=<?php echo $fid ?>&amp;tid=<?php echo $tid ?>">
 <?php
 
-	require PUN_ROOT.'include/parser.php';
+	$parser = new FbV\Parser($pun_config, $pun_user, $lang_common);
 
 	$post_count = 0; // Keep track of post numbers
 
@@ -546,7 +546,7 @@ if (isset($_GET['tid']))
 		}
 
 		// Perform the main parsing of the message (BBCode, smilies, censor words etc)
-		$cur_post['message'] = parse_message($cur_post['message'], $cur_post['hide_smilies']);
+		$cur_post['message'] = $parser->parseMessage($cur_post['message'], (bool) $cur_post['hide_smilies']);
 
 ?>
 

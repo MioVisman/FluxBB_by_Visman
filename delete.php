@@ -96,8 +96,8 @@ $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_de
 define ('PUN_ACTIVE_PAGE', 'index');
 require PUN_ROOT.'header.php';
 
-require PUN_ROOT.'include/parser.php';
-$cur_post['message'] = parse_message($cur_post['message'], $cur_post['hide_smilies']);
+$parser = new FbV\Parser($pun_config, $pun_user, $lang_common);
+$cur_post['message'] = $parser->parseMessage($cur_post['message'], (bool) $cur_post['hide_smilies']);
 
 ?>
 <div class="linkst">

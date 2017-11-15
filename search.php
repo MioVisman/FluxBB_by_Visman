@@ -646,7 +646,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 		{
 			require PUN_ROOT.'lang/'.$pun_user['language'].'/topic.php';
 
-			require PUN_ROOT.'include/parser.php';
+			$parser = new FbV\Parser($pun_config, $pun_user, $lang_common);
 
 			$post_count = 0;
 		}
@@ -692,7 +692,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 				if ($pun_config['o_censoring'] == '1')
 					$cur_search['message'] = censor_words($cur_search['message']);
 
-				$message = parse_message($cur_search['message'], $cur_search['hide_smilies']);
+				$message = $parser->parseMessage($cur_search['message'], (bool) $cur_search['hide_smilies']);
 				$pposter = pun_htmlspecialchars($cur_search['pposter']);
 
 				if ($cur_search['poster_id'] > 1)
@@ -705,7 +705,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 
 				// MOD warnings - Visman
 				if (!empty($cur_search['wposter']))
-					$warnings = '<cite>'.format_time($cur_search['wposted']).' '.pun_htmlspecialchars($cur_search['wposter']).' '.$lang_common['wrote'].'</cite>'.parse_message($cur_search['wmessage'], false);
+					$warnings = '<cite>'.format_time($cur_search['wposted']).' '.pun_htmlspecialchars($cur_search['wposter']).' '.$lang_common['wrote'].'</cite>'.$parser->parseMessage($cur_search['wmessage'], false);
 
 
 ?>

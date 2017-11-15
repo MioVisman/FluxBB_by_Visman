@@ -181,7 +181,10 @@ ob_end_clean();
 // Close the db connection (and free up any result data)
 $db->close();
 
-if (isset($page_js))
+if (isset($parser)) {
+	$page_js = $parser->mergeJs($page_js);
+}
+if (! empty($page_js))
 	$tpl_main = str_replace('<!-- forum_javascript -->', generation_js($page_js), $tpl_main);
 
 // Spit out the page

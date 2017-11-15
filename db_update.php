@@ -58,6 +58,8 @@ if (!defined('PUN'))
 if (!defined('PUN_DEBUG'))
 	define('PUN_DEBUG', 1);
 
+require PUN_ROOT.'vendor/autoload.php';
+
 // Load the functions script
 require PUN_ROOT.'include/functions.php';
 
@@ -931,7 +933,6 @@ if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_v
 // ВНИМАНИЕ!!! ATTENTION!!!
 // Если на вашем форуме используются другие смайлы,
 // то перед обновлением замените этот массив на свой!
-// Брать из файла parser.php
 	$smilies = array(
 		':)' => 'smile.png',
 		'=)' => 'smile.png',
@@ -2234,7 +2235,7 @@ foreach ($errors[$id] as $cur_error)
 		if (isset($pun_config['o_parser_revision']) && $pun_config['o_parser_revision'] >= UPDATE_TO_PARSER_REVISION)
 			break;
 
-		require PUN_ROOT.'include/parser.php';
+		$parser = new FbV\Parser($pun_config, $pun_user, $lang_common);
 
 		// Fetch posts to process this cycle
 		$result = $db->query('SELECT id, message FROM '.$db->prefix.'posts WHERE id > '.$start_at.' ORDER BY id ASC LIMIT '.PER_PAGE) or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());
@@ -2250,7 +2251,7 @@ foreach ($errors[$id] as $cur_error)
 			$cur_item['message'] = str_replace('[list]','[list=*]',$cur_item['message']);
 			$cur_item['message'] = str_replace('[listo]','[list=1]',$cur_item['message']);
 			$cur_item['message'] = str_replace('[/listo]','[/list]',$cur_item['message']);
-			$db->query('UPDATE '.$db->prefix.'posts SET message = \''.$db->escape(preparse_bbcode($cur_item['message'], $temp)).'\' WHERE id = '.$cur_item['id']) or error('Unable to update post', __FILE__, __LINE__, $db->error());
+			$db->query('UPDATE '.$db->prefix.'posts SET message = \''.$db->escape($parser->prepare($cur_item['message'])).'\' WHERE id = '.$cur_item['id']) or error('Unable to update post', __FILE__, __LINE__, $db->error());
 
 			$end_at = $cur_item['id'];
 		}

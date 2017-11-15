@@ -1,0 +1,22 @@
+{
+    "name": "miovisman/fluxbb_by_visman",
+    "description": "My modification of FluxBB",
+    "type": "project",
+    "license": "GPL 2.0",
+    "authors": [
+        {
+            "name": "Visman",
+            "email": "mio.visman@yandex.ru",
+            "homepage": "https://github.com/MioVisman"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "FbV\\": "include/class/"
+        }
+    },
+    "require": {
+        "php": ">=5.4.0",
+        "miovisman/parserus": "dev-master"
+    }
+}

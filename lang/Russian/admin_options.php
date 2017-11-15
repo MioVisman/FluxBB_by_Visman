@@ -112,7 +112,7 @@ $lang_admin_options = array(
 'Indent label'						=>	'Размер отступа',
 'Indent help'						=>	'Если поставить 8, отступы внутри тегов [code][/code] будут делаться табуляцими. Иначе отступы будут отбиваться пробелами.',
 'Quote depth label'					=>	'Макс. глубина [quote]',
-'Quote depth help'					=>	'Сколько раз тег [quote] может вкладываться в другие [quote], все теги свыше указанного порога будут игнорироваться.',
+'Quote depth help'					=>	'Сколько раз тег [quote] может вкладываться в другие [quote].',
 
 // Features section
 'Features subhead'					=>	'Тонкости',

@@ -78,8 +78,9 @@ if (isset($_POST['csrf_hash']))
 	// Validate BBCode syntax
 	if ($pun_config['p_message_bbcode'] == '1')
 	{
-		require PUN_ROOT.'include/parser.php';
-		$message = preparse_bbcode($message, $errors);
+		$parser = new FbV\Parser($pun_config, $pun_user, $lang_common);
+		$message = $parser->prepare($message);
+		$errors = $parser->getErrors($lang_common['errors'], $errors);
 	}
 
 	if ($message == '')
@@ -154,8 +155,10 @@ if (!empty($errors))
 }
 else if (isset($_POST['preview']))
 {
-	require_once PUN_ROOT.'include/parser.php';
-	$preview_message = parse_message($message, $hide_smilies);
+	if (! isset($parser)) {
+		$parser = new FbV\Parser($pun_config, $pun_user, $lang_common);
+	}
+	$preview_message = $parser->parseMessage($message, (bool) $hide_smilies);
 ?>
 
 	<div class="block">

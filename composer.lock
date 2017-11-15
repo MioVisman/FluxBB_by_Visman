@@ -1,0 +1,65 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "hash": "36463b37e470c544c7273c5122412404",
+    "content-hash": "0df696db4d44bc13d80573fda270eb39",
+    "packages": [
+        {
+            "name": "miovisman/parserus",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/MioVisman/Parserus.git",
+                "reference": "e5672b86dcafe37ddebf3ff96acdca967686cea6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/MioVisman/Parserus/zipball/e5672b86dcafe37ddebf3ff96acdca967686cea6",
+                "reference": "e5672b86dcafe37ddebf3ff96acdca967686cea6",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Parserus": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Visman",
+                    "email": "mio.visman@yandex.ru",
+                    "homepage": "https://github.com/MioVisman"
+                }
+            ],
+            "description": "BBCode parser.",
+            "homepage": "https://github.com/MioVisman/Parserus",
+            "keywords": [
+                "bbcode",
+                "parser"
+            ],
+            "time": "2017-11-15 08:46:49"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "miovisman/parserus": 20
+    },
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=5.4.0"
+    },
+    "platform-dev": []
+}

@@ -914,12 +914,11 @@ else if (isset($_POST['form_sent']))
 				// Validate BBCode syntax
 				if ($pun_config['p_sig_bbcode'] == '1')
 				{
-					require PUN_ROOT.'include/parser.php';
+					$parser = new FbV\Parser($pun_config, $pun_user, $lang_common);
 
-					$errors = array();
+					$form['signature'] = $parser->prepare($form['signature'], true);
 
-					$form['signature'] = preparse_bbcode($form['signature'], $errors, true);
-
+					$errors = $parser->getErrors($lang_common['errors']);
 					if(count($errors) > 0)
 						message('<ul><li>'.implode('</li><li>', $errors).'</li></ul>');
 				}
@@ -1088,8 +1087,10 @@ $last_post = format_time($user['last_post']);
 
 if ($user['signature'] != '')
 {
-	require PUN_ROOT.'include/parser.php';
-	$parsed_signature = parse_signature($user['signature']);
+	if (! isset($parser)) {
+		$parser = new FbV\Parser($pun_config, $pun_user, $lang_common);
+	}
+	$parsed_signature =  $parser->parseSignature($user['signature']);
 }
 
 
