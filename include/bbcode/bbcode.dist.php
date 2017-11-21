@@ -428,7 +428,7 @@ return [
             }
 
             if ($url === $body) {
-                $url = htmlspecialchars_decode($url, ENT_QUOTES);
+                $url = htmlspecialchars_decode($url, ENT_QUOTES | ENT_XHTML);
                 $url = mb_strlen($url, 'UTF-8') > 55 ? mb_substr($url, 0, 39, 'UTF-8') . ' … ' . mb_substr($url, -10, null, 'UTF-8') : $url;
                 $body = $parser->e($url);
             }
