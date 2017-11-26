@@ -83,18 +83,18 @@ if ($db_type == 'mysql' || $db_type == 'mysqli' || $db_type == 'mysql_innodb' ||
 
 
 // Check for the existence of various PHP opcode caches/optimizers
-if (function_exists('mmcache'))
-	$php_accelerator = '<a href="http://'.$lang_admin_index['Turck MMCache link'].'">'.$lang_admin_index['Turck MMCache'].'</a>';
-else if (isset($_PHPA))
-	$php_accelerator = '<a href="http://'.$lang_admin_index['ionCube PHP Accelerator link'].'">'.$lang_admin_index['ionCube PHP Accelerator'].'</a>';
-else if (ini_get('apc.enabled'))
-	$php_accelerator ='<a href="http://'.$lang_admin_index['Alternative PHP Cache (APC) link'].'">'.$lang_admin_index['Alternative PHP Cache (APC)'].'</a>';
-else if (ini_get('zend_optimizer.optimization_level'))
-	$php_accelerator = '<a href="http://'.$lang_admin_index['Zend Optimizer link'].'">'.$lang_admin_index['Zend Optimizer'].'</a>';
+if (ini_get('opcache.enable') && function_exists('opcache_invalidate'))
+	$php_accelerator = '<a href="https://secure.php.net/opcache/">Zend OPcache</a>';
+elseif (ini_get('wincache.fcenabled'))
+	$php_accelerator = '<a href="https://secure.php.net/wincache/">Windows Cache for PHP</a>';
+elseif (ini_get('apc.enabled') && function_exists('apc_delete_file'))
+	$php_accelerator = '<a href="https://secure.php.net/apc/">Alternative PHP Cache (APC)</a>';
+elseif (isset($_PHPA))
+	$php_accelerator = '<a href="https://www.ioncube.com/">ionCube PHP Accelerator</a>';
 else if (ini_get('eaccelerator.enable'))
-	$php_accelerator = '<a href="http://'.$lang_admin_index['eAccelerator link'].'">'.$lang_admin_index['eAccelerator'].'</a>';
-else if (ini_get('xcache.cacher'))
-	$php_accelerator = '<a href="http://'.$lang_admin_index['XCache link'].'">'.$lang_admin_index['XCache'].'</a>';
+	$php_accelerator = '<a href="http://eaccelerator.net/">eAccelerator</a>';
+elseif (ini_get('xcache.cacher'))
+	$php_accelerator = '<a href="https://xcache.lighttpd.net/">XCache</a>';
 else
 	$php_accelerator = $lang_admin_index['NA'];
 
