@@ -1154,10 +1154,10 @@ function csrf_hash($script = false, $use_ip = true, $user = false)
 	$ip = $use_ip ? get_remote_address() : '';
 	$user = is_array($user) ? $user : $pun_user;
 
-	$key = $script.$ip.$user['id'];
+	$key = $script.$ip.$user['id'].get_current_protocol();
 
 	if (!isset($arr[$key]))
-		$arr[$key] = pun_hash(PUN_ROOT.$script.$user['id'].pun_hash($ip.$user['password'].$pun_config['o_crypto_pas']));
+		$arr[$key] = pun_hash(PUN_ROOT.$script.$user['id'].pun_hash($ip.$user['password'].$pun_config['o_crypto_pas'].get_current_protocol()));
 
 	return $arr[$key];
 }
