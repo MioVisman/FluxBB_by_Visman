@@ -1213,9 +1213,14 @@ if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_v
 } // rev.72
 if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 74)
 {
-		$db->drop_field('pms_new_block', 'bl_user') or error('Unable to drop bl_user field', __FILE__, __LINE__, $db->error());
-		$db->drop_field('pms_new_posts', 'post_seen') or error('Unable to drop post_seen field', __FILE__, __LINE__, $db->error());
+	$db->drop_field('pms_new_block', 'bl_user') or error('Unable to drop bl_user field', __FILE__, __LINE__, $db->error());
+	$db->drop_field('pms_new_posts', 'post_seen') or error('Unable to drop post_seen field', __FILE__, __LINE__, $db->error());
 } // rev.74
+if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 78)
+{
+	$db->alter_field('users', 'password', 'VARCHAR(255)', false, '') or error('Unable to alter password field', __FILE__, __LINE__, $db->error());
+	$db->alter_field('users', 'activate_string', 'VARCHAR(255)', true) or error('Unable to alter activate_string field', __FILE__, __LINE__, $db->error());
+} // rev.78
 // Visman
 
 		// If we don't need to update the database, skip this stage
@@ -1228,7 +1233,7 @@ if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_v
 		$db->alter_field('users', 'email', 'VARCHAR(80)', false, '') or error('Unable to alter email field', __FILE__, __LINE__, $db->error());
 		$db->alter_field('users', 'jabber', 'VARCHAR(80)', true) or error('Unable to alter jabber field', __FILE__, __LINE__, $db->error());
 		$db->alter_field('users', 'msn', 'VARCHAR(80)', true) or error('Unable to alter msn field', __FILE__, __LINE__, $db->error());
-		$db->alter_field('users', 'activate_string', 'VARCHAR(80)', true) or error('Unable to alter activate_string field', __FILE__, __LINE__, $db->error());
+		$db->alter_field('users', 'activate_string', 'VARCHAR(255)', true) or error('Unable to alter activate_string field', __FILE__, __LINE__, $db->error());
 
 		// Make all IP fields VARCHAR(39) to support IPv6
 		$db->alter_field('posts', 'poster_ip', 'VARCHAR(39)', true) or error('Unable to alter poster_ip field', __FILE__, __LINE__, $db->error());

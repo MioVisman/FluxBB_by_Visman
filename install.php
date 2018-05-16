@@ -1551,7 +1551,7 @@ else
 				'default'		=> '\'\''
 			),
 			'password'			=> array(
-				'datatype'		=> 'VARCHAR(40)',
+				'datatype'		=> 'VARCHAR(255)',
 				'allow_null'	=> false,
 				'default'		=> '\'\''
 			),
@@ -1719,7 +1719,7 @@ else
 				'allow_null'	=> true
 			),
 			'activate_string'	=> array(
-				'datatype'		=> 'VARCHAR(80)',
+				'datatype'		=> 'VARCHAR(255)',
 				'allow_null'	=> true
 			),
 			'activate_key'		=> array(
