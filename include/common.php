@@ -15,7 +15,7 @@ $pun_start = empty($_SERVER['REQUEST_TIME_FLOAT']) ? microtime(true) : (float) $
 // Define the version and database revision that this code was written for
 define('FORUM_VERSION', '1.5.10');
 
-define('FORUM_VER_REVISION', 77);	// номер сборки - Visman
+define('FORUM_VER_REVISION', 78);	// номер сборки - Visman
 
 $page_js = array();
 
