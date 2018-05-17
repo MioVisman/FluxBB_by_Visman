@@ -31,7 +31,7 @@ function check_cookie(&$pun_user)
 	if (isset($cookie) && $cookie['user_id'] > 1 && $cookie['expiration_time'] > $now)
 	{
 		// If the cookie has been tampered with
-		$is_authorized = pun_hash_equals(forum_hmac($cookie['user_id'].'|'.$cookie['expiration_time'], $cookie_seed.'_cookie_hash'), $cookie['cookie_hash']);
+		$is_authorized = hash_equals(forum_hmac($cookie['user_id'].'|'.$cookie['expiration_time'], $cookie_seed.'_cookie_hash'), $cookie['cookie_hash']);
 		if (!$is_authorized)
 		{
 			$expire = $now + 31536000; // The cookie expires after a year
@@ -47,7 +47,7 @@ function check_cookie(&$pun_user)
 		$pun_user = $db->fetch_assoc($result);
 
 		// If user authorisation failed
-		$is_authorized = pun_hash_equals(forum_hmac($pun_user['password'], $cookie_seed.'_password_hash'), $cookie['password_hash']);
+		$is_authorized = hash_equals(forum_hmac($pun_user['password'], $cookie_seed.'_password_hash'), $cookie['password_hash']);
 		if (!isset($pun_user['id']) || !$is_authorized)
 		{
 			$expire = $now + 31536000; // The cookie expires after a year
@@ -167,8 +167,8 @@ function authenticate_user($user, $password, $password_is_hash = false)
 	$result = $db->query('SELECT u.*, g.*, o.logged, o.idle FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'groups AS g ON g.g_id=u.group_id LEFT JOIN '.$db->prefix.'online AS o ON o.user_id=u.id WHERE '.(is_int($user) ? 'u.id='.intval($user) : 'u.username=\''.$db->escape($user).'\'')) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
 	$pun_user = $db->fetch_assoc($result);
 
-	$is_password_authorized = pun_hash_equals($password, $pun_user['password']);
-	$is_hash_authorized = pun_hash_equals(pun_hash($password), $pun_user['password']);
+	$is_password_authorized = hash_equals($password, $pun_user['password']);
+	$is_hash_authorized = hash_equals(pun_hash($password), $pun_user['password']);
 
 	if (!isset($pun_user['id']) ||
 		($password_is_hash && !$is_password_authorized ||
@@ -274,7 +274,7 @@ function set_default_user()
 	global $db, $db_type, $pun_user, $pun_config, $cookie_name, $languages;
 
 	$remote_addr = get_remote_address();
-	
+
 	// MOD определения ботов - Visman
 	if (!defined('FORUM_BOT_FUNCTIONS_LOADED'))
 		include PUN_ROOT.'include/bots.inc.php';
@@ -788,7 +788,7 @@ function delete_topic($topic_id, $flag_f = 1) // not sum - Visman
 				$db->query('UPDATE '.$db->prefix.'users SET num_posts = num_posts-'.$row[0].' WHERE id='.$row[1]) or error('Unable to update posters messages count', __FILE__, __LINE__, $db->error());
 		}
 	}
-	
+
 	// Create a list of the post IDs in this topic
 	$post_ids = '';
 	$result = $db->query('SELECT id FROM '.$db->prefix.'posts WHERE topic_id='.$topic_id) or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());
@@ -1136,11 +1136,11 @@ function confirm_referrer($script, $error_msg = false, $use_ip = true)
 	$hash = '';
 
 	if (isset($_POST['csrf_hash']))
-		$hash = $_POST['csrf_hash'];
+		$hash = (string) $_POST['csrf_hash'];
 	else if (isset($_GET['csrf_hash']))
-		$hash = $_GET['csrf_hash'];
+		$hash = (string) $_GET['csrf_hash'];
 
-	if (empty($hash) || !pun_hash_equals(csrf_hash($script, $use_ip), $hash))
+	if (empty($hash) || !hash_equals(csrf_hash($script, $use_ip), $hash))
 		confirm_message($error_msg);
 }
 
@@ -1149,7 +1149,7 @@ function csrf_hash($script = false, $use_ip = true, $user = false)
 {
 	global $pun_config, $pun_user;
 	static $arr = array();
-	
+
 	$script = $script ? $script : basename($_SERVER['SCRIPT_NAME']);
 	$ip = $use_ip ? get_remote_address() : '';
 	$user = is_array($user) ? $user : $pun_user;
@@ -1222,30 +1222,6 @@ function pun_hash($str)
 
 
 //
-// Compare two strings in constant time
-// Inspired by WordPress
-//
-function pun_hash_equals($a, $b)
-{
-	if (function_exists('hash_equals'))
-		return hash_equals((string) $a, (string) $b);
-
-	$a_length = strlen($a);
-
-	if ($a_length !== strlen($b))
-		return false;
-
-	$result = 0;
-
-	// Do not attempt to "optimize" this.
-	for ($i = 0; $i < $a_length; $i++)
-		$result |= ord($a[$i]) ^ ord($b[$i]);
-
-	return $result === 0;
-}
-
-
-//
 // Compute a random hash used against CSRF attacks
 //
 function pun_csrf_token()
@@ -1266,7 +1242,7 @@ function check_csrf($token)
 {
 	global $lang_common;
 
-	$is_hash_authorized = pun_hash_equals($token, pun_csrf_token());
+	$is_hash_authorized = hash_equals($token, pun_csrf_token());
 
 	if (!isset($token) || !$is_hash_authorized)
 		message($lang_common['Bad csrf hash'], false, '404 Not Found');
@@ -2260,7 +2236,7 @@ function generation_js($arr)
 		$res.= '<script type="text/javascript" src="'.implode('"></script>'."\n".'<script type="text/javascript" src="', $arr['f']).'"></script>'."\n";
 	if (!empty($arr['c']))
 		$res.= '<script type="text/javascript">'."\n".'/* <![CDATA[ */'."\n".implode("\n", $arr['c'])."\n".'/* ]]> */'."\n".'</script>'."\n";
-		
+
 	return $res;
 }
 
