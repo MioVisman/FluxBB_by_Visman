@@ -45,7 +45,7 @@ if (isset($_POST['form_sent']) && $action == 'in')
 		// If there is a salt in the database we have upgraded from 1.3-legacy though haven't yet logged in
 		if (!empty($cur_user['salt']))
 		{
-			$is_salt_authorized = pun_hash_equals(sha1($cur_user['salt'].sha1($form_password)), $cur_user['password']);
+			$is_salt_authorized = hash_equals(sha1($cur_user['salt'].sha1($form_password)), $cur_user['password']);
 			if ($is_salt_authorized) // 1.3 used sha1(salt.sha1(pass))
 			{
 				$authorized = true;
@@ -56,7 +56,7 @@ if (isset($_POST['form_sent']) && $action == 'in')
 		// If the length isn't 40 then the password isn't using sha1, so it must be md5 from 1.2
 		else if (strlen($cur_user['password']) != 40)
 		{
-			$is_md5_authorized = pun_hash_equals(md5($form_password.$salt1), $cur_user['password']); // Visman
+			$is_md5_authorized = hash_equals(md5($form_password.$salt1), $cur_user['password']); // Visman
 			if ($is_md5_authorized)
 			{
 				$authorized = true;
@@ -66,7 +66,7 @@ if (isset($_POST['form_sent']) && $action == 'in')
 		}
 		// Otherwise we should have a normal sha1 password
 		else
-			$authorized = pun_hash_equals($cur_user['password'], $form_password_hash);
+			$authorized = hash_equals($cur_user['password'], $form_password_hash);
 	}
 
 	if (!$authorized)

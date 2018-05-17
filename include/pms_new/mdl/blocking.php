@@ -17,7 +17,7 @@ if ($uid < 2)
 	message($lang_common['Bad request'], false, '404 Not Found');
 
 $csrf_token = pmsn_csrf_token($uid);
-if (!pun_hash_equals($csrf_token, pmsn_get_var('csrf_token', '')))
+if (!hash_equals($csrf_token, pmsn_get_var('csrf_token', '')))
 	message($lang_common['Bad request'], false, '404 Not Found');
 
 $result = $db->query('SELECT id, group_id, username FROM '.$db->prefix.'users WHERE id='.$uid) or error('Unable to fetch user information', __FILE__, __LINE__, $db->error());

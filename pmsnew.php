@@ -33,7 +33,7 @@ $action = pmsn_get_var('action', '');
 if ($action == 'onoff')
 {
 	$csrf_token = pmsn_csrf_token('onoff');
-	if (!pun_hash_equals($csrf_token, pmsn_get_var('csrf_token', '')))
+	if (!hash_equals($csrf_token, pmsn_get_var('csrf_token', '')))
 		message($lang_common['Bad request'], false, '404 Not Found');
 
 	if ($pun_user['messages_enable'] == 0 || ($pun_user['messages_enable'] == 1 && isset($_POST['action2']) && defined('PUN_PMS_NEW_CONFIRM')))
@@ -41,7 +41,7 @@ if ($action == 'onoff')
 		// удаляем сообщения пользователя
 		if ($pun_user['messages_enable'] == 1)
 			pmsn_user_delete($pun_user['id'], 2);
-			
+
 		$pun_user['messages_enable'] = ($pun_user['messages_enable'] == 0) ? 1 : 0;
 		$db->query('UPDATE '.$db->prefix.'users SET messages_enable='.$pun_user['messages_enable'].' WHERE id='.$pun_user['id']) or error('Unable to update users table', __FILE__, __LINE__, $db->error());
 
@@ -55,7 +55,7 @@ if ($action == 'onoff')
 else if ($action == 'email')
 {
 	$csrf_token = pmsn_csrf_token('email');
-	if (!pun_hash_equals($csrf_token, pmsn_get_var('csrf_token', '')))
+	if (!hash_equals($csrf_token, pmsn_get_var('csrf_token', '')))
 		message($lang_common['Bad request'], false, '404 Not Found');
 
 	if ($pun_user['messages_email'] == 1)
@@ -76,7 +76,7 @@ else if ($pun_user['messages_enable'] == 0 && $pun_user['messages_new'] == 0) //
 else
 {
 	$pmsn_modul = pmsn_get_var('mdl', 'new');
-	
+
 	if ($pun_user['g_pm'] == 0 || $pun_user['messages_enable'] == 0)
 		if (!in_array($pmsn_modul, array('new','topic','close','closeq')))
 			message($lang_common['No permission'], false, '403 Forbidden');
@@ -146,7 +146,7 @@ else
 
 if (!isset($page_head))
 	$page_head = array();
-	
+
 if (file_exists(PUN_ROOT.'style/'.$pun_user['style'].'/newpms.css'))
 	$page_head['pmsnewstyle'] = '<link rel="stylesheet" type="text/css" href="style/'.$pun_user['style'].'/newpms.css" />';
 else
