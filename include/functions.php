@@ -168,7 +168,7 @@ function authenticate_user($user, $password, $password_is_hash = false)
 	$pun_user = $db->fetch_assoc($result);
 
 	$is_password_authorized = hash_equals($password, $pun_user['password']);
-	$is_hash_authorized = hash_equals(pun_hash($password), $pun_user['password']);
+	$is_hash_authorized = forum_password_verify($password, $pun_user);
 
 	if (!isset($pun_user['id']) ||
 		($password_is_hash && !$is_password_authorized ||
@@ -2290,4 +2290,49 @@ function sf_crumbs($id)
 	}
 
 	return $str;
+}
+
+//
+// Checks the password on the user's data array
+//
+function forum_password_verify($password, $user)
+{
+	global $salt1;
+
+	if (empty($user['password']) || ! is_string($user['password']) || ! is_string($password))
+	{
+		return false;
+	}
+
+	// v 1.5.10.59 or later
+	if (password_verify($password, $user['password']))
+	{
+		return true;
+	}
+	// If there is a salt in the database we have upgraded from 1.3-legacy though haven't yet logged in
+	else if (!empty($user['salt']))
+	{
+		if (hash_equals(sha1($user['salt'].sha1($password)), $user['password']))
+		{
+			return 2;
+		}
+	}
+	// If the length isn't 40 then the password isn't using sha1, so it must be md5 from 1.2
+	else if (strlen($user['password']) === 32)
+	{
+		if (hash_equals(md5($password . $salt1), $user['password']))
+		{
+			return 1;
+		}
+	}
+	// Otherwise we should have a normal sha1 password (v 1.5.10.58 and less)
+	else if (strlen($user['password']) === 40)
+	{
+		if (hash_equals(pun_hash($password), $user['password']))
+		{
+			return 1;
+		}
+	}
+
+	return false;
 }

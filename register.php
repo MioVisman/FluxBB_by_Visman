@@ -158,11 +158,11 @@ if (isset($_POST['form_sent']))
 		// Insert the new user into the database. We do this now to get the last inserted ID for later use
 		$now = time();
 
-		$intial_group_id = ($pun_config['o_regs_verify'] == '0') ? $pun_config['o_default_user_group'] : PUN_UNVERIFIED;
-		$password_hash = pun_hash($password1);
+		$intial_group_id = ($pun_config['o_regs_verify'] == '0') ? (int) $pun_config['o_default_user_group'] : PUN_UNVERIFIED;
+		$password_hash = password_hash($password1, PASSWORD_DEFAULT);
 
 		// Add the user
-		$db->query('INSERT INTO '.$db->prefix.'users (username, group_id, password, email, email_setting, timezone, dst, language, style, registered, registration_ip, last_visit) VALUES(\''.$db->escape($username).'\', '.$intial_group_id.', \''.$password_hash.'\', \''.$db->escape($email1).'\', '.$email_setting.', '.$timezone.' , '.$dst.', \''.$db->escape($language).'\', \''.$pun_config['o_default_style'].'\', '.$now.', \''.$db->escape(get_remote_address()).'\', '.$now.')') or error('Unable to create user', __FILE__, __LINE__, $db->error());
+		$db->query('INSERT INTO '.$db->prefix.'users (username, group_id, password, email, email_setting, timezone, dst, language, style, registered, registration_ip, last_visit) VALUES(\''.$db->escape($username).'\', '.$intial_group_id.', \''.$db->escape($password_hash).'\', \''.$db->escape($email1).'\', '.$email_setting.', '.$timezone.' , '.$dst.', \''.$db->escape($language).'\', \''.$pun_config['o_default_style'].'\', '.$now.', \''.$db->escape(get_remote_address()).'\', '.$now.')') or error('Unable to create user', __FILE__, __LINE__, $db->error());
 		$new_uid = $db->insert_id();
 
 		if ($pun_config['o_regs_verify'] == '0')
@@ -260,7 +260,7 @@ if (isset($_POST['form_sent']))
 		}
 
 		pun_setcookie($new_uid, $password_hash, ($save_pass == '1') ? time() + 1209600 : time() + $pun_config['o_timeout_visit']); // мод запоминания пароля - Visman
-		
+
 		// удаляем из онлайн таблицы запись для этого пользователя для правильного подсчета макс. кол-во пользователей - Visman
 		$db->query('DELETE FROM '.$db->prefix.'online WHERE ident=\''.$db->escape(get_remote_address()).'\'') or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
 

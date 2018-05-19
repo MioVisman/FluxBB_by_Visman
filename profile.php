@@ -103,18 +103,16 @@ if ($action == 'change_pass')
 
 		if (!empty($cur_user['password']))
 		{
-			$old_password_hash = pun_hash($old_password);
-
-			if ($cur_user['password'] == $old_password_hash || $pun_user['is_admmod'])
+			if (forum_password_verify($old_password, $cur_user) || $pun_user['is_admmod'])
 				$authorized = true;
 		}
 
 		if (!$authorized)
 			message($lang_profile['Wrong pass']);
 
-		$new_password_hash = pun_hash($new_password1);
+		$new_password_hash = password_hash($new_password1, PASSWORD_DEFAULT);
 
-		$db->query('UPDATE '.$db->prefix.'users SET password=\''.$new_password_hash.'\''.(!empty($cur_user['salt']) ? ', salt=NULL' : '').' WHERE id='.$id) or error('Unable to update password', __FILE__, __LINE__, $db->error());
+		$db->query('UPDATE '.$db->prefix.'users SET password=\''.$db->escape($new_password_hash).'\''.(!empty($cur_user['salt']) ? ', salt=NULL' : '').' WHERE id='.$id) or error('Unable to update password', __FILE__, __LINE__, $db->error());
 
 		if ($pun_user['id'] == $id)
 			pun_setcookie($pun_user['id'], $new_password_hash, time() + $pun_config['o_timeout_visit']);
@@ -197,7 +195,7 @@ else if ($action == 'change_email')
 	}
 	else if (isset($_POST['form_sent']))
 	{
-		if (pun_hash($_POST['req_password']) !== $pun_user['password'])
+		if (empty($_POST['req_password']) || ! forum_password_verify($_POST['req_password'], $pun_user))
 			message($lang_profile['Wrong pass']);
 
 		// Make sure they got here from the site
@@ -325,7 +323,7 @@ else if ($action == 'upload_avatar' || $action == 'upload_avatar2')
 
 	if ($pun_user['id'] != $id && !$pun_user['is_admmod'])
 		message($lang_common['No permission'], false, '403 Forbidden');
-		
+
 	require PUN_ROOT.'include/upload.php'; // Visman - auto resize avatar
 
 	if (isset($_POST['form_sent']))
@@ -1115,7 +1113,7 @@ if ($pun_user['id'] != $id &&																	// If we aren't the user (i.e. edi
 		$user_personal[] = '<dt>'.$lang_profile['Realname'].'</dt>';
 		$user_personal[] = '<dd>'.pun_htmlspecialchars(($pun_config['o_censoring'] == '1') ? censor_words($user['realname']) : $user['realname']).'</dd>';
 	}
-	
+
 	// мод пола - Visman
 	if ($user['gender'] > 0)
 	{
@@ -1175,7 +1173,7 @@ if ($pun_user['id'] != $id &&																	// If we aren't the user (i.e. edi
 		$user_messaging[] = '<dt>'.$lang_profile['MSN'].'</dt>';
 		$user_messaging[] = '<dd>'.pun_htmlspecialchars(($pun_config['o_censoring'] == '1') ? censor_words($user['msn']) : $user['msn']).'</dd>';
 	}
-	
+
 	if ($user['aim'] != '')
 	{
 		$user_messaging[] = '<dt>'.$lang_profile['AOL IM'].'</dt>';
@@ -1189,7 +1187,7 @@ if ($pun_user['id'] != $id &&																	// If we aren't the user (i.e. edi
 	}
 
 	$user_personality = array();
- 	
+
 	if ($pun_config['o_avatars'] == '1')
 	{
 		$avatar_field = generate_avatar_markup($id);
@@ -1199,7 +1197,7 @@ if ($pun_user['id'] != $id &&																	// If we aren't the user (i.e. edi
 			$user_personality[] = '<dd>'.$avatar_field.'</dd>';
 		}
 	}
-	
+
 	if ($pun_config['o_signatures'] == '1')
 	{
 		if (isset($parsed_signature))
