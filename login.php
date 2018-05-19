@@ -39,11 +39,15 @@ if (isset($_POST['form_sent']) && $action == 'in')
 
 	$authorized = forum_password_verify($form_password, $cur_user);
 
-	if (1 === $authorized || 2 === $authorized)
+	if (false === $authorized)
+	{
+		$errors[] = $lang_login['Wrong user/pass'];
+	}
+	else if ($authorized > 1)
 	{
 		$cur_user['password'] = password_hash($form_password, PASSWORD_DEFAULT);
 
-		if (2 === $authorized)
+		if (3 === $authorized)
 		{
 			$db->query('UPDATE '.$db->prefix.'users SET password=\''.$db->escape($cur_user['password']).'\', salt=NULL WHERE id='.$cur_user['id']) or error('Unable to update user password', __FILE__, __LINE__, $db->error());
 		}
@@ -52,9 +56,6 @@ if (isset($_POST['form_sent']) && $action == 'in')
 			$db->query('UPDATE '.$db->prefix.'users SET password=\''.$db->escape($cur_user['password']).'\' WHERE id='.$cur_user['id']) or error('Unable to update user password', __FILE__, __LINE__, $db->error());
 		}
 	}
-
-	else if (!$authorized)
-		$errors[] = $lang_login['Wrong user/pass'];
 
 	flux_hook('login_after_validation');
 
