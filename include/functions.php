@@ -2307,14 +2307,14 @@ function forum_password_verify($password, $user)
 	// v 1.5.10.59 or later
 	if (password_verify($password, $user['password']))
 	{
-		return true;
+		return 1;
 	}
 	// If there is a salt in the database we have upgraded from 1.3-legacy though haven't yet logged in
 	else if (!empty($user['salt']))
 	{
 		if (hash_equals(sha1($user['salt'].sha1($password)), $user['password']))
 		{
-			return 2;
+			return 3;
 		}
 	}
 	// If the length isn't 40 then the password isn't using sha1, so it must be md5 from 1.2
@@ -2322,7 +2322,7 @@ function forum_password_verify($password, $user)
 	{
 		if (hash_equals(md5($password . $salt1), $user['password']))
 		{
-			return 1;
+			return 2;
 		}
 	}
 	// Otherwise we should have a normal sha1 password (v 1.5.10.58 and less)
@@ -2330,7 +2330,7 @@ function forum_password_verify($password, $user)
 	{
 		if (hash_equals(pun_hash($password), $user['password']))
 		{
-			return 1;
+			return 2;
 		}
 	}
 
