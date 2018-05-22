@@ -218,15 +218,6 @@ if (!isset($_POST['form_sent']) || !empty($alerts))
 		$db_extensions[] = array('mysqli_innodb', 'MySQL Improved (InnoDB)');
 		$mysql_innodb = true;
 	}
-	if (function_exists('mysql_connect'))
-	{
-		$db_extensions[] = array('mysql', 'MySQL Standard');
-		$db_extensions[] = array('mysql_innodb', 'MySQL Standard (InnoDB)');
-		$mysql_innodb = true;
-
-		if (count($db_extensions) > 2)
-			$dual_mysql = true;
-	}
 	if (function_exists('sqlite_open'))
 		$db_extensions[] = array('sqlite', 'SQLite');
 	if (class_exists('SQLite3'))
@@ -500,17 +491,11 @@ else
 	switch ($db_type)
 	{
 		case 'mysql':
-			require PUN_ROOT.'include/dblayer/mysql.php';
-			break;
-
-		case 'mysql_innodb':
-			require PUN_ROOT.'include/dblayer/mysql_innodb.php';
-			break;
-
 		case 'mysqli':
 			require PUN_ROOT.'include/dblayer/mysqli.php';
 			break;
 
+		case 'mysql_innodb':
 		case 'mysqli_innodb':
 			require PUN_ROOT.'include/dblayer/mysqli_innodb.php';
 			break;
