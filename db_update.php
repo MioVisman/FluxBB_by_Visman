@@ -9,14 +9,14 @@
 // The FluxBB version this script updates to
 define('UPDATE_TO', '1.5.10');
 
-define('UPDATE_TO_VER_REVISION', 78);	// номер сборки - Visman
+define('UPDATE_TO_VER_REVISION', 79);	// номер сборки - Visman
 
 define('UPDATE_TO_DB_REVISION', 21);
 define('UPDATE_TO_SI_REVISION', 2.1);
 define('UPDATE_TO_PARSER_REVISION', 2);
 
 define('MIN_PHP_VERSION', '5.6.0');
-define('MIN_MYSQL_VERSION', '5.0.7');
+define('MIN_MYSQL_VERSION', '5.5.3');
 define('MIN_PGSQL_VERSION', '7.0.0');
 define('PUN_SEARCH_MIN_WORD', 3);
 define('PUN_SEARCH_MAX_WORD', 20);
@@ -319,7 +319,7 @@ function alter_table_utf8($table)
 	}
 
 	// Set table default charset to utf8
-	$db->query('ALTER TABLE '.$table.' CHARACTER SET utf8') or error('Unable to set table character set', __FILE__, __LINE__, $db->error());
+	$db->query('ALTER TABLE '.$table.' CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci') or error('Unable to set table character set', __FILE__, __LINE__, $db->error());
 
 	// Find out which columns need converting and build SQL statements
 	$result = $db->query('SHOW FULL COLUMNS FROM '.$table) or error('Unable to fetch column information', __FILE__, __LINE__, $db->error());
@@ -329,13 +329,13 @@ function alter_table_utf8($table)
 			continue;
 
 		list($type) = explode('(', $cur_column['Type']);
-		if (isset($types[$type]) && strpos($cur_column['Collation'], 'utf8') === false)
+		if (isset($types[$type]) && strpos($cur_column['Collation'], 'utf8mb4') === false)
 		{
 			$allow_null = ($cur_column['Null'] == 'YES');
-			$collate = (substr($cur_column['Collation'], -3) == 'bin') ? 'utf8_bin' : 'utf8_general_ci';
+			$collate = (substr($cur_column['Collation'], -3) == 'bin') ? 'utf8mb4_bin' : 'utf8mb4_unicode_ci';
 
-			$db->alter_field($table, $cur_column['Field'], preg_replace('%'.$type.'%i', $types[$type], $cur_column['Type']), $allow_null, $cur_column['Default'], null, true) or error('Unable to alter field to binary', __FILE__, __LINE__, $db->error());
-			$db->alter_field($table, $cur_column['Field'], $cur_column['Type'].' CHARACTER SET utf8 COLLATE '.$collate, $allow_null, $cur_column['Default'], null, true) or error('Unable to alter field to utf8', __FILE__, __LINE__, $db->error());
+//			$db->alter_field($table, $cur_column['Field'], preg_replace('%'.$type.'%i', $types[$type], $cur_column['Type']), $allow_null, $cur_column['Default'], null, true) or error('Unable to alter field to binary', __FILE__, __LINE__, $db->error());
+			$db->alter_field($table, $cur_column['Field'], $cur_column['Type'].' CHARACTER SET utf8mb4 COLLATE '.$collate, $allow_null, $cur_column['Default'], null, true) or error('Unable to alter field to utf8mb4', __FILE__, __LINE__, $db->error());
 		}
 	}
 }
@@ -685,544 +685,6 @@ switch ($stage)
 	// Start by updating the database structure
 	case 'start':
 		$query_str = '?stage=preparse_posts';
-
-// Visman
-if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 16)
-{
-		$db->add_field('groups', 'g_deledit_interval', 'INT(10)', false, 0) or error('Unable to add g_deledit_interval field', __FILE__, __LINE__, $db->error());
-
-		$db->add_field('posts', 'edit_post', 'TINYINT(1)', false, 0) or error('Unable to add edit_post field', __FILE__, __LINE__, $db->error());
-
-		$db->add_field('users', 'gender', 'TINYINT(4) UNSIGNED', false, 0) or error('Unable to add gender field', __FILE__, __LINE__, $db->error());
-
-		if (!array_key_exists('o_cur_ver_revision', $pun_config))
-			$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_cur_ver_revision\', \'0\')') or error('Unable to insert config value \'o_cur_ver_revision\'', __FILE__, __LINE__, $db->error());
-
-		if (!array_key_exists('o_merge_timeout', $pun_config))
-			$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_merge_timeout\', \'86400\')') or error('Unable to insert config value \'o_merge_timeout\'', __FILE__, __LINE__, $db->error());
-
-		if (!array_key_exists('o_coding_forms', $pun_config))
-			$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_coding_forms\', \'0\')') or error('Unable to insert config value \'o_coding_forms\'', __FILE__, __LINE__, $db->error());
-
-		if (!array_key_exists('o_check_ip', $pun_config))
-			$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_check_ip\', \'0\')') or error('Unable to insert config value \'o_check_ip\'', __FILE__, __LINE__, $db->error());
-} // rev.16
-
-if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 21)
-{
-		$db->add_field('groups', 'g_pm', 'TINYINT(1)', false, 1) or error('Unable to add g_pm field', __FILE__, __LINE__, $db->error());
-		$db->add_field('groups', 'g_pm_limit', 'INT(10) UNSIGNED', false, 100) or error('Unable to add g_pm_limit field', __FILE__, __LINE__, $db->error());
-
-		$db->add_field('users', 'messages_enable', 'TINYINT(1)', false, 1) or error('Unable to add messages_enable field', __FILE__, __LINE__, $db->error());
-		$db->add_field('users', 'messages_email', 'TINYINT(1)', false, 0) or error('Unable to add messages_email field', __FILE__, __LINE__, $db->error());
-		$db->add_field('users', 'messages_new', 'INT(10) UNSIGNED', false, 0) or error('Unable to add messages_new field', __FILE__, __LINE__, $db->error());
-		$db->add_field('users', 'messages_all', 'INT(10) UNSIGNED', false, 0) or error('Unable to add messages_all field', __FILE__, __LINE__, $db->error());
-		$db->add_field('users', 'pmsn_last_post', 'INT(10) UNSIGNED', true) or error('Unable to add pmsn_last_post field', __FILE__, __LINE__, $db->error());
-
-		$db->query('UPDATE '.$db->prefix.'groups SET g_pm_limit=0 WHERE g_id='.PUN_ADMIN) or error('Unable to merge groups', __FILE__, __LINE__, $db->error());
-
- 		if (!array_key_exists('o_pms_enabled', $pun_config))
-			$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_pms_enabled\', \'1\')') or error('Unable to insert config value \'o_pms_enabled\'', __FILE__, __LINE__, $db->error());
-
-		if (!$db->table_exists('pms_new_block'))
-		{
-			$schema = array(
-				'FIELDS'		=> array(
-					'bl_id'		=> array(
-						'datatype'		=> 'INT(10) UNSIGNED',
-						'allow_null'	=> false,
-						'default'		=> '0'
-					),
-					'bl_user_id'		=> array(
-						'datatype'		=> 'INT(10) UNSIGNED',
-						'allow_null'	=> false,
-						'default'		=> '0'
-					)
-				),
-				'INDEXES'		=> array(
-					'bl_id_idx'	=> array('bl_id'),
-					'bl_user_id_idx'	=> array('bl_user_id')
-				)
-			);
-
-			$db->create_table('pms_new_block', $schema) or error('Unable to create pms_new_block table', __FILE__, __LINE__, $db->error());
-		}
-
-		if (!$db->table_exists('pms_new_posts'))
-		{
-			$schema = array(
-				'FIELDS'		=> array(
-					'id'			=> array(
-						'datatype'		=> 'SERIAL',
-						'allow_null'	=> false
-					),
-					'poster'		=> array(
-						'datatype'		=> 'VARCHAR(200)',
-						'allow_null'	=> false,
-						'default'		=> '\'\''
-					),
-					'poster_id'		=> array(
-						'datatype'		=> 'INT(10) UNSIGNED',
-						'allow_null'	=> false,
-						'default'		=> '1'
-					),
-					'poster_ip'		=> array(
-						'datatype'		=> 'VARCHAR(39)',
-						'allow_null'	=> true
-					),
-					'message'		=> array(
-						'datatype'		=> 'TEXT',
-						'allow_null'	=> true
-					),
-					'hide_smilies'	=> array(
-						'datatype'		=> 'TINYINT(1)',
-						'allow_null'	=> false,
-						'default'		=> '0'
-					),
-					'posted'		=> array(
-						'datatype'		=> 'INT(10) UNSIGNED',
-						'allow_null'	=> false,
-						'default'		=> '0'
-					),
-					'edited'		=> array(
-						'datatype'		=> 'INT(10) UNSIGNED',
-						'allow_null'	=> true
-					),
-					'edited_by'		=> array(
-						'datatype'		=> 'VARCHAR(200)',
-						'allow_null'	=> true
-					),
-					'post_new'		=> array(
-						'datatype'		=> 'TINYINT(1)',
-						'allow_null'	=> false,
-						'default'		=> '1'
-					),
-					'topic_id'		=> array(
-						'datatype'		=> 'INT(10) UNSIGNED',
-						'allow_null'	=> false,
-						'default'		=> '0'
-					)
-				),
-				'PRIMARY KEY'	=> array('id'),
-				'INDEXES'		=> array(
-					'topic_id_idx'	=> array('topic_id'),
-					'multi_idx'		=> array('poster_id', 'topic_id')
-				)
-			);
-
-			$db->create_table('pms_new_posts', $schema) or error('Unable to create pms_new_posts table', __FILE__, __LINE__, $db->error());
-		}
-
-		if (!$db->table_exists('pms_new_topics'))
-		{
-			$schema = array(
-				'FIELDS'		=> array(
-					'id'			=> array(
-						'datatype'		=> 'SERIAL',
-						'allow_null'	=> false
-					),
-					'topic'		=> array(
-						'datatype'		=> 'VARCHAR(255)',
-						'allow_null'	=> false,
-						'default'		=> '\'\''
-					),
-					'starter'		=> array(
-						'datatype'		=> 'VARCHAR(200)',
-						'allow_null'	=> false,
-						'default'		=> '\'\''
-					),
-					'starter_id'	=> array(
-						'datatype'		=> 'INT(10) UNSIGNED',
-						'allow_null'	=> false,
-						'default'		=> '0'
-					),
-					'to_user'		=> array(
-						'datatype'		=> 'VARCHAR(200)',
-						'allow_null'	=> false,
-						'default'		=> '\'\''
-					),
-					'to_id'	=> array(
-						'datatype'		=> 'INT(10) UNSIGNED',
-						'allow_null'	=> false,
-						'default'		=> '0'
-					),
-					'replies'	=> array(
-						'datatype'		=> 'MEDIUMINT(8) UNSIGNED',
-						'allow_null'	=> false,
-						'default'		=> '0'
-					),
-					'last_posted'	=> array(
-						'datatype'		=> 'INT(10) UNSIGNED',
-						'allow_null'	=> false,
-						'default'		=> '0'
-					),
-					'last_poster'		=> array(
-						'datatype'		=> 'TINYINT(1)',
-						'allow_null'	=> false,
-						'default'		=> '0'
-					),
-					'see_st'	=> array(
-						'datatype'		=> 'INT(10) UNSIGNED',
-						'allow_null'	=> false,
-						'default'		=> '0'
-					),
-					'see_to'	=> array(
-						'datatype'		=> 'INT(10) UNSIGNED',
-						'allow_null'	=> false,
-						'default'		=> '0'
-					),
-					'topic_st'		=> array(
-						'datatype'		=> 'TINYINT(4)',
-						'allow_null'	=> false,
-						'default'		=> '0'
-					),
-					'topic_to'		=> array(
-						'datatype'		=> 'TINYINT(4)',
-						'allow_null'	=> false,
-						'default'		=> '0'
-					),
-				),
-				'PRIMARY KEY'	=> array('id'),
-				'INDEXES'		=> array(
-					'multi_idx_st'		=> array('starter_id', 'topic_st'),
-					'multi_idx_to'		=> array('to_id', 'topic_to')
-				)
-			);
-
-			$db->create_table('pms_new_topics', $schema) or error('Unable to create pms_new_topics table', __FILE__, __LINE__, $db->error());
-		}
-} // rev.21
-
-if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 23)
-{
-		$db->add_field('forums', 'no_sum_mess', 'TINYINT(1)', false, 0) or error('Unable to add no_sum_mess field', __FILE__, __LINE__, $db->error());
-} // rev.23
-
-if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 24)
-{
-
-		if (!$db->table_exists('smilies'))
-		{
-			// Create "smilies" table
-			$schema = array(
-				'FIELDS' => array(
-					'id' => array(
-						'datatype' => 'SERIAL',
-						'allow_null' => false
-					),
-					'image' => array(
-						'datatype' => 'VARCHAR(40)',
-						'allow_null' => false,
-						'default' => '\'\''
-					),
-					'text' => array(
-						'datatype' => 'VARCHAR(20)',
-						'allow_null' => false,
-						'default' => '\'\''
-					),
-					'disp_position' => array(
-						'datatype' => 'TINYINT(4) UNSIGNED',
-						'allow_null' => false,
-						'default' => '0'
-					)
-				),
-				'PRIMARY KEY' => array('id')
-			);
-			$db->create_table('smilies', $schema) or error('Unable to create smilies table', __FILE__, __LINE__, $db->error());
-
-// ВНИМАНИЕ!!! ATTENTION!!!
-// Если на вашем форуме используются другие смайлы,
-// то перед обновлением замените этот массив на свой!
-	$smilies = array(
-		':)' => 'smile.png',
-		'=)' => 'smile.png',
-		':|' => 'neutral.png',
-		'=|' => 'neutral.png',
-		':(' => 'sad.png',
-		'=(' => 'sad.png',
-		':D' => 'big_smile.png',
-		'=D' => 'big_smile.png',
-		':o' => 'yikes.png',
-		':O' => 'yikes.png',
-		';)' => 'wink.png',
-		':/' => 'hmm.png',
-		':P' => 'tongue.png',
-		':p' => 'tongue.png',
-		':lol:' => 'lol.png',
-		':mad:' => 'mad.png',
-		':rolleyes:' => 'roll.png',
-		':cool:' => 'cool.png');
-
-			$i = 0;
-			foreach ($smilies as $text => $img)
-			{
-				$db->query('INSERT INTO '.$db->prefix.'smilies (image, text, disp_position) VALUES(\''.$img.'\', \''.$db->escape($text).'\', '.$i.')') or error('Unable to add smiley', __FILE__, __LINE__, $db->error());
-				$i++;
-			}
-		}
-} // rev.24
-
-if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 26)
-{
-	$db->add_field('topics', 'stick_fp', 'TINYINT(1)', false, 0) or error('Unable to add stick_fp field', __FILE__, __LINE__, $db->error());
-} // rev.26
-
-if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 27)
-{
-	$db->add_field('users', 'messages_flag', 'TINYINT(1)', false, 0) or error('Unable to add messages_flag field', __FILE__, __LINE__, $db->error());
-} // rev.27
-
-if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 28)
-{
-	// Create warnings table - Visman
-	$schema = array(
-		'FIELDS' => array(
-			'id' => array(
-				'datatype' => 'SERIAL',
-				'allow_null' => false
-			),
-			'poster' => array(
-				'datatype' => 'VARCHAR(200)',
-				'allow_null' => false,
-				'default' => '\'\''
-			),
-			'poster_id'	=> array(
-				'datatype'		=> 'INT(10) UNSIGNED',
-				'allow_null'	=> false,
-				'default'		=> '0'
-			),
-			'posted'	=> array(
-				'datatype'		=> 'INT(10) UNSIGNED',
-				'allow_null'	=> false,
-				'default'		=> '0'
-			),
-			'message'		=> array(
-				'datatype'		=> 'TEXT',
-				'allow_null' => true
-			)
-		),
-		'PRIMARY KEY' => array('id')
-	);
-
-	$db->create_table('warnings', $schema) or error('Unable to create warnings table', __FILE__, __LINE__, $db->error());
-		// Create warnings table - Visman
-} // rev.28
-
-if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 29)
-{
-	$db->add_field('users', 'warning_flag', 'TINYINT(1)', false, 0) or error('Unable to add messages_flag field', __FILE__, __LINE__, $db->error());
-} // rev.29
-if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 31)
-{
-		$db->add_field('users', 'warning_all', 'INT(10) UNSIGNED', false, 0) or error('Unable to add messages_all field', __FILE__, __LINE__, $db->error());
-		$db->add_field('posts', 'user_agent', 'VARCHAR( 255 )', true);
-
- 		if (!array_key_exists('o_pms_min_kolvo', $pun_config))
-			$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_pms_min_kolvo\', \'0\')') or error('Unable to insert config value \'o_pms_min_kolvo\'', __FILE__, __LINE__, $db->error());
-} // rev.31
-if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 32)
-{
- 		if (!array_key_exists('o_board_redirect', $pun_config))
-			$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_board_redirect\', \'\')') or error('Unable to insert config value \'o_board_redirect\'', __FILE__, __LINE__, $db->error());
- 		if (!array_key_exists('o_board_redirectg', $pun_config))
-			$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_board_redirectg\', \'0\')') or error('Unable to insert config value \'o_board_redirectg\'', __FILE__, __LINE__, $db->error());
-} // rev.32
-if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 33)
-{
-	$db->add_field('topics', 'poll_type', 'TINYINT(4)', false, 0) or error('Unable to add poll_type field', __FILE__, __LINE__, $db->error());
-	$db->add_field('topics', 'poll_time', 'INT(10) UNSIGNED', false, 0) or error('Unable to add poll_time field', __FILE__, __LINE__, $db->error());
-	$db->add_field('topics', 'poll_term', 'TINYINT(4)', false, 0) or error('Unable to add poll_term field', __FILE__, __LINE__, $db->error());
-	$db->add_field('topics', 'poll_kol', 'INT(10) UNSIGNED', false, 0) or error('Unable to add poll_kol field', __FILE__, __LINE__, $db->error());
-
-	$schema = array(
-			'FIELDS'			=> array(
-					'tid'				=> array(
-							'datatype'		=> 'INT(10) UNSIGNED',
-							'allow_null'	=> false,
-							'default'			=> '0'
-					),
-					'question'			=> array(
-							'datatype'		=> 'TINYINT(4)',
-							'allow_null'	=> false,
-							'default'			=> '0'
-					),
-					'field'			=> array(
-							'datatype'		=> 'TINYINT(4)',
-							'allow_null'	=> false,
-							'default'			=> '0'
-					),
-					'choice'			=> array(
-							'datatype'		=> 'VARCHAR(255)',
-							'allow_null'	=> false,
-							'default'			=> '\'\''
-					),
-					'votes'				=> array(
-							'datatype'		=> 'INT(10) UNSIGNED',
-							'allow_null'	=> false,
-							'default'			=> '0'
-					)
-			),
-			'PRIMARY KEY'		=> array('tid', 'question', 'field')
-	);
-
-	$db->create_table('poll', $schema) or error('Unable to create table poll', __FILE__, __LINE__, $db->error());
-
-	$schema = array(
-			'FIELDS'			=> array(
-					'tid'				=> array(
-							'datatype'			=> 'INT(10) UNSIGNED',
-							'allow_null'		=> false
-					),
-					'uid'			=> array(
-							'datatype'			=> 'INT(10) UNSIGNED',
-							'allow_null'		=> false
-					),
-					'rez'			=> array(
-							'datatype'			=> 'TEXT',
-							'allow_null'		=> true
-					)
-			),
-			'PRIMARY KEY'		=> array('tid', 'uid')
-	);
-
-	$db->create_table('poll_voted', $schema) or error('Unable to create table poll_voted', __FILE__, __LINE__, $db->error());
-
-	if (!array_key_exists('o_poll_enabled', $pun_config))
-		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_poll_enabled\', \'0\')') or error('Unable to insert config value \'o_poll_enabled\'', __FILE__, __LINE__, $db->error());
-	if (!array_key_exists('o_poll_max_ques', $pun_config))
-		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_poll_max_ques\', \'3\')') or error('Unable to insert config value \'o_poll_max_ques\'', __FILE__, __LINE__, $db->error());
-	if (!array_key_exists('o_poll_max_field', $pun_config))
-		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_poll_max_field\', \'20\')') or error('Unable to insert config value \'o_poll_max_field\'', __FILE__, __LINE__, $db->error());
-	if (!array_key_exists('o_poll_time', $pun_config))
-		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_poll_time\', \'60\')') or error('Unable to insert config value \'o_poll_time\'', __FILE__, __LINE__, $db->error());
-	if (!array_key_exists('o_poll_term', $pun_config))
-		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_poll_term\', \'3\')') or error('Unable to insert config value \'o_poll_term\'', __FILE__, __LINE__, $db->error());
-	if (!array_key_exists('o_poll_guest', $pun_config))
-		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_poll_guest\', \'0\')') or error('Unable to insert config value \'o_poll_guest\'', __FILE__, __LINE__, $db->error());
-
-} // rev.33
-if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 40)
-{
-	if (!array_key_exists('o_fbox_guest', $pun_config))
-		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_fbox_guest\', \'0\')') or error('Unable to insert config value \'o_fbox_guest\'', __FILE__, __LINE__, $db->error());
-	if (!array_key_exists('o_fbox_files', $pun_config))
-		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_fbox_files\', \'viewtopic.php,search.php,pmsnew.php\')') or error('Unable to insert config value \'o_fbox_files\'', __FILE__, __LINE__, $db->error());
-} // rev.40
-if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 42)
-{
-		$db->add_field('online', 'witt_data', 'VARCHAR(255)', false, '') or error('Unable to add witt_data field', __FILE__, __LINE__, $db->error());
-} // rev.42
-if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 47)
-{
-	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o\_uploadile\_%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());
-
-	if (!array_key_exists('o_crypto_enable', $pun_config))
-		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_crypto_enable\', \'1\')') or error('Unable to insert config value \'o_crypto_enable\'', __FILE__, __LINE__, $db->error());
-	if (!array_key_exists('o_crypto_pas', $pun_config))
-		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_crypto_pas\', \''.$db->escape(random_pass(25)).'\')') or error('Unable to insert config value \'o_crypto_pas\'', __FILE__, __LINE__, $db->error());
-	if (!array_key_exists('o_crypto_salt', $pun_config))
-		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_crypto_salt\', \''.$db->escape(random_pass(13)).'\')') or error('Unable to insert config value \'o_crypto_salt\'', __FILE__, __LINE__, $db->error());
-} // rev.47
-if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 52)
-{
-	@unlink(PUN_ROOT.'include/footer.php');
-	@unlink(PUN_ROOT.'include/header.php');
-} // rev.52
-if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 57)
-{
-	$db->add_field('forums', 'parent_forum_id', 'INT(10) UNSIGNED', false, 0);
-	$db->add_field('forums', 'last_topic', 'VARCHAR(255)', true, null, 'last_poster');
-	$db->query('UPDATE '.$db->prefix.'forums AS f, '.$db->prefix.'posts AS p, '.$db->prefix.'topics AS t SET f.last_topic=t.subject WHERE f.last_post_id=p.id AND p.topic_id=t.id') or error('Unable to update last topic', __FILE__, __LINE__, $db->error());
-} // rev.57
-if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 58)
-{
-	$stat = array();
-	if (file_exists(FORUM_CACHE_DIR.'cache_maxusers.php'))
-		include FORUM_CACHE_DIR.'cache_maxusers.php';
-
-	if (!defined('PUN_MAXUSERS_LOADED'))
-	{
-		$stats['max_users'] = 1;
-		$stats['max_users_time'] = time();
-	}
-
-	if (!array_key_exists('st_max_users', $pun_config))
-		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'st_max_users\', \''.$db->escape($stats['max_users']).'\')') or error('Unable to insert config value \'st_max_users\'', __FILE__, __LINE__, $db->error());
-	if (!array_key_exists('st_max_users_time', $pun_config))
-		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'st_max_users_time\', \''.$db->escape($stats['max_users_time']).'\')') or error('Unable to insert config value \'st_max_users_time\'', __FILE__, __LINE__, $db->error());
-} // rev.58
-if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 59)
-{
-	@unlink(PUN_ROOT.'include/cache_smilies.php');
-} // rev.59
-if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 63)
-{
-	$conf_contents = file_get_contents(PUN_ROOT.'include/config.php');
-
-	if ($conf_contents === false)
-		error('Unable to read config file include/config.php.', __FILE__, __LINE__);
-
-	$conf_define = array(
-		'PUN_DEBUG' => array('1', true, ''),
-		'PUN_SHOW_QUERIES' => array('1', false, ''),
-		'PUN_MAX_POSTSIZE' => array('65535', true, ''),
-		'FORUM_EOL' => array('"\r\n"', false, 'possible values can be PHP_EOL, "\r\n", "\n" or "\r"'),
-		'FORUM_UA_OFF' => array('1', false, ''),
-		'FORUM_AJAX_JQUERY' => array('\'//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js\'', true, ''),
-	);
-
-	$conf_add = array();
-	foreach ($conf_define as $conf_name => $conf_value)
-	{
-		if (!preg_match('%[\'"]'.$conf_name.'[\'"]%u', $conf_contents))
-		{
-			$conf_add[] = ($conf_value[1] ? '' : '//').'define(\''.$conf_name.'\', '.$conf_value[0].');'.(empty($conf_value[2]) ? '' : ' // '.$conf_value[2]);
-		}
-	}
-
-	if (!empty($conf_add))
-	{
-		$fn = @fopen(PUN_ROOT.'include/config.php', 'wb');
-		if (!$fn)
-			error('Unable to write config file include/config.php.', __FILE__, __LINE__);
-
-		if (fwrite($fn, pun_trim($conf_contents, " \n\r")."\n\n".implode("\n", $conf_add)."\n") === false)
-			error('Unable to write config file include/config.php.', __FILE__, __LINE__);
-
-		fclose($fn);
-	}
-} // rev.63
-if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 65)
-{
-	@unlink(PUN_ROOT.'lang/English/bbcode.php');
-	@unlink(PUN_ROOT.'lang/Russian/bbcode.php');
-} // rev.65
-if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 68)
-{
-	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o\_blocking\_%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());
-
-	if ($db->table_exists('blocking'))
-		$db->drop_table('blocking') or error('Unable to drop blocking table', __FILE__, __LINE__, $db->error());
-
-	if (!array_key_exists('o_enable_acaptcha', $pun_config))
-		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_enable_acaptcha\', \'1\')') or error('Unable to insert config value \'o_enable_acaptcha\'', __FILE__, __LINE__, $db->error());
-} // rev.68
-if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 72)
-{
-	@unlink(PUN_ROOT.'js/minmax.js');
-	@unlink(PUN_ROOT.'install.php');
-} // rev.72
-if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 74)
-{
-	$db->drop_field('pms_new_block', 'bl_user') or error('Unable to drop bl_user field', __FILE__, __LINE__, $db->error());
-	$db->drop_field('pms_new_posts', 'post_seen') or error('Unable to drop post_seen field', __FILE__, __LINE__, $db->error());
-} // rev.74
-if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 78)
-{
-	$db->alter_field('users', 'password', 'VARCHAR(255)', false, '') or error('Unable to alter password field', __FILE__, __LINE__, $db->error());
-	$db->alter_field('users', 'activate_string', 'VARCHAR(255)', true) or error('Unable to alter activate_string field', __FILE__, __LINE__, $db->error());
-} // rev.78
-// Visman
 
 		// If we don't need to update the database, skip this stage
 		if (isset($pun_config['o_database_revision']) && $pun_config['o_database_revision'] >= UPDATE_TO_DB_REVISION)
@@ -2100,11 +1562,11 @@ if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_v
 					$db->query('UPDATE '.$db->prefix.'posts SET poster=\''.$db->escape($username).'\' WHERE poster_id='.$id) or error('Unable to update posts', __FILE__, __LINE__, $db->error());
 
 					// TODO: The following must compare using collation utf8_bin otherwise we will accidently update posts/topics/etc belonging to both of the duplicate users, not just the one we renamed!
-					$db->query('UPDATE '.$db->prefix.'posts SET edited_by=\''.$db->escape($username).'\' WHERE edited_by=\''.$db->escape($old_username).'\' COLLATE utf8_bin') or error('Unable to update posts', __FILE__, __LINE__, $db->error());
-					$db->query('UPDATE '.$db->prefix.'topics SET poster=\''.$db->escape($username).'\' WHERE poster=\''.$db->escape($old_username).'\' COLLATE utf8_bin') or error('Unable to update topics', __FILE__, __LINE__, $db->error());
-					$db->query('UPDATE '.$db->prefix.'topics SET last_poster=\''.$db->escape($username).'\' WHERE last_poster=\''.$db->escape($old_username).'\' COLLATE utf8_bin') or error('Unable to update topics', __FILE__, __LINE__, $db->error());
-					$db->query('UPDATE '.$db->prefix.'forums SET last_poster=\''.$db->escape($username).'\' WHERE last_poster=\''.$db->escape($old_username).'\' COLLATE utf8_bin') or error('Unable to update forums', __FILE__, __LINE__, $db->error());
-					$db->query('UPDATE '.$db->prefix.'online SET ident=\''.$db->escape($username).'\' WHERE ident=\''.$db->escape($old_username).'\' COLLATE utf8_bin') or error('Unable to update online list', __FILE__, __LINE__, $db->error());
+					$db->query('UPDATE '.$db->prefix.'posts SET edited_by=\''.$db->escape($username).'\' WHERE edited_by=\''.$db->escape($old_username).'\' COLLATE utf8mb4_bin') or error('Unable to update posts', __FILE__, __LINE__, $db->error());
+					$db->query('UPDATE '.$db->prefix.'topics SET poster=\''.$db->escape($username).'\' WHERE poster=\''.$db->escape($old_username).'\' COLLATE utf8mb4_bin') or error('Unable to update topics', __FILE__, __LINE__, $db->error());
+					$db->query('UPDATE '.$db->prefix.'topics SET last_poster=\''.$db->escape($username).'\' WHERE last_poster=\''.$db->escape($old_username).'\' COLLATE utf8mb4_bin') or error('Unable to update topics', __FILE__, __LINE__, $db->error());
+					$db->query('UPDATE '.$db->prefix.'forums SET last_poster=\''.$db->escape($username).'\' WHERE last_poster=\''.$db->escape($old_username).'\' COLLATE utf8mb4_bin') or error('Unable to update forums', __FILE__, __LINE__, $db->error());
+					$db->query('UPDATE '.$db->prefix.'online SET ident=\''.$db->escape($username).'\' WHERE ident=\''.$db->escape($old_username).'\' COLLATE utf8mb4_bin') or error('Unable to update online list', __FILE__, __LINE__, $db->error());
 
 					// If the user is a moderator or an administrator we have to update the moderator lists
 					$result = $db->query('SELECT g_moderator FROM '.$db->prefix.'groups WHERE g_id='.$cur_user['group_id']) or error('Unable to fetch group', __FILE__, __LINE__, $db->error());
@@ -2309,7 +1771,7 @@ foreach ($errors[$id] as $cur_error)
 
 	// Rebuild the search index
 	case 'rebuild_idx':
-		$query_str = '?stage=finish';
+		$query_str = '?stage=visman';
 
 		// If we don't need to update the search index, skip this stage
 		if (isset($pun_config['o_searchindex_revision']) && $pun_config['o_searchindex_revision'] >= UPDATE_TO_SI_REVISION)
@@ -2367,6 +1829,614 @@ foreach ($errors[$id] as $cur_error)
 
 		break;
 
+
+	// Visman
+	case 'visman':
+		$query_str = '?stage=finish';
+
+		if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 16)
+		{
+			$db->add_field('groups', 'g_deledit_interval', 'INT(10)', false, 0) or error('Unable to add g_deledit_interval field', __FILE__, __LINE__, $db->error());
+
+			$db->add_field('posts', 'edit_post', 'TINYINT(1)', false, 0) or error('Unable to add edit_post field', __FILE__, __LINE__, $db->error());
+
+			$db->add_field('users', 'gender', 'TINYINT(4) UNSIGNED', false, 0) or error('Unable to add gender field', __FILE__, __LINE__, $db->error());
+
+			if (!array_key_exists('o_cur_ver_revision', $pun_config))
+				$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_cur_ver_revision\', \'0\')') or error('Unable to insert config value \'o_cur_ver_revision\'', __FILE__, __LINE__, $db->error());
+
+			if (!array_key_exists('o_merge_timeout', $pun_config))
+				$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_merge_timeout\', \'86400\')') or error('Unable to insert config value \'o_merge_timeout\'', __FILE__, __LINE__, $db->error());
+
+			if (!array_key_exists('o_coding_forms', $pun_config))
+				$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_coding_forms\', \'0\')') or error('Unable to insert config value \'o_coding_forms\'', __FILE__, __LINE__, $db->error());
+
+			if (!array_key_exists('o_check_ip', $pun_config))
+				$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_check_ip\', \'0\')') or error('Unable to insert config value \'o_check_ip\'', __FILE__, __LINE__, $db->error());
+		} // rev.16
+
+		if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 21)
+		{
+			$db->add_field('groups', 'g_pm', 'TINYINT(1)', false, 1) or error('Unable to add g_pm field', __FILE__, __LINE__, $db->error());
+			$db->add_field('groups', 'g_pm_limit', 'INT(10) UNSIGNED', false, 100) or error('Unable to add g_pm_limit field', __FILE__, __LINE__, $db->error());
+
+			$db->add_field('users', 'messages_enable', 'TINYINT(1)', false, 1) or error('Unable to add messages_enable field', __FILE__, __LINE__, $db->error());
+			$db->add_field('users', 'messages_email', 'TINYINT(1)', false, 0) or error('Unable to add messages_email field', __FILE__, __LINE__, $db->error());
+			$db->add_field('users', 'messages_new', 'INT(10) UNSIGNED', false, 0) or error('Unable to add messages_new field', __FILE__, __LINE__, $db->error());
+			$db->add_field('users', 'messages_all', 'INT(10) UNSIGNED', false, 0) or error('Unable to add messages_all field', __FILE__, __LINE__, $db->error());
+			$db->add_field('users', 'pmsn_last_post', 'INT(10) UNSIGNED', true) or error('Unable to add pmsn_last_post field', __FILE__, __LINE__, $db->error());
+
+			$db->query('UPDATE '.$db->prefix.'groups SET g_pm_limit=0 WHERE g_id='.PUN_ADMIN) or error('Unable to merge groups', __FILE__, __LINE__, $db->error());
+
+ 			if (!array_key_exists('o_pms_enabled', $pun_config))
+				$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_pms_enabled\', \'1\')') or error('Unable to insert config value \'o_pms_enabled\'', __FILE__, __LINE__, $db->error());
+
+			if (!$db->table_exists('pms_new_block'))
+			{
+				$schema = array(
+					'FIELDS'		=> array(
+						'bl_id'		=> array(
+							'datatype'		=> 'INT(10) UNSIGNED',
+							'allow_null'	=> false,
+							'default'		=> '0'
+						),
+						'bl_user_id'		=> array(
+							'datatype'		=> 'INT(10) UNSIGNED',
+							'allow_null'	=> false,
+							'default'		=> '0'
+						)
+					),
+					'INDEXES'		=> array(
+						'bl_id_idx'	=> array('bl_id'),
+						'bl_user_id_idx'	=> array('bl_user_id')
+					)
+				);
+
+				$db->create_table('pms_new_block', $schema) or error('Unable to create pms_new_block table', __FILE__, __LINE__, $db->error());
+			}
+
+			if (!$db->table_exists('pms_new_posts'))
+			{
+				$schema = array(
+					'FIELDS'		=> array(
+						'id'			=> array(
+							'datatype'		=> 'SERIAL',
+							'allow_null'	=> false
+						),
+						'poster'		=> array(
+							'datatype'		=> 'VARCHAR(200)',
+							'allow_null'	=> false,
+							'default'		=> '\'\''
+						),
+						'poster_id'		=> array(
+							'datatype'		=> 'INT(10) UNSIGNED',
+							'allow_null'	=> false,
+							'default'		=> '1'
+						),
+						'poster_ip'		=> array(
+							'datatype'		=> 'VARCHAR(39)',
+							'allow_null'	=> true
+						),
+						'message'		=> array(
+							'datatype'		=> 'TEXT',
+							'allow_null'	=> true
+						),
+						'hide_smilies'	=> array(
+							'datatype'		=> 'TINYINT(1)',
+							'allow_null'	=> false,
+							'default'		=> '0'
+						),
+						'posted'		=> array(
+							'datatype'		=> 'INT(10) UNSIGNED',
+							'allow_null'	=> false,
+							'default'		=> '0'
+						),
+						'edited'		=> array(
+							'datatype'		=> 'INT(10) UNSIGNED',
+							'allow_null'	=> true
+						),
+						'edited_by'		=> array(
+							'datatype'		=> 'VARCHAR(200)',
+							'allow_null'	=> true
+						),
+						'post_new'		=> array(
+							'datatype'		=> 'TINYINT(1)',
+							'allow_null'	=> false,
+							'default'		=> '1'
+						),
+						'topic_id'		=> array(
+							'datatype'		=> 'INT(10) UNSIGNED',
+							'allow_null'	=> false,
+							'default'		=> '0'
+						)
+					),
+					'PRIMARY KEY'	=> array('id'),
+					'INDEXES'		=> array(
+						'topic_id_idx'	=> array('topic_id'),
+						'multi_idx'		=> array('poster_id', 'topic_id')
+					)
+				);
+
+				$db->create_table('pms_new_posts', $schema) or error('Unable to create pms_new_posts table', __FILE__, __LINE__, $db->error());
+			}
+
+			if (!$db->table_exists('pms_new_topics'))
+			{
+				$schema = array(
+					'FIELDS'		=> array(
+						'id'			=> array(
+							'datatype'		=> 'SERIAL',
+							'allow_null'	=> false
+						),
+						'topic'		=> array(
+							'datatype'		=> 'VARCHAR(255)',
+							'allow_null'	=> false,
+							'default'		=> '\'\''
+						),
+						'starter'		=> array(
+							'datatype'		=> 'VARCHAR(200)',
+							'allow_null'	=> false,
+							'default'		=> '\'\''
+						),
+						'starter_id'	=> array(
+							'datatype'		=> 'INT(10) UNSIGNED',
+							'allow_null'	=> false,
+							'default'		=> '0'
+						),
+						'to_user'		=> array(
+							'datatype'		=> 'VARCHAR(200)',
+							'allow_null'	=> false,
+							'default'		=> '\'\''
+						),
+						'to_id'	=> array(
+							'datatype'		=> 'INT(10) UNSIGNED',
+							'allow_null'	=> false,
+							'default'		=> '0'
+						),
+						'replies'	=> array(
+							'datatype'		=> 'MEDIUMINT(8) UNSIGNED',
+							'allow_null'	=> false,
+							'default'		=> '0'
+						),
+						'last_posted'	=> array(
+							'datatype'		=> 'INT(10) UNSIGNED',
+							'allow_null'	=> false,
+							'default'		=> '0'
+						),
+						'last_poster'		=> array(
+							'datatype'		=> 'TINYINT(1)',
+							'allow_null'	=> false,
+							'default'		=> '0'
+						),
+						'see_st'	=> array(
+							'datatype'		=> 'INT(10) UNSIGNED',
+							'allow_null'	=> false,
+							'default'		=> '0'
+						),
+						'see_to'	=> array(
+							'datatype'		=> 'INT(10) UNSIGNED',
+							'allow_null'	=> false,
+							'default'		=> '0'
+						),
+						'topic_st'		=> array(
+							'datatype'		=> 'TINYINT(4)',
+							'allow_null'	=> false,
+							'default'		=> '0'
+						),
+						'topic_to'		=> array(
+							'datatype'		=> 'TINYINT(4)',
+							'allow_null'	=> false,
+							'default'		=> '0'
+						),
+					),
+					'PRIMARY KEY'	=> array('id'),
+					'INDEXES'		=> array(
+						'multi_idx_st'		=> array('starter_id', 'topic_st'),
+						'multi_idx_to'		=> array('to_id', 'topic_to')
+					)
+				);
+
+				$db->create_table('pms_new_topics', $schema) or error('Unable to create pms_new_topics table', __FILE__, __LINE__, $db->error());
+			}
+		} // rev.21
+
+		if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 23)
+		{
+			$db->add_field('forums', 'no_sum_mess', 'TINYINT(1)', false, 0) or error('Unable to add no_sum_mess field', __FILE__, __LINE__, $db->error());
+		} // rev.23
+
+		if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 24)
+		{
+			if (!$db->table_exists('smilies'))
+			{
+				// Create "smilies" table
+				$schema = array(
+					'FIELDS' => array(
+						'id' => array(
+							'datatype' => 'SERIAL',
+							'allow_null' => false
+						),
+						'image' => array(
+							'datatype' => 'VARCHAR(40)',
+							'allow_null' => false,
+							'default' => '\'\''
+						),
+						'text' => array(
+							'datatype' => 'VARCHAR(20)',
+							'allow_null' => false,
+							'default' => '\'\''
+						),
+						'disp_position' => array(
+							'datatype' => 'TINYINT(4) UNSIGNED',
+							'allow_null' => false,
+							'default' => '0'
+						)
+					),
+					'PRIMARY KEY' => array('id')
+				);
+				$db->create_table('smilies', $schema) or error('Unable to create smilies table', __FILE__, __LINE__, $db->error());
+
+				// ВНИМАНИЕ!!! ATTENTION!!!
+				// Если на вашем форуме используются другие смайлы,
+				// то перед обновлением замените этот массив на свой!
+				// Брать из файла parser.php
+				$smilies = array(
+					':)' => 'smile.png',
+					'=)' => 'smile.png',
+					':|' => 'neutral.png',
+					'=|' => 'neutral.png',
+					':(' => 'sad.png',
+					'=(' => 'sad.png',
+					':D' => 'big_smile.png',
+					'=D' => 'big_smile.png',
+					':o' => 'yikes.png',
+					':O' => 'yikes.png',
+					';)' => 'wink.png',
+					':/' => 'hmm.png',
+					':P' => 'tongue.png',
+					':p' => 'tongue.png',
+					':lol:' => 'lol.png',
+					':mad:' => 'mad.png',
+					':rolleyes:' => 'roll.png',
+					':cool:' => 'cool.png',
+				);
+
+				$i = 0;
+				foreach ($smilies as $text => $img)
+				{
+					$db->query('INSERT INTO '.$db->prefix.'smilies (image, text, disp_position) VALUES(\''.$img.'\', \''.$db->escape($text).'\', '.$i.')') or error('Unable to add smiley', __FILE__, __LINE__, $db->error());
+					$i++;
+				}
+			}
+		} // rev.24
+
+		if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 26)
+		{
+			$db->add_field('topics', 'stick_fp', 'TINYINT(1)', false, 0) or error('Unable to add stick_fp field', __FILE__, __LINE__, $db->error());
+		} // rev.26
+
+		if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 27)
+		{
+			$db->add_field('users', 'messages_flag', 'TINYINT(1)', false, 0) or error('Unable to add messages_flag field', __FILE__, __LINE__, $db->error());
+		} // rev.27
+
+		if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 28)
+		{
+			// Create warnings table - Visman
+			$schema = array(
+				'FIELDS' => array(
+					'id' => array(
+						'datatype' => 'SERIAL',
+						'allow_null' => false
+					),
+					'poster' => array(
+						'datatype' => 'VARCHAR(200)',
+						'allow_null' => false,
+						'default' => '\'\''
+					),
+					'poster_id'	=> array(
+						'datatype'		=> 'INT(10) UNSIGNED',
+						'allow_null'	=> false,
+						'default'		=> '0'
+					),
+					'posted'	=> array(
+						'datatype'		=> 'INT(10) UNSIGNED',
+						'allow_null'	=> false,
+						'default'		=> '0'
+					),
+					'message'		=> array(
+						'datatype'		=> 'TEXT',
+						'allow_null' => true
+					)
+				),
+				'PRIMARY KEY' => array('id')
+			);
+
+			$db->create_table('warnings', $schema) or error('Unable to create warnings table', __FILE__, __LINE__, $db->error());
+		// Create warnings table - Visman
+		} // rev.28
+
+		if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 29)
+		{
+			$db->add_field('users', 'warning_flag', 'TINYINT(1)', false, 0) or error('Unable to add messages_flag field', __FILE__, __LINE__, $db->error());
+		} // rev.29
+
+		if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 31)
+		{
+			$db->add_field('users', 'warning_all', 'INT(10) UNSIGNED', false, 0) or error('Unable to add messages_all field', __FILE__, __LINE__, $db->error());
+			$db->add_field('posts', 'user_agent', 'VARCHAR( 255 )', true);
+
+ 			if (!array_key_exists('o_pms_min_kolvo', $pun_config))
+				$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_pms_min_kolvo\', \'0\')') or error('Unable to insert config value \'o_pms_min_kolvo\'', __FILE__, __LINE__, $db->error());
+		} // rev.31
+
+		if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 32)
+		{
+ 			if (!array_key_exists('o_board_redirect', $pun_config))
+				$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_board_redirect\', \'\')') or error('Unable to insert config value \'o_board_redirect\'', __FILE__, __LINE__, $db->error());
+ 			if (!array_key_exists('o_board_redirectg', $pun_config))
+				$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_board_redirectg\', \'0\')') or error('Unable to insert config value \'o_board_redirectg\'', __FILE__, __LINE__, $db->error());
+		} // rev.32
+
+		if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 33)
+		{
+			$db->add_field('topics', 'poll_type', 'TINYINT(4)', false, 0) or error('Unable to add poll_type field', __FILE__, __LINE__, $db->error());
+			$db->add_field('topics', 'poll_time', 'INT(10) UNSIGNED', false, 0) or error('Unable to add poll_time field', __FILE__, __LINE__, $db->error());
+			$db->add_field('topics', 'poll_term', 'TINYINT(4)', false, 0) or error('Unable to add poll_term field', __FILE__, __LINE__, $db->error());
+			$db->add_field('topics', 'poll_kol', 'INT(10) UNSIGNED', false, 0) or error('Unable to add poll_kol field', __FILE__, __LINE__, $db->error());
+
+			$schema = array(
+				'FIELDS' => array(
+					'tid' => array(
+						'datatype'		=> 'INT(10) UNSIGNED',
+						'allow_null'	=> false,
+						'default'		=> '0'
+					),
+					'question' => array(
+						'datatype'		=> 'TINYINT(4)',
+						'allow_null'	=> false,
+						'default'		=> '0'
+					),
+					'field' => array(
+						'datatype'		=> 'TINYINT(4)',
+						'allow_null'	=> false,
+						'default'		=> '0'
+					),
+					'choice' => array(
+						'datatype'		=> 'VARCHAR(255)',
+						'allow_null'	=> false,
+						'default'		=> '\'\''
+					),
+					'votes' => array(
+						'datatype'		=> 'INT(10) UNSIGNED',
+						'allow_null'	=> false,
+						'default'		=> '0'
+					)
+				),
+				'PRIMARY KEY' => array('tid', 'question', 'field')
+			);
+
+			$db->create_table('poll', $schema) or error('Unable to create table poll', __FILE__, __LINE__, $db->error());
+
+			$schema = array(
+				'FIELDS' => array(
+					'tid' => array(
+						'datatype'		=> 'INT(10) UNSIGNED',
+						'allow_null'	=> false
+					),
+					'uid' => array(
+						'datatype'		=> 'INT(10) UNSIGNED',
+						'allow_null'	=> false
+					),
+					'rez' => array(
+						'datatype'		=> 'TEXT',
+						'allow_null'	=> true
+					)
+				),
+				'PRIMARY KEY' => array('tid', 'uid')
+			);
+
+			$db->create_table('poll_voted', $schema) or error('Unable to create table poll_voted', __FILE__, __LINE__, $db->error());
+
+			if (!array_key_exists('o_poll_enabled', $pun_config))
+				$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_poll_enabled\', \'0\')') or error('Unable to insert config value \'o_poll_enabled\'', __FILE__, __LINE__, $db->error());
+			if (!array_key_exists('o_poll_max_ques', $pun_config))
+				$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_poll_max_ques\', \'3\')') or error('Unable to insert config value \'o_poll_max_ques\'', __FILE__, __LINE__, $db->error());
+			if (!array_key_exists('o_poll_max_field', $pun_config))
+				$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_poll_max_field\', \'20\')') or error('Unable to insert config value \'o_poll_max_field\'', __FILE__, __LINE__, $db->error());
+			if (!array_key_exists('o_poll_time', $pun_config))
+				$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_poll_time\', \'60\')') or error('Unable to insert config value \'o_poll_time\'', __FILE__, __LINE__, $db->error());
+			if (!array_key_exists('o_poll_term', $pun_config))
+				$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_poll_term\', \'3\')') or error('Unable to insert config value \'o_poll_term\'', __FILE__, __LINE__, $db->error());
+			if (!array_key_exists('o_poll_guest', $pun_config))
+				$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_poll_guest\', \'0\')') or error('Unable to insert config value \'o_poll_guest\'', __FILE__, __LINE__, $db->error());
+		} // rev.33
+
+		if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 40)
+		{
+			if (!array_key_exists('o_fbox_guest', $pun_config))
+				$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_fbox_guest\', \'0\')') or error('Unable to insert config value \'o_fbox_guest\'', __FILE__, __LINE__, $db->error());
+			if (!array_key_exists('o_fbox_files', $pun_config))
+				$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_fbox_files\', \'viewtopic.php,search.php,pmsnew.php\')') or error('Unable to insert config value \'o_fbox_files\'', __FILE__, __LINE__, $db->error());
+		} // rev.40
+
+		if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 42)
+		{
+			$db->add_field('online', 'witt_data', 'VARCHAR(255)', false, '') or error('Unable to add witt_data field', __FILE__, __LINE__, $db->error());
+		} // rev.42
+
+		if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 47)
+		{
+			$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o\_uploadile\_%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());
+
+			if (!array_key_exists('o_crypto_enable', $pun_config))
+				$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_crypto_enable\', \'1\')') or error('Unable to insert config value \'o_crypto_enable\'', __FILE__, __LINE__, $db->error());
+			if (!array_key_exists('o_crypto_pas', $pun_config))
+				$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_crypto_pas\', \''.$db->escape(random_pass(25)).'\')') or error('Unable to insert config value \'o_crypto_pas\'', __FILE__, __LINE__, $db->error());
+			if (!array_key_exists('o_crypto_salt', $pun_config))
+				$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_crypto_salt\', \''.$db->escape(random_pass(13)).'\')') or error('Unable to insert config value \'o_crypto_salt\'', __FILE__, __LINE__, $db->error());
+		} // rev.47
+
+		if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 52)
+		{
+			@unlink(PUN_ROOT.'include/footer.php');
+			@unlink(PUN_ROOT.'include/header.php');
+		} // rev.52
+
+		if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 57)
+		{
+			$db->add_field('forums', 'parent_forum_id', 'INT(10) UNSIGNED', false, 0);
+			$db->add_field('forums', 'last_topic', 'VARCHAR(255)', true, null, 'last_poster');
+			$db->query('UPDATE '.$db->prefix.'forums AS f, '.$db->prefix.'posts AS p, '.$db->prefix.'topics AS t SET f.last_topic=t.subject WHERE f.last_post_id=p.id AND p.topic_id=t.id') or error('Unable to update last topic', __FILE__, __LINE__, $db->error());
+		} // rev.57
+
+		if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 58)
+		{
+			$stat = array();
+			if (file_exists(FORUM_CACHE_DIR.'cache_maxusers.php'))
+				include FORUM_CACHE_DIR.'cache_maxusers.php';
+
+			if (!defined('PUN_MAXUSERS_LOADED'))
+			{
+				$stats['max_users'] = 1;
+				$stats['max_users_time'] = time();
+			}
+
+			if (!array_key_exists('st_max_users', $pun_config))
+				$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'st_max_users\', \''.$db->escape($stats['max_users']).'\')') or error('Unable to insert config value \'st_max_users\'', __FILE__, __LINE__, $db->error());
+			if (!array_key_exists('st_max_users_time', $pun_config))
+				$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'st_max_users_time\', \''.$db->escape($stats['max_users_time']).'\')') or error('Unable to insert config value \'st_max_users_time\'', __FILE__, __LINE__, $db->error());
+		} // rev.58
+
+		if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 59)
+		{
+			@unlink(PUN_ROOT.'include/cache_smilies.php');
+		} // rev.59
+
+		if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 63)
+		{
+			$conf_contents = file_get_contents(PUN_ROOT.'include/config.php');
+
+			if ($conf_contents === false)
+				error('Unable to read config file include/config.php.', __FILE__, __LINE__);
+
+			$conf_define = array(
+				'PUN_DEBUG' => array('1', true, ''),
+				'PUN_SHOW_QUERIES' => array('1', false, ''),
+				'PUN_MAX_POSTSIZE' => array('65535', true, ''),
+				'FORUM_EOL' => array('"\r\n"', false, 'possible values can be PHP_EOL, "\r\n", "\n" or "\r"'),
+				'FORUM_UA_OFF' => array('1', false, ''),
+				'FORUM_AJAX_JQUERY' => array('\'//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js\'', true, ''),
+			);
+
+			$conf_add = array();
+			foreach ($conf_define as $conf_name => $conf_value)
+			{
+				if (!preg_match('%[\'"]'.$conf_name.'[\'"]%u', $conf_contents))
+				{
+					$conf_add[] = ($conf_value[1] ? '' : '//').'define(\''.$conf_name.'\', '.$conf_value[0].');'.(empty($conf_value[2]) ? '' : ' // '.$conf_value[2]);
+				}
+			}
+
+			if (!empty($conf_add))
+			{
+				$fn = @fopen(PUN_ROOT.'include/config.php', 'wb');
+				if (!$fn)
+					error('Unable to write config file include/config.php.', __FILE__, __LINE__);
+
+				if (fwrite($fn, pun_trim($conf_contents, " \n\r")."\n\n".implode("\n", $conf_add)."\n") === false)
+					error('Unable to write config file include/config.php.', __FILE__, __LINE__);
+
+				fclose($fn);
+			}
+		} // rev.63
+
+		if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 65)
+		{
+			@unlink(PUN_ROOT.'lang/English/bbcode.php');
+			@unlink(PUN_ROOT.'lang/Russian/bbcode.php');
+		} // rev.65
+
+		if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 68)
+		{
+			$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o\_blocking\_%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());
+
+			if ($db->table_exists('blocking'))
+				$db->drop_table('blocking') or error('Unable to drop blocking table', __FILE__, __LINE__, $db->error());
+
+			if (!array_key_exists('o_enable_acaptcha', $pun_config))
+				$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_enable_acaptcha\', \'1\')') or error('Unable to insert config value \'o_enable_acaptcha\'', __FILE__, __LINE__, $db->error());
+		} // rev.68
+
+		if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 72)
+		{
+			@unlink(PUN_ROOT.'js/minmax.js');
+			@unlink(PUN_ROOT.'install.php');
+		} // rev.72
+
+		if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 74)
+		{
+			$db->drop_field('pms_new_block', 'bl_user') or error('Unable to drop bl_user field', __FILE__, __LINE__, $db->error());
+			$db->drop_field('pms_new_posts', 'post_seen') or error('Unable to drop post_seen field', __FILE__, __LINE__, $db->error());
+		} // rev.74
+
+		if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 78)
+		{
+			$db->alter_field('users', 'password', 'VARCHAR(255)', false, '') or error('Unable to alter password field', __FILE__, __LINE__, $db->error());
+			$db->alter_field('users', 'activate_string', 'VARCHAR(255)', true) or error('Unable to alter activate_string field', __FILE__, __LINE__, $db->error());
+		} // rev.78
+
+		if ($mysql && (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 79))
+		{
+			echo 'Update DB to utf8mb4...<br />'."\n";
+
+			$db->alter_field('config', 'conf_name', 'VARCHAR(190)', false, '') or error('Unable to alter password field', __FILE__, __LINE__, $db->error());
+
+			$db->query('ALTER DATABASE `'.$db_name.'` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci') or error('Unable to update CHARACTER SET for DB', __FILE__, __LINE__, $db->error());
+
+			$db_tables = [
+				'bans',
+				'categories',
+				'censoring',
+				'config',
+				'forums',
+				'forum_perms',
+				'forum_subscriptions',
+				'groups',
+				'online',
+				'pms_new_block',
+				'pms_new_posts',
+				'pms_new_topics',
+				'poll',
+				'poll_voted',
+				'posts',
+				'reports',
+				'search_cache',
+				'search_matches',
+				'search_words',
+				'sec_of_login',
+				'sec_of_post',
+				'sec_of_register',
+				'smilies',
+				'topics',
+				'topic_subscriptions',
+				'users',
+				'warnings',
+			];
+
+			foreach ($db_tables as $t)
+			{
+				if (!$db->table_exists($t))
+				{
+					continue;
+				}
+				echo 'Update `' . $t . '` to utf8mb4...<br />'."\n";
+
+				alter_table_utf8($db_prefix . $t);
+			}
+		} // rev.79
+		// Visman
+		break;
 
 	// Show results page
 	case 'finish':

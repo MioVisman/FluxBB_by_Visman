@@ -215,6 +215,10 @@ class DBLayer
 
 	function set_names($names)
 	{
+		if ('utf8' === $names)
+		{
+			$names = 'utf8mb4';
+		}
 		return @mysqli_set_charset($this->link_id, $names);
 	}
 
@@ -277,7 +281,7 @@ class DBLayer
 			$query .= $field_name.' '.$field_data['datatype'];
 
 			if (isset($field_data['collation']))
-				$query .= 'CHARACTER SET utf8 COLLATE utf8_'.$field_data['collation'];
+				$query .= 'CHARACTER SET utf8mb4 COLLATE utf8mb4_'.$field_data['collation'];
 
 			if (!$field_data['allow_null'])
 				$query .= ' NOT NULL';
@@ -307,7 +311,7 @@ class DBLayer
 		}
 
 		// We remove the last two characters (a newline and a comma) and add on the ending
-		$query = substr($query, 0, strlen($query) - 2)."\n".') ENGINE = '.(isset($schema['ENGINE']) ? $schema['ENGINE'] : 'InnoDB').' CHARACTER SET utf8';
+		$query = substr($query, 0, strlen($query) - 2)."\n".') ENGINE = '.(isset($schema['ENGINE']) ? $schema['ENGINE'] : 'InnoDB').' CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci';
 
 		return $this->query($query) ? true : false;
 	}

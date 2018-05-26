@@ -88,7 +88,7 @@ if (isset($_POST['form_sent']))
 			$errors[] = $lang_post['No subject after censoring'];
 
 		poll_form_validate($cur_post['tid'], $errors);
-		
+
 	} else { // MOD warnings - Visman
 		$subject = $cur_post['subject'];
 	}
@@ -129,9 +129,6 @@ if (isset($_POST['form_sent']))
 	if (!$is_admmod)
 		$stick_topic = $cur_post['sticky'];
 
-	// Replace four-byte characters (MySQL cannot handle them)
-	$message = strip_bad_multibyte_chars($message);
-
 	// Visman
 	$edit_post = isset($_POST['editpost']) ? '1' : '0';
 	if ($pun_user['g_id'] != PUN_ADMIN)
@@ -163,7 +160,7 @@ if (isset($_POST['form_sent']))
 			{
 				// Update the topic and any redirect topics
 				$db->query('UPDATE '.$db->prefix.'topics SET stick_fp='.$stick_fp.', subject=\''.$db->escape($subject).'\', sticky='.$stick_topic.' WHERE id='.$cur_post['tid'].' OR moved_to='.$cur_post['tid']) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
-			
+
 				// Is the current topic last? - last topic on index - Visman
 				$result = $db->query('SELECT 1 FROM '.$db->prefix.'posts WHERE id='.$cur_post['last_post_id'].' AND topic_id='.$cur_post['tid']);
 				if ($db->num_rows($result))

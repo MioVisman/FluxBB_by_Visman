@@ -9,14 +9,14 @@
 // The FluxBB version this script installs
 define('FORUM_VERSION', '1.5.10');
 
-define('FORUM_VER_REVISION', 78);	// номер сборки - Visman
+define('FORUM_VER_REVISION', 79);	// номер сборки - Visman
 
 define('FORUM_DB_REVISION', 21);
 define('FORUM_SI_REVISION', 2.1);
 define('FORUM_PARSER_REVISION', 2);
 
 define('MIN_PHP_VERSION', '5.6.0');
-define('MIN_MYSQL_VERSION', '5.0.7');
+define('MIN_MYSQL_VERSION', '5.5.3');
 define('MIN_PGSQL_VERSION', '7.0.0');
 define('PUN_SEARCH_MIN_WORD', 3);
 define('PUN_SEARCH_MAX_WORD', 20);
@@ -662,7 +662,7 @@ else
 	$schema = array(
 		'FIELDS'		=> array(
 			'conf_name'		=> array(
-				'datatype'		=> 'VARCHAR(255)',
+				'datatype'		=> 'VARCHAR(190)',
 				'allow_null'	=> false,
 				'default'		=> '\'\''
 			),
