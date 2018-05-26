@@ -171,9 +171,6 @@ if (isset($_POST['form_sent']))
 	$subscribe = isset($_POST['subscribe']) ? '1' : '0';
 	$stick_topic = isset($_POST['stick_topic']) && $is_admmod ? '1' : '0';
 
-	// Replace four-byte characters (MySQL cannot handle them)
-	$message = strip_bad_multibyte_chars($message);
-
 	$now = time();
 
 	poll_form_validate($tid, $errors); // Poll Mod - Visman
@@ -358,7 +355,7 @@ if (isset($_POST['form_sent']))
 
 			update_forum($fid);
 			poll_save($new_tid);
-			
+
 			// Should we send out notifications?
 			if ($pun_config['o_forum_subscriptions'] == '1')
 			{
