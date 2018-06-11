@@ -794,7 +794,7 @@ else if (isset($_GET['find_user']))
 	{
 		if ($input != '' && in_array($key, array('username', 'email', 'title', 'realname', 'gender', 'url', 'jabber', 'icq', 'msn', 'aim', 'yahoo', 'location', 'signature', 'admin_note'))) // мод пола - Visman
 		{
-			$conditions[] = 'u.'.$db->escape($key).' '.$like_command.' \''.$db->escape(str_replace('*', '%', $input)).'\'';
+			$conditions[] = 'u.'.$db->escape($key).' '.$like_command.' \''.$db->escape(str_replace(array('*', '_'), array('%', '\\_'), $input)).'\'';
 			$query_str[] = 'form%5B'.$key.'%5D='.urlencode($input);
 		}
 	}
