@@ -85,7 +85,7 @@ class DBLayer
 		if ($this->query_result)
 		{
 			if (defined('PUN_SHOW_QUERIES'))
-				$this->saved_queries[] = array($sql, sprintf('%.5f', microtime(true) - $q_start));
+				$this->saved_queries[] = array($sql, sprintf('%.5F', microtime(true) - $q_start));
 
 			++$this->num_queries;
 
