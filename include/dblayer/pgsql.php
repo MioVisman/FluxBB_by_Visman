@@ -71,7 +71,7 @@ class DBLayer
 		if (!defined('FORUM_NO_SET_NAMES'))
 			$this->set_names('utf8');
 	}
-	
+
 
 	function start_transaction()
 	{
@@ -109,7 +109,7 @@ class DBLayer
 		if (pg_result_status($this->query_result) != PGSQL_FATAL_ERROR)
 		{
 			if (defined('PUN_SHOW_QUERIES'))
-				$this->saved_queries[] = array($sql, sprintf('%.5f', microtime(true) - $q_start));
+				$this->saved_queries[] = array($sql, sprintf('%.5F', microtime(true) - $q_start));
 
 			++$this->num_queries;
 
