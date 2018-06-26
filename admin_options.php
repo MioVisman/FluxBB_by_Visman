@@ -736,14 +736,14 @@ generate_admin_menu('options');
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['SMTP address label'] ?></th>
 									<td>
-										<input type="text" name="form[smtp_host]" size="30" maxlength="100" value="<?php echo pun_htmlspecialchars($pun_config['o_smtp_host']) ?>" />
+										<input type="text" name="form[smtp_host]" size="30" value="<?php echo pun_htmlspecialchars($pun_config['o_smtp_host']) ?>" />
 										<span><?php echo $lang_admin_options['SMTP address help'] ?></span>
 									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['SMTP username label'] ?></th>
 									<td>
-										<input type="text" name="form[smtp_user]" size="25" maxlength="50" value="<?php echo pun_htmlspecialchars($pun_config['o_smtp_user']) ?>" />
+										<input type="text" name="form[smtp_user]" size="25" value="<?php echo pun_htmlspecialchars($pun_config['o_smtp_user']) ?>" />
 										<span><?php echo $lang_admin_options['SMTP username help'] ?></span>
 									</td>
 								</tr>
@@ -780,7 +780,7 @@ generate_admin_menu('options');
 										<label class="conl"><input type="radio" name="form[regs_allow]" value="1"<?php if ($pun_config['o_regs_allow'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
 										<label class="conl"><input type="radio" name="form[regs_allow]" value="0"<?php if ($pun_config['o_regs_allow'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
 										<span class="clearb"><?php echo $lang_admin_options['Allow new help'] ?></span>
-									</td> 
+									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Verify label'] ?></th>
