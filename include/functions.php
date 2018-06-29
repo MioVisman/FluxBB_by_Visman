@@ -1375,13 +1375,8 @@ function maintenance_message()
 	global $db, $pun_config, $lang_common, $pun_user;
 
 	// Send no-cache headers
-	header('Expires: Thu, 21 Jul 1977 07:30:00 GMT'); // When yours truly first set eyes on this world! :)
-	header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
-	header('Cache-Control: post-check=0, pre-check=0', false);
-	header('Pragma: no-cache'); // For HTTP/1.0 compatibility
-
 	// Send the Content-type header in case the web server is setup to send something else
-	header('Content-type: text/html; charset=utf-8');
+	forum_http_headers();
 
 	// Deal with newlines, tabs and multiple spaces
 	$pattern = array("\t", '  ', '  ');
@@ -1505,13 +1500,8 @@ function redirect($destination_url, $message)
 	}
 
 	// Send no-cache headers
-	header('Expires: Thu, 21 Jul 1977 07:30:00 GMT'); // When yours truly first set eyes on this world! :)
-	header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
-	header('Cache-Control: post-check=0, pre-check=0', false);
-	header('Pragma: no-cache'); // For HTTP/1.0 compatibility
-
 	// Send the Content-type header in case the web server is setup to send something else
-	header('Content-type: text/html; charset=utf-8');
+	forum_http_headers();
 
 	if (file_exists(PUN_ROOT.'style/'.$pun_user['style'].'/redirect.tpl'))
 	{
@@ -1651,13 +1641,8 @@ function error($message, $file = null, $line = null, $db_error = false)
 		ob_start('ob_gzhandler');
 
 	// Send no-cache headers
-	header('Expires: Thu, 21 Jul 1977 07:30:00 GMT'); // When yours truly first set eyes on this world! :)
-	header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
-	header('Cache-Control: post-check=0, pre-check=0', false);
-	header('Pragma: no-cache'); // For HTTP/1.0 compatibility
-
 	// Send the Content-type header in case the web server is setup to send something else
-	header('Content-type: text/html; charset=utf-8');
+	forum_http_headers();
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -2275,6 +2260,7 @@ function sf_crumbs($id)
 	return $str;
 }
 
+
 //
 // Checks the password on the user's data array
 //
@@ -2287,7 +2273,7 @@ function forum_password_verify($password, $user)
 		return false;
 	}
 
-	// v 1.5.10.59 or later
+	// v 1.5.10.79 or later
 	if (password_verify($password, $user['password']))
 	{
 		return 1;
@@ -2308,7 +2294,7 @@ function forum_password_verify($password, $user)
 			return 2;
 		}
 	}
-	// Otherwise we should have a normal sha1 password (v 1.5.10.58 and less)
+	// Otherwise we should have a normal sha1 password (v 1.5.10.78 and less)
 	else if (strlen($user['password']) === 40)
 	{
 		if (hash_equals(pun_hash($password), $user['password']))
@@ -2318,4 +2304,19 @@ function forum_password_verify($password, $user)
 	}
 
 	return false;
+}
+
+
+//
+// Sets common http headers
+//
+function forum_http_headers($type = 'text/html')
+{
+	$now = gmdate('D, d M Y H:i:s') . ' GMT';
+
+	header('Content-type: ' . $type . '; charset=utf-8');
+	header('Cache-Control: no-cache, no-store, must-revalidate');
+	header('Date: ' . $now);
+	header('Last-Modified: ' . $now);
+	header('Expires: ' . $now);
 }

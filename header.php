@@ -9,15 +9,10 @@
 // Make sure no one attempts to run this script "directly"
 if (!defined('PUN'))
 	exit;
-	
-// Send no-cache headers
-header('Expires: Thu, 21 Jul 1977 07:30:00 GMT'); // When yours truly first set eyes on this world! :)
-header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
-header('Cache-Control: post-check=0, pre-check=0', false);
-header('Pragma: no-cache'); // For HTTP/1.0 compatibility
 
+// Send no-cache headers
 // Send the Content-type header in case the web server is setup to send something else
-header('Content-type: text/html; charset=utf-8');
+forum_http_headers();
 
 // Prevent site from being embedded in a frame unless FORUM_FRAME_OPTIONS is set
 // to a valid X-Frame-Options header value or false

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2013 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2018 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -10,7 +10,7 @@ define('PUN_QUIET_VISIT', 1);
 define('PUN_ROOT', dirname(__FILE__).'/');
 require PUN_ROOT.'include/common.php';
 
-header('Content-type: text/html; charset=utf-8');
+forum_http_headers();
 
 if ($pun_user['g_read_board'] == '0')
 	exit($lang_common['No view']);
