@@ -113,10 +113,7 @@ function output_rss($feed)
 	global $lang_common, $pun_config;
 
 	// Send XML/no cache headers
-	header('Content-Type: application/xml; charset=utf-8');
-	header('Expires: '.gmdate('D, d M Y H:i:s').' GMT');
-	header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-	header('Pragma: public');
+	forum_http_headers('application/xml');
 
 	echo '<?xml version="1.0" encoding="utf-8"?>'."\n";
 	echo '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">'."\n";
@@ -158,10 +155,7 @@ function output_atom($feed)
 	global $lang_common, $pun_config;
 
 	// Send XML/no cache headers
-	header('Content-Type: application/atom+xml; charset=utf-8');
-	header('Expires: '.gmdate('D, d M Y H:i:s').' GMT');
-	header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-	header('Pragma: public');
+	forum_http_headers('application/atom+xml');
 
 	echo '<?xml version="1.0" encoding="utf-8"?>'."\n";
 	echo '<feed xmlns="http://www.w3.org/2005/Atom">'."\n";
@@ -214,10 +208,7 @@ function output_xml($feed)
 	global $lang_common, $pun_config;
 
 	// Send XML/no cache headers
-	header('Content-Type: application/xml; charset=utf-8');
-	header('Expires: '.gmdate('D, d M Y H:i:s').' GMT');
-	header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-	header('Pragma: public');
+	forum_http_headers('application/xml');
 
 	echo '<?xml version="1.0" encoding="utf-8"?>'."\n";
 	echo '<source>'."\n";
@@ -258,10 +249,7 @@ function output_html($feed)
 {
 
 	// Send the Content-type header in case the web server is setup to send something else
-	header('Content-type: text/html; charset=utf-8');
-	header('Expires: '.gmdate('D, d M Y H:i:s').' GMT');
-	header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-	header('Pragma: public');
+	forum_http_headers();
 
 	foreach ($feed['items'] as $item)
 	{
@@ -492,10 +480,7 @@ else if ($action == 'online' || $action == 'online_full')
 	}
 
 	// Send the Content-type header in case the web server is setup to send something else
-	header('Content-type: text/html; charset=utf-8');
-	header('Expires: '.gmdate('D, d M Y H:i:s').' GMT');
-	header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-	header('Pragma: public');
+	forum_http_headers();
 
 	echo sprintf($lang_index['Guests online'], forum_number_format($num_guests)).'<br />'."\n";
 
@@ -530,10 +515,7 @@ else if ($action == 'stats')
 	list($stats['total_topics'], $stats['total_posts']) = $db->fetch_row($result);
 
 	// Send the Content-type header in case the web server is setup to send something else
-	header('Content-type: text/html; charset=utf-8');
-	header('Expires: '.gmdate('D, d M Y H:i:s').' GMT');
-	header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-	header('Pragma: public');
+	forum_http_headers();
 
 	echo sprintf($lang_index['No of users'], forum_number_format($stats['total_users'])).'<br />'."\n";
 	echo sprintf($lang_index['Newest user'], (($pun_user['g_view_users'] == '1') ? '<a href="'.pun_htmlspecialchars(get_base_url(true)).'/profile.php?id='.$stats['last_user']['id'].'">'.pun_htmlspecialchars($stats['last_user']['username']).'</a>' : pun_htmlspecialchars($stats['last_user']['username']))).'<br />'."\n";
