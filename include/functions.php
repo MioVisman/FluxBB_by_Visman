@@ -1374,6 +1374,8 @@ function maintenance_message()
 {
 	global $db, $pun_config, $lang_common, $pun_user;
 
+	header("HTTP/1.1 503 Service Unavailable");
+
 	// Send no-cache headers
 	// Send the Content-type header in case the web server is setup to send something else
 	forum_http_headers();
@@ -1639,6 +1641,8 @@ function error($message, $file = null, $line = null, $db_error = false)
 	// "Restart" output buffering if we are using ob_gzhandler (since the gzip header is already sent)
 	if ($pun_config['o_gzip'] && extension_loaded('zlib'))
 		ob_start('ob_gzhandler');
+
+	header("HTTP/1.1 503 Service Unavailable");
 
 	// Send no-cache headers
 	// Send the Content-type header in case the web server is setup to send something else
