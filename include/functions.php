@@ -1009,7 +1009,7 @@ function message($message, $no_back_link = false, $http_status = null)
 	witt_query(); // MOD Кто в этой теме - Visman
 
 	// Did we receive a custom header?
-	if(!is_null($http_status)) {
+	if (!is_null($http_status)) {
 		header('HTTP/1.1 ' . $http_status);
 	}
 
@@ -1051,17 +1051,17 @@ function format_time($timestamp, $date_only = false, $date_format = null, $time_
 	$timestamp += $diff;
 	$now = time();
 
-	if(is_null($date_format))
+	if (is_null($date_format))
 		$date_format = $forum_date_formats[$pun_user['date_format']];
 
-	if(is_null($time_format))
+	if (is_null($time_format))
 		$time_format = $forum_time_formats[$pun_user['time_format']];
 
 	$date = gmdate($date_format, $timestamp);
 	$today = gmdate($date_format, $now+$diff);
 	$yesterday = gmdate($date_format, $now+$diff-86400);
 
-	if(!$no_text)
+	if (!$no_text)
 	{
 		if ($date == $today)
 			$date = $lang_common['Today'];
@@ -1374,7 +1374,7 @@ function maintenance_message()
 {
 	global $db, $pun_config, $lang_common, $pun_user;
 
-	header("HTTP/1.1 503 Service Unavailable");
+	header('HTTP/1.1 503 Service Unavailable');
 
 	// Send no-cache headers
 	// Send the Content-type header in case the web server is setup to send something else
@@ -1642,7 +1642,7 @@ function error($message, $file = null, $line = null, $db_error = false)
 	if ($pun_config['o_gzip'] && extension_loaded('zlib'))
 		ob_start('ob_gzhandler');
 
-	header("HTTP/1.1 503 Service Unavailable");
+	header('HTTP/1.1 500 Internal Server Error');
 
 	// Send no-cache headers
 	// Send the Content-type header in case the web server is setup to send something else
