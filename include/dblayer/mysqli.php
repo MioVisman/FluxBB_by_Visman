@@ -206,7 +206,7 @@ class DBLayer
 		{
 			$names = 'utf8mb4';
 		}
-		return @mysqli_set_charset($this->link_id, $names);
+		return mysqli_set_charset($this->link_id, $names);
 	}
 
 
