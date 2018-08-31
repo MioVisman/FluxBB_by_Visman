@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2015 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2015-2018 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -14,7 +14,7 @@ class addon_security_for_post extends flux_addon
 	var $time_max;
 	var $form_key;
 
-	
+
 	function register($manager)
 	{
 		global $pun_user;
@@ -100,8 +100,6 @@ class addon_security_for_post extends flux_addon
 		$ip = get_remote_address();
 		$key = pun_hash($now.$ip.uniqid(rand(), true));
 
-//		$result = $db->query('SELECT 1 FROM '.$db->prefix.'sec_of_post WHERE form_time>'.($now - $this->att_period).' LIMIT '.($this->att_max)) or error('Unable to get sec_of_post data', __FILE__, __LINE__, $db->error());
-//		$type = ($db->num_rows($result) == $this->att_max);
 		$enable_acaptcha = isset($pun_config['o_enable_acaptcha']) && $pun_config['o_enable_acaptcha'] == '1';
 
 		$form_captcha = security_show_captcha(0, $enable_acaptcha, true);
@@ -115,7 +113,7 @@ class addon_security_for_post extends flux_addon
 	function hook_post_after_validation()
 	{
 		global $db, $pun_config, $errors;
-		
+
 		if (!defined('FORUM_SEC_FUNCTIONS_LOADED'))
 			include PUN_ROOT.'include/security.php';
 
