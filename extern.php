@@ -283,13 +283,13 @@ if ($action == 'feed')
 
 		// Fetch topic subject
 		$result = $db->query('SELECT t.subject, t.first_post_id FROM '.$db->prefix.'topics AS t LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.moved_to IS NULL AND t.id='.$tid) or error('Unable to fetch topic info', __FILE__, __LINE__, $db->error());
-		if (!$db->num_rows($result))
+		$cur_topic = $db->fetch_assoc($result);
+
+		if (!$cur_topic)
 		{
 			http_authenticate_user();
 			exit($lang_common['Bad request']);
 		}
-
-		$cur_topic = $db->fetch_assoc($result);
 
 		if ($pun_config['o_censoring'] == '1')
 			$cur_topic['subject'] = censor_words($cur_topic['subject']);
@@ -355,8 +355,10 @@ if ($action == 'feed')
 			{
 				// Fetch forum name
 				$result = $db->query('SELECT f.forum_name FROM '.$db->prefix.'forums AS f LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.id='.$fids[0]) or error('Unable to fetch forum name', __FILE__, __LINE__, $db->error());
-				if ($db->num_rows($result))
-					$forum_name = $lang_common['Title separator'].$db->result($result);
+				$forum = $db->fetch_row($result);
+
+				if (is_array($forum))
+					$forum_name = $lang_common['Title separator'].$forum[0];
 			}
 		}
 
