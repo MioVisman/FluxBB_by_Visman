@@ -21,10 +21,10 @@ if ($id < 1)
 // MOD last topic on index - f.last_post_id, - мод ограничения времени редактирвания, добавил p.posted as pposted, p.edit_post - StickFP Add t.stick_fp, - MOD warnings Add , w.message AS warning - t.poll_type, t.poll_time, t.poll_term, t.poll_kol, - Visman
 // Fetch some info about the post, the topic and the forum
 $result = $db->query('SELECT f.id AS fid, f.forum_name, f.moderators, f.redirect_url, fp.post_replies, fp.post_topics, f.last_post_id, t.id AS tid, t.stick_fp, t.subject, t.posted, t.first_post_id, t.sticky, t.closed, t.poll_type, t.poll_time, t.poll_term, t.poll_kol, p.poster, p.poster_id, p.message, p.hide_smilies, p.posted as pposted, p.edit_post, w.message AS warning FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'topics AS t ON t.id=p.topic_id INNER JOIN '.$db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$db->prefix.'warnings AS w ON p.id=w.id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.id='.$id) or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
-if (!$db->num_rows($result))
-	message($lang_common['Bad request'], false, '404 Not Found');
-
 $cur_post = $db->fetch_assoc($result);
+
+if (!$cur_post)
+	message($lang_common['Bad request'], false, '404 Not Found');
 
 // MOD subforums - Visman
 if (!isset($sf_array_asc[$cur_post['fid']]))
@@ -163,7 +163,7 @@ if (isset($_POST['form_sent']))
 
 				// Is the current topic last? - last topic on index - Visman
 				$result = $db->query('SELECT 1 FROM '.$db->prefix.'posts WHERE id='.$cur_post['last_post_id'].' AND topic_id='.$cur_post['tid']);
-				if ($db->num_rows($result))
+				if ($db->result($result))
 					$db->query('UPDATE '.$db->prefix.'forums SET last_topic=\''.$db->escape($subject).'\' WHERE id='.$cur_post['fid']) or error('Unable to update last topic', __FILE__, __LINE__, $db->error());
 
 				// We changed the subject, so we need to take that into account when we update the search words
