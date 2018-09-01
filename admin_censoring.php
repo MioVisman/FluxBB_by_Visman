@@ -36,7 +36,7 @@ if (isset($_POST['add_word']))
 	$word = $db->escape($search_for);
 	$result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'censoring WHERE search_for IN (\''.$word.'\',\'*'.$word.'\',\''.$word.'*\',\'*'.$word.'*\')') or error('Unable to fetch censor word', __FILE__, __LINE__, $db->error());
 	$nwords = $db->result($result);
-	
+
 	// Regenerate the censoring cache
 	if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
 		require PUN_ROOT.'include/cache.php';
@@ -146,7 +146,9 @@ generate_admin_menu('censoring');
 <?php
 
 $result = $db->query('SELECT id, search_for, replace_with FROM '.$db->prefix.'censoring ORDER BY id') or error('Unable to fetch censor word list', __FILE__, __LINE__, $db->error());
-if ($db->num_rows($result))
+$cur_word = $db->fetch_assoc($result);
+
+if (is_array($cur_word))
 {
 
 ?>
@@ -161,8 +163,11 @@ if ($db->num_rows($result))
 							<tbody>
 <?php
 
-	while ($cur_word = $db->fetch_assoc($result))
+	do
+	{
 		echo "\t\t\t\t\t\t\t\t".'<tr><td class="tcl"><input type="text" name="search_for['.$cur_word['id'].']" value="'.pun_htmlspecialchars($cur_word['search_for']).'" size="24" maxlength="60" /></td><td class="tc2"><input type="text" name="replace_with['.$cur_word['id'].']" value="'.pun_htmlspecialchars($cur_word['replace_with']).'" size="24" maxlength="60" /></td><td><input type="submit" name="update['.$cur_word['id'].']" value="'.$lang_admin_common['Update'].'" />&#160;<input type="submit" name="remove['.$cur_word['id'].']" value="'.$lang_admin_common['Remove'].'" /></td></tr>'."\n";
+	}
+	while ($cur_word = $db->fetch_assoc($result))
 
 ?>
 							</tbody>
