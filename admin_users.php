@@ -36,8 +36,8 @@ if (isset($_GET['ip_stats']))
 		message($lang_common['Bad request'], false, '404 Not Found');
 
 	// Fetch ip count
-	$result = $db->query('SELECT poster_ip, MAX(posted) AS last_used FROM '.$db->prefix.'posts WHERE poster_id='.$ip_stats.' GROUP BY poster_ip') or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
-	$num_ips = $db->num_rows($result);
+	$result = $db->query('SELECT COUNT(*) FROM (SELECT DISTINCT poster_ip FROM '.$db->prefix.'posts WHERE poster_id='.$ip_stats.') AS temp') or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
+	$num_ips = $db->result($result);
 
 	// Determine the ip offset (based on $_GET['p'])
 	$num_pages = ceil($num_ips / 50);
@@ -84,9 +84,11 @@ if (isset($_GET['ip_stats']))
 <?php
 
 	$result = $db->query('SELECT poster_ip, MAX(posted) AS last_used, COUNT(id) AS used_times FROM '.$db->prefix.'posts WHERE poster_id='.$ip_stats.' GROUP BY poster_ip ORDER BY last_used DESC LIMIT '.$start_from.', 50') or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
-	if ($db->num_rows($result))
+	$cur_ip = $db->fetch_assoc($result);
+
+	if (is_array($cur_ip))
 	{
-		while ($cur_ip = $db->fetch_assoc($result))
+		do
 		{
 
 ?>
@@ -99,6 +101,7 @@ if (isset($_GET['ip_stats']))
 <?php
 
 		}
+		while ($cur_ip = $db->fetch_assoc($result));
 	}
 	else
 		echo "\t\t\t\t".'<tr><td class="tcl" colspan="4">'.$lang_admin_users['Results no posts found'].'</td></tr>'."\n";
@@ -137,8 +140,8 @@ if (isset($_GET['show_users']))
 		message($lang_admin_users['Bad IP message']);
 
 	// Fetch user count
-	$result = $db->query('SELECT DISTINCT poster_id, poster FROM '.$db->prefix.'posts WHERE poster_ip=\''.$db->escape($ip).'\'') or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
-	$num_users = $db->num_rows($result);
+	$result = $db->query('SELECT COUNT(*) FROM (SELECT DISTINCT poster_id FROM '.$db->prefix.'posts WHERE poster_ip=\''.$db->escape($ip).'\') AS temp') or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
+	$num_users = $db->result($result);
 
 	// Determine the user offset (based on $_GET['p'])
 	$num_pages = ceil($num_users / 50);
@@ -187,17 +190,16 @@ if (isset($_GET['show_users']))
 <?php
 
 	$result = $db->query('SELECT DISTINCT poster_id, poster FROM '.$db->prefix.'posts WHERE poster_ip=\''.$db->escape($ip).'\' ORDER BY poster ASC LIMIT '.$start_from.', 50') or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
-	$num_posts = $db->num_rows($result);
+	$posters = $poster_ids = array();
 
-	if ($num_posts)
+	while ($cur_poster = $db->fetch_assoc($result))
 	{
-		$posters = $poster_ids = array();
-		while ($cur_poster = $db->fetch_assoc($result))
-		{
-			$posters[] = $cur_poster;
-			$poster_ids[] = $cur_poster['poster_id'];
-		}
+		$posters[] = $cur_poster;
+		$poster_ids[] = $cur_poster['poster_id'];
+	}
 
+	if (!empty($posters))
+	{
 		$result = $db->query('SELECT u.id, u.username, u.email, u.title, u.num_posts, u.admin_note, g.g_id, g.g_user_title FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'groups AS g ON g.g_id=u.group_id WHERE u.id>1 AND u.id IN('.implode(',', $poster_ids).')') or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
 
 		$user_data = array();
@@ -474,20 +476,18 @@ else if (isset($_POST['delete_users']) || isset($_POST['delete_users_comply']))
 
 			// Find all posts made by this user
 			$result = $db->query('SELECT p.id, p.topic_id, t.forum_id FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'topics AS t ON t.id=p.topic_id INNER JOIN '.$db->prefix.'forums AS f ON f.id=t.forum_id WHERE p.poster_id IN ('.implode(',', $user_ids).')') or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());
-			if ($db->num_rows($result))
+
+			while ($cur_post = $db->fetch_assoc($result))
 			{
-				while ($cur_post = $db->fetch_assoc($result))
-				{
-					// Determine whether this post is the "topic post" or not
-					$result2 = $db->query('SELECT id FROM '.$db->prefix.'posts WHERE topic_id='.$cur_post['topic_id'].' ORDER BY posted LIMIT 1') or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
+				// Determine whether this post is the "topic post" or not
+				$result2 = $db->query('SELECT id FROM '.$db->prefix.'posts WHERE topic_id='.$cur_post['topic_id'].' ORDER BY posted LIMIT 1') or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
 
-					if ($db->result($result2) == $cur_post['id'])
-						delete_topic($cur_post['topic_id']);
-					else
-						delete_post($cur_post['id'], $cur_post['topic_id']);
+				if ($db->result($result2) == $cur_post['id'])
+					delete_topic($cur_post['topic_id']);
+				else
+					delete_post($cur_post['id'], $cur_post['topic_id']);
 
-					update_forum($cur_post['forum_id']);
-				}
+				update_forum($cur_post['forum_id']);
 			}
 		}
 		else
@@ -875,9 +875,11 @@ else if (isset($_GET['find_user']))
 <?php
 
 	$result = $db->query('SELECT u.id, u.username, u.email, u.title, u.num_posts, u.admin_note, g.g_id, g.g_user_title FROM '.$db->prefix.'users AS u LEFT JOIN '.$db->prefix.'groups AS g ON g.g_id=u.group_id WHERE u.id>1'.(!empty($conditions) ? ' AND '.implode(' AND ', $conditions) : '').' ORDER BY '.$db->escape($order_by).' '.$db->escape($direction).' LIMIT '.$start_from.', 50') or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
-	if ($db->num_rows($result))
+	$user_data = $db->fetch_assoc($result);
+
+	if (is_array($user_data))
 	{
-		while ($user_data = $db->fetch_assoc($result))
+		do
 		{
 			$user_title = get_title($user_data);
 
@@ -901,6 +903,7 @@ else if (isset($_GET['find_user']))
 <?php
 
 		}
+		while ($user_data = $db->fetch_assoc($result));
 	}
 	else
 		echo "\t\t\t\t".'<tr><td class="tcl" colspan="6">'.$lang_admin_users['No match'].'</td></tr>'."\n";
