@@ -60,15 +60,13 @@ else if (isset($_GET['del_forum']))
 
 		// Locate any "orphaned redirect topics" and delete them
 		$result = $db->query('SELECT t1.id FROM '.$db->prefix.'topics AS t1 LEFT JOIN '.$db->prefix.'topics AS t2 ON t1.moved_to=t2.id WHERE t2.id IS NULL AND t1.moved_to IS NOT NULL') or error('Unable to fetch redirect topics', __FILE__, __LINE__, $db->error());
-		$num_orphans = $db->num_rows($result);
+		$orphans = [];
 
-		if ($num_orphans)
-		{
-			for ($i = 0; $i < $num_orphans; ++$i)
-				$orphans[] = $db->result($result, $i);
+		while ($row = $db->fetch_row($result))
+			$orphans[] = $row[0];
 
+		if (!empty($orphans))
 			$db->query('DELETE FROM '.$db->prefix.'topics WHERE id IN('.implode(',', $orphans).')') or error('Unable to delete redirect topics', __FILE__, __LINE__, $db->error());
-		}
 
 		// Delete the forum and any forum specific group permissions
 		$db->query('DELETE FROM '.$db->prefix.'forums WHERE id='.$forum_id) or error('Unable to delete forum', __FILE__, __LINE__, $db->error());
@@ -239,10 +237,11 @@ else if (isset($_GET['edit_forum']))
 
 	// Fetch forum info
 	$result = $db->query('SELECT id, forum_name, forum_desc, redirect_url, num_topics, sort_by, cat_id, parent_forum_id FROM '.$db->prefix.'forums WHERE id='.$forum_id) or error('Unable to fetch forum info', __FILE__, __LINE__, $db->error()); // MOD subforums - Visman
-	if (!$db->num_rows($result))
+	$cur_forum = $db->fetch_assoc($result);
+
+	if (!$cur_forum)
 		message($lang_common['Bad request'], false, '404 Not Found');
 
-	$cur_forum = $db->fetch_assoc($result);
 
 	// MOD subforums - Visman
 	if (file_exists(PUN_ROOT.'lang/'.$pun_user['language'].'/subforums.php'))
@@ -317,7 +316,7 @@ else if (isset($_GET['edit_forum']))
 	function sf_select_view ($id, $cur_forum, $space = '')
 	{
 		global $sf_array_tree, $sf_array_asc;
-		
+
 		if (empty($sf_array_tree[$id])) return;
 		$cur_category = 0;
 		foreach ($sf_array_tree[$id] as $forum_list)
@@ -434,8 +433,9 @@ generate_admin_menu('forums');
 <?php
 
 $result = $db->query('SELECT id, cat_name FROM '.$db->prefix.'categories ORDER BY disp_position') or error('Unable to fetch category list', __FILE__, __LINE__, $db->error());
+$cur_cat = $db->fetch_assoc($result);
 
-if ($db->num_rows($result) > 0)
+if (is_array($cur_cat))
 {
 
 ?>
@@ -451,8 +451,11 @@ if ($db->num_rows($result) > 0)
 										<select name="add_to_cat" tabindex="1">
 <?php
 
-	while ($cur_cat = $db->fetch_assoc($result))
+	do
+	{
 		echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_cat['id'].'">'.pun_htmlspecialchars($cur_cat['cat_name']).'</option>'."\n";
+	}
+	while ($cur_cat = $db->fetch_assoc($result))
 
 ?>
 										</select>
