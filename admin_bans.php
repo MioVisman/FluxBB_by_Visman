@@ -33,10 +33,12 @@ if (isset($_REQUEST['add_ban']) || isset($_GET['edit_ban']))
 				message($lang_common['Bad request'], false, '404 Not Found');
 
 			$result = $db->query('SELECT group_id, username, email FROM '.$db->prefix.'users WHERE id='.$user_id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
-			if ($db->num_rows($result))
-				list($group_id, $ban_user, $ban_email) = $db->fetch_row($result);
-			else
+			$banned_user_info = $db->fetch_row($result);
+
+			if (!$banned_user_info)
 				message($lang_admin_bans['No user ID message']);
+
+			list($group_id, $ban_user, $ban_email) = $banned_user_info;
 		}
 		else // Otherwise the username is in POST
 		{
@@ -45,10 +47,12 @@ if (isset($_REQUEST['add_ban']) || isset($_GET['edit_ban']))
 			if ($ban_user != '')
 			{
 				$result = $db->query('SELECT id, group_id, username, email FROM '.$db->prefix.'users WHERE username=\''.$db->escape($ban_user).'\' AND id>1') or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
-				if ($db->num_rows($result))
-					list($user_id, $group_id, $ban_user, $ban_email) = $db->fetch_row($result);
-				else
+				$banned_user_info = $db->fetch_row($result);
+
+				if (!$banned_user_info)
 					message($lang_admin_bans['No user message']);
+
+				list($user_id, $group_id, $ban_user, $ban_email) = $banned_user_info;
 			}
 		}
 
@@ -69,12 +73,15 @@ if (isset($_REQUEST['add_ban']) || isset($_GET['edit_ban']))
 		if (isset($user_id))
 		{
 			$result = $db->query('SELECT poster_ip FROM '.$db->prefix.'posts WHERE poster_id='.$user_id.' ORDER BY posted DESC LIMIT 1') or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
-			$ban_ip = ($db->num_rows($result)) ? $db->result($result) : '';
+			$ban_ip = $db->result($result);
 
-			if ($ban_ip == '')
+			if (!$ban_ip)
 			{
 				$result = $db->query('SELECT registration_ip FROM '.$db->prefix.'users WHERE id='.$user_id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
-				$ban_ip = ($db->num_rows($result)) ? $db->result($result) : '';
+				$ban_ip = $db->result($result);
+
+				if (!$ban_ip)
+					$ban_ip = '';
 			}
 		}
 
@@ -87,10 +94,12 @@ if (isset($_REQUEST['add_ban']) || isset($_GET['edit_ban']))
 			message($lang_common['Bad request'], false, '404 Not Found');
 
 		$result = $db->query('SELECT username, ip, email, message, expire FROM '.$db->prefix.'bans WHERE id='.$ban_id) or error('Unable to fetch ban info', __FILE__, __LINE__, $db->error());
-		if ($db->num_rows($result))
-			list($ban_user, $ban_ip, $ban_email, $ban_message, $ban_expire) = $db->fetch_row($result);
-		else
+		$banned_user_info = $db->fetch_row($result);
+
+		if (!$banned_user_info)
 			message($lang_common['Bad request'], false, '404 Not Found');
+
+		list($ban_user, $ban_ip, $ban_email, $ban_message, $ban_expire) = $banned_user_info;
 
 		$diff = ($pun_user['timezone'] + $pun_user['dst']) * 3600;
 		$ban_expire = ($ban_expire != '') ? gmdate('Y-m-d', $ban_expire + $diff) : '';
@@ -198,9 +207,11 @@ else if (isset($_POST['add_edit_ban']))
 	if (!empty($ban_user))
 	{
 		$result = $db->query('SELECT group_id FROM '.$db->prefix.'users WHERE username=\''.$db->escape($ban_user).'\' AND id>1') or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
-		if ($db->num_rows($result))
+		$row = $db->fetch_row($result);
+
+		if (is_array($row))
 		{
-			$group_id = $db->result($result);
+			$group_id = $row[0];
 
 			if ($group_id == PUN_ADMIN)
 				message(sprintf($lang_admin_bans['User is admin message'], pun_htmlspecialchars($ban_user)));
@@ -424,13 +435,13 @@ else if (isset($_GET['find_ban']))
 <?php
 
 	$result = $db->query('SELECT b.id, b.username, b.ip, b.email, b.message, b.expire, b.ban_creator, u.username AS ban_creator_username FROM '.$db->prefix.'bans AS b LEFT JOIN '.$db->prefix.'users AS u ON b.ban_creator=u.id WHERE b.id>0'.(!empty($conditions) ? ' AND '.implode(' AND ', $conditions) : '').' ORDER BY '.$db->escape($order_by).' '.$db->escape($direction).' LIMIT '.$start_from.', 50') or error('Unable to fetch ban list', __FILE__, __LINE__, $db->error());
-	if ($db->num_rows($result))
-	{
-		while ($ban_data = $db->fetch_assoc($result))
-		{
+	$actions = false;
 
-			$actions = '<a href="admin_bans.php?edit_ban='.$ban_data['id'].'">'.$lang_admin_common['Edit'].'</a> | <a href="admin_bans.php?del_ban='.$ban_data['id'].'&amp;csrf_hash='.csrf_hash().'">'.$lang_admin_common['Remove'].'</a>';
-			$expire = format_time($ban_data['expire'], true);
+	while ($ban_data = $db->fetch_assoc($result))
+	{
+
+		$actions = '<a href="admin_bans.php?edit_ban='.$ban_data['id'].'">'.$lang_admin_common['Edit'].'</a> | <a href="admin_bans.php?del_ban='.$ban_data['id'].'&amp;csrf_hash='.csrf_hash().'">'.$lang_admin_common['Remove'].'</a>';
+		$expire = format_time($ban_data['expire'], true);
 
 ?>
 				<tr>
@@ -444,9 +455,9 @@ else if (isset($_GET['find_ban']))
 				</tr>
 <?php
 
-		}
 	}
-	else
+
+	if (false === $actions)
 		echo "\t\t\t\t".'<tr><td class="tcl" colspan="7">'.$lang_admin_bans['No match'].'</td></tr>'."\n";
 
 ?>
