@@ -147,8 +147,9 @@ else if ($action == 'forget' || $action == 'forget_2')
 		if (empty($errors))
 		{
 			$result = $db->query('SELECT id, username, last_email_sent FROM '.$db->prefix.'users WHERE email=\''.$db->escape($email).'\'') or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+			$cur_hit = $db->fetch_assoc($result);
 
-			if ($db->num_rows($result))
+			if (is_array($cur_hit))
 			{
 				// Load the "activate password" template
 				$mail_tpl = trim(file_get_contents(PUN_ROOT.'lang/'.$pun_user['language'].'/mail_templates/activate_password.tpl'));
@@ -163,7 +164,7 @@ else if ($action == 'forget' || $action == 'forget_2')
 				$mail_message = str_replace('<board_mailer>', $pun_config['o_board_title'], $mail_message);
 
 				// Loop through users we found
-				while ($cur_hit = $db->fetch_assoc($result))
+				do
 				{
 					if ($cur_hit['last_email_sent'] != '' && (time() - $cur_hit['last_email_sent']) < 3600 && (time() - $cur_hit['last_email_sent']) >= 0)
 						message(sprintf($lang_login['Email flood'], intval((3600 - (time() - $cur_hit['last_email_sent'])) / 60)), true);
@@ -181,6 +182,7 @@ else if ($action == 'forget' || $action == 'forget_2')
 
 					pun_mail($email, $mail_subject, $cur_mail_message);
 				}
+				while ($cur_hit = $db->fetch_assoc($result));
 
 				message($lang_login['Forget mail'].' <a href="mailto:'.pun_htmlspecialchars($pun_config['o_admin_email']).'">'.pun_htmlspecialchars($pun_config['o_admin_email']).'</a>.', true);
 			}
