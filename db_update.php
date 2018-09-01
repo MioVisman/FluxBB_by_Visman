@@ -385,7 +385,7 @@ function convert_table_utf8($table, $callback, $old_charset, $key = null, $start
 		if (!is_null($start_at) && $end_at > 0)
 		{
 			$result = $db->query('SELECT 1 FROM '.$table.' WHERE '.$key.'>'.$end_at.' ORDER BY '.$key.' ASC LIMIT 1') or error('Unable to check for next row', __FILE__, __LINE__, $db->error());
-			$finished = $db->num_rows($result) == 0;
+			$finished = empty($db->result($result));
 		}
 
 		// Only swap the tables if we are doing this in 1 go, or it's the last go
@@ -423,7 +423,8 @@ function convert_table_utf8($table, $callback, $old_charset, $key = null, $start
 		if (!is_null($start_at) && $end_at > 0)
 		{
 			$result = $db->query('SELECT 1 FROM '.$table.' WHERE '.$key.'>'.$end_at.' ORDER BY '.$key.' ASC LIMIT 1') or error('Unable to check for next row', __FILE__, __LINE__, $db->error());
-			if ($db->num_rows($result) == 0)
+
+			if (empty($db->result($result)))
 				return true;
 
 			return $end_at;
@@ -806,9 +807,9 @@ switch ($stage)
 			$temp_id = $db->result($result);
 
 			$result = $db->query('SELECT g_id FROM '.$db->prefix.'groups WHERE g_moderator = 1 AND g_id > 1 LIMIT 1') or error('Unable to select moderator group', __FILE__, __LINE__, $db->error());
-			if ($db->num_rows($result))
-				$mod_gid = $db->result($result);
-			else
+			$mod_gid = $db->result($result);
+
+			if (empty($mod_gid))
 			{
 				$db->query('INSERT INTO '.$db->prefix.'groups (g_title, g_user_title, g_moderator, g_mod_edit_users, g_mod_rename_users, g_mod_change_passwords, g_mod_ban_users, g_read_board, g_view_users, g_post_replies, g_post_topics, g_edit_posts, g_delete_posts, g_delete_topics, g_set_title, g_search, g_search_users, g_send_email, g_post_flood, g_search_flood, g_email_flood, g_report_flood) VALUES('."'Moderators', 'Moderator', 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0)") or error('Unable to add group', __FILE__, __LINE__, $db->error());
 				$mod_gid = $db->insert_id();
@@ -1533,11 +1534,11 @@ switch ($stage)
 					$errors[$id][] = $lang_update['Username BBCode error'];
 
 				$result = $db->query('SELECT username FROM '.$db->prefix.'users WHERE (UPPER(username)=UPPER(\''.$db->escape($username).'\') OR UPPER(username)=UPPER(\''.$db->escape(preg_replace('%[^\p{L}\p{N}]%u', '', $username)).'\')) AND id>1') or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+				$busy = $db->fetch_row($result);
 
-				if ($db->num_rows($result))
+				if (is_array($busy))
 				{
-					$busy = $db->result($result);
-					$errors[$id][] = sprintf($lang_update['Username duplicate error'], pun_htmlspecialchars($busy));
+					$errors[$id][] = sprintf($lang_update['Username duplicate error'], pun_htmlspecialchars($busy[0]));
 				}
 
 				if (empty($errors[$id]))
@@ -1722,7 +1723,7 @@ foreach ($errors[$id] as $cur_error)
 		{
 			$result = $db->query('SELECT 1 FROM '.$db->prefix.'posts WHERE id > '.$end_at.' ORDER BY id ASC LIMIT 1') or error('Unable to fetch next ID', __FILE__, __LINE__, $db->error());
 
-			if ($db->num_rows($result) > 0)
+			if ($db->result($result))
 				$query_str = '?stage=preparse_posts&start_at='.$end_at;
 		}
 
@@ -1756,7 +1757,8 @@ foreach ($errors[$id] as $cur_error)
 		if ($end_at > 0)
 		{
 			$result = $db->query('SELECT 1 FROM '.$db->prefix.'users WHERE id > '.$end_at.' ORDER BY id ASC LIMIT 1') or error('Unable to fetch next ID', __FILE__, __LINE__, $db->error());
-			if ($db->num_rows($result) > 0)
+
+			if ($db->result($result))
 				$query_str = '?stage=preparse_sigs&start_at='.$end_at;
 		}
 
@@ -1817,7 +1819,7 @@ foreach ($errors[$id] as $cur_error)
 		{
 			$result = $db->query('SELECT 1 FROM '.$db->prefix.'posts WHERE id > '.$end_at.' ORDER BY id ASC LIMIT 1') or error('Unable to fetch next ID', __FILE__, __LINE__, $db->error());
 
-			if ($db->num_rows($result) > 0)
+			if ($db->result($result))
 				$query_str = '?stage=rebuild_idx&start_at='.$end_at;
 		}
 
