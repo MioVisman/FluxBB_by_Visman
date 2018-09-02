@@ -145,12 +145,11 @@ function generate_censoring_cache()
 	global $db;
 
 	$result = $db->query('SELECT search_for, replace_with FROM '.$db->prefix.'censoring') or error('Unable to fetch censoring list', __FILE__, __LINE__, $db->error());
-	$num_words = $db->num_rows($result);
 
 	$search_for = $replace_with = array();
-	for ($i = 0; $i < $num_words; $i++)
+	for ($i = 0; $row = $db->fetch_row($result); $i++)
 	{
-		list($search_for[$i], $replace_with[$i]) = $db->fetch_row($result);
+		list($search_for[$i], $replace_with[$i]) = $row;
 		$search_for[$i] = '%(?<=[^\p{L}\p{N}])('.str_replace('\*', '[\p{L}\p{N}]*?', preg_quote($search_for[$i], '%')).')(?=[^\p{L}\p{N}])%iu';
 	}
 
