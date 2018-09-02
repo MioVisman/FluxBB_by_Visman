@@ -57,8 +57,9 @@ else
 
 // Display all the categories and forums
 $result = $db->query('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name, f.no_sum_mess FROM '.$db->prefix.'categories AS c INNER JOIN '.$db->prefix.'forums AS f ON c.id=f.cat_id ORDER BY c.disp_position, c.id, f.disp_position') or error('Unable to fetch category/forum list', __FILE__, __LINE__, $db->error());
+$cur_forum = $db->fetch_assoc($result);
 
-if ($db->num_rows($result) > 0)
+if (is_array($cur_forum))
 {
 
 ?>
@@ -73,7 +74,7 @@ $tabindex = 2;
 
 $cur_category = 0;
 $vcsrf_hash = csrf_hash();
-while ($cur_forum = $db->fetch_assoc($result))
+do
 {
 	if ($cur_forum['cid'] != $cur_category) // A new category since last iteration?
 	{
@@ -97,13 +98,17 @@ while ($cur_forum = $db->fetch_assoc($result))
 
 		$cur_category = $cur_forum['cid'];
 	}
+
 ?>
 								<tr>
 									<td class="tcl"><input type="checkbox" name="no_sum_mess[<?php echo $cur_forum['fid'] ?>]" value="1" tabindex="<?php echo ($tabindex++) ?>"<?php echo ($cur_forum['no_sum_mess'] == 1 ? ' checked="checked"' : '')?> /></td>
 									<td class="tcr"><strong><?php echo pun_htmlspecialchars($cur_forum['forum_name']) ?></strong></td>
 								</tr>
 <?php
+
 }
+while ($cur_forum = $db->fetch_assoc($result))
+
 ?>
 							</tbody>
 							</table>
