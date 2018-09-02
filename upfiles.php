@@ -41,12 +41,14 @@ else
 	$id = intval($_GET['id']);
 	if ($id < 2 || ($pun_user['g_id'] != PUN_ADMIN && $id != $pun_user['id']))
 		message($lang_common['Bad request'], false, '404 Not Found');
-		
+
 	$result = $db->query('SELECT u.username, u.upload, g.g_up_ext, g.g_up_max, g.g_up_limit FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'groups AS g ON u.group_id=g.g_id WHERE u.id='.$id) or error('Unable to fetch user information', __FILE__, __LINE__, $db->error());
-	if (!$db->num_rows($result))
+	$user_info = $db->fetch_row($result);
+
+	if (!$user_info)
 		message($lang_common['Bad request'], false, '404 Not Found');
 
-	list($usname, $upload, $extsup, $maxsize, $limit) = $db->fetch_row($result);
+	list($usname, $upload, $extsup, $maxsize, $limit) = $user_info;
 
 	define('PLUGIN_URL', PLUGIN_REF.'?id='.$id);
 	define('PLUGIN_URLD', PLUGIN_URL.'&amp;');
@@ -103,13 +105,13 @@ if (isset($_GET['delete']))
 		$db->close();
 
 		header('Content-type: text/html; charset=utf-8');
-		
+
 		if ($error)
 			exit('not ok');
 
 		exit('ok');
 	}
-	
+
 	$s = $lang_up['Redirect delete'];
 	if ($error)
 	{
@@ -183,7 +185,7 @@ else if (isset($_FILES['upfile']) && $id == $pun_user['id'])
 		if ($isimg2)
 		{
 			$isimge = false;
-		
+
 			if (empty($size[0]) || empty($size[1]) || empty($size[2]))
 				$isimge = true;
 			else if (!isset($extimage2[$size[2]]) || !in_array($ext, $extimage2[$size[2]]))
@@ -445,7 +447,7 @@ FluxBB.upfile = (function (doc, win) {
 	function createElement(elem) {
 		return (doc.createElementNS) ? doc.createElementNS('http://www.w3.org/1999/xhtml', elem) : doc.createElement(elem);
 	}
-	
+
 	function is_img(a) {
 		return /.+\.(jpg|jpeg|png|gif|bmp)$/.test(a);
 	}
@@ -466,7 +468,7 @@ FluxBB.upfile = (function (doc, win) {
 
 	function set_button(li) {
 		get_us(li);
-		
+
 		if (!!url) {
 			var div = createElement('div');
 			div.className = 'upf-but upf-insert';
@@ -499,7 +501,7 @@ FluxBB.upfile = (function (doc, win) {
 		}
 		win.focus();
 	}
-	
+
 	function cr_req() {
 		if (win.XMLHttpRequest) {
 			return new XMLHttpRequest();
@@ -510,12 +512,12 @@ FluxBB.upfile = (function (doc, win) {
 		}
 		return !1;
 	}
-	
+
 	function orsc(req, ref) {
 		if (req.readyState == 4)
 		{
 			ref.className = '';
-			
+
 			if (req.status == 200 && req.responseText == 'ok') {
 				ref.parentNode.parentNode.parentNode.removeChild(ref.parentNode.parentNode);
 				if (get('upf-list').getElementsByTagName('li').length == 0) {
@@ -532,7 +534,7 @@ FluxBB.upfile = (function (doc, win) {
 			if (!confirm('<?php echo addslashes($lang_up['delete file']) ?>')) return !1;
 
 			ref.className = 'upf-loading';
-			
+
 			var req = cr_req();
 			if (req) {
 				req.onreadystatechange=function(){orsc(req, ref);};
