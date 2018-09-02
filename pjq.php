@@ -27,10 +27,10 @@ if ($action == "quote")
 {
 	// Fetch some info about the post, the topic and the forum
 	$result = $db->query('SELECT p.message FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'topics AS t ON t.id=p.topic_id INNER JOIN '.$db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.id='.$id) or exit('Unable to fetch post info '.$db->error());
-	if (!$db->num_rows($result))
-		exit($lang_common['Bad request']);
-
 	$cur_post = $db->fetch_assoc($result);
+
+	if (!$cur_post)
+		exit($lang_common['Bad request']);
 
 	if ($pun_config['o_censoring'] == '1')
 		$cur_post['message'] = censor_words($cur_post['message']);
@@ -47,10 +47,10 @@ else if ($action == "pmquote")
 
 	// Fetch some info about the post, the topic and the forum
 	$result = $db->query('SELECT p.message FROM '.$db->prefix.'pms_new_posts AS p INNER JOIN '.$db->prefix.'pms_new_topics AS t ON t.id=p.topic_id WHERE p.id='.$id.' AND (t.starter_id='.$pun_user['id'].' OR t.to_id='.$pun_user['id'].')') or exit('Unable to fetch pms_new_posts info '.$db->error());
-	if (!$db->num_rows($result))
-		exit($lang_common['Bad request']);
-
 	$cur_post = $db->fetch_assoc($result);
+
+	if (!$cur_post)
+		exit($lang_common['Bad request']);
 
 	if ($pun_config['o_censoring'] == '1')
 		$cur_post['message'] = censor_words($cur_post['message']);
