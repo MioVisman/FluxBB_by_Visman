@@ -36,10 +36,11 @@ if ($tid)
 else
 	$result = $db->query('SELECT f.id, f.forum_name, f.moderators, f.redirect_url, f.no_sum_mess, fp.post_replies, fp.post_topics FROM '.$db->prefix.'forums AS f LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.id='.$fid) or error('Unable to fetch forum info', __FILE__, __LINE__, $db->error());
 
-if (!$db->num_rows($result))
+$cur_posting = $db->fetch_assoc($result);
+
+if (!$cur_posting)
 	message($lang_common['Bad request'], false, '404 Not Found');
 
-$cur_posting = $db->fetch_assoc($result);
 $is_subscribed = $tid && $cur_posting['is_subscribed'];
 
 // Is someone trying to post into a redirect forum?
@@ -248,7 +249,9 @@ if (isset($_POST['form_sent']))
 
 				// Get any subscribed users that should be notified (banned users are excluded)
 				$result = $db->query('SELECT u.id, u.password, u.email, u.notify_with_post, u.language FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'topic_subscriptions AS s ON u.id=s.user_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id='.$cur_posting['id'].' AND fp.group_id=u.group_id) LEFT JOIN '.$db->prefix.'online AS o ON u.id=o.user_id LEFT JOIN '.$db->prefix.'bans AS b ON u.username=b.username WHERE b.username IS NULL AND COALESCE(o.logged, u.last_visit)>'.$previous_post_time.' AND (fp.read_forum IS NULL OR fp.read_forum=1) AND s.topic_id='.$tid.' AND u.id!='.$pun_user['id']) or error('Unable to fetch subscription info', __FILE__, __LINE__, $db->error());
-				if ($db->num_rows($result))
+				$cur_subscriber = $db->fetch_assoc($result);
+
+				if (is_array($cur_subscriber))
 				{
 					require_once PUN_ROOT.'include/email.php';
 
@@ -256,7 +259,7 @@ if (isset($_POST['form_sent']))
 					$languages = forum_list_langs();
 
 					// Loop through subscribed users and send emails
-					while ($cur_subscriber = $db->fetch_assoc($result))
+					do
 					{
 						if (!in_array($cur_subscriber['language'], $languages))
 							$cur_subscriber['language'] = $pun_config['o_default_lang'];
@@ -321,6 +324,7 @@ if (isset($_POST['form_sent']))
 								pun_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][2], $notification_emails[$cur_subscriber['language']][3]);
 						}
 					}
+					while ($cur_subscriber = $db->fetch_assoc($result));
 				}
 			}
 		}
@@ -362,7 +366,9 @@ if (isset($_POST['form_sent']))
 			{
 				// Get any subscribed users that should be notified (banned users are excluded)
 				$result = $db->query('SELECT u.id, u.password, u.email, u.notify_with_post, u.language FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'forum_subscriptions AS s ON u.id=s.user_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id='.$cur_posting['id'].' AND fp.group_id=u.group_id) LEFT JOIN '.$db->prefix.'bans AS b ON u.username=b.username WHERE b.username IS NULL AND (fp.read_forum IS NULL OR fp.read_forum=1) AND s.forum_id='.$cur_posting['id'].' AND u.id!='.$pun_user['id']) or error('Unable to fetch subscription info', __FILE__, __LINE__, $db->error());
-				if ($db->num_rows($result))
+				$cur_subscriber = $db->fetch_assoc($result);
+
+				if (is_array($cur_subscriber))
 				{
 					require_once PUN_ROOT.'include/email.php';
 
@@ -370,7 +376,7 @@ if (isset($_POST['form_sent']))
 					$languages = forum_list_langs();
 
 					// Loop through subscribed users and send emails
-					while ($cur_subscriber = $db->fetch_assoc($result))
+					do
 					{
 						if (!in_array($cur_subscriber['language'], $languages))
 							$cur_subscriber['language'] = $pun_config['o_default_lang'];
@@ -437,6 +443,7 @@ if (isset($_POST['form_sent']))
 								pun_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][2], $notification_emails[$cur_subscriber['language']][3]);
 						}
 					}
+					while ($cur_subscriber = $db->fetch_assoc($result));
 				}
 			}
 		}
@@ -509,10 +516,12 @@ if ($tid)
 			message($lang_common['Bad request'], false, '404 Not Found');
 
 		$result = $db->query('SELECT poster, message FROM '.$db->prefix.'posts WHERE id='.$qid.' AND topic_id='.$tid) or error('Unable to fetch quote info', __FILE__, __LINE__, $db->error());
-		if (!$db->num_rows($result))
+		$post_info = $db->fetch_row($result);
+
+		if (!$post_info)
 			message($lang_common['Bad request'], false, '404 Not Found');
 
-		list($q_poster, $q_message) = $db->fetch_row($result);
+		list($q_poster, $q_message) = $post_info;
 
 		// If the message contains a code tag we have to split it up (text within [code][/code] shouldn't be touched)
 		if (strpos($q_message, '[code]') !== false && strpos($q_message, '[/code]') !== false)
