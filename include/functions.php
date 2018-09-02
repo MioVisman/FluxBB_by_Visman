@@ -283,10 +283,10 @@ function set_default_user()
 	// Кто в этой теме - , o.witt_data - Visman
 	// Fetch guest user
 	$result = $db->query('SELECT u.*, g.*, o.logged, o.last_post, o.last_search, o.witt_data FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'groups AS g ON u.group_id=g.g_id LEFT JOIN '.$db->prefix.'online AS o ON o.ident=\''.$db->escape($remote_addr).'\' WHERE u.id=1') or error('Unable to fetch guest information', __FILE__, __LINE__, $db->error());
-	if (!$db->num_rows($result))
-		exit('Unable to fetch guest information. Your database must contain both a guest user and a guest user group.');
-
 	$pun_user = $db->fetch_assoc($result);
+
+	if (!$pun_user)
+		exit('Unable to fetch guest information. Your database must contain both a guest user and a guest user group.');
 
 	// Update online list
 	if (!$pun_user['logged'])
@@ -305,7 +305,7 @@ function set_default_user()
 				witt_query('REPLACE INTO '.$db->prefix.'online (user_id, ident, logged:?comma?::?column?:) VALUES(1, \''.$db->escape($remote_addr).'\', '.$pun_user['logged'].':?comma?::?value?:)'); // MOD Кто в этой теме - Visman
 				break;
 
-                        default:
+			default:
 				witt_query('INSERT INTO '.$db->prefix.'online (user_id, ident, logged:?comma?::?column?:) SELECT 1, \''.$db->escape($remote_addr).'\', '.$pun_user['logged'].':?comma?::?value?: WHERE NOT EXISTS (SELECT 1 FROM '.$db->prefix.'online WHERE ident=\''.$db->escape($remote_addr).'\')'); // MOD Кто в этой теме - Visman
 				break;
 		}
@@ -481,11 +481,11 @@ function check_username($username, $exclude_id = null)
 	$query = (!is_null($exclude_id)) ? ' AND id!='.$exclude_id : '';
 
 	$result = $db->query('SELECT username FROM '.$db->prefix.'users WHERE (UPPER(username)=UPPER(\''.$db->escape($username).'\') OR UPPER(username)=UPPER(\''.$db->escape(preg_replace('%[^\p{L}\p{N}]%u', '', $username)).'\')) AND id>1'.$query) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+	$busy = $db->fetch_row($result);
 
-	if ($db->num_rows($result))
+	if (is_array($busy))
 	{
-		$busy = $db->result($result);
-		$errors[] = $lang_register['Username dupe 1'].' '.pun_htmlspecialchars($busy).'. '.$lang_register['Username dupe 2'];
+		$errors[] = $lang_register['Username dupe 1'].' '.pun_htmlspecialchars($busy[0]).'. '.$lang_register['Username dupe 2'];
 	}
 
 	// Check username for any banned usernames
@@ -740,9 +740,11 @@ function update_forum($forum_id)
 	$num_posts = $num_posts + $num_topics; // $num_posts is only the sum of all replies (we have to add the topic posts)
 
 	$result = $db->query('SELECT last_post, last_post_id, last_poster, subject FROM '.$db->prefix.'topics WHERE forum_id='.$forum_id.' AND moved_to IS NULL ORDER BY last_post DESC LIMIT 1') or error('Unable to fetch last_post/last_post_id/last_poster', __FILE__, __LINE__, $db->error()); // last topic on index - Visman
-	if ($db->num_rows($result)) // There are topics in the forum
+	$post_info = $db->fetch_row($result);
+
+	if (is_array($post_info)) // There are topics in the forum
 	{
-		list($last_post, $last_post_id, $last_poster, $last_topic) = $db->fetch_row($result);
+		list($last_post, $last_post_id, $last_poster, $last_topic) = $post_info;
 
 		$db->query('UPDATE '.$db->prefix.'forums SET num_topics='.$num_topics.', num_posts='.$num_posts.', last_post='.$last_post.', last_post_id='.$last_post_id.', last_poster=\''.$db->escape($last_poster).'\', last_topic=\''.$db->escape($last_topic).'\' WHERE id='.$forum_id) or error('Unable to update last_post/last_post_id/last_poster', __FILE__, __LINE__, $db->error()); // last topic on index - Visman
 	}
