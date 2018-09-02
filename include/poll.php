@@ -60,9 +60,9 @@ function poll_can_vote($tid, $uid)
 
 	if (is_null($uid) || $uid < 2) return false;
 	if (isset($cur_topic['closed']) && $cur_topic['closed'] != '0') return false;
-	
+
 	$result = $db->query('SELECT 1 FROM '.$db->prefix.'poll_voted WHERE tid='.$tid.' AND uid='.$uid) or error('Unable to fetch poll voted info', __FILE__, __LINE__, $db->error());
-	return ($db->num_rows($result) == 0);
+	return empty($db->result($result));
 }
 
 // получение информации по опросу **********************************************
@@ -71,10 +71,10 @@ function poll_info($tid, $uid = null)
 	global $db;
 
 	if ($tid == 0) return null;
-	
+
 	if (file_exists(FORUM_CACHE_DIR.'polls/'.$tid.'.php'))
 		include FORUM_CACHE_DIR.'polls/'.$tid.'.php';
-		
+
 	if (!isset($kol))
 	{
 		$result = $db->query('SELECT question, field, choice, votes FROM '.$db->prefix.'poll WHERE tid='.$tid.' ORDER BY question, field') or error('Unable to fetch poll info', __FILE__, __LINE__, $db->error());
@@ -99,7 +99,7 @@ function poll_info($tid, $uid = null)
 		}
 
 		if ($kol == 0) return null;
-	
+
 		$rez = array(
 			'questions' => $questions,
 			'choices' => $choices,
@@ -125,7 +125,7 @@ function poll_info($tid, $uid = null)
 		if (function_exists('apc_delete_file'))
 			@apc_delete_file(FORUM_CACHE_DIR.'polls/'.$tid.'.php');
 	}
-	
+
 	if ($kol == 0) return null;
 
 	$rez['canVote'] = (is_null($uid)) ? false : poll_can_vote($tid, $uid);
@@ -151,7 +151,7 @@ function poll_form_edit($tid)
 function poll_topic($tid)
 {
 	global $cur_post, $cur_topic;
-	
+
 	if ($tid == 0)
 		$rez = array(0,time(),0,0);
 	else if (isset($cur_topic['poll_type']))
@@ -164,7 +164,7 @@ function poll_topic($tid)
 		$rez = array($cur_post['poll_type'], $cur_post['poll_time'], $cur_post['poll_term'], $cur_post['poll_kol']);
 	else
 		$rez = array(0,time(),0,0);
-		
+
 	return $rez;
 }
 
@@ -179,7 +179,7 @@ function poll_form($tid)
 	$enabled = ($top[0] > 0);
 	$resu = ($top[2] > 1);
 	$term = max($top[2],$pun_config['o_poll_term']);
-	
+
 	$edit = (poll_noedit($tid)) ? false : true;
 
 	$questions = $type = $choices = array();
@@ -307,7 +307,7 @@ function poll_form($tid)
 		if (empty($question))
 			$fk = false;
 		$fi = $fk;
-		
+
 		for ($i = 1; $i <= $pun_config['o_poll_max_field']; $i++)
 		{
 			$choice = (isset($choices[$k][$i]) && $fi) ? pun_htmlspecialchars(pun_trim($choices[$k][$i])) : '';
@@ -514,12 +514,12 @@ function poll_display_topic($tid, $uid, $p = 0, $f = false)
 
 	$top = poll_topic($tid);
 	if ($top[0] == 0) return;
-		
+
 	$top[4] = $p;
 	if (is_null($info))
 		$info = poll_info($tid, $uid);
 	if ($f) return;
-	
+
 	poll_display($tid, $uid, $info, $top);
 }
 
@@ -598,7 +598,7 @@ function poll_display($tid, $uid, $info, $top, $prev = false)
 	global $db, $lang_poll, $pun_config, $lang_common;
 
 	if (is_null($info)) return;
-	
+
 	$can_vote = ($info['canVote'] && $top[0] != 2 && poll_post('poll_view') === null);
 	$can_visi = ((($info['isGuest'] && $pun_config['o_poll_guest'] == '1') || !$info['isGuest']) && $top[2] <= $top[3]);
 	$fmess = '';
@@ -632,7 +632,7 @@ function poll_display($tid, $uid, $info, $top, $prev = false)
 
 	}
 	$amax = array();
-	
+
 	foreach($questions as $k => $question)
 	{
 		$choice = $choices[$k];
@@ -744,9 +744,9 @@ function poll_vote($tid, $uid)
 	$type = array_map('intval', $type);
 	$amax = array_map('intval', $amax);
 	$ques = intval($ques);
-	
+
 	$csrf2 = pun_hash($tid.(pun_hash($uid.$ques.implode('0',$type))).get_remote_address().implode('.',$amax));
-	
+
 	if ($csrf2 != $csrf) poll_mess('Err2');
 
 	$kol = 0;
@@ -788,6 +788,6 @@ function poll_vote($tid, $uid)
 
 	$db->query('INSERT INTO '.$db->prefix.'poll_voted (tid, uid, rez) VALUES ('.$tid.','.$uid.',\''.$db->escape(serialize($votes)).'\')') or error('Unable to save vote', __FILE__, __LINE__, $db->error());
 	$db->query('UPDATE '.$db->prefix.'topics SET poll_kol=poll_kol+1 WHERE id='.$tid) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
-	
+
 	poll_cache_delete($tid);
 }
