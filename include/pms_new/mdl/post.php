@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2015 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2018 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2008-2010 FluxBB
  * based on code by Rickard Andersson copyright (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -15,7 +15,7 @@ define('PUN_PMS_LOADED', 1);
 $tid = isset($_GET['tid']) ? intval($_GET['tid']) : 0;
 if ($tid < 0)
 	message($lang_common['Bad request'], false, '404 Not Found');
-	
+
 // Проверка на минимум сообщений
 if ($pun_user['g_id'] != PUN_ADMIN && $pun_config['o_pms_min_kolvo'] > $pun_user['num_posts'])
 	message(sprintf($lang_pmsn['Min post'], $pun_config['o_pms_min_kolvo']));
@@ -29,11 +29,10 @@ if ($tid > 0)
 	else
 	{
 		$result = $db->query('SELECT * FROM '.$db->prefix.'pms_new_topics WHERE id='.$tid) or error('Unable to fetch pmsn topic info', __FILE__, __LINE__, $db->error());
-
-		if (!$db->num_rows($result))
-			message($lang_common['Bad request'], false, '404 Not Found');
-			
 		$cur_topic = $db->fetch_assoc($result);
+
+		if (!$cur_topic)
+			message($lang_common['Bad request'], false, '404 Not Found');
 
 		if ($pun_config['o_censoring'] == '1')
 				$cur_topic['topic'] = censor_words($cur_topic['topic']);
@@ -70,7 +69,7 @@ else
 {
 	if ($pun_user['g_pm_limit'] != 0 && $pmsn_kol_list >= $pun_user['g_pm_limit'] && $pmsn_kol_save >= $pun_user['g_pm_limit'] )
 		message($lang_pmsn['Full folders']);
-		
+
 	if ($pun_user['g_pm_limit'] == 0 || $pmsn_kol_list < $pun_user['g_pm_limit'])
 		$mbutsubmit = 1;
 
@@ -112,7 +111,7 @@ if (!isset($_POST['req_addressee']) && (isset($_GET['uid']) || $sid))
 		message($lang_pmsn['Addr block you']);
 
 	$addressee = $cur_user['username'];
-	
+
 	$to_user['id'] = $cur_user['id'];
 	$to_user['username'] = $cur_user['username'];
 
@@ -147,7 +146,7 @@ if (isset($_POST['csrf_hash']))
 			$errors[] = $lang_post['Too long subject'];
 		else if ($pun_config['p_subject_all_caps'] == '0' && is_all_uppercase($subject) && !$pun_user['is_admmod'])
 			$errors[] = $lang_post['All caps subject'];
-			
+
 		$result = $db->query('SELECT u.*, g.* FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'groups AS g ON u.group_id=g.g_id WHERE u.username=\''.$db->escape($addressee).'\'') or error('Unable to fetch user information', __FILE__, __LINE__, $db->error());
 		$cur_addressee = $db->fetch_assoc($result);
 
@@ -230,7 +229,7 @@ if (isset($_POST['csrf_hash']))
 	if (empty($errors) && !isset($_POST['preview']))
 	{
 		$flag2 = 0;
-		
+
 		if ($tid) // new post
 		{
 			// создаем новое сообщение
@@ -285,7 +284,7 @@ if (isset($_POST['csrf_hash']))
 			// создаем новую тему
 			$db->query('INSERT INTO '.$db->prefix.'pms_new_topics (topic, starter, starter_id, to_user, to_id, replies, last_posted, last_poster, see_st, see_to, topic_st, topic_to) VALUES(\''.$db->escape($subject).'\', \''.$db->escape($pun_user['username']).'\', '.$pun_user['id'].', \''.$db->escape($cur_addressee['username']).'\', '.$cur_addressee['id'].', 0, '.$now.', 0, '.$now.', 0, '.$flag1.', '.$flag2.')') or error('Unable to create pms_new_topics', __FILE__, __LINE__, $db->error());
 			$new_tid = $db->insert_id();
-			
+
 			// создаем новое сообщение
 			$db->query('INSERT INTO '.$db->prefix.'pms_new_posts (poster, poster_id, poster_ip, message, hide_smilies, posted, post_new, topic_id) VALUES(\''.$db->escape($pun_user['username']).'\', '.$pun_user['id'].', \''.$db->escape(get_remote_address()).'\', \''.$db->escape($message).'\', '.$hide_smilies.', '.$now.', 1, '.$new_tid.')') or error('Unable to create pms_new_posts', __FILE__, __LINE__, $db->error());
 			$new_pid = $db->insert_id();
@@ -297,7 +296,7 @@ if (isset($_POST['csrf_hash']))
 			if ($flag2 != 2)
 				pmsn_user_update($cur_addressee['id'], true);
 		}
-		
+
 		if ($cur_addressee['messages_email'] == 1 && isset($mbutsubmit) && $flag2 != 2)
 		{
 			$mail_tpl = trim(file_get_contents(PUN_ROOT.'lang/'.$cur_addressee['language'].'/mail_templates/form_pmsn.tpl'));
@@ -347,10 +346,12 @@ if ($tid)
 			message($lang_common['Bad request'], false, '404 Not Found');
 
 		$result = $db->query('SELECT poster, message FROM '.$db->prefix.'pms_new_posts WHERE id='.$qid.' AND topic_id='.$tid) or error('Unable to fetch quote info', __FILE__, __LINE__, $db->error());
-		if (!$db->num_rows($result))
+		$post_info = $db->fetch_row($result);
+
+		if (!$post_info)
 			message($lang_common['Bad request'], false, '404 Not Found');
 
-		list($q_poster, $q_message) = $db->fetch_row($result);
+		list($q_poster, $q_message) = $post_info;
 
 		if ($pun_config['o_censoring'] == '1')
 			$q_message = censor_words($q_message);

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2015 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2018 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2008-2010 FluxBB
  * based on code by Rickard Andersson copyright (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -84,10 +84,11 @@ function ChekUncheck()
 <?php
 
 $result = $db->query('SELECT b.bl_user_id, u.username, u.id, u.title, u.registered, u.num_posts, g.g_id, g.g_user_title FROM '.$db->prefix.'pms_new_block AS b LEFT JOIN '.$db->prefix.'users AS u ON b.bl_user_id=u.id LEFT JOIN '.$db->prefix.'groups AS g ON g.g_id=u.group_id WHERE b.bl_id='.$pun_user['id'].' ORDER BY u.username LIMIT '.$start_from.','.$pun_user['disp_topics']) or error('Unable to fetch pms_new_block and users', __FILE__, __LINE__, $db->error());
+$user_data = $db->fetch_assoc($result);
 
-if ($db->num_rows($result))
+if (is_array($user_data))
 {
-	while ($user_data = $db->fetch_assoc($result))
+	do
 	{
 		if (!$user_data['id'])
 		{
@@ -115,6 +116,7 @@ if ($db->num_rows($result))
 <?php
 
 	}
+	while ($user_data = $db->fetch_assoc($result));
 }
 else
 {
