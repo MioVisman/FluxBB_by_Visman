@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2015 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2018 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2008-2010 FluxBB
  * based on code by Rickard Andersson copyright (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -22,10 +22,10 @@ if ($pid)
 else
 	$result = $db->query('SELECT id AS tid, topic, starter_id, to_id, replies FROM '.$db->prefix.'pms_new_topics WHERE id='.$tid) or error('Unable to fetch pms_new_topics info', __FILE__, __LINE__, $db->error());
 
-if (!$db->num_rows($result))
-	message($lang_common['Bad request'], false, '404 Not Found');
-
 $cur_post = $db->fetch_assoc($result);
+
+if (!$cur_post)
+	message($lang_common['Bad request'], false, '404 Not Found');
 
 if (!in_array($cur_post['tid'], $pmsn_arr_list) && !in_array($cur_post['tid'], $pmsn_arr_save))
 	message($lang_common['Bad request'], false, '404 Not Found');
@@ -59,7 +59,7 @@ if (isset($_POST['action2']))
 		if ($pun_user['id'] == $cur_post['starter_id'] && $cur_post['topic_to'] == 1)
 		{
 			$result = $db->query('SELECT id FROM '.$db->prefix.'pms_new_posts WHERE poster_id='.$pun_user['id'].' AND topic_id='.$cur_post['tid'].' AND post_new=1') or error('Unable to fetch post count', __FILE__, __LINE__, $db->error());
-			if (!$db->num_rows($result))
+			if (!$db->result($result))
 			{
 				$mquery[] = 'topic_to=0';
 				$muser = $cur_post['to_id'];
@@ -68,7 +68,7 @@ if (isset($_POST['action2']))
 		else if ($pun_user['id'] == $cur_post['to_id'] && $cur_post['topic_st'] == 1)
 		{
 			$result = $db->query('SELECT id FROM '.$db->prefix.'pms_new_posts WHERE poster_id='.$pun_user['id'].' AND topic_id='.$cur_post['tid'].' AND post_new=1') or error('Unable to fetch post count', __FILE__, __LINE__, $db->error());
-			if (!$db->num_rows($result))
+			if (!$db->result($result))
 			{
 				$mquery[] = 'topic_st=0';
 				$muser = $cur_post['starter_id'];
@@ -85,7 +85,7 @@ if (isset($_POST['action2']))
 	else
 	{
 		pmsn_user_delete($pun_user['id'], 2, array($cur_post['tid']));
-		
+
 		if (in_array($cur_post['tid'], $pmsn_arr_new))
 			redirect('pmsnew.php?mdl=new'.$sidamp, $lang_pmsn['DelTop redirect']);
 		else if (in_array($cur_post['tid'], $pmsn_arr_save))

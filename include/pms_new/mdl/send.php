@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2015 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2018 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2008-2010 FluxBB
  * based on code by Rickard Andersson copyright (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -21,11 +21,10 @@ if (!in_array($tid, $pmsn_arr_save))
 	message($lang_common['Bad request'], false, '404 Not Found');
 
 $result = $db->query('SELECT * FROM '.$db->prefix.'pms_new_topics WHERE id='.$tid) or error('Unable to fetch pms_new_topics info', __FILE__, __LINE__, $db->error());
-
-if (!$db->num_rows($result))
-	message($lang_common['Bad request'], false, '404 Not Found');
-
 $cur_topic = $db->fetch_assoc($result);
+
+if (!$cur_topic)
+	message($lang_common['Bad request'], false, '404 Not Found');
 
 if ($pun_user['id'] != $cur_topic['starter_id'] || $cur_topic['see_to'] != 0)
 	message($lang_common['Bad request'], false, '404 Not Found');
@@ -54,7 +53,7 @@ if (isset($_POST['action2']))
 		message($lang_common['Bad referrer']);
 
 	$db->query('UPDATE '.$db->prefix.'pms_new_topics SET topic_st=0, topic_to=1 WHERE id='.$tid) or error('Unable to update pms_new_topics', __FILE__, __LINE__, $db->error());
-	
+
 	pmsn_user_update($cur_user['id'], true);
 	pmsn_user_update($pun_user['id']);
 

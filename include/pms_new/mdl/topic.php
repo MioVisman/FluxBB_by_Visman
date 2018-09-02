@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2015 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2018 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2008-2010 FluxBB
  * based on code by Rickard Andersson copyright (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -20,10 +20,10 @@ if ($tid < 1 && $pid < 1)
 if ($pid)
 {
 	$result = $db->query('SELECT topic_id FROM '.$db->prefix.'pms_new_posts WHERE id='.$pid) or error('Unable to fetch pms_new_posts info', __FILE__, __LINE__, $db->error());
-	if (!$db->num_rows($result))
-		message($lang_common['Bad request'], false, '404 Not Found');
-
 	$tid = $db->result($result);
+
+	if (!$tid)
+		message($lang_common['Bad request'], false, '404 Not Found');
 
 	$result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'pms_new_posts WHERE topic_id='.$tid.' AND id<'.$pid) or error('Unable to fetch pms_new_posts info', __FILE__, __LINE__, $db->error());
 	$i = $db->result($result) + 1;
@@ -50,11 +50,11 @@ else
 	message($lang_common['Bad request'], false, '404 Not Found');
 
 $result = $db->query('SELECT t.*, u.num_posts, u.id AS userid, u.group_id FROM '.$db->prefix.'pms_new_topics AS t LEFT JOIN '.$db->prefix.'users AS u ON (u.id!='.$pun_user['id'].' AND (u.id=t.starter_id OR u.id=t.to_id)) WHERE t.id='.$tid) or error('Unable to fetch pms_new_topics info', __FILE__, __LINE__, $db->error());
+$cur_topic = $db->fetch_assoc($result);
 
-if (!$db->num_rows($result))
+if (!$cur_topic)
 	message($lang_common['Bad request'], false, '404 Not Found');
 
-$cur_topic = $db->fetch_assoc($result);
 $to_user = array();
 
 if ($cur_topic['starter_id'] == $pun_user['id'])
@@ -176,7 +176,7 @@ $result = $db->query('SELECT id FROM '.$db->prefix.'pms_new_posts WHERE topic_id
 $post_ids = array();
 for ($i = 0;$cur_post_id = $db->result($result, $i);$i++)
 	$post_ids[] = $cur_post_id;
-	
+
 $post_view_new = array();
 
 // мод пола, добавлен u.gender
@@ -299,10 +299,10 @@ while ($cur_post = $db->fetch_assoc($result))
 			}
 		}
 	}
-	
+
 	// Perform the main parsing of the message (BBCode, smilies, censor words etc)
 	$cur_post['message'] = $parser->parseMessage($cur_post['message'], (bool) $cur_post['hide_smilies']);
-	
+
 ?>
 		<div id="p<?php echo $cur_post['id'] ?>" class="blockpost<?php echo ($post_count % 2 == 0) ? ' roweven' : ' rowodd' ?><?php if ($post_count == 1) echo ' blockpost1'; ?>">
 			<h2><span><span class="conr">#<?php echo ($start_from + $post_count) ?></span> <a href="pmsnew.php?mdl=topic&amp;pid=<?php echo $cur_post['id'].'#p'.$cur_post['id'] ?>"><?php echo format_time($cur_post['posted']) ?></a></span></h2>

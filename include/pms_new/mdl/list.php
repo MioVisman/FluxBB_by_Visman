@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2015 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2018 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2008-2010 FluxBB
  * based on code by Rickard Andersson copyright (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -115,11 +115,12 @@ function ChekUncheck()
 	LEFT JOIN '.$db->prefix.'users AS s ON (s.id = t.starter_id)
 	LEFT JOIN '.$db->prefix.'users AS u ON (u.id = t.to_id)
 	WHERE t.id IN ('.implode(',', $viewt).') ORDER BY t.last_posted DESC') or error('Unable to fetch pms topics IDs', __FILE__, __LINE__, $db->error());
+	$cur_topic = $db->fetch_assoc($result);
 
-	if ($db->num_rows($result))
+	if (is_array($cur_topic))
 	{
 		$topic_count = 0;
-		while ($cur_topic = $db->fetch_assoc($result))
+		do
 		{
 			++$topic_count;
 			$status_text = array();
@@ -195,6 +196,7 @@ function ChekUncheck()
 						</tr>
 <?php
 		}
+		while ($cur_topic = $db->fetch_assoc($result));
 	}
 	else
 	{
