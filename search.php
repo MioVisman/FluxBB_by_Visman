@@ -290,12 +290,12 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 						break;
 				}
 
-				if ($db->num_rows($result))
-				{
-					$user_ids = array();
-					while ($row = $db->fetch_row($result))
-						$user_ids[] = $row[0];
+				$user_ids = array();
+				while ($row = $db->fetch_row($result))
+					$user_ids[] = $row[0];
 
+				if (!empty($user_ids))
+				{
 					$result = $db->query('SELECT p.id AS post_id, p.topic_id FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'topics AS t ON t.id=p.topic_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.poster_id IN('.implode(',', $user_ids).')'.$forum_sql.' ORDER BY '.$sort_by_sql.' '.$sort_dir) or error('Unable to fetch matched posts list', __FILE__, __LINE__, $db->error());
 					while ($temp = $db->fetch_assoc($result))
 						$author_results[$temp['post_id']] = $temp['topic_id'];
@@ -349,28 +349,22 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 					message($lang_common['No permission'], false, '403 Forbidden');
 
 				$result = $db->query('SELECT t.id FROM '.$db->prefix.'topics AS t LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.last_post>'.$pun_user['last_visit'].' AND t.moved_to IS NULL'.(isset($_GET['fid']) ? (isset($sf_array_asc[$_GET['fid']]) ? ' AND t.forum_id IN ('.implode(',', $sf_array_asc[$_GET['fid']]).')' : ' AND t.forum_id='.intval($_GET['fid'])) : '').' ORDER BY t.last_post DESC') or error('Unable to fetch topic list', __FILE__, __LINE__, $db->error()); // MOD subforums - Visman
-				$num_hits = $db->num_rows($result);
 
-				if (!$num_hits)
-					message($lang_search['No new posts']);
+				$no_hits_mess = $lang_search['No new posts'];
 			}
 			// If it's a search for recent posts (in a certain time interval)
 			else if ($action == 'show_recent')
 			{
 				$result = $db->query('SELECT t.id FROM '.$db->prefix.'topics AS t LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.last_post>'.(time() - $interval).' AND t.moved_to IS NULL'.(isset($_GET['fid']) ? (isset($sf_array_asc[$_GET['fid']]) ? ' AND t.forum_id IN ('.implode(',', $sf_array_asc[$_GET['fid']]).')' : ' AND t.forum_id='.intval($_GET['fid'])) : '').' ORDER BY t.last_post DESC') or error('Unable to fetch topic list', __FILE__, __LINE__, $db->error()); // MOD subforums - Visman
-				$num_hits = $db->num_rows($result);
 
-				if (!$num_hits)
-					message($lang_search['No recent posts']);
+				$no_hits_mess = $lang_search['No recent posts'];
 			}
 			// If it's a search for topics in which the user has posted
 			else if ($action == 'show_replies')
 			{
 				$result = $db->query('SELECT t.id FROM '.$db->prefix.'topics AS t INNER JOIN '.$db->prefix.'posts AS p ON t.id=p.topic_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.poster_id='.$pun_user['id'].' GROUP BY t.id'.($db_type == 'pgsql' ? ', t.last_post' : '').' ORDER BY t.last_post DESC') or error('Unable to fetch topic list', __FILE__, __LINE__, $db->error());
-				$num_hits = $db->num_rows($result);
 
-				if (!$num_hits)
-					message($lang_search['No user posts']);
+				$no_hits_mess = $lang_search['No user posts'];
 			}
 			// If it's a search for posts by a specific user ID
 			else if ($action == 'show_user_posts')
@@ -378,10 +372,8 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 				$show_as = 'posts';
 
 				$result = $db->query('SELECT p.id FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'topics AS t ON p.topic_id=t.id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.poster_id='.$user_id.' ORDER BY p.posted DESC') or error('Unable to fetch user posts', __FILE__, __LINE__, $db->error());
-				$num_hits = $db->num_rows($result);
 
-				if (!$num_hits)
-					message($lang_search['No user posts']);
+				$no_hits_mess = $lang_search['No user posts'];
 
 				// Pass on the user ID so that we can later know whose posts we're searching for
 				$search_type[2] = $user_id;
@@ -390,10 +382,8 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 			else if ($action == 'show_user_topics')
 			{
 				$result = $db->query('SELECT t.id FROM '.$db->prefix.'topics AS t INNER JOIN '.$db->prefix.'posts AS p ON t.first_post_id=p.id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.poster_id='.$user_id.' ORDER BY t.last_post DESC') or error('Unable to fetch user topics', __FILE__, __LINE__, $db->error());
-				$num_hits = $db->num_rows($result);
 
-				if (!$num_hits)
-					message($lang_search['No user topics']);
+				$no_hits_mess = $lang_search['No user topics'];
 
 				// Pass on the user ID so that we can later know whose topics we're searching for
 				$search_type[2] = $user_id;
@@ -405,10 +395,8 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 					message($lang_common['Bad request'], false, '404 Not Found');
 
 				$result = $db->query('SELECT t.id FROM '.$db->prefix.'topics AS t INNER JOIN '.$db->prefix.'topic_subscriptions AS s ON (t.id=s.topic_id AND s.user_id='.$user_id.') LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) ORDER BY t.last_post DESC') or error('Unable to fetch topic list', __FILE__, __LINE__, $db->error());
-				$num_hits = $db->num_rows($result);
 
-				if (!$num_hits)
-					message($lang_search['No subscriptions']);
+				$no_hits_mess = $lang_search['No subscriptions'];
 
 				// Pass on user ID so that we can later know whose subscriptions we're searching for
 				$search_type[2] = $user_id;
@@ -417,15 +405,17 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 			else
 			{
 				$result = $db->query('SELECT t.id FROM '.$db->prefix.'topics AS t LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND t.num_replies=0 AND t.moved_to IS NULL ORDER BY t.last_post DESC') or error('Unable to fetch topic list', __FILE__, __LINE__, $db->error());
-				$num_hits = $db->num_rows($result);
 
-				if (!$num_hits)
-					message($lang_search['No unanswered']);
+				$no_hits_mess = $lang_search['No unanswered'];
 			}
 
 			$search_ids = array();
 			while ($row = $db->fetch_row($result))
 				$search_ids[] = $row[0];
+
+			$num_hits = count($search_ids);
+			if (!$num_hits)
+				message($no_hits_mess);
 
 			$db->free_result($result);
 		}
@@ -437,14 +427,14 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 			$sort_dir = 'DESC';
 
 			$result = $db->query('SELECT p.id FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'warnings AS w ON w.id=p.id INNER JOIN '.$db->prefix.'topics AS t ON t.id=p.topic_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$pun_user['g_id'].') WHERE p.poster_id='.$user_id.' AND (fp.read_forum IS NULL OR fp.read_forum=1) ORDER BY w.posted DESC') or error('Unable to search for posts', __FILE__, __LINE__, $db->error());
-			$num_hits = $db->num_rows($result);
-
-			if (!$num_hits)
-				message($lang_search['No user posts']);
 
 			$search_ids = array();
 			while ($row = $db->fetch_row($result))
 				$search_ids[] = $row[0];
+
+			$num_hits = count($search_ids);
+			if (!$num_hits)
+				message($lang_search['No user posts']);
 
 			$search_type = array('warn', $user_id);
 
@@ -563,11 +553,12 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 				// Fetch username of subscriber
 				$subscriber_id = $search_type[2];
 				$result = $db->query('SELECT username FROM '.$db->prefix.'users WHERE id='.$subscriber_id) or error('Unable to fetch username of subscriber', __FILE__, __LINE__, $db->error());
+				$user_info = $db->fetch_row($result);
 
-				if ($db->num_rows($result))
-					$subscriber_name = $db->result($result);
-				else
+				if (!$user_info)
 					message($lang_common['Bad request'], false, '404 Not Found');
+
+				$subscriber_name = $user_info[0];
 
 				$crumbs_text['search_type'] = '<a href="search.php?action=show_subscriptions&amp;user_id='.$subscriber_id.'">'.sprintf($lang_search['Quick search show_subscriptions'], pun_htmlspecialchars($subscriber_name)).'</a>';
 			}
