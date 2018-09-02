@@ -102,10 +102,13 @@ $sid = isset($_GET['sid']) ? intval($_GET['sid']) : 0;
 if ($sid < 2)
 	$sid = 0;
 
+$ttmp = null;
 if ($sid)
 {
 	$result = $db->query('SELECT id, starter, to_user, starter_id, topic_st, topic_to FROM '.$db->prefix.'pms_new_topics WHERE (starter_id = '.$pun_user['id'].' AND topic_st != 2 AND to_id='.$sid.') OR (to_id = '.$pun_user['id'].' AND topic_to != 2 AND starter_id='.$sid.') ORDER BY last_posted DESC') or error('Unable to fetch pms topics IDs', __FILE__, __LINE__, $db->error());
-	if (!$db->num_rows($result))
+	$ttmp = $db->fetch_assoc($result);
+
+	if (!$ttmp)
 		$sid = 0;
 	else
 	{
@@ -114,9 +117,12 @@ if ($sid)
 	}
 }
 if ($sid == 0)
+{
 	$result = $db->query('SELECT id, starter, to_user, starter_id, topic_st, topic_to FROM '.$db->prefix.'pms_new_topics WHERE (starter_id = '.$pun_user['id'].' AND topic_st != 2) OR (to_id = '.$pun_user['id'].' AND topic_to != 2) ORDER BY last_posted DESC') or error('Unable to fetch pms topics IDs', __FILE__, __LINE__, $db->error());
+	$ttmp = $db->fetch_assoc($result);
+}
 
-while ($ttmp = $db->fetch_assoc($result))
+while ($ttmp)
 {
 	if ($sid && empty($siduser))
 		$siduser = pun_htmlspecialchars(($ttmp['starter_id'] == $sid) ? $ttmp['starter'] : $ttmp['to_user']);
@@ -132,6 +138,8 @@ while ($ttmp = $db->fetch_assoc($result))
 		$pmsn_arr_new[] = $ttmp['id'];
 		$pmsn_arr_list[] = $ttmp['id'];
 	}
+
+	$ttmp = $db->fetch_assoc($result);
 }
 
 $pmsn_kol_list = count($pmsn_arr_list);
