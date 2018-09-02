@@ -287,9 +287,9 @@ else
 	<?php
 
 	$result = $db->query('SELECT * FROM '.$db->prefix.'smilies ORDER BY disp_position') or error('Unable to retrieve smilies', __FILE__, __LINE__, $db->error());
-	$num_db_smilies = $db->num_rows($result);
+	$db_smilies = $db->fetch_assoc($result);
 
-	if ($num_db_smilies > 0)
+	if (is_array($db_smilies))
 	{
 
 ?>
@@ -309,7 +309,7 @@ else
 								<tbody>
 <?php
 
-		while ($db_smilies = $db->fetch_assoc($result))
+		do
 		{
 
 ?>
@@ -335,6 +335,7 @@ else
 <?php
 
 		}
+		while ($db_smilies = $db->fetch_assoc($result));
 
 ?>
 								</tbody>
