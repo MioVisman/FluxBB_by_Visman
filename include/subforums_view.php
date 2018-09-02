@@ -13,7 +13,7 @@ if (!defined('PUN'))
 function sf_status_new($cur_forum)
 {
 	global $new_topics;
-	
+
 	return isset($new_topics[$cur_forum['fid']]);
 }
 
@@ -59,18 +59,20 @@ if (!$pun_user['is_guest'])
 {
 //	$result = $db->query('SELECT f.id, f.last_post FROM '.$db->prefix.'forums AS f LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND f.last_post>'.$pun_user['last_visit']) or error('Unable to fetch forum list', __FILE__, __LINE__, $db->error());
 	$result = $db->query('SELECT f.id, f.last_post FROM '.$db->prefix.'forums AS f WHERE f.last_post>'.$pun_user['last_visit'].' AND f.id IN ('.implode(',', $sf_array_asc[$sf_cur_forum]).')') or error('Unable to fetch forum list', __FILE__, __LINE__, $db->error());
+	$cur_forum = $db->fetch_assoc($result);
 
-	if ($db->num_rows($result))
+	if (is_array($cur_forum))
 	{
 		$forums = $new_topics = array();
 		if (!isset($tracked_topics))
 			$tracked_topics = get_tracked_topics();
 
-		while ($cur_forum = $db->fetch_assoc($result))
+		do
 		{
 			if (!isset($tracked_topics['forums'][$cur_forum['id']]) || $tracked_topics['forums'][$cur_forum['id']] < $cur_forum['last_post'])
 				$forums[$cur_forum['id']] = $cur_forum['last_post'];
 		}
+		while ($cur_forum = $db->fetch_assoc($result));
 
 		if (!empty($forums))
 		{
