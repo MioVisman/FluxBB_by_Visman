@@ -152,10 +152,9 @@ function prune($forum_id, $prune_sticky, $prune_date)
 	{
 		// not sum - Visman
 		$result = $db->query('SELECT no_sum_mess FROM '.$db->prefix.'forums WHERE id='.$forum_id) or error('Unable to fetch forums', __FILE__, __LINE__, $db->error());
-		if (!$db->num_rows($result))
-			$flag_f = 1;
-		else
-			$flag_f = $db->result($result);
+		$row = $db->fetch_row($result);
+
+		$flag_f = !$row ? 1 : $row[0];
 
 		// уменьшение постов у юзеров и not sum - Visman
 		if ($flag_f == 0)
