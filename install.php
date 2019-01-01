@@ -172,7 +172,7 @@ else
 	else if (pun_strlen($salt1) < 10)
 		$alerts[] = 'Salt must be at least 10 characters long.';
 
-	if (pun_strlen($password1) < 6)
+	if (pun_strlen($password1) < 9)
 		$alerts[] = $lang_install['Short password'];
 	else if ($password1 != $password2)
 		$alerts[] = $lang_install['Passwords not match'];
