@@ -137,6 +137,9 @@ else if ($action == 'forget' || $action == 'forget_2')
 	{
 		flux_hook('forget_password_before_validation');
 
+		// Make sure they got here from the site
+		confirm_referrer('login.php');
+
 		require PUN_ROOT.'include/email.php';
 
 		// Validate the email address
@@ -237,6 +240,7 @@ if (!empty($errors))
 					<legend><?php echo $lang_login['Request pass legend'] ?></legend>
 					<div class="infldset">
 						<input type="hidden" name="form_sent" value="1" />
+						<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 						<label class="required"><strong><?php echo $lang_common['Email'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input id="req_email" type="text" name="req_email" value="<?php if (isset($_POST['req_email'])) echo pun_htmlspecialchars($_POST['req_email']); ?>" size="50" maxlength="80" /><br /></label>
 						<p><?php echo $lang_login['Request pass info'] ?></p>
 					</div>
