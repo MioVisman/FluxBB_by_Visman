@@ -269,10 +269,26 @@ else if (isset($_POST['add_edit_ban']))
 	}
 
 	require PUN_ROOT.'include/email.php';
-	if ($ban_email != '' && !is_valid_email($ban_email))
+	if ($ban_email != '')
 	{
-		if (!preg_match('%^[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,63})$%', $ban_email))
+		$domain = false === strpos($ban_email, '@');
+		$ban_email_cl = $domain && '.' === $ban_email[0]
+			? substr($ban_email, 1)
+			: $ban_email;
+
+		if (!is_valid_email($ban_email_cl) && !is_valid_email('test@' . $ban_email_cl))
 			message($lang_admin_bans['Invalid e-mail message']);
+
+		$match = $_POST['mode'] == 'edit' ? intval($_POST['ban_id']) : -1;
+		$match = is_banned_email(($domain ? '.' : '') . $ban_email_cl, $match);
+
+		if (false !== $match)
+		{
+			if (true === $match)
+				message(sprintf($lang_admin_bans['Duplicate e-mail message'], $ban_email));
+			else
+				message(sprintf($lang_admin_bans['Duplicate domain message'], $match));
+		}
 	}
 
 	if ($ban_expire != '' && $ban_expire != 'Never')

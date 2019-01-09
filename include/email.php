@@ -31,7 +31,7 @@ function is_valid_email($email)
 //
 // Check if $email is banned
 //
-function is_banned_email($email)
+function is_banned_email($email, $id = false)
 {
 	global $pun_bans;
 
@@ -39,18 +39,20 @@ function is_banned_email($email)
 	{
 		if (empty($cur_ban['email'])) {
 			continue;
+		} elseif (false !== $id && $cur_ban['id'] == $id) {
+			continue;
 		}
 
 		if (false === strpos($cur_ban['email'], '@')) {
 			$len = strlen($cur_ban['email']);
 			if ($cur_ban['email'][0] == '.') {
 				if (substr($email, -$len) == $cur_ban['email']) {
-					return true;
+					return false === $id ? true : $cur_ban['email'];
 				}
 			} else {
 				$tmp = substr($email, -1-$len);
 				if ($tmp == '.'.$cur_ban['email'] || $tmp == '@'.$cur_ban['email']) {
-					return true;
+					return false === $id ? true : $cur_ban['email'];
 				}
 			}
 		} else if ($email == $cur_ban['email']) {
