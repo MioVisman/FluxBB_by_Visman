@@ -661,7 +661,7 @@ function preparse_list_tag($content, $type = '*')
 function handle_url_tag($url, $link = '', $bbcode = false)
 {
 	global $pun_config, $pun_user, $page_js;
-	
+
 	$url = pun_trim($url);
 
 	// Deal with [url][img]http://example.com/test.png[/img][/url]

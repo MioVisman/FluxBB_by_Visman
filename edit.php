@@ -26,7 +26,6 @@ $cur_post = $db->fetch_assoc($result);
 if (!$cur_post)
 	message($lang_common['Bad request'], false, '404 Not Found');
 
-
 // MOD subforums - Visman
 if (!isset($sf_array_asc[$cur_post['fid']]))
 	message($lang_common['Bad request'], false, '404 Not Found');
