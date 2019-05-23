@@ -2069,6 +2069,8 @@ else
 	$db->end_transaction();
 
 
+	forum_clear_cache();
+
 	$alerts = array();
 
 	// Check if we disabled uploading avatars because file_uploads was disabled
