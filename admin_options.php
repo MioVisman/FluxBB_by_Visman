@@ -63,7 +63,7 @@ if (isset($_POST['form_sent']))
 		'report_method'			=> intval($_POST['form']['report_method']),
 		'mailing_list'			=> pun_trim($_POST['form']['mailing_list']),
 		'avatars'				=> $_POST['form']['avatars'] != '1' ? '0' : '1',
-		'avatars_dir'			=> pun_trim($_POST['form']['avatars_dir']),
+		'avatars_dir'			=> str_replace([':', '//'], '', pun_trim($_POST['form']['avatars_dir'])),
 		'avatars_width'			=> (intval($_POST['form']['avatars_width']) > 0) ? intval($_POST['form']['avatars_width']) : 1,
 		'avatars_height'		=> (intval($_POST['form']['avatars_height']) > 0) ? intval($_POST['form']['avatars_height']) : 1,
 		'avatars_size'			=> (intval($_POST['form']['avatars_size']) > 0) ? intval($_POST['form']['avatars_size']) : 1,
