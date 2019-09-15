@@ -1,18 +1,22 @@
+# -Indexes -> Disable directory listing
+# -ExecCGI -> Disable CGI script execution
 Options -Indexes -ExecCGI
 
+# Disable PHP script execution
 php_flag engine 0
 
-RemoveHandler .phtml .php .php3 .php4 .php5 .php6 .php7 .phps .cgi .exe .pl .asp .aspx .shtml .shtm .fcgi .fpl .jsp .htm .html .wml
-AddType text/plain .phtml .php .php3 .php4 .php5 .php6 .php7 .phps .cgi .exe .pl .asp .aspx .shtml .shtm .fcgi .fpl .jsp .htm .html .wml
+# Treat these files as plain text
+RemoveHandler .asmx .asp .aspx .cgi .dll .exe .fcgi .fpl .htm .html .js .jsp .php .php3 .php4 .php5 .php6 .php7 .phar .phps .phtm .phtml .pl .py .rb .shtm .shtml .wml .xml
+AddType text/plain .asmx .asp .aspx .cgi .dll .exe .fcgi .fpl .htm .html .js .jsp .php .php3 .php4 .php5 .php6 .php7 .phar .phps .phtm .phtml .pl .py .rb .shtm .shtml .wml .xml
 
+# Disable script execution
+SetHandler default-handler
+
+# Show nofile.gif instead of missing files
 <IfModule mod_rewrite.c>
-
 RewriteEngine On
-
 # Uncomment and properly set the RewriteBase if the rewrite rules are not working properly
 #RewriteBase /
-
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule .* nofile.gif [L]
-
 </IfModule>
