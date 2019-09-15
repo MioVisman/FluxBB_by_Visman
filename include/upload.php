@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2011-2013 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2011-2019 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -19,7 +19,7 @@ $gd  = extension_loaded('gd');
 $gd2 = ($gd && function_exists('imagecreatetruecolor'));
 
 $extimage = array('gif', 'jpeg', 'jpg', 'jpe', 'png', 'bmp', 'tiff', 'tif', 'swf', 'psd', 'iff', 'wbmp', 'wbm', 'xbm');
-$extforno = array('phtml','php','php3','php4','php5','php6','php7','phps','cgi','exe','pl','asp','aspx','shtml','shtm','fcgi','fpl','jsp','htm','html','wml','htaccess');
+$extforno = array('asmx', 'asp', 'aspx', 'cgi', 'dll', 'exe', 'fcgi', 'fpl', 'htm', 'html', 'js', 'jsp', 'php', 'php3', 'php4', 'php5', 'php6', 'php7', 'phar', 'phps', 'phtm', 'phtml', 'pl', 'py', 'rb', 'shtm', 'shtml', 'wml', 'xml');
 
 $extimage2 = array(
 	1 => array('gif'),
@@ -236,7 +236,7 @@ if ($gd && !function_exists('ImageCreateFromBMP'))
 function img_resize ($file, $dir, $name, $type, $width = 0, $height = 0, $quality = 75, $flag = false)
 {
 	global $gd, $gd2, $extimage2, $extimageGD;
-	
+
 	if (!$gd) return false;
 	if (!file_exists($file)) return false;
 
@@ -245,7 +245,7 @@ function img_resize ($file, $dir, $name, $type, $width = 0, $height = 0, $qualit
 
 	$type2 = strtolower($type);
 	$type1 = (($flag && in_array($type2, array('jpeg','jpg','jpe','gif','png','bmp'))) || ($type2 == 'bmp')) ? 'jpeg' : $extimageGD[$type2];
-	
+
 	$icfunc = 'imagecreatefrom'.$extimageGD[$extimage2[$size[2]][0]]; //  $type;
 	if (!function_exists($icfunc)) return false;
 
