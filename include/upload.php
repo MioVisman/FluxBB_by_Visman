@@ -19,7 +19,7 @@ $gd  = extension_loaded('gd');
 $gd2 = ($gd && function_exists('imagecreatetruecolor'));
 
 $extimage = array('gif', 'jpeg', 'jpg', 'jpe', 'png', 'bmp', 'tiff', 'tif', 'swf', 'psd', 'iff', 'wbmp', 'wbm', 'xbm');
-$extforno = array('asmx', 'asp', 'aspx', 'cgi', 'dll', 'exe', 'fcgi', 'fpl', 'htm', 'html', 'js', 'jsp', 'php', 'php3', 'php4', 'php5', 'php6', 'php7', 'phar', 'phps', 'phtm', 'phtml', 'pl', 'py', 'rb', 'shtm', 'shtml', 'wml', 'xml');
+$extforno = array('asmx', 'asp', 'aspx', 'cgi', 'dll', 'exe', 'fcgi', 'fpl', 'htaccess', 'htm', 'html', 'js', 'jsp', 'php', 'php3', 'php4', 'php5', 'php6', 'php7', 'phar', 'phps', 'phtm', 'phtml', 'pl', 'py', 'rb', 'shtm', 'shtml', 'wml', 'xml');
 
 $extimage2 = array(
 	1 => array('gif'),
