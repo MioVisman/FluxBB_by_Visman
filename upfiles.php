@@ -214,7 +214,7 @@ else if (isset($_FILES['upfile']) && $id == $pun_user['id'])
 		{
 			$ext_ml = img_resize($_FILES['upfile']['tmp_name'], $dir, $name, $ext, $aconf['pic_w'], $aconf['pic_h'], $aconf['pic_perc'], true);
 			if (!is_array($ext_ml))
-				redirect(PLUGIN_URL, $lang_up['Error'].$lang_up['Error no mod img']);
+				redirect(PLUGIN_URL, $lang_up['Error'].sprintf($lang_up['Error no mod img'], $ext_ml));
 
 			list($name, $ext) = $ext_ml;
 		}
