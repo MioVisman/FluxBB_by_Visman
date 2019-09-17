@@ -393,7 +393,7 @@ else if ($action == 'upload_avatar' || $action == 'upload_avatar2')
 			if ($gd && !empty($width) && !empty($height) && ($uploaded_file['size'] > $pun_config['o_avatars_size'] || $width > $pun_config['o_avatars_width'] || $height > $pun_config['o_avatars_height'] || $type == IMAGETYPE_BMP))
 			{
 				$result_res = img_resize(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp', $pun_config['o_avatars_dir'].'/', 'temp'.$id, $extimage2[$type][0], $pun_config['o_avatars_width'], $pun_config['o_avatars_height']);
-				if ($result_res !== false)
+				if (is_array($result_res))
 				{
 					@unlink(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp');
 					@rename(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$result_res[0].'.'.$result_res[1], PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp');
