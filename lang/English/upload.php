@@ -8,7 +8,7 @@ $lang_up = array(
 'Error space'				=> 'You exceeded your storage space. Delete files and try again.',
 'Error delete'			=> 'Error during the file delete.',
 'Error img'					=> 'Invalid format of the picture. Or the server doesn\'t support processing of pictures.',
-'Error no mod img'	=> 'The picture has crash at updating.',
+'Error no mod img'	=> 'The picture has crash at updating (%d).',
 'Error open'				=> 'Uploaded file doesn\'t open.',
 'Error inject'			=> 'Uploaded file contains the forbidden string. Archive this file and try again, Or speak to administrator.',
 
