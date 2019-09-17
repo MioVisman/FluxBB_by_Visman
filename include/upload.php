@@ -237,17 +237,17 @@ function img_resize ($file, $dir, $name, $type, $width = 0, $height = 0, $qualit
 {
 	global $gd, $gd2, $extimage2, $extimageGD;
 
-	if (!$gd) return false;
-	if (!file_exists($file)) return false;
+	if (!$gd) return 1;
+	if (!file_exists($file)) return 2;
 
 	$size = getimagesize($file);
-	if ($size === false) return false;
+	if ($size === false) return 3;
 
 	$type2 = strtolower($type);
 	$type1 = (($flag && in_array($type2, array('jpeg','jpg','jpe','gif','png','bmp'))) || ($type2 == 'bmp')) ? 'jpeg' : $extimageGD[$type2];
 
 	$icfunc = 'imagecreatefrom'.$extimageGD[$extimage2[$size[2]][0]]; //  $type;
-	if (!function_exists($icfunc)) return false;
+	if (!function_exists($icfunc)) return 4;
 
 	$xr = ($width == 0) ? 1 : $width / $size[0];
 	$yr = ($height == 0) ? 1 : $height / $size[1];
@@ -256,7 +256,7 @@ function img_resize ($file, $dir, $name, $type, $width = 0, $height = 0, $qualit
 	$height = round($size[1] * $r);
 
 	$image = @$icfunc($file);
-	if (!isset($image) || empty($image)) return false;
+	if (!isset($image) || empty($image)) return 5;
 
 	if ($gd2)
 	{
@@ -282,7 +282,7 @@ function img_resize ($file, $dir, $name, $type, $width = 0, $height = 0, $qualit
 	{
 		$type1 = 'jpeg';
 		$icfunc = 'image'.$type1;
-		if (!function_exists($icfunc)) return false;
+		if (!function_exists($icfunc)) return 6;
 	}
 
 	if ($flag) $type = $type1;
@@ -300,7 +300,7 @@ function img_resize ($file, $dir, $name, $type, $width = 0, $height = 0, $qualit
 	imagedestroy($image);
 	imagedestroy($idest);
 
-	if (!file_exists(PUN_ROOT.$dir.$name.'.'.$type)) return false;
+	if (!file_exists(PUN_ROOT.$dir.$name.'.'.$type)) return 7;
 	@chmod(PUN_ROOT.$dir.$name.'.'.$type, 0644);
 
 	return array($name, $type);
