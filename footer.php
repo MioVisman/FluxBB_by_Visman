@@ -36,7 +36,7 @@ if (count($languages) > 1)
 	}
 	$lang_temp .= "\t\t\t\t\t\t".'</select></label>'."\n\t\t\t\t\t\t".'<input id="qjump2input" type="submit" value="'.$lang_common['Go'].'" />'."\n\t\t\t\t\t".'</div>'."\n\t\t\t\t".'</form>'."\n";
 
-	$page_js['c'][] = 'document.getElementById("qjump2input").style.display = "none";';
+	$page_js['c'][] = 'if (document.getElementById("qjump2input")) document.getElementById("qjump2input").style.display = "none";';
 }
 // END быстрое переключение языка - Visman
 
@@ -101,7 +101,7 @@ if ($pun_config['o_quickjump'] == '1')
 		generate_quickjump_cache($pun_user['g_id']);
 		require FORUM_CACHE_DIR.'cache_quickjump_'.$pun_user['g_id'].'.php';
 	}
-	$page_js['c'][] = 'document.getElementById("qjump").getElementsByTagName("div")[0].getElementsByTagName("input")[0].style.display = "none";'; // Visman - скрываем кнопку перехода при включенном js
+	$page_js['c'][] = 'if (document.getElementById("qjump")) document.getElementById("qjump").getElementsByTagName("div")[0].getElementsByTagName("input")[0].style.display = "none";'; // Visman - скрываем кнопку перехода при включенном js
 }
 
 echo $lang_temp; // быстрое переключение языка - Visman
