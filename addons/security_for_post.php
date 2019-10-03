@@ -106,7 +106,7 @@ class addon_security_for_post extends flux_addon
 
 		$db->query('INSERT INTO '.$db->prefix.'sec_of_post (form_key, form_time, form_ip, form_captcha) VALUES(\''.$db->escape($key).'\', '.$now.', \''.$db->escape($ip).'\', \''.$db->escape($form_captcha).'\')') or error('Unable to insert data in sec_of_post', __FILE__, __LINE__, $db->error());
 
-		echo "\t\t\t".'<input type="hidden" name="'.pun_htmlspecialchars($this->form_key).'" value="'.pun_htmlspecialchars($key).'" />'."\n";
+		echo "\t\t\t".'<div><input type="hidden" name="'.pun_htmlspecialchars($this->form_key).'" value="'.pun_htmlspecialchars($key).'" /></div>'."\n";
 	}
 
 
