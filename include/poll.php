@@ -647,10 +647,10 @@ function poll_display($tid, $uid, $info, $top, $prev = false)
 		$maxPercent = ($top[3] == 0 || !$max) ? 1 : 100 * $max / $top[3];
 
 ?>
-<?php if ($can_vote && !$prev): ?>
-	<input type="hidden" name="poll_max[<?php echo $k ?>]" value="<?php echo $amax[$k] ?>" />
-<?php endif ?>
 	<fieldset class="poll">
+<?php if ($can_vote && !$prev): ?>
+		<input type="hidden" name="poll_max[<?php echo $k ?>]" value="<?php echo $amax[$k] ?>" />
+<?php endif ?>
 		<p><?php echo pun_htmlspecialchars($question) ?></p>
 <?php if ($can_vote && $types[$k]>1): ?>
 		<div class="poss"><?php printf($lang_poll['Possible choose'], $types[$k]) ?></div>
@@ -701,19 +701,25 @@ function poll_display($tid, $uid, $info, $top, $prev = false)
 	}
 	if ($can_vote && !$prev)
 	{
+
+?>
+	<div>
+<?php
+
 		$csrf = pun_hash($tid.(pun_hash($uid.count($questions).implode('0',$types))).get_remote_address().implode('.',$amax));
 		foreach ($types as $i => $type)
 		{
 
 ?>
-	<input type="hidden" name="poll_type[<?php echo $i ?>]" value="<?php echo $type ?>" />
+		<input type="hidden" name="poll_type[<?php echo $i ?>]" value="<?php echo $type ?>" />
 <?php
 
 		}
 
 ?>
-	<input type="hidden" name="poll_ques" value="<?php echo count($questions) ?>" />
-	<input type="hidden" name="poll_csrf" value="<?php echo $csrf ?>" />
+		<input type="hidden" name="poll_ques" value="<?php echo count($questions) ?>" />
+		<input type="hidden" name="poll_csrf" value="<?php echo $csrf ?>" />
+	</div>
 	<p class="pollbut"><input type="submit" name="poll_submit" value="<?php echo $lang_poll['Vote button'] ?>" /><?php echo (($can_visi && $top[3] > 0) ? '<input type="submit" name="poll_view" value="'.$lang_poll['View'].'" />' : '') ?></p>
 </form>
 </div>

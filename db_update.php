@@ -519,10 +519,10 @@ if (empty($stage))
 	<h2><span><?php echo $lang_update['Update'] ?></span></h2>
 	<div class="box">
 		<form id="install" method="post" action="db_update.php">
-			<input type="hidden" name="stage" value="start" />
 			<div class="inform">
+				<input type="hidden" name="stage" value="start" />
 				<fieldset>
-				<legend><?php echo $lang_update['Administrator only'] ?></legend>
+					<legend><?php echo $lang_update['Administrator only'] ?></legend>
 					<div class="infldset">
 						<p><?php echo $lang_update['Database password info'] ?></p>
 						<p><strong><?php echo $lang_update['Note']; ?></strong> <?php echo $lang_update['Database password note'] ?></p>
@@ -1633,8 +1633,8 @@ switch ($stage)
 	<h2><span><?php echo $lang_update['Error converting users'] ?></span></h2>
 	<div class="box">
 		<form method="post" action="db_update.php?stage=conv_users_dupe&amp;uid=<?php echo $uid ?>">
-			<input type="hidden" name="form_sent" value="1" />
 			<div class="inform">
+				<input type="hidden" name="form_sent" value="1" />
 				<div class="forminfo">
 						<p style="font-size: 1.1em"><?php echo $lang_update['Error info 1'] ?></p>
 						<p style="font-size: 1.1em"><?php echo $lang_update['Error info 2'] ?></p>

@@ -719,8 +719,8 @@ else if (isset($_POST['delete_user']) || isset($_POST['delete_user_comply']))
 	<h2><span><?php echo $lang_profile['Confirm delete user'] ?></span></h2>
 	<div class="box">
 		<form id="confirm_del_user" method="post" action="profile.php?id=<?php echo $id ?>">
-			<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 			<div class="inform">
+				<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 				<fieldset>
 					<legend><?php echo $lang_profile['Confirm delete legend'] ?></legend>
 					<div class="infldset">
@@ -1824,8 +1824,8 @@ else
 		<div class="box">
 			<form id="profile7" method="post" action="profile.php?section=admin&amp;id=<?php echo $id ?>">
 				<div class="inform">
-				<input type="hidden" name="form_sent" value="1" />
-				<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
+					<input type="hidden" name="form_sent" value="1" />
+					<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 					<fieldset>
 <?php
 
