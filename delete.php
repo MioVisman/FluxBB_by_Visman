@@ -115,8 +115,8 @@ $cur_post['message'] = $parser->parseMessage($cur_post['message'], (bool) $cur_p
 	<h2><span><?php echo $lang_delete['Delete post'] ?></span></h2>
 	<div class="box">
 		<form method="post" action="delete.php?id=<?php echo $id ?>">
-			<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 			<div class="inform">
+				<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 				<div class="forminfo">
 					<h3><span><?php printf($is_topic_post ? $lang_delete['Topic by'] : $lang_delete['Reply by'], '<strong>'.pun_htmlspecialchars($cur_post['poster']).'</strong>', format_time($cur_post['posted'])) ?></span></h3>
 					<p><?php echo ($is_topic_post) ? '<strong>'.$lang_delete['Topic warning'].'</strong>' : '<strong>'.$lang_delete['Warning'].'</strong>' ?><br /><?php echo $lang_delete['Delete info'] ?></p>

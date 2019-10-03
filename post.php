@@ -691,6 +691,7 @@ $cur_index = 1;
 				<fieldset>
 					<legend><?php echo $lang_common['Write message legend'] ?></legend>
 					<div class="infldset txtarea">
+						<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 						<input type="hidden" name="form_sent" value="1" />
 <?php
 
@@ -778,7 +779,6 @@ if (!empty($checkboxes))
 			</div>
 <?php poll_form_post($tid); ?>
 <?php flux_hook('post_before_submit') ?>
-			<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 			<p class="buttons"><input type="submit" name="submit" value="<?php echo $lang_common['Submit'] ?>" tabindex="<?php echo $cur_index++ ?>" accesskey="s" /> <input type="submit" name="preview" value="<?php echo $lang_post['Preview'] ?>" tabindex="<?php echo $cur_index++ ?>" accesskey="p" /> <a href="javascript:history.go(-1)"><?php echo $lang_common['Go back'] ?></a></p>
 		</form>
 	</div>

@@ -676,6 +676,7 @@ $cur_index = 1;
 				<fieldset>
 					<legend><?php echo $lang_common['Write message legend'] ?></legend>
 					<div class="infldset txtarea">
+						<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash('post.php') ?>" />
 						<input type="hidden" name="form_sent" value="1" />
 <?php if ($pun_config['o_topic_subscriptions'] == '1' && ($pun_user['auto_notify'] == '1' || $cur_topic['is_subscribed'])): ?>						<input type="hidden" name="subscribe" value="1" />
 <?php endif; ?>
@@ -735,7 +736,6 @@ else
 // End Merge mod
 ?>
 <?php flux_hook('quickpost_before_submit') ?>
-			<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash('post.php') ?>" />
 			<p class="buttons"><input type="submit" name="submit" tabindex="<?php echo $cur_index++ ?>" value="<?php echo $lang_common['Submit'] ?>" accesskey="s" /> <input type="submit" name="preview" value="<?php echo $lang_topic['Preview'] ?>" tabindex="<?php echo $cur_index++ ?>" accesskey="p" /></p>
 		</form>
 	</div>
