@@ -98,8 +98,8 @@ else if (isset($_POST['del_cat']) || isset($_POST['del_cat_comply']))
 		<div class="box">
 			<form method="post" action="admin_categories.php">
 				<div class="inform">
-				<input type="hidden" name="cat_to_delete" value="<?php echo $cat_to_delete ?>" />
-				<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
+					<input type="hidden" name="cat_to_delete" value="<?php echo $cat_to_delete ?>" />
+					<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 					<fieldset>
 						<legend><?php echo $lang_admin_categories['Confirm delete subhead'] ?></legend>
 						<div class="infldset">
@@ -172,8 +172,8 @@ generate_admin_menu('categories');
 		<h2><span><?php echo $lang_admin_categories['Add categories head'] ?></span></h2>
 		<div class="box">
 			<form method="post" action="admin_categories.php">
-				<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 				<div class="inform">
+					<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 					<fieldset>
 						<legend><?php echo $lang_admin_categories['Add categories subhead'] ?></legend>
 						<div class="infldset">
@@ -195,8 +195,8 @@ generate_admin_menu('categories');
 <?php if (!empty($cat_list)): ?>		<h2 class="block2"><span><?php echo $lang_admin_categories['Delete categories head'] ?></span></h2>
 		<div class="box">
 			<form method="post" action="admin_categories.php">
-				<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 				<div class="inform">
+					<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 					<fieldset>
 						<legend><?php echo $lang_admin_categories['Delete categories subhead'] ?></legend>
 						<div class="infldset">
@@ -226,8 +226,8 @@ generate_admin_menu('categories');
 <?php if (!empty($cat_list)): ?>		<h2 class="block2"><span><?php echo $lang_admin_categories['Edit categories head'] ?></span></h2>
 		<div class="box">
 			<form method="post" action="admin_categories.php">
-				<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 				<div class="inform">
+					<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 					<fieldset>
 						<legend><?php echo $lang_admin_categories['Edit categories subhead'] ?></legend>
 						<div class="infldset">

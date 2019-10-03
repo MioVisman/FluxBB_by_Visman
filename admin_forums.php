@@ -100,8 +100,8 @@ else if (isset($_GET['del_forum']))
 		<h2><span><?php echo $lang_admin_forums['Confirm delete head'] ?></span></h2>
 		<div class="box">
 			<form method="post" action="admin_forums.php?del_forum=<?php echo $forum_id ?>">
-				<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 				<div class="inform">
+					<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 					<fieldset>
 						<legend><?php echo $lang_admin_forums['Confirm delete subhead'] ?></legend>
 						<div class="infldset">
@@ -260,9 +260,9 @@ else if (isset($_GET['edit_forum']))
 		<h2><span><?php echo $lang_admin_forums['Edit forum head'] ?></span></h2>
 		<div class="box">
 			<form id="edit_forum" method="post" action="admin_forums.php?edit_forum=<?php echo $forum_id ?>">
-				<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 				<p class="submittop"><input type="submit" name="save" value="<?php echo $lang_admin_common['Save changes'] ?>" tabindex="6" /></p>
 				<div class="inform">
+					<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 					<fieldset>
 						<legend><?php echo $lang_admin_forums['Edit details subhead'] ?></legend>
 						<div class="infldset">
@@ -439,8 +439,8 @@ if (is_array($cur_cat))
 {
 
 ?>
-				<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 				<div class="inform">
+					<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 					<fieldset>
 						<legend><?php echo $lang_admin_forums['Create new subhead'] ?></legend>
 						<div class="infldset">
@@ -501,8 +501,10 @@ if (!empty($sf_array_tree[0])) // MOD subforums - Visman
 		<h2 class="block2"><span><?php echo $lang_admin_forums['Edit forums head'] ?></span></h2>
 		<div class="box">
 			<form id="edforum" method="post" action="admin_forums.php?action=edit">
-				<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
-				<p class="submittop"><input type="submit" name="update_positions" value="<?php echo $lang_admin_forums['Update positions'] ?>" tabindex="3" /></p>
+				<p class="submittop">
+					<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
+					<input type="submit" name="update_positions" value="<?php echo $lang_admin_forums['Update positions'] ?>" tabindex="3" />
+				</p>
 <?php
 
 $cur_index = 4;

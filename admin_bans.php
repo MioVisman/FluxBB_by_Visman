@@ -120,10 +120,10 @@ if (isset($_REQUEST['add_ban']) || isset($_GET['edit_ban']))
 		<div class="box">
 			<form id="bans2" method="post" action="admin_bans.php">
 				<div class="inform">
-				<input type="hidden" name="mode" value="<?php echo $mode ?>" />
-				<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
-<?php if ($mode == 'edit'): ?>				<input type="hidden" name="ban_id" value="<?php echo $ban_id ?>" />
-<?php endif; ?>				<fieldset>
+					<input type="hidden" name="mode" value="<?php echo $mode ?>" />
+					<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
+<?php if ($mode == 'edit'): ?>					<input type="hidden" name="ban_id" value="<?php echo $ban_id ?>" />
+<?php endif; ?>					<fieldset>
 						<legend><?php echo $lang_admin_bans['Ban advanced subhead'] ?></legend>
 						<div class="infldset">
 							<table class="aligntop">
@@ -537,8 +537,8 @@ generate_admin_menu('bans');
 		<div class="box">
 			<form id="find_bans" method="get" action="admin_bans.php">
 				<p class="submittop"><input type="submit" name="find_ban" value="<?php echo $lang_admin_bans['Submit search'] ?>" tabindex="3" /></p>
-				<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 				<div class="inform">
+					<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 					<fieldset>
 						<legend><?php echo $lang_admin_bans['Ban search subhead'] ?></legend>
 						<div class="infldset">

@@ -469,8 +469,8 @@ else if (isset($_GET['del_group']))
 		<div class="box">
 			<form method="post" action="admin_groups.php?del_group=<?php echo $group_id ?>">
 				<div class="inform">
-				<input type="hidden" name="group_to_delete" value="<?php echo $group_id ?>" />
-				<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
+					<input type="hidden" name="group_to_delete" value="<?php echo $group_id ?>" />
+					<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 					<fieldset>
 						<legend><?php echo $lang_admin_groups['Confirm delete subhead'] ?></legend>
 						<div class="infldset">
@@ -504,8 +504,8 @@ else if (isset($_GET['del_group']))
 		<h2><span><?php echo $lang_admin_groups['Delete group head'] ?></span></h2>
 		<div class="box">
 			<form id="groups" method="post" action="admin_groups.php?del_group=<?php echo $group_id ?>">
-				<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 				<div class="inform">
+					<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 					<fieldset>
 						<legend><?php echo $lang_admin_groups['Move users subhead'] ?></legend>
 						<div class="infldset">
@@ -553,8 +553,8 @@ generate_admin_menu('groups');
 		<h2><span><?php echo $lang_admin_groups['Add groups head'] ?></span></h2>
 		<div class="box">
 			<form id="groups" method="post" action="admin_groups.php">
-				<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 				<div class="inform">
+					<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 					<fieldset>
 						<legend><?php echo $lang_admin_groups['Add group subhead'] ?></legend>
 						<div class="infldset">

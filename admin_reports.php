@@ -57,7 +57,9 @@ generate_admin_menu('reports');
 		<h2><span><?php echo $lang_admin_reports['New reports head'] ?></span></h2>
 		<div class="box">
 			<form method="post" action="admin_reports.php?action=zap">
-				<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
+				<div>
+					<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
+				</div>
 <?php
 
 $result = $db->query('SELECT r.id, r.topic_id, r.forum_id, r.reported_by, r.created, r.message, p.id AS pid, t.subject, f.forum_name, u.username AS reporter FROM '.$db->prefix.'reports AS r LEFT JOIN '.$db->prefix.'posts AS p ON r.post_id=p.id LEFT JOIN '.$db->prefix.'topics AS t ON r.topic_id=t.id LEFT JOIN '.$db->prefix.'forums AS f ON r.forum_id=f.id LEFT JOIN '.$db->prefix.'users AS u ON r.reported_by=u.id WHERE r.zapped IS NULL ORDER BY created DESC') or error('Unable to fetch report list', __FILE__, __LINE__, $db->error());

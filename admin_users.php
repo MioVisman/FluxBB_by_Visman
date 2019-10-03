@@ -365,10 +365,10 @@ else if (isset($_POST['move_users']) || isset($_POST['move_users_comply']))
 	<div class="blockform">
 		<h2><span><?php echo $lang_admin_users['Move users'] ?></span></h2>
 		<div class="box">
-			<form name="confirm_move_users" method="post" action="admin_users.php">
-				<input type="hidden" name="users" value="<?php echo implode(',', $user_ids) ?>" />
-				<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
+			<form method="post" action="admin_users.php">
 				<div class="inform">
+					<input type="hidden" name="users" value="<?php echo implode(',', $user_ids) ?>" />
+					<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 					<fieldset>
 						<legend><?php echo $lang_admin_users['Move users subhead'] ?></legend>
 						<div class="infldset">
@@ -527,10 +527,10 @@ else if (isset($_POST['delete_users']) || isset($_POST['delete_users_comply']))
 	<div class="blockform">
 		<h2><span><?php echo $lang_admin_users['Delete users'] ?></span></h2>
 		<div class="box">
-			<form name="confirm_del_users" method="post" action="admin_users.php">
-				<input type="hidden" name="users" value="<?php echo implode(',', $user_ids) ?>" />
-				<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
+			<form method="post" action="admin_users.php">
 				<div class="inform">
+					<input type="hidden" name="users" value="<?php echo implode(',', $user_ids) ?>" />
+					<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 					<fieldset>
 						<legend><?php echo $lang_admin_users['Confirm delete legend'] ?></legend>
 						<div class="infldset">
@@ -654,10 +654,10 @@ else if (isset($_POST['ban_users']) || isset($_POST['ban_users_comply']))
 	<div class="blockform">
 		<h2><span><?php echo $lang_admin_users['Ban users'] ?></span></h2>
 		<div class="box">
-			<form id="bans2" name="confirm_ban_users" method="post" action="admin_users.php">
-				<input type="hidden" name="users" value="<?php echo implode(',', $user_ids) ?>" />
-				<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
+			<form id="bans2" method="post" action="admin_users.php">
 				<div class="inform">
+					<input type="hidden" name="users" value="<?php echo implode(',', $user_ids) ?>" />
+					<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 					<fieldset>
 						<legend><?php echo $lang_admin_users['Message expiry subhead'] ?></legend>
 						<div class="infldset">
@@ -853,10 +853,10 @@ else if (isset($_GET['find_user']))
 
 
 <form id="search-users-form" action="admin_users.php" method="post">
-<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 <div id="users2" class="blocktable">
 	<h2><span><?php echo $lang_admin_users['Results head'] ?></span></h2>
 	<div class="box">
+		<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 		<div class="inbox">
 			<table>
 			<thead>

@@ -104,8 +104,8 @@ generate_admin_menu('censoring');
 		<h2><span><?php echo $lang_admin_censoring['Censoring head'] ?></span></h2>
 		<div class="box">
 			<form id="censoring" method="post" action="admin_censoring.php">
-				<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 				<div class="inform">
+					<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 					<fieldset>
 						<legend><?php echo $lang_admin_censoring['Add word subhead'] ?></legend>
 						<div class="infldset">
