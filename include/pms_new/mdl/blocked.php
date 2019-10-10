@@ -43,7 +43,7 @@ $paging_links = '<span class="pages-label">'.$lang_common['Pages'].' </span>'.pa
 $pmsn_f_savedel = '<input type="submit" name="delete" value="'.$lang_pmsn['Delete'].'" />';
 
 ?>
-<script language="JavaScript" type="text/JavaScript">
+<script type="text/javascript">
 /* <![CDATA[ */
 function ChekUncheck()
 {
@@ -65,10 +65,10 @@ function ChekUncheck()
 		<div class="pagepost">
 			<p class="pagelink conl"><?php echo $paging_links ?></p>
 		</div>
-		<form method="post" action="pmsnew.php?mdl=blockedq" name="usernumb">
-		<input type="hidden" name="csrf_hash" value="<?php echo $pmsn_csrf_hash; ?>" />
-		<input type="hidden" name="p" value="<?php echo $p; ?>" />
+		<form method="post" action="pmsnew.php?mdl=blockedq">
 		<div id="users1" class="blocktable">
+			<input type="hidden" name="csrf_hash" value="<?php echo $pmsn_csrf_hash; ?>" />
+			<input type="hidden" name="p" value="<?php echo $p; ?>" />
 			<div class="box">
 				<div class="inbox">
 					<table>

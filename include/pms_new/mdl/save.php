@@ -64,7 +64,7 @@ else
 	$pmsn_f_savedel = '<input type="submit" name="delete" value="'.$lang_pmsn['Delete'].'" />';
 
 ?>
-<script language="JavaScript" type="text/JavaScript">
+<script type="text/javascript">
 /* <![CDATA[ */
 function ChekUncheck()
 {
@@ -87,10 +87,10 @@ function ChekUncheck()
 			<p class="pagelink conl"><?php echo $paging_links ?></p>
 			<p class="postlink actions conr"><?php echo $pmsn_f_cnt ?></p>
 		</div>
-		<form method="post" action="pmsnew.php?mdl=saveq<?php echo $sidamp ?>" name="posttopic">
-		<input type="hidden" name="csrf_hash" value="<?php echo $pmsn_csrf_hash ?>" />
-		<input type="hidden" name="p" value="<?php echo $p ?>" />
+		<form method="post" action="pmsnew.php?mdl=saveq<?php echo $sidamp ?>">
 		<div id="vf" class="blocktable">
+			<input type="hidden" name="csrf_hash" value="<?php echo $pmsn_csrf_hash ?>" />
+			<input type="hidden" name="p" value="<?php echo $p ?>" />
 			<div class="box">
 				<div class="inbox">
 					<table>
