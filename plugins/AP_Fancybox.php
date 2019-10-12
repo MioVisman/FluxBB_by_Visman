@@ -40,7 +40,7 @@ $arr_new = array(
 function InstallModInFiles ()
 {
 	global $arr_files, $arr_search, $arr_new, $lang_fb;
-	
+
 	$max = count($arr_files);
 	$errors = array();
 
@@ -72,7 +72,7 @@ function InstallModInFiles ()
 		fwrite ($fp, $file_content);
 		fclose ($fp);
 	}
-	
+
 	return $errors;
 }
 
@@ -115,7 +115,8 @@ function DeleteModInFiles ()
 // Установка плагина/мода
 if (isset($_POST['installation']))
 {
-	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o\_fbox\_%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
+	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name=\'o_fbox_guest\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
+	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name=\'o_fbox_files\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
 	$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES(\'o_fbox_guest\', \'0\')') or error('Unable to insert into table config.', __FILE__, __LINE__, $db->error());
 	$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES(\'o_fbox_files\', \''.$db->escape(PLUGIN_FILES).'\')') or error('Unable to insert into table config.', __FILE__, __LINE__, $db->error());
 
@@ -123,7 +124,7 @@ if (isset($_POST['installation']))
 		require PUN_ROOT.'include/cache.php';
 
 	generate_config_cache();
-	
+
 	$err = InstallModInFiles();
 	if (empty($err))
 		redirect(PLUGIN_URL, $lang_fb['Red installation']);
@@ -145,7 +146,8 @@ else if (isset($_POST['update']))
 			$fls[] = $file;
 	}
 
-	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o\_fbox\_%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
+	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name=\'o_fbox_guest\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
+	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name=\'o_fbox_files\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
 	$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES(\'o_fbox_guest\', \''.$gst.'\')') or error('Unable to insert into table config.', __FILE__, __LINE__, $db->error());
 	$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES(\'o_fbox_files\', \''.$db->escape(implode(',', $fls)).'\')') or error('Unable to insert into table config.', __FILE__, __LINE__, $db->error());
 
@@ -160,13 +162,14 @@ else if (isset($_POST['update']))
 // Удаление мода
 else if (isset($_POST['delete']))
 {
-	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o\_fbox\_%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
+	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name=\'o_fbox_guest\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
+	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name=\'o_fbox_files\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
 
 	if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
 		require PUN_ROOT.'include/cache.php';
 
 	generate_config_cache();
-	
+
 	$err = DeleteModInFiles();
 	if (empty($err))
 		redirect(PLUGIN_URL, $lang_fb['Red delete']);
@@ -181,7 +184,8 @@ if ($file_content === false)
 $f_inst = (strpos($file_content, $fd_str) !== false);
 if ($f_inst && !isset($pun_config['o_fbox_files'])) // непредвиденная ситуация при обновлении
 {
-	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o\_fbox\_%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
+	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name=\'o_fbox_guest\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
+	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name=\'o_fbox_files\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
 	$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES(\'o_fbox_guest\', \'0\')') or error('Unable to insert into table config.', __FILE__, __LINE__, $db->error());
 	$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES(\'o_fbox_files\', \''.$db->escape(PLUGIN_FILES).'\')') or error('Unable to insert into table config.', __FILE__, __LINE__, $db->error());
 
@@ -267,7 +271,7 @@ else
 		$ar_file[] = 'AP_Upload.php';
 
 	natcasesort($ar_file);
-	
+
 	foreach ($ar_file as $id => $file)
 	{
 
