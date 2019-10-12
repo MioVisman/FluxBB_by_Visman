@@ -39,7 +39,7 @@ if (isset($_POST['installation']))
 
 	$db->query('UPDATE '.$db->prefix.'groups SET g_up_ext=\''.$db->escape(PLUGIN_EXTS).'\', g_up_limit=1073741824, g_up_max='.min(return_bytes(ini_get('upload_max_filesize')), return_bytes(ini_get('post_max_size'))).' WHERE g_id='.PUN_ADMIN) or error('Unable to update user group list', __FILE__, __LINE__, $db->error());
 
-	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o\_uploadile\_%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
+	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name=\'o_uploadile_other\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
 	$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES(\'o_uploadile_other\', \''.$db->escape(serialize($sconf)).'\')') or error($lang_up['Error DB ins-up'], __FILE__, __LINE__, $db->error());
 
 	if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
@@ -110,7 +110,7 @@ else if (isset($_POST['update']))
 	if (isset($_POST['pic_h']) && $_POST['pic_h'] >= 100)
 		$sconf['pic_h'] = intval($_POST['pic_h']);
 
-	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o\_uploadile\_%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
+	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name=\'o_uploadile_other\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
 	$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES(\'o_uploadile_other\', \''.$db->escape(serialize($sconf)).'\')') or error($lang_up['Error DB ins-up'], __FILE__, __LINE__, $db->error());
 
 	if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
@@ -129,13 +129,13 @@ else if (isset($_POST['restore']))
 	$db->drop_field('groups', 'g_up_max') or error('Unable to drop g_up_max field', __FILE__, __LINE__, $db->error());
 	$db->drop_field('groups', 'g_up_limit') or error('Unable to drop g_up_limit field', __FILE__, __LINE__, $db->error());
 
-	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name LIKE \'o\_uploadile\_%\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
+	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name=\'o_uploadile_other\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
 
 	if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
 		require PUN_ROOT.'include/cache.php';
 
 	generate_config_cache();
-	
+
 	redirect(PLUGIN_URL, $lang_up['Redirect']);
 }
 
@@ -224,7 +224,7 @@ $tabindex = 1;
 <?php
 
 $stthumb = '" disabled="disabled';
-	
+
 if (defined('PLUGIN_OFF'))
 {
 
@@ -336,7 +336,7 @@ else
 				$cur_group['g_up_max'] = $cur_group['g_up_limit'] = 0;
 				$cur_group['g_up_ext'] = '';
 			}
-				
+
 ?>
 								<tr>
 									<td class="tcl"><?php echo pun_htmlspecialchars($cur_group['g_title']) ?></td>
@@ -496,7 +496,7 @@ else
 	{
 		preg_match($regx, $file, $fi);
 		if (!isset($fi[1]) || !isset($fi[2]) || !isset($fi[3])) continue;
-		
+
 		$fb = in_array(strtolower($fi[3]), array('jpg', 'jpeg', 'gif', 'png', 'bmp')) ? '" class="fancy_zoom" rel="vi001' : '';
 		$dir = $mem.$fi[1].'/';
 		$size_file = file_size(filesize(PUN_ROOT.$file));
@@ -521,7 +521,7 @@ else
 <?php
 
 	} // end foreach
-	
+
 ?>
 							</tbody>
 						</table>
