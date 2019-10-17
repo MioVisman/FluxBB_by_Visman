@@ -1,22 +1,72 @@
-# -Indexes -> Disable directory listing
-# -ExecCGI -> Disable CGI script execution
-Options -Indexes -ExecCGI
+# ----------------------------------------------------------------------
+# If something is broken, then see the apache config for your site,
+# the AllowOverride directive https://httpd.apache.org/docs/2.4/mod/core.html#allowoverride
+# ----------------------------------------------------------------------
 
-# Disable PHP script execution
-php_flag engine 0
+# ----------------------------------------------------------------------
+# Disable directory listing.
+#-----------------------------------------------------------------------
 
-# Treat these files as plain text
-RemoveHandler .asmx .asp .aspx .cgi .dll .exe .fcgi .fpl .htm .html .js .jsp .php .php3 .php4 .php5 .php6 .php7 .phar .phps .phtm .phtml .pl .py .rb .shtm .shtml .wml .xml
-AddType text/plain .asmx .asp .aspx .cgi .dll .exe .fcgi .fpl .htm .html .js .jsp .php .php3 .php4 .php5 .php6 .php7 .phar .phps .phtm .phtml .pl .py .rb .shtm .shtml .wml .xml
+<IfModule mod_autoindex.c>
+    Options -Indexes
+</IfModule>
 
-# Disable script execution
+# ----------------------------------------------------------------------
+# Disable CGI script execution.
+#-----------------------------------------------------------------------
+
+<IfModule mod_cgi.c>
+    Options -ExecCGI
+</IfModule>
+<IfModule mod_cgid.c>
+    Options -ExecCGI
+</IfModule>
+<IfModule mod_fcgid.c>
+    Options -ExecCGI
+</IfModule>
+
+# ----------------------------------------------------------------------
+# Disable PHP script execution if php as apache module.
+# If your php has a module name other than "mod_php", "mod_php_null",
+# "mod_php5" and "mod_php7", then add here one more condition with your name.
+#-----------------------------------------------------------------------
+
+<IfModule mod_php.c>
+    php_flag engine 0
+</IfModule>
+<IfModule mod_php_null.c>
+    php_flag engine 0
+</IfModule>
+<IfModule mod_php5.c>
+    php_flag engine 0
+</IfModule>
+<IfModule mod_php7.c>
+    php_flag engine 0
+</IfModule>
+
+# ----------------------------------------------------------------------
+# Treat these files as plain text.
+# ----------------------------------------------------------------------
+
+<IfModule mod_mime.c>
+    RemoveHandler .asmx .asp .aspx .cgi .dll .exe .fcgi .fpl .htm .html .js .jsp .php .php3 .php4 .php5 .php6 .php7 .phar .phps .phtm .phtml .pl .py .rb .shtm .shtml .wml .xml
+    AddType text/plain .asmx .asp .aspx .cgi .dll .exe .fcgi .fpl .htm .html .js .jsp .php .php3 .php4 .php5 .php6 .php7 .phar .phps .phtm .phtml .pl .py .rb .shtm .shtml .wml .xml
+</IfModule>
+
+# ----------------------------------------------------------------------
+# All files are given through the default handler for static content (Disable script execution).
+# ----------------------------------------------------------------------
+
 SetHandler default-handler
 
-# Show nofile.gif instead of missing files
+# ----------------------------------------------------------------------
+# Show nofile.gif instead of missing files.
+# ----------------------------------------------------------------------
+
 <IfModule mod_rewrite.c>
-RewriteEngine On
-# Uncomment and properly set the RewriteBase if the rewrite rules are not working properly
-#RewriteBase /
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule .* nofile.gif [L]
+    RewriteEngine On
+#   Uncomment and properly set the RewriteBase if the rewrite rules are not working properly
+#   RewriteBase /
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule .* nofile.gif [L]
 </IfModule>
