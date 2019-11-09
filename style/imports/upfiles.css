@@ -16,13 +16,26 @@ ul#upf-list {
 }
 
 #upf-list li {
-	display: inline-block;
+	display: block;
 	float: left;
 	margin: 3px;
 	padding: 3px;
 	text-align: center;
 	border: 1px solid;
 	position: relative;
+}
+
+.upf-fmess #upf-list-fls {
+	min-width: auto;
+}
+
+.upf-fmess ul#upf-list {
+	white-space: nowrap;
+}
+
+.upf-fmess #upf-list li {
+	display: inline-block;
+	float: none;
 }
 
 .upf-but a, .upf-but a:link, .upf-but a:visited, .upf-but a:hover, .upf-but a:active, .upf-but a:focus {
@@ -73,7 +86,8 @@ ul#upf-list {
 	float: right;
 }
 
-.upf-delete .upf-loading span {
+.upf-delete .upf-loading span,
+.upf-removal .upf-delete span {
 	background: url("../../img/loading.gif") no-repeat scroll 5px 5px;
 }
 
@@ -110,6 +124,10 @@ ul#upf-list {
 	width: 100%;
 }
 
+#upf-legend div span {
+	filter: invert(1) grayscale(1) contrast(9);
+}
+
 #upf-table th, #upf-table td {
 	text-align: center;
 	width: auto;
@@ -122,8 +140,28 @@ ul#upf-list {
 
 #upf-table .upf-c3 img {
 	border: none;
+	max-width: 150px;
 }
 
 #upf-block #upf-table td {
+	vertical-align: middle;
+}
+
+#upf-- .upf-delete,
+#upf-- .upf-insert,
+#upf-- .upf-insert-t {
+	display: none;
+}
+
+#upf-button.upf-uploading {
+	display: none;
+}
+
+#upf-button.upf-uploading + span:before {
+	height: 16px;
+	width: 26px;
+	background: url("../../img/loading.gif") no-repeat scroll left center;
+	display: inline-block;
+	content: " ";
 	vertical-align: middle;
 }

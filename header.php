@@ -149,10 +149,10 @@ function process_form(the_form)
 
 }
 
-require PUN_ROOT.'include/fancybox.php';
-
 // New PMS - Visman
 require PUN_ROOT.'include/pms_new/pmsnheader.php';
+
+require PUN_ROOT.'include/fancybox.php';
 
 if (!empty($page_head))
 	echo implode("\n", $page_head)."\n";

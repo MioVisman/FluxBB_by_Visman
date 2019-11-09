@@ -40,14 +40,6 @@ foreach ($smilies as $smileyt => $smileyi)
 $bbres = '<style type="text/css">div.grippie {background:#EEEEEE url(img/grippie.png) no-repeat scroll center 2px;border-color:#DDDDDD;border-style:solid;border-width:0pt 1px 1px;cursor:s-resize;height:9px;overflow:hidden;} .resizable-textarea textarea {display:block;margin-bottom:0pt;width:95%;height: 20%;}</style>';
 $tpl_main = str_replace('</head>', $bbres."\n".'</head>', $tpl_main);
 
-// mod upload
-$bbflagup = 0;
-if (!$pun_user['is_guest'] && !empty($pun_user['g_up_ext']))
-{
-	if ($pun_user['g_id'] == PUN_ADMIN || ($pun_user['g_up_limit'] > 0 && $pun_user['g_up_max'] > 0))
-		$bbflagup = 1;
-}
-
 $page_js['j'] = 1; // for resize textarea :(
 $page_js['f']['bbcode'] = 'js/post.js';
 $page_js['c'][] = 'if (typeof FluxBB === \'undefined\' || !FluxBB) {var FluxBB = {};}
@@ -55,9 +47,8 @@ FluxBB.vars = {
 	bbDir: "'.$btndir.'",
 	bbGuest: '.($pun_user['is_guest'] ? 1 : 0).',
 	bbCIndex: '.$cur_index.',
-	bbFlagUp: '.$bbflagup.',
-	bbSmImg: ['.implode(',',$smil_i).'],
-	bbSmTxt: ['.implode(',',$smil_t).']
+	bbSmImg: ['.implode(',', $smil_i).'],
+	bbSmTxt: ['.implode(',', $smil_t).']
 };
 FluxBB.post.init();';
 

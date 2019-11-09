@@ -1,9 +1,9 @@
-// post.js v2.1.1 Copyright (C) 2014-2016 Visman (mio.visman@yandex.ru)
+// post.js v2.2.0 Copyright (C) 2014-2019 Visman (mio.visman@yandex.ru)
 if (typeof FluxBB === 'undefined' || !FluxBB) {var FluxBB = {};}
 
 FluxBB.post = (function (doc, win) {
 	'use strict';
-	
+
 	var nameusers = [],
 			bbcode = [],
 			lang = [],
@@ -52,14 +52,14 @@ FluxBB.post = (function (doc, win) {
 		}
 		return !1;
 	}
-	
+
 	function check_apq () {
 		if (apq_id != -1)	{
 			get('pq' + apq_id).innerHTML = apq_temp;
 			apq_id = -1;
 		}
 	}
-	
+
 	function orsc(req) {
 		if (req.readyState == 4) {
 			check_apq();
@@ -80,7 +80,7 @@ FluxBB.post = (function (doc, win) {
 		}
 		return html;
 	}
-	
+
 	function ColorMapBB() {
 		var colors = [], a = ['00', '33', '66', '99', 'cc', 'ff'];
 		for (var x = 0; x < 6; x++) {
@@ -106,7 +106,7 @@ FluxBB.post = (function (doc, win) {
 		init : function () {
 			if (fls) return false;
 			fls = true;
-			
+
 			textarea = doc.getElementsByName('req_message')[0];
 			if (typeof textarea === 'undefined') return false;
 
@@ -136,11 +136,11 @@ FluxBB.post = (function (doc, win) {
 				{i:'smile.png', a:'smileys', f:'return FluxBB.post.overlay(this, \'bbcode_smileys\');'}];
 
 			if (doc.getElementsByTagName('html')[0].getAttribute('lang') == 'ru') {
-			  lang = {'b':'Полужирный текст', 'i':'Наклонный текст', 'u':'Подчеркнутый текст', 's':'Зачёркнутый текст', 'center':'По центру', 'right':'По правому краю', 'justify':'По ширине', 'mono':'Моношрифт', 'url':'Ссылка', 'email':'Электронная почта', 'img':'Картинка', 'list':'Список', '*':'Элемент списка', 'quote':'Цитата', 'code':'Блок кода', 'hr':'Горизонтальная линия', 'color':'Цвет текста', 'spoiler':'Скрытый текст', 'smileys':'Смайлы', 'upfiles':'Загрузки', 'QQ':'Цитировать', 'Loading':'Загрузка...', 'Must':'Вы должны выделить текст для цитирования'};
+			  lang = {'b':'Полужирный текст', 'i':'Наклонный текст', 'u':'Подчеркнутый текст', 's':'Зачёркнутый текст', 'center':'По центру', 'right':'По правому краю', 'justify':'По ширине', 'mono':'Моношрифт', 'url':'Ссылка', 'email':'Электронная почта', 'img':'Картинка', 'list':'Список', '*':'Элемент списка', 'quote':'Цитата', 'code':'Блок кода', 'hr':'Горизонтальная линия', 'color':'Цвет текста', 'spoiler':'Скрытый текст', 'smileys':'Смайлы', 'QQ':'Цитировать', 'Loading':'Загрузка...', 'Must':'Вы должны выделить текст для цитирования'};
 			} else {
-			  lang = {'b':'Bold text', 'i':'Italic text', 'u':'Underlined text', 's':'Strike-through text', 'center':'Center', 'right':'Right', 'justify':'Justify', 'mono':'Mono', 'url':'Link', 'email':'E-mail', 'img':'Image', 'list':'List', '*':'List element', 'quote':'Quote', 'code':'Code block', 'hr':'Horizontal line', 'color':'Colour of text', 'spoiler':'Spoiler', 'smileys':'Smileys', 'upfiles':'Uploads', 'QQ':'Quote', 'Loading':'Loading...', 'Must':'You must select text before quoting'};
+			  lang = {'b':'Bold text', 'i':'Italic text', 'u':'Underlined text', 's':'Strike-through text', 'center':'Center', 'right':'Right', 'justify':'Justify', 'mono':'Mono', 'url':'Link', 'email':'E-mail', 'img':'Image', 'list':'List', '*':'List element', 'quote':'Quote', 'code':'Code block', 'hr':'Horizontal line', 'color':'Colour of text', 'spoiler':'Spoiler', 'smileys':'Smileys', 'QQ':'Quote', 'Loading':'Loading...', 'Must':'You must select text before quoting'};
 			}
-			
+
 			var div = createElement('div');
 			div.setAttribute('id', 'bbcode_bar');
 
@@ -173,7 +173,7 @@ FluxBB.post = (function (doc, win) {
 					if (typeof dt !== 'undefined') {
 						var a = dt.innerHTML;
 						var n = a.replace(/<[^>]+>/g, '');
-						
+
 						// Decode html special chars
 						nameusers[id] = n.replace(/&lt;/g, '<')
 							.replace(/&gt;/g, '>')
@@ -191,18 +191,6 @@ FluxBB.post = (function (doc, win) {
 							p.insertAdjacentHTML('beforeEnd', '<li class="postquote"><span id="pq' + id + '"><a href="' + a.href.replace(/&/g, '&amp;') + '" onmousedown="FluxBB.post.getText();" onclick="return FluxBB.post.quote(' + id + ');">' + lang['QQ'] + '</a></span></li>');
 						}
 					}
-				}
-			}
-			
-			if (!!FluxBB.vars.bbFlagUp && !FluxBB.vars.bbGuest) {
-				var all_ul = doc.getElementsByTagName('ul'),
-						i = all_ul.length - 1;
-				while (i > -1) {
-					if (all_ul[i].className == 'bblinks') {
-						all_ul[i].insertAdjacentHTML('beforeEnd', '<li><span><a href="upfiles.php" onclick="return FluxBB.post.popUp(this.href);"><strong>' + lang['upfiles'] + '</strong></a></span></li>');
-						i = 0;
-					}
-					i--;
 				}
 			}
 		},
@@ -234,16 +222,16 @@ FluxBB.post = (function (doc, win) {
 			textarea.focus();
 			return false;
 		},
-		
+
 		insName: function (id) {
 			return FluxBB.post.insText('', '[b]@' + nameusers[id] + '[/b], ');
 		},
-		
+
 		getText: function () {
 			if (win.getSelection) quote_text = win.getSelection().toString();
 			else if (doc.selection && doc.selection.createRange) quote_text = doc.selection.createRange().text;
 		},
-		
+
 		quote: function (id) {
 			if (typeof id !== 'number' || id < 1) return false;
 			if (quote_text != '') {
@@ -276,7 +264,7 @@ FluxBB.post = (function (doc, win) {
 			win.open(url, 'gest', 'top=' + t + ',left=' + l + ',width=' + w + ',height=' + h + ',resizable=yes,location=no,menubar=no,status=no,scrollbars=yes');
 			return false;
 		},
-		
+
 		overlay : function (prt, str) {
 			var m = get(str);
 			if (m.style.display != 'block') {
@@ -308,7 +296,7 @@ FluxBB.post = (function (doc, win) {
 
 			return false;
 		},
-		
+
 		showMapColor : function (color) {
 			get('selectedMapColor').style.backgroundColor = color;
 			get('selectedMapColorBox').value = color;
