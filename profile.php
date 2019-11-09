@@ -330,7 +330,10 @@ else if ($action == 'upload_avatar' || $action == 'upload_avatar2')
 	if ($pun_user['id'] != $id && !$pun_user['is_admmod'])
 		message($lang_common['No permission'], false, '403 Forbidden');
 
-	require PUN_ROOT.'include/upload.php'; // Visman - auto resize avatar
+// Visman - auto resize avatar
+	require PUN_ROOT.'include/upload.php';
+	$max_filesize = (true === $upf_class->isResize()) ? min(2097152, $upf_class->size(ini_get('upload_max_filesize')), $upf_class->size(ini_get('post_max_size'))) : $pun_config['o_avatars_size'];
+// Visman - auto resize avatar
 
 	if (isset($_POST['form_sent']))
 	{
@@ -374,61 +377,66 @@ else if ($action == 'upload_avatar' || $action == 'upload_avatar2')
 
 		if (is_uploaded_file($uploaded_file['tmp_name']))
 		{
-			// Preliminary file check, adequate in most cases
-			$allowed_types = array('image/gif', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/x-png');
-			if (!in_array($uploaded_file['type'], $allowed_types))
-				message($lang_profile['Bad type']);
-
+// Visman - auto resize avatar
 			// Make sure the file isn't too big
-			if ($uploaded_file['size'] > ($gd ? min(2097152, return_bytes(ini_get('upload_max_filesize')), return_bytes(ini_get('post_max_size'))) : $pun_config['o_avatars_size'])) // Visman - auto resize avatar
-				message($lang_profile['Too large'].' '.forum_number_format(($gd ? min(2097152, return_bytes(ini_get('upload_max_filesize')), return_bytes(ini_get('post_max_size'))) : $pun_config['o_avatars_size'])).' '.$lang_profile['bytes'].'.'); // Visman - auto resize avatar
-
-			// Move the file to the avatar directory. We do this before checking the width/height to circumvent open_basedir restrictions
-			if (!@move_uploaded_file($uploaded_file['tmp_name'], PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp'))
-				message($lang_profile['Move failed'].' <a href="mailto:'.pun_htmlspecialchars($pun_config['o_admin_email']).'">'.pun_htmlspecialchars($pun_config['o_admin_email']).'</a>.');
-
-			list($width, $height, $type,) = @getimagesize(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp');
-
-// Visman - auto resize avatar
-			if ($gd && !empty($width) && !empty($height) && ($uploaded_file['size'] > $pun_config['o_avatars_size'] || $width > $pun_config['o_avatars_width'] || $height > $pun_config['o_avatars_height'] || $type == IMAGETYPE_BMP))
-			{
-				$result_res = img_resize(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp', $pun_config['o_avatars_dir'].'/', 'temp'.$id, $extimage2[$type][0], $pun_config['o_avatars_width'], $pun_config['o_avatars_height']);
-				if (is_array($result_res))
-				{
-					@unlink(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp');
-					@rename(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$result_res[0].'.'.$result_res[1], PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp');
-
-					list($width, $height, $type,) = @getimagesize(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp');
-				}
+			if ($uploaded_file['size'] > $max_filesize) {
+				message($lang_profile['Too large'].' '.forum_number_format($max_filesize).' '.$lang_profile['bytes'].'.');
 			}
-// Visman - auto resize avatar
 
+			if (false === $upf_class->loadFile($uploaded_file['tmp_name'], 'temp' . $id . '.tmp')) {
+				message($lang_up['Unknown failure'] . ' (' . pun_htmlspecialchars($upf_class->getError()) . ')');
+			}
 
-			// Determine type
-			if ($type == IMAGETYPE_GIF)
-				$extension = '.gif';
-			else if ($type == IMAGETYPE_JPEG)
-				$extension = '.jpg';
-			else if ($type == IMAGETYPE_PNG)
-				$extension = '.png';
-			else
-			{
-				// Invalid type
-				@unlink(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp');
+			if (true !== $upf_class->isImage() || ! in_array($upf_class->getFileExt(), ['jpg', 'gif', 'png'])) {
 				message($lang_profile['Bad type']);
 			}
 
-			// Now check the width/height
-			if (empty($width) || empty($height) || $width > $pun_config['o_avatars_width'] || $height > $pun_config['o_avatars_height'])
-			{
-				@unlink(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp');
+			if (false !== $upf_class->isUnsafeContent()) {
+				message($lang_up['Error inject']);
+			}
+
+			$result = $upf_class->loadImage();
+			if (false === $result) {
+				message($lang_up['Error img'] . ' (' . pun_htmlspecialchars($upf_class->getError()) . ')');
+			}
+
+			$scaleResize = false;
+
+			if (
+				$uploaded_file['size'] <= $pun_config['o_avatars_size']
+				&& $result[0] <= $pun_config['o_avatars_width']
+				&& $result[1] <= $pun_config['o_avatars_height']
+			) {
+				$fileinfo = $upf_class->saveFile(PUN_ROOT . $pun_config['o_avatars_dir'] . '/' . $upf_class->getFileName() . '.' . $upf_class->getFileExt(), true);
+			} else if (true === $upf_class->isResize()) {
+				$upf_class->setImageQuality(40);
+				$scaleResize = $upf_class->resizeImage($pun_config['o_avatars_width'], $pun_config['o_avatars_height']);
+
+				if (false === $scaleResize) {
+					message($lang_up['Error no mod img'] . ' (' . pun_htmlspecialchars($upf_class->getError()) . ')'); //????
+				}
+
+				$fileinfo = $upf_class->saveImage(PUN_ROOT . $pun_config['o_avatars_dir'] . '/' . $upf_class->getFileName() . '.' . $upf_class->getFileExt(), true);
+			} else if (
+				$result[0] > $pun_config['o_avatars_width']
+				|| $result[1] > $pun_config['o_avatars_height']
+			) {
 				message($lang_profile['Too wide or high'].' '.$pun_config['o_avatars_width'].'x'.$pun_config['o_avatars_height'].' '.$lang_profile['pixels'].'.');
+			}
+
+			if (false === $fileinfo) {
+				message($lang_profile['Move failed'] . ' (' . pun_htmlspecialchars($upf_class->getError()) . ')'); //????
+			}
+			if (filesize($fileinfo['path']) > $pun_config['o_avatars_size']) {
+				@unlink($fileinfo['path']);
+				message($lang_profile['Too large'].' '.forum_number_format($pun_config['o_avatars_size']).' '.$lang_profile['bytes'].'.');
 			}
 
 			// Delete any old avatars and put the new one in place
 			delete_avatar($id);
-			@rename(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp', PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.$extension);
-			@chmod(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.$extension, 0644);
+			@rename($fileinfo['path'], PUN_ROOT . $pun_config['o_avatars_dir'] . '/' . $id . '.' . $fileinfo['extension']);
+			@chmod(PUN_ROOT . $pun_config['o_avatars_dir'] . '/' . $id . '.' . $fileinfo['extension'], 0644);
+// Visman - auto resize avatar
 		}
 		else
 			message($lang_profile['Unknown failure']);
@@ -453,7 +461,7 @@ else if ($action == 'upload_avatar' || $action == 'upload_avatar2')
 					<div class="infldset">
 						<input type="hidden" name="form_sent" value="1" />
 						<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
-						<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo ($gd ? min(2097152, return_bytes(ini_get('upload_max_filesize')), return_bytes(ini_get('post_max_size'))) : $pun_config['o_avatars_size']) ?>" />
+						<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $max_filesize ?>" />
 						<label class="required"><strong><?php echo $lang_profile['File'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input name="req_file" type="file" size="40" /><br /></label>
 						<p><?php echo $lang_profile['Avatar desc'].' '.$pun_config['o_avatars_width'].' x '.$pun_config['o_avatars_height'].' '.$lang_profile['pixels'].' '.$lang_common['and'].' '.forum_number_format($pun_config['o_avatars_size']).' '.$lang_profile['bytes'].' ('.file_size($pun_config['o_avatars_size']).').' ?></p>
 					</div>

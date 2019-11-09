@@ -18,6 +18,7 @@ ob_end_clean();
 
 // START SUBST - <pun_footer>
 ob_start();
+require PUN_ROOT.'include/uploadf.php'; // Upload mod - Visman
 
 // START быстрое переключение языка - Visman
 if (!isset($languages) || !is_array($languages))

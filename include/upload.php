@@ -6,358 +6,779 @@
  */
 
 // Make sure no one attempts to run this script "directly"
-if (!defined('PUN'))
-	exit;
+if (! defined('PUN')) {
+    exit;
+}
 
 // Load language file
-if (file_exists(PUN_ROOT.'lang/'.$pun_user['language'].'/upload.php'))
-	require PUN_ROOT.'lang/'.$pun_user['language'].'/upload.php';
-else
-	require PUN_ROOT.'lang/English/upload.php';
-
-$gd  = extension_loaded('gd');
-$gd2 = ($gd && function_exists('imagecreatetruecolor'));
-
-$extimage = array('gif', 'jpeg', 'jpg', 'jpe', 'png', 'bmp', 'tiff', 'tif', 'swf', 'psd', 'iff', 'wbmp', 'wbm', 'xbm');
-$extforno = array('asmx', 'asp', 'aspx', 'cgi', 'dll', 'exe', 'fcgi', 'fpl', 'htaccess', 'htm', 'html', 'js', 'jsp', 'php', 'php3', 'php4', 'php5', 'php6', 'php7', 'phar', 'phps', 'phtm', 'phtml', 'pl', 'py', 'rb', 'shtm', 'shtml', 'wml', 'xml');
-
-$extimage2 = array(
-	1 => array('gif'),
-	2 => array('jpg', 'jpeg', 'jpe'),
-	3 => array('png'),
-	4 => array('swf'),
-	5 => array('psd'),
-	6 => array('bmp'),
-	7 => array('tif', 'tiff'),
-	8 => array('tif', 'tiff'),
-	9 => array('jpg', 'jpeg', 'jpe'),
-	10 => array('jpg', 'jpeg', 'jpe'),
-	11 => array('jpg', 'jpeg', 'jpe'),
-	12 => array('jpg', 'jpeg', 'jpe'),
-	13 => array('swf'),
-	14 => array('iff'),
-	15 => array('wbmp', 'wbm'),
-	16 => array('xbm'),
-);
-
-$extimageGD = array(
-	'gif' => 'gif',
-	'jpeg' => 'jpeg',
-	'jpg' => 'jpeg',
-	'jpe' => 'jpeg',
-	'png' => 'png',
-	'bmp' => 'bmp',
-	'wbmp' => 'wbmp',
-	'wbm' => 'wbmp',
-	'xbm' => 'xbm',
-);
-
-function parse_file($f)
-{
-	static $UTF8AR = null;
-
-	if (is_null($UTF8AR))
-	{
-		$UTF8AR = array(
-			'à' => 'a', 'ô' => 'o', 'ď' => 'd', 'ḟ' => 'f', 'ë' => 'e', 'š' => 's', 'ơ' => 'o',
-			'ß' => 'ss', 'ă' => 'a', 'ř' => 'r', 'ț' => 't', 'ň' => 'n', 'ā' => 'a', 'ķ' => 'k',
-			'ŝ' => 's', 'ỳ' => 'y', 'ņ' => 'n', 'ĺ' => 'l', 'ħ' => 'h', 'ṗ' => 'p', 'ó' => 'o',
-			'ú' => 'u', 'ě' => 'e', 'é' => 'e', 'ç' => 'c', 'ẁ' => 'w', 'ċ' => 'c', 'õ' => 'o',
-			'ṡ' => 's', 'ø' => 'o', 'ģ' => 'g', 'ŧ' => 't', 'ș' => 's', 'ė' => 'e', 'ĉ' => 'c',
-			'ś' => 's', 'î' => 'i', 'ű' => 'u', 'ć' => 'c', 'ę' => 'e', 'ŵ' => 'w', 'ṫ' => 't',
-			'ū' => 'u', 'č' => 'c', 'ö' => 'oe', 'è' => 'e', 'ŷ' => 'y', 'ą' => 'a', 'ł' => 'l',
-			'ų' => 'u', 'ů' => 'u', 'ş' => 's', 'ğ' => 'g', 'ļ' => 'l', 'ƒ' => 'f', 'ž' => 'z',
-			'ẃ' => 'w', 'ḃ' => 'b', 'å' => 'a', 'ì' => 'i', 'ï' => 'i', 'ḋ' => 'd', 'ť' => 't',
-			'ŗ' => 'r', 'ä' => 'ae', 'í' => 'i', 'ŕ' => 'r', 'ê' => 'e', 'ü' => 'ue', 'ò' => 'o',
-			'ē' => 'e', 'ñ' => 'n', 'ń' => 'n', 'ĥ' => 'h', 'ĝ' => 'g', 'đ' => 'd', 'ĵ' => 'j',
-			'ÿ' => 'y', 'ũ' => 'u', 'ŭ' => 'u', 'ư' => 'u', 'ţ' => 't', 'ý' => 'y', 'ő' => 'o',
-			'â' => 'a', 'ľ' => 'l', 'ẅ' => 'w', 'ż' => 'z', 'ī' => 'i', 'ã' => 'a', 'ġ' => 'g',
-			'ṁ' => 'm', 'ō' => 'o', 'ĩ' => 'i', 'ù' => 'u', 'į' => 'i', 'ź' => 'z', 'á' => 'a',
-			'û' => 'u', 'þ' => 'th', 'ð' => 'dh', 'æ' => 'ae', 'µ' => 'u', 'ĕ' => 'e',
-			'À' => 'A', 'Ô' => 'O', 'Ď' => 'D', 'Ḟ' => 'F', 'Ë' => 'E', 'Š' => 'S', 'Ơ' => 'O',
-			'Ă' => 'A', 'Ř' => 'R', 'Ț' => 'T', 'Ň' => 'N', 'Ā' => 'A', 'Ķ' => 'K',
-			'Ŝ' => 'S', 'Ỳ' => 'Y', 'Ņ' => 'N', 'Ĺ' => 'L', 'Ħ' => 'H', 'Ṗ' => 'P', 'Ó' => 'O',
-			'Ú' => 'U', 'Ě' => 'E', 'É' => 'E', 'Ç' => 'C', 'Ẁ' => 'W', 'Ċ' => 'C', 'Õ' => 'O',
-			'Ṡ' => 'S', 'Ø' => 'O', 'Ģ' => 'G', 'Ŧ' => 'T', 'Ș' => 'S', 'Ė' => 'E', 'Ĉ' => 'C',
-			'Ś' => 'S', 'Î' => 'I', 'Ű' => 'U', 'Ć' => 'C', 'Ę' => 'E', 'Ŵ' => 'W', 'Ṫ' => 'T',
-			'Ū' => 'U', 'Č' => 'C', 'Ö' => 'Oe', 'È' => 'E', 'Ŷ' => 'Y', 'Ą' => 'A', 'Ł' => 'L',
-			'Ų' => 'U', 'Ů' => 'U', 'Ş' => 'S', 'Ğ' => 'G', 'Ļ' => 'L', 'Ƒ' => 'F', 'Ž' => 'Z',
-			'Ẃ' => 'W', 'Ḃ' => 'B', 'Å' => 'A', 'Ì' => 'I', 'Ï' => 'I', 'Ḋ' => 'D', 'Ť' => 'T',
-			'Ŗ' => 'R', 'Ä' => 'Ae', 'Í' => 'I', 'Ŕ' => 'R', 'Ê' => 'E', 'Ü' => 'Ue', 'Ò' => 'O',
-			'Ē' => 'E', 'Ñ' => 'N', 'Ń' => 'N', 'Ĥ' => 'H', 'Ĝ' => 'G', 'Đ' => 'D', 'Ĵ' => 'J',
-			'Ÿ' => 'Y', 'Ũ' => 'U', 'Ŭ' => 'U', 'Ư' => 'U', 'Ţ' => 'T', 'Ý' => 'Y', 'Ő' => 'O',
-			'Â' => 'A', 'Ľ' => 'L', 'Ẅ' => 'W', 'Ż' => 'Z', 'Ī' => 'I', 'Ã' => 'A', 'Ġ' => 'G',
-			'Ṁ' => 'M', 'Ō' => 'O', 'Ĩ' => 'I', 'Ù' => 'U', 'Į' => 'I', 'Ź' => 'Z', 'Á' => 'A',
-			'Û' => 'U', 'Þ' => 'Th', 'Ð' => 'Dh', 'Æ' => 'Ae', 'Ĕ' => 'E',
-			'а' => 'a', 'б' => 'b', 'в' => 'v', 'г' => 'g', 'д' => 'd', 'е' => 'e', 'ё' => 'jo',
-			'ж' => 'zh', 'з' => 'z', 'и' => 'i', 'й' => 'jj', 'к' => 'k', 'л' => 'l', 'м' => 'm',
-			'н' => 'n', 'о' => 'o', 'п' => 'p', 'р' => 'r', 'с' => 's', 'т' => 't', 'у' => 'u',
-			'ф' => 'f', 'х' => 'kh', 'ц' => 'c', 'ч' => 'ch', 'ш' => 'sh', 'щ' => 'shh', 'ъ' => '',
-			'ы' => 'y', 'ь' => '', 'э' => 'eh', 'ю' => 'ju', 'я' => 'ja',
-			'А' => 'A', 'Б' => 'B', 'В' => 'V', 'Г' => 'G', 'Д' => 'D', 'Е' => 'E', 'Ё' => 'Jo',
-			'Ж' => 'Zh', 'З' => 'Z', 'И' => 'I', 'Й' => 'Jj', 'К' => 'K', 'Л' => 'L', 'М' => 'M',
-			'Н' => 'N', 'О' => 'O', 'П' => 'P', 'Р' => 'R', 'С' => 'S', 'Т' => 'T', 'У' => 'U',
-			'Ф' => 'F', 'Х' => 'Kh', 'Ц' => 'C', 'Ч' => 'Ch', 'Ш' => 'Sh', 'Щ' => 'Shh', 'Ъ' => '',
-			'Ы' => 'Y', 'Ь' => '', 'Э' => 'Eh', 'Ю' => 'Ju', 'Я' => 'Ja',
-			);
-	}
-
-	$f = preg_replace('%[\x00-\x1f]%', '', $f);
-	$f = preg_replace('%[@=\' ]+%', '-', $f);
-	$f = str_replace(array_keys($UTF8AR), array_values($UTF8AR), $f);
-	$f = preg_replace('%[^\w\.-]+%', '', $f);
-
-	return $f;
+if (file_exists(PUN_ROOT . 'lang/' . $pun_user['language'] . '/upload.php')) {
+    require PUN_ROOT . 'lang/' . $pun_user['language'] . '/upload.php';
+} else {
+    require PUN_ROOT . 'lang/English/upload.php';
 }
 
-function dir_size($dir)
+class upfClass
 {
-	global $extforno;
+    protected $blackList = [
+        '' => true,
+        'asmx' => true,
+        'asp' => true,
+        'aspx' => true,
+        'cgi' => true,
+        'dll' => true,
+        'exe' => true,
+        'fcgi' => true,
+        'fpl' => true,
+        'htaccess' => true,
+        'htm' => true,
+        'html' => true,
+        'js' => true,
+        'jsp' => true,
+        'php' => true,
+        'php3' => true,
+        'php4' => true,
+        'php5' => true,
+        'php6' => true,
+        'php7' => true,
+        'phar' => true,
+        'phps' => true,
+        'phtm' => true,
+        'phtml' => true,
+        'pl' => true,
+        'py' => true,
+        'rb' => true,
+        'shtm' => true,
+        'shtml' => true,
+        'wml' => true,
+        'xml' => true,
+    ];
 
-	$upload = 0;
-	$open = opendir(PUN_ROOT.$dir);
-	while(($file = readdir($open)) !== false)
-	{
-		if (is_file(PUN_ROOT.$dir.$file))
-		{
-			$ext = strtolower(substr(strrchr($file, '.'), 1)); // берем расширение файла
-			if ($ext != '' && $file[0] != '#' && !in_array($ext, $extforno))
-				$upload += filesize(PUN_ROOT.$dir.$file);
-		}
-	}
-	closedir($open);
-	return $upload;
+    /**
+     * Список кодов типов картинок и расширений для них????
+     * @var array
+     */
+    protected $imageType = [
+        1  => ['gif', true],
+        2  => ['jpg', true],
+        3  => ['png', true],
+        4  => ['swf', false],
+        5  => ['psd', false],
+        6  => ['bmp', true],
+        7  => ['tiff', false],
+        8  => ['tiff', false],
+        9  => ['jpc', false],
+        10 => ['jp2', false],
+        11 => ['jpx', false],
+        12 => ['jb2', false],
+        13 => ['swc', false],
+        14 => ['iff', false],
+        15 => ['wbmp', false],
+        16 => ['xbm', false],
+        17 => ['ico', false],
+        18 => ['webp', true],
+    ];
+
+    /**
+     * Список единиц измерения
+     * @var string
+     */
+    protected $units = 'BKMGTPEZY';
+
+    protected $UTF8AR = [
+        'à' => 'a', 'ô' => 'o', 'ď' => 'd', 'ḟ' => 'f', 'ë' => 'e', 'š' => 's', 'ơ' => 'o',
+        'ß' => 'ss', 'ă' => 'a', 'ř' => 'r', 'ț' => 't', 'ň' => 'n', 'ā' => 'a', 'ķ' => 'k',
+        'ŝ' => 's', 'ỳ' => 'y', 'ņ' => 'n', 'ĺ' => 'l', 'ħ' => 'h', 'ṗ' => 'p', 'ó' => 'o',
+        'ú' => 'u', 'ě' => 'e', 'é' => 'e', 'ç' => 'c', 'ẁ' => 'w', 'ċ' => 'c', 'õ' => 'o',
+        'ṡ' => 's', 'ø' => 'o', 'ģ' => 'g', 'ŧ' => 't', 'ș' => 's', 'ė' => 'e', 'ĉ' => 'c',
+        'ś' => 's', 'î' => 'i', 'ű' => 'u', 'ć' => 'c', 'ę' => 'e', 'ŵ' => 'w', 'ṫ' => 't',
+        'ū' => 'u', 'č' => 'c', 'ö' => 'oe', 'è' => 'e', 'ŷ' => 'y', 'ą' => 'a', 'ł' => 'l',
+        'ų' => 'u', 'ů' => 'u', 'ş' => 's', 'ğ' => 'g', 'ļ' => 'l', 'ƒ' => 'f', 'ž' => 'z',
+        'ẃ' => 'w', 'ḃ' => 'b', 'å' => 'a', 'ì' => 'i', 'ï' => 'i', 'ḋ' => 'd', 'ť' => 't',
+        'ŗ' => 'r', 'ä' => 'ae', 'í' => 'i', 'ŕ' => 'r', 'ê' => 'e', 'ü' => 'ue', 'ò' => 'o',
+        'ē' => 'e', 'ñ' => 'n', 'ń' => 'n', 'ĥ' => 'h', 'ĝ' => 'g', 'đ' => 'd', 'ĵ' => 'j',
+        'ÿ' => 'y', 'ũ' => 'u', 'ŭ' => 'u', 'ư' => 'u', 'ţ' => 't', 'ý' => 'y', 'ő' => 'o',
+        'â' => 'a', 'ľ' => 'l', 'ẅ' => 'w', 'ż' => 'z', 'ī' => 'i', 'ã' => 'a', 'ġ' => 'g',
+        'ṁ' => 'm', 'ō' => 'o', 'ĩ' => 'i', 'ù' => 'u', 'į' => 'i', 'ź' => 'z', 'á' => 'a',
+        'û' => 'u', 'þ' => 'th', 'ð' => 'dh', 'æ' => 'ae', 'µ' => 'u', 'ĕ' => 'e',
+        'À' => 'A', 'Ô' => 'O', 'Ď' => 'D', 'Ḟ' => 'F', 'Ë' => 'E', 'Š' => 'S', 'Ơ' => 'O',
+        'Ă' => 'A', 'Ř' => 'R', 'Ț' => 'T', 'Ň' => 'N', 'Ā' => 'A', 'Ķ' => 'K',
+        'Ŝ' => 'S', 'Ỳ' => 'Y', 'Ņ' => 'N', 'Ĺ' => 'L', 'Ħ' => 'H', 'Ṗ' => 'P', 'Ó' => 'O',
+        'Ú' => 'U', 'Ě' => 'E', 'É' => 'E', 'Ç' => 'C', 'Ẁ' => 'W', 'Ċ' => 'C', 'Õ' => 'O',
+        'Ṡ' => 'S', 'Ø' => 'O', 'Ģ' => 'G', 'Ŧ' => 'T', 'Ș' => 'S', 'Ė' => 'E', 'Ĉ' => 'C',
+        'Ś' => 'S', 'Î' => 'I', 'Ű' => 'U', 'Ć' => 'C', 'Ę' => 'E', 'Ŵ' => 'W', 'Ṫ' => 'T',
+        'Ū' => 'U', 'Č' => 'C', 'Ö' => 'Oe', 'È' => 'E', 'Ŷ' => 'Y', 'Ą' => 'A', 'Ł' => 'L',
+        'Ų' => 'U', 'Ů' => 'U', 'Ş' => 'S', 'Ğ' => 'G', 'Ļ' => 'L', 'Ƒ' => 'F', 'Ž' => 'Z',
+        'Ẃ' => 'W', 'Ḃ' => 'B', 'Å' => 'A', 'Ì' => 'I', 'Ï' => 'I', 'Ḋ' => 'D', 'Ť' => 'T',
+        'Ŗ' => 'R', 'Ä' => 'Ae', 'Í' => 'I', 'Ŕ' => 'R', 'Ê' => 'E', 'Ü' => 'Ue', 'Ò' => 'O',
+        'Ē' => 'E', 'Ñ' => 'N', 'Ń' => 'N', 'Ĥ' => 'H', 'Ĝ' => 'G', 'Đ' => 'D', 'Ĵ' => 'J',
+        'Ÿ' => 'Y', 'Ũ' => 'U', 'Ŭ' => 'U', 'Ư' => 'U', 'Ţ' => 'T', 'Ý' => 'Y', 'Ő' => 'O',
+        'Â' => 'A', 'Ľ' => 'L', 'Ẅ' => 'W', 'Ż' => 'Z', 'Ī' => 'I', 'Ã' => 'A', 'Ġ' => 'G',
+        'Ṁ' => 'M', 'Ō' => 'O', 'Ĩ' => 'I', 'Ù' => 'U', 'Į' => 'I', 'Ź' => 'Z', 'Á' => 'A',
+        'Û' => 'U', 'Þ' => 'Th', 'Ð' => 'Dh', 'Æ' => 'Ae', 'Ĕ' => 'E',
+        'а' => 'a', 'б' => 'b', 'в' => 'v', 'г' => 'g', 'д' => 'd', 'е' => 'e', 'ё' => 'jo',
+        'ж' => 'zh', 'з' => 'z', 'и' => 'i', 'й' => 'jj', 'к' => 'k', 'л' => 'l', 'м' => 'm',
+        'н' => 'n', 'о' => 'o', 'п' => 'p', 'р' => 'r', 'с' => 's', 'т' => 't', 'у' => 'u',
+        'ф' => 'f', 'х' => 'kh', 'ц' => 'c', 'ч' => 'ch', 'ш' => 'sh', 'щ' => 'shh', 'ъ' => '',
+        'ы' => 'y', 'ь' => '', 'э' => 'eh', 'ю' => 'ju', 'я' => 'ja',
+        'А' => 'A', 'Б' => 'B', 'В' => 'V', 'Г' => 'G', 'Д' => 'D', 'Е' => 'E', 'Ё' => 'Jo',
+        'Ж' => 'Zh', 'З' => 'Z', 'И' => 'I', 'Й' => 'Jj', 'К' => 'K', 'Л' => 'L', 'М' => 'M',
+        'Н' => 'N', 'О' => 'O', 'П' => 'P', 'Р' => 'R', 'С' => 'S', 'Т' => 'T', 'У' => 'U',
+        'Ф' => 'F', 'Х' => 'Kh', 'Ц' => 'C', 'Ч' => 'Ch', 'Ш' => 'Sh', 'Щ' => 'Shh', 'Ъ' => '',
+        'Ы' => 'Y', 'Ь' => '', 'Э' => 'Eh', 'Ю' => 'Ju', 'Я' => 'Ja',
+    ];
+
+    const GD = 1;
+    const IMAGICK = 2;
+
+    protected $resizeFlag = false;
+    protected $libType;
+    protected $libName = '-';
+    protected $libVersion = '-';
+    protected $error;
+    protected $quality = 75;
+
+    public function __construct()
+    {
+        if (\extension_loaded('imagick') && \class_exists('\Imagick')) {
+            $this->resizeFlag = true;
+            $this->libType = self::IMAGICK;
+            $this->libName = 'ImageMagick';
+            $imagick = \Imagick::getVersion();
+            $this->libVersion = \trim(\preg_replace(['%ImageMagick%i', '%http[^\s]+%i'], '', $imagick['versionString']));
+        } elseif (\extension_loaded('gd') && \function_exists('\\imagecreatetruecolor')) {
+            $this->resizeFlag = true;
+            $this->libType = self::GD;
+            $this->libName = 'GD';
+            $gd = \gd_info();
+            $this->libVersion = $gd['GD Version'];
+        }
+    }
+
+    public function isResize()
+    {
+        return $this->resizeFlag;
+    }
+
+    public function getLibName()
+    {
+        return $this->libName;
+    }
+
+    public function getLibVersion()
+    {
+        return $this->libVersion;
+    }
+
+    public function getError()
+    {
+        $error = $this->error;
+        $this->error = null;
+        return $error;
+    }
+
+    protected function isBadLink($link)
+    {
+        if (false !== \strpos($link, ':', 2) || false !== \strpos($link, '//') || \preg_match('%\bphar\b%i', $link)) {
+            $this->error = 'Bad link';
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function inBlackList($ext)
+    {
+        return isset($this->blackList[\strtolower($ext)]);
+    }
+
+    public function dirSize($dir)
+    {
+        if ($this->isBadLink($dir)) {
+            return false;
+        }
+        if (! \is_dir($dir)) {
+            $this->error = 'Directory expected';
+            return false;
+        }
+        if (false === ($dh = \opendir($dir))) {
+            $this->error = 'Could not open directory';
+            return false;
+        }
+
+        $size = 0;
+        while (false !== ($file = \readdir($dh))) {
+            if ('' == \trim($file) || '.' === $file[0] || '#' === $file[0] || ! \is_file($dir . $file)) {
+                continue;
+            }
+            $ext = \strtolower(\substr(\strrchr($file, '.'), 1)); // расширение файла
+            if (isset($this->blackList[$ext])) {
+                continue;
+            }
+            $size += \filesize($dir . $file);
+        }
+
+        \closedir($dh);
+        return $size;
+    }
+
+    /**
+     * Переводит объем информации из одних единиц в другие
+     * кило = 1024, а не 1000
+     *
+     * @param int|float|string $value
+     * @param string $to
+     *
+     * @return int|float|false
+     */
+    public function size($value, $to = null)
+    {
+        if (\is_string($value)) {
+            if (! \preg_match('%^([^a-z]+)([a-z]+)?$%i', \trim($value), $matches)) {
+                $this->error = 'Expected string indicating the amount of information';
+                return false;
+            }
+            if (! \is_numeric($matches[1])) {
+                $this->error = 'String does not contain number';
+                return false;
+            }
+
+            $value = 0 + $matches[1];
+
+            if (! empty($matches[2])) {
+                $unit = \strtoupper($matches[2][0]);
+                $expo = \strpos($this->units, $unit);
+
+                if (false === $expo) {
+                    $this->error = 'Unknown unit';
+                    return false;
+                }
+
+                $value *= 1024 ** $expo;
+            }
+        }
+
+        if (\is_string($to)) {
+            $to = \trim($to);
+            $unit = \strtoupper($to[0]);
+            $expo = \strpos($this->units, $unit);
+
+            if (false === $expo) {
+                $this->error = 'Unknown unit';
+                return false;
+            }
+
+            $value /= 1024 ** $expo;
+        }
+
+        return 0 + $value;
+    }
+
+    /**
+     * Определяет по содержимому файла расширение картинки????
+     *
+     * @param string $path
+     *
+     * @return false|array
+     */
+    public function imageExt($path)
+    {
+        if ($this->isBadLink($path)) {
+            return false;
+        }
+
+        if (\function_exists('\\exif_imagetype')) {
+            $type = \exif_imagetype($path);
+        } elseif (
+            \function_exists('\\getimagesize')
+            && false !== ($type = @\getimagesize($path))
+            && $type[0] > 0
+            && $type[1] > 0
+        ) {
+            $type = $type[2];
+        } else {
+            $type = 0;
+        }
+        return isset($this->imageType[$type]) ? $this->imageType[$type] : false;
+    }
+
+    /**
+     * Фильрует и переводит в латиницу(?) имя файла
+     *
+     * @param string $name
+     *
+     * @return string
+     */
+    protected function filterName($name)
+    {
+        $new = false;
+        if (\function_exists('\\transliterator_transliterate')) {
+            $new = \transliterator_transliterate("Any-Latin; NFD; [:Nonspacing Mark:] Remove; NFC;", $name);
+        }
+        if (! \is_string($new)) {
+            $new = str_replace(array_keys($this->UTF8AR), array_values($this->UTF8AR), $name);
+        }
+
+        $name = \trim(\preg_replace('%[^\w-]+%', '-', $new), '-_');
+
+        if (! isset($name[0])) {
+            $name = $this->filterName(\date('Ymd\-His'));
+        }
+
+        return $name;
+    }
+
+    public function getFileExt()
+    {
+        return $this->fileExt;
+    }
+
+    public function getFileName()
+    {
+        return $this->fileName;
+    }
+
+    public function prepFileName()
+    {
+        if ('mini_' === \substr($this->fileName, 0, 5)) {
+            $this->fileName = \substr($this->fileName, 5);
+        }
+        if (\strlen($this->fileName) > 100) {
+            $this->fileName = \substr($this->fileName, 0, 100);
+        }
+        if ('' == $this->fileName) {
+            $this->fileName = 'none';
+        }
+    }
+
+    public function isImage()
+    {
+        return $this->fileAsImage;
+    }
+
+    public function setImageQuality($quality)
+    {
+        $this->quality = \min(\max((int) $quality, 1), 100);
+    }
+
+    protected $filePath;
+    protected $fileName;
+    protected $fileExt;
+    protected $fileCalcExt;
+    protected $fileAsImage;
+    protected $fileIsUp;
+    protected $image;
+
+    public function loadFile($path, $basename = null)
+    {
+        $this->filePath = null;
+        $this->fileName = null;
+        $this->fileExt = null;
+        $this->fileCalcExt = null;
+        $this->fileAsImage = false;
+        $this->fileIsUp = null !== $basename;
+
+        $this->destroyImage();
+        $this->image = null;
+
+        if ($this->isBadLink($path)) {
+            return false;
+        }
+
+        if (null !== $basename) {
+            $pattern = '%^(.+)\.(\w+)$%';
+            $subject = $basename;
+        } else {
+            $pattern = '%[\\/]([\w-]+)\.(\w+)$%';
+            $subject = $path;
+        }
+        if (! \preg_match($pattern, $subject, $matches)) {
+            $this->error = 'Bad file name or extension';
+            return false;
+        }
+
+        $this->fileExt = $this->fileCalcExt = \strtolower($matches[2]);
+        if (isset($this->blackList[$this->fileExt])) {
+            $this->error = 'Bad file extension';
+            return false;
+        }
+
+        if (null !== $basename) {
+            if (! \is_uploaded_file($path)) {
+                $this->error = 'File was not uploaded';
+                return false;
+            }
+        } else {
+            if (! \is_file($path)) {
+                $this->error = 'No file';
+                return false;
+            }
+        }
+        if (! \is_readable($path)) {
+            $this->error = 'File unreadable';
+            return false;
+        }
+
+        $imageInfo = $this->imageExt($path);
+        if (\is_array($imageInfo)) {
+            if (null !== $basename) {
+                $this->fileExt = $imageInfo[0];
+            }
+            $this->fileCalcExt = $imageInfo[0];
+            $this->fileAsImage = $imageInfo[1];
+        }
+
+        $this->fileName = null !== $basename ? $this->filterName($matches[1]) : $matches[1];
+        $this->filePath = $path;
+
+        return true;
+    }
+
+    public function isUnsafeContent()
+    {
+        if (null === $this->filePath) {
+            return true;
+        }
+
+        $f = \fopen($this->filePath, "rb");
+        if (false === $f) {
+            return true;
+        }
+
+        $buf1 = '';
+        while ($buf2 = \fread($f, 4096)) {
+            if (\preg_match( "%<(?:script|html|head|title|body|table|a\s+href|img\s|plaintext|cross\-domain\-policy|embed|applet|i?frame|\?php)%msi", $buf1 . $buf2)) {
+                \fclose($f);
+                return true;
+            }
+            $buf1 = \substr($buf2, -30);
+        }
+        \fclose($f);
+        return false;
+    }
+
+    public function loadImage()
+    {
+        if (null === $this->filePath || true !== $this->fileAsImage) {
+            $this->error = 'No image';
+            return false;
+        }
+        switch ($this->libType) {
+            case self::IMAGICK:
+                try {
+                    $image = new \Imagick(\realpath($this->filePath));
+                    $width = $image->getImageWidth();
+                    $height = $image->getImageHeight();
+                } catch (\Exception $e) {
+                    $this->error = $this->hidePath($e->getMessage());
+                    return false;
+                }
+                break;
+            case self::GD:
+                $type = $this->fileCalcExt;
+                switch ($type) {
+                    case 'jpg':
+                        $type = 'jpeg';
+                        break;
+                }
+
+                $func = '\\imagecreatefrom' . $type;
+                if (! \function_exists($func)) {
+                    $this->error = 'No function to create image';
+                    return false;
+                }
+
+                $image = @$func($this->filePath);
+                if (! $image) {
+                    $this->error = 'Failed to create image';
+                    return false;
+                }
+                if (false === \imagealphablending($image, false) || false === \imagesavealpha($image, true)) {
+                    $this->error = 'Failed to adjust image';
+                    return false;
+                }
+                $width = \imagesx($image);
+                $height = \imagesy($image);
+                break;
+            default:
+                $this->error = 'Graphics library type not defined';
+                return false;
+        }
+        $this->image = $image;
+
+        return [
+            $width,
+            $height,
+        ];
+    }
+
+    public function saveFile($path, $overwrite = false)
+    {
+        return $this->save($path, $overwrite, false);
+    }
+
+    public function saveImage($path, $overwrite = false)
+    {
+        if (empty($this->image)) {
+            $this->error = 'No image';
+            return false;
+        }
+
+        return $this->save($path, $overwrite, true);
+    }
+
+    protected function save($path, $overwrite, $isImage)
+    {
+        if ($this->isBadLink($path)) {
+            return false;
+        }
+
+        if (! \preg_match('%^(.+[\\/])([\w-]+)\.(\w+)$%', $path, $matches)) {
+            $this->error = 'Bad dir name, file name or extension';
+            return false;
+        }
+
+        $ext = \strtolower($matches[3]);
+        if (isset($this->blackList[$ext])) {
+            $this->error = 'Bad file extension';
+            return false;
+        }
+        $name = $matches[2];
+        $dir = $matches[1];
+
+        if (true !== $overwrite) {
+            $tmp = '';
+            $i = 0;
+            while (\is_file($dir . $name . $tmp . '.' . $ext) && $i < 100) {
+                $tmp = '-' . random_pass(4);
+                ++$i;
+            }
+            if ($i >= 100) {
+                $this->error = 'Many similar names';
+                return false;
+            }
+            $name .= $tmp;
+        }
+        $path = $dir . $name . '.' . $ext;
+
+        if (false === $isImage) {
+            $func = $this->fileIsUp ? '\\move_uploaded_file' : '\\copy';
+            $result = @$func($this->filePath, $path);
+            if (! $result) {
+                $this->error = 'Failed to copy file';
+                return false;
+            }
+        } else {
+            switch ($this->libType) {
+                case self::IMAGICK:
+                    try {
+                        //var_dump($this->image->getImageColors());
+                        $type = $this->fileCalcExt;
+                        switch ($type) {
+                            case 'png':
+                                $this->image->setImageCompressionQuality(0);
+                                break;
+                            default:
+                                $this->image->setImageCompressionQuality($this->quality);
+                                break;
+                        }
+                        $this->image->writeImages($path, true);
+                    } catch (\Exception $e) {
+                        $this->error = $this->hidePath($e->getMessage(), $path);
+                        return false;
+                    }
+                    break;
+                case self::GD:
+                    $result = false;
+                    $type = $this->fileCalcExt;
+                    $args = [$this->image, $path];
+                    switch ($type) {
+                        case 'jpg':
+                            $type = 'jpeg';
+                            $args[] = $this->quality;
+                            break;
+                        case 'png':
+                            //$args[] = -1;
+                            //$args[] = \PNG_ALL_FILTERS; // \PNG_NO_FILTER;
+                            // imagecolorstotal
+                            // , int $quality = -1 , int $filters = -1
+                            break;
+                        case 'webp':
+                            $args[] = $this->quality;
+                            break;
+                    }
+                    $func = '\\image' . $type;
+                    if (! \function_exists($func)) {
+                        $this->error = 'No function to save image';
+                        return false;
+                    }
+
+                    $result = @$func(...$args);
+                    if (true !== $result) {
+                        $this->error = 'Failed to copy image';
+                        return false;
+                    }
+                    break;
+                default:
+                    $this->error = 'Graphics library type not defined';
+                    return false;
+            }
+        }
+
+        @\chmod($path, 0644);
+
+        return [
+            'path' => $path,
+            'dirname' => $dir,
+            'filename' => $name,
+            'extension' => $ext,
+        ];
+    }
+
+    public function resizeImage($width, $height = null)
+    {
+        if (empty($this->image)) {
+            $this->error = 'No image';
+            return false;
+        }
+
+        switch ($this->libType) {
+            case self::IMAGICK:
+                try {
+                    $oldWidth = $this->image->getImageWidth();
+                    $oldHeight = $this->image->getImageHeight();
+                } catch (\Exception $e) {
+                    $this->error = $this->hidePath($e->getMessage());
+                    return false;
+                }
+                break;
+            case self::GD:
+                $oldWidth = \imagesx($this->image);
+                $oldHeight = \imagesy($this->image);
+                break;
+            default:
+                $this->error = 'Graphics library type not defined';
+                return false;
+        }
+
+        $w = (empty($width) || $width < 16) ? 1 : $width / $oldWidth;
+        $h = (empty($height) || $height < 16) ? 1 : $height / $oldHeight;
+        $r = \min(1, $w, $h);
+        if (1 == $r) { // ?
+            return 1;
+        }
+        $width = (int) \round($oldWidth * $r);
+        $height = (int) \round($oldHeight * $r);
+
+        switch ($this->libType) {
+            case self::IMAGICK:
+                try {
+                    // есть анимация
+                    if ($this->image->getImageDelay() > 0) {
+                        $image = $this->image->coalesceImages();
+
+                        foreach ($image as $frame) {
+                            $frame->resizeImage($width, $height, \Imagick::FILTER_LANCZOS, 1);
+                            $frame->setImagePage($width, $height, 0, 0);
+                        }
+
+                        $image = $image->deconstructImages();
+                        //$image = $image->optimizeImageLayers();
+                    // нет анимации
+                    } else {
+                        $image = clone $this->image;
+                        $image->resizeImage($width, $height, \Imagick::FILTER_LANCZOS, 1);
+                    }
+                } catch (\Exception $e) {
+                    $this->error = $this->hidePath($e->getMessage());
+                    return false;
+                }
+                break;
+            case self::GD:
+                if (false === ($image = \imagecreatetruecolor($width, $height))) {
+                    $this->error = 'Failed to create new truecolor image';
+                    return false;
+                }
+                if (false === ($transparent = \imagecolorallocatealpha($image, 255, 255, 255, 127))) {
+                    $this->error = 'Failed to create color for image';
+                    return false;
+                }
+                if (false === \imagefill($image, 0, 0, $transparent)) {
+                    $this->error = 'Failed to fill image with color';
+                    return false;
+                }
+                \imagecolortransparent($image, $transparent);
+                $colors = \imagecolorstotal($this->image);
+                if ($colors > 0 && false === \imagetruecolortopalette($image, true, $colors)) {
+                    $this->error = 'Failed to convert image to palette';
+                    return false;
+                }
+                if (false === \imagealphablending($image, false) || false === \imagesavealpha($image, true)) {
+                    $this->error = 'Failed to adjust image';
+                    return false;
+                }
+                if (false === \imagecopyresampled($image, $this->image, 0, 0, 0, 0, $width, $height, $oldWidth, $oldHeight)) {
+                    $this->error = 'Failed to resize image';
+                    return false;
+                }
+                break;
+        }
+
+        if (false === $this->destroyImage()) {
+            return false;
+        }
+        $this->image = $image;
+
+        return $r;
+    }
+
+    public function destroyImage()
+    {
+        if (empty($this->image)) {
+            return true;
+        }
+
+        $result = false;
+
+        switch ($this->libType) {
+            case self::IMAGICK:
+                try {
+                    $result = $this->image->clear();
+                } catch (\Exception $e) {
+                    $result = false;
+                }
+                break;
+            case self::GD:
+                $result = \imagedestroy($this->image);
+                break;
+        }
+
+        if (true === $result) {
+            $this->image = null;
+        } else {
+            $this->error = 'Failed to clear resource';
+        }
+
+        return $result;
+    }
+
+    public function __destruct()
+    {
+        $this->destroyImage();
+    }
+
+    protected function hidePath($str, $path = null)
+    {
+        $search = [];
+        if (null !== $this->filePath) {
+            $search[] = \realpath($this->filePath);
+            $search[] = $this->filePath;
+        }
+        if (null !== $path) {
+            $search[] = \realpath($path);
+            $search[] = $path;
+        }
+        return empty($search) ? $str : \str_replace($search, '', $str);
+    }
 }
 
-if ($gd && !function_exists('ImageCreateFromBMP'))
-{
-	/*********************************************/
-	/* Fonction: ImageCreateFromBMP              */
-	/* Author:   DHKold                          */
-	/* Contact:  admin@dhkold.com                */
-	/* Date:     The 15th of June 2005           */
-	/* Version:  2.0B                            */
-	/*********************************************/
-
-	function ImageCreateFromBMP($filename)
-	{
-		global $gd2;
-		//Ouverture du fichier en mode binaire
-		if (! $f1 = fopen($filename,"rb")) return FALSE;
-
-		//1 : Chargement des ent�tes FICHIER
-		$FILE = unpack("vfile_type/Vfile_size/Vreserved/Vbitmap_offset", fread($f1,14));
-		if ($FILE['file_type'] != 19778) return FALSE;
-
-		//2 : Chargement des ent�tes BMP
-		$BMP = unpack('Vheader_size/Vwidth/Vheight/vplanes/vbits_per_pixel'.
-									'/Vcompression/Vsize_bitmap/Vhoriz_resolution'.
-									'/Vvert_resolution/Vcolors_used/Vcolors_important', fread($f1,40));
-		$BMP['colors'] = pow(2,$BMP['bits_per_pixel']);
-		if ($BMP['size_bitmap'] == 0) $BMP['size_bitmap'] = $FILE['file_size'] - $FILE['bitmap_offset'];
-		$BMP['bytes_per_pixel'] = $BMP['bits_per_pixel']/8;
-		$BMP['bytes_per_pixel2'] = ceil($BMP['bytes_per_pixel']);
-		$BMP['decal'] = ($BMP['width']*$BMP['bytes_per_pixel']/4);
-		$BMP['decal'] -= floor($BMP['width']*$BMP['bytes_per_pixel']/4);
-		$BMP['decal'] = 4-(4*$BMP['decal']);
-		if ($BMP['decal'] == 4) $BMP['decal'] = 0;
-
-		//3 : Chargement des couleurs de la palette
-		$PALETTE = array();
-		if ($BMP['colors'] < 16777216)
-		{
-			$PALETTE = unpack('V'.$BMP['colors'], fread($f1,$BMP['colors']*4));
-		}
-
-		//4 : Cr�ation de l'image
-		$IMG = fread($f1,$BMP['size_bitmap']);
-		$VIDE = chr(0);
-
-		if ($gd2)
-			$res = imagecreatetruecolor($BMP['width'],$BMP['height']);
-		else
-			$res = imagecreate($BMP['width'],$BMP['height']);
-
-		$P = 0;
-		$Y = $BMP['height']-1;
-		while ($Y >= 0)
-		{
-			$X=0;
-			while ($X < $BMP['width'])
-			{
-				if ($BMP['bits_per_pixel'] == 24)
-					$COLOR = unpack("V",substr($IMG,$P,3).$VIDE);
-				elseif ($BMP['bits_per_pixel'] == 16)
-				{
-					$COLOR = unpack("n",substr($IMG,$P,2));
-					$COLOR[1] = $PALETTE[$COLOR[1]+1];
-				}
-				elseif ($BMP['bits_per_pixel'] == 8)
-				{
-					$COLOR = unpack("n",$VIDE.substr($IMG,$P,1));
-					$COLOR[1] = $PALETTE[$COLOR[1]+1];
-				}
-				elseif ($BMP['bits_per_pixel'] == 4)
-				{
-					$COLOR = unpack("n",$VIDE.substr($IMG,floor($P),1));
-					if (($P*2)%2 == 0) $COLOR[1] = ($COLOR[1] >> 4) ; else $COLOR[1] = ($COLOR[1] & 0x0F);
-					$COLOR[1] = $PALETTE[$COLOR[1]+1];
-				}
-				elseif ($BMP['bits_per_pixel'] == 1)
-				{
-					$COLOR = unpack("n",$VIDE.substr($IMG,floor($P),1));
-					if     (($P*8)%8 == 0) $COLOR[1] =  $COLOR[1]        >>7;
-					elseif (($P*8)%8 == 1) $COLOR[1] = ($COLOR[1] & 0x40)>>6;
-					elseif (($P*8)%8 == 2) $COLOR[1] = ($COLOR[1] & 0x20)>>5;
-					elseif (($P*8)%8 == 3) $COLOR[1] = ($COLOR[1] & 0x10)>>4;
-					elseif (($P*8)%8 == 4) $COLOR[1] = ($COLOR[1] & 0x8)>>3;
-					elseif (($P*8)%8 == 5) $COLOR[1] = ($COLOR[1] & 0x4)>>2;
-					elseif (($P*8)%8 == 6) $COLOR[1] = ($COLOR[1] & 0x2)>>1;
-					elseif (($P*8)%8 == 7) $COLOR[1] = ($COLOR[1] & 0x1);
-					$COLOR[1] = $PALETTE[$COLOR[1]+1];
-				}
-				else
-					return FALSE;
-				imagesetpixel($res,$X,$Y,$COLOR[1]);
-				$X++;
-				$P += $BMP['bytes_per_pixel'];
-			}
-			$Y--;
-			$P+=$BMP['decal'];
-		}
-
-		//Fermeture du fichier
-		fclose($f1);
-
-		return $res;
-	}
-}
-
-function img_resize ($file, $dir, $name, $type, $width = 0, $height = 0, $quality = 75, $flag = false)
-{
-	global $gd, $gd2, $extimage2, $extimageGD;
-
-	if (!$gd) return 1;
-	if (!file_exists($file)) return 2;
-
-	$size = getimagesize($file);
-	if ($size === false) return 3;
-
-	$type2 = strtolower($type);
-	$type1 = (($flag && in_array($type2, array('jpeg','jpg','jpe','gif','png','bmp'))) || ($type2 == 'bmp')) ? 'jpeg' : $extimageGD[$type2];
-
-	$icfunc = 'imagecreatefrom'.$extimageGD[$extimage2[$size[2]][0]]; //  $type;
-	if (!function_exists($icfunc)) return 4;
-
-	$xr = ($width == 0) ? 1 : $width / $size[0];
-	$yr = ($height == 0) ? 1 : $height / $size[1];
-	$r = min($xr, $yr, 1);
-	$width = round($size[0] * $r);
-	$height = round($size[1] * $r);
-
-	$image = @$icfunc($file);
-	if (!isset($image) || empty($image)) return 5;
-
-	if ($gd2)
-	{
-		$idest = imagecreatetruecolor($width, $height);
-		imagefill($idest, 0, 0, 0x7FFFFFFF);
-		imagecolortransparent($idest, 0x7FFFFFFF);
-		if ($type1 == 'gif')
-		{
-			$palette = imagecolorstotal($image);
-			imagetruecolortopalette($idest, true, $palette);
-		}
-		imagecopyresampled($idest, $image, 0, 0, 0, 0, $width, $height, $size[0], $size[1]);
-		imagesavealpha($idest, true);
-	}
-	else
-	{
-		$idest = imagecreate($width, $height);
-		imagecopyresized($idest, $image, 0, 0, 0, 0, $width, $height, $size[0], $size[1]);
-	}
-
-	$icfunc = 'image'.$type1;
-	if (!function_exists($icfunc))
-	{
-		$type1 = 'jpeg';
-		$icfunc = 'image'.$type1;
-		if (!function_exists($icfunc)) return 6;
-	}
-
-	if ($flag) $type = $type1;
-
-	if ($type1 == 'png' && version_compare(PHP_VERSION, '5.1.2', '>='))
-	{
-		$quality = floor((100 - $quality) / 11);
-		@imagepng($idest, PUN_ROOT.$dir.$name.'.'.$type, $quality);
-	}
-	else if ($type1 == 'jpeg')
-		@imagejpeg($idest, PUN_ROOT.$dir.$name.'.'.$type, $quality);
-	else
-		@$icfunc($idest, PUN_ROOT.$dir.$name.'.'.$type);
-
-	imagedestroy($image);
-	imagedestroy($idest);
-
-	if (!file_exists(PUN_ROOT.$dir.$name.'.'.$type)) return 7;
-	@chmod(PUN_ROOT.$dir.$name.'.'.$type, 0644);
-
-	return array($name, $type);
-}
-
-function isXSSattack ($file)
-{
-	global $lang_up;
-	// сканируем содержание загруженного файла
-	$fin = fopen($file, "rb");
-	if (!$fin)
-		return $lang_up['Error open'];
-
-	$buf1 = '';
-	while ($buf2 = fread($fin, 4096))
-	{
-		if (preg_match( "%<(script|html|head|title|body|table|a\s+href|img\s|plaintext|cross\-domain\-policy|embed|applet|\?php)%si", $buf1.$buf2 ))
-		{
-			fclose($fin);
-			return $lang_up['Error inject'];
-		}
-		$buf1 = substr($buf2,-30);
-	}
-	fclose($fin);
-	return false;
-}
-
-function return_bytes ($val)
-{
-// Author: Ivo Mandalski
-	if(empty($val))return 0;
-
-	$val = trim($val);
-
-	preg_match('#([0-9]+)[\s]*([a-z]+)#i', $val, $matches);
-
-	$last = '';
-	if(isset($matches[2])){
-		$last = $matches[2];
-	}
-
-	if(isset($matches[1])){
-		$val = (int)$matches[1];
-	}
-
-	switch (strtolower($last))
-	{
-		case 'g':
-		case 'gb':
-			$val *= 1024;
-		case 'm':
-		case 'mb':
-			$val *= 1024;
-		case 'k':
-		case 'kb':
-			$val *= 1024;
-	}
-
-	return (int)$val;
-}
+$upf_class = new upfClass();

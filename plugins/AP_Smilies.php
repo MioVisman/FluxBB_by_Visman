@@ -211,34 +211,50 @@ elseif (isset($_POST['add_image']))
 	{
 		include PUN_ROOT.'include/upload.php';
 
-		$filename = parse_file(substr($uploaded_file['name'], 0, strpos($uploaded_file['name'], '.')));
-		if (empty($filename))
-			message($lang_smiley['Bad name']);
-
-		if (isXSSattack($uploaded_file['tmp_name']) !== false)
-			message($lang_smiley['Bad type']);
-
-		// Check types
-		$allowed_types = array('image/gif', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/x-png');
-		if (!in_array($uploaded_file['type'], $allowed_types))
-			message($lang_smiley['Bad type']);
-
 		// Make sure the file isn't too big
-		if ($uploaded_file['size'] > $smilies_config_image_size)
+		if ($uploaded_file['size'] > $smilies_config_image_size) {
 			message($lang_smiley['Too large'].' '.$smilies_config_image_size.' '.$lang_smiley['bytes'].'.');
+		}
 
+		if (false === $upf_class->loadFile($uploaded_file['tmp_name'], $uploaded_file['name'])) {
+			message($lang_up['Unknown failure'] . ' (' . pun_htmlspecialchars($upf_class->getError()) . ')');
+		}
+
+		if (true !== $upf_class->isImage() || ! in_array($upf_class->getFileExt(), ['jpg', 'gif', 'png'])) {
+			message($lang_smiley['Bad type']);
+		}
+
+		if (false !== $upf_class->isUnsafeContent()) {
+			message($lang_up['Error inject']);
+		}
+
+		$upf_class->prepFileName();
+
+		if (false === $upf_class->loadImage()) {
+			message($lang_up['Error img'] . ' (' . pun_htmlspecialchars($upf_class->getError()) . ')');
+		}
+
+		$filename = $upf_class->getFileName();
 		// Determine type
 		$extensions = null;
-		if ($uploaded_file['type'] == 'image/gif')
-			$extensions = array('.gif', '.jpg', '.png');
-		else if ($uploaded_file['type'] == 'image/jpeg' || $uploaded_file['type'] == 'image/pjpeg')
-			$extensions = array('.jpg', '.gif', '.png');
-		else
-			$extensions = array('.png', '.gif', '.jpg');
+		switch ($upf_class->getFileExt()) {
+			case 'gif':
+				$extensions = array('.gif', '.jpg', '.png');
+				break;
+			case 'jpg':
+				$extensions = array('.jpg', '.gif', '.png');
+				break;
+			case 'png':
+				$extensions = array('.png', '.gif', '.jpg');
+				break;
+			default:
+				message($lang_smiley['Bad type']);
+		}
 
-		// Move the file to the avatar directory. We do this before checking the width/height to circumvent open_basedir restrictions.
-		if (!@move_uploaded_file($uploaded_file['tmp_name'], PUN_ROOT.'img/smilies/'.$filename.'.tmp'))
-			message($lang_smiley['Move failed']);
+		$fileinfo = $upf_class->saveFile(PUN_ROOT . 'img/smilies/' . $filename . '.tmp', true);
+		if (false === $fileinfo) {
+			message($lang_smiley['Move failed'] . ' (' . pun_htmlspecialchars($upf_class->getError()) . ')');
+		}
 
 		// Now check the width/height
 		list($width, $height, $type,) = getimagesize(PUN_ROOT.'img/smilies/'.$filename.'.tmp');
