@@ -57,6 +57,12 @@ class DBLayer
 
 		if (!$this->link_id)
 			error('Unable to open database \''.$db_name.'\'.', __FILE__, __LINE__);
+
+		if (defined('FORUM_SQLITE3_BUSY_TIMEOUT'))
+			$this->link_id->busyTimeout(FORUM_SQLITE3_BUSY_TIMEOUT);
+
+		if (defined('FORUM_SQLITE3_WAL_ON'))
+			$this->link_id->exec('PRAGMA journal_mode=WAL;');
 	}
 
 	function start_transaction()
