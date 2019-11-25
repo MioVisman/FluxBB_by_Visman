@@ -298,11 +298,11 @@ function server_parse($socket, $expected_response)
 	while (substr($server_response, 3, 1) != ' ')
 	{
 		if (!($server_response = fgets($socket, 256)))
-			error('Couldn\'t get mail server response codes. Please contact the forum administrator.', __FILE__, __LINE__);
+			error('Couldn\'t get mail server response codes. Please contact the forum administrator.');
 	}
 
 	if (!(substr($server_response, 0, 3) == $expected_response))
-		error('Unable to send email. Please contact the forum administrator with the following error message reported by the SMTP server: "'.$server_response.'"', __FILE__, __LINE__);
+		error('Unable to send email. Please contact the forum administrator with the following error message reported by the SMTP server: "'.$server_response.'"');
 }
 
 
@@ -334,7 +334,7 @@ function smtp_mail($to, $subject, $message, $headers = '')
 		$smtp_host = 'ssl://'.$smtp_host;
 
 	if (!($socket = fsockopen($smtp_host, $smtp_port, $errno, $errstr, 15)))
-		error('Could not connect to smtp host "'.$pun_config['o_smtp_host'].'" ('.$errno.') ('.$errstr.')', __FILE__, __LINE__);
+		error('Could not connect to smtp host "'.$pun_config['o_smtp_host'].'" ('.$errno.') ('.$errstr.')');
 
 	server_parse($socket, '220');
 
