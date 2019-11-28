@@ -23,7 +23,7 @@ function security_lang($val, $isset = false)
 		else
 			require PUN_ROOT.'lang/English/security.php';
 	}
-	
+
 	if ($isset)
 		return isset($lang_sec[$val]);
 	else
@@ -47,7 +47,7 @@ function security_encode_for_js($s)
 function security_show_random_value($val)
 {
 	static $random;
-	
+
 	if ($val === false)
 	{
 		$random = 0;
@@ -111,7 +111,7 @@ function security_show_captcha($tabindex, $acaptcha = true, $qcaptcha = false)
 
 	if ($acaptcha || $qcaptcha)
 	{
-	
+
 ?>
 			<div class="inform">
 				<fieldset>
@@ -146,7 +146,7 @@ function security_show_captcha($tabindex, $acaptcha = true, $qcaptcha = false)
 <?php
 
 		} // $qcaptcha
-		
+
 		if ($acaptcha)
 		{
 			$len = mt_rand(2, 3);
@@ -154,15 +154,16 @@ function security_show_captcha($tabindex, $acaptcha = true, $qcaptcha = false)
 			$a = $d = array();
 
 			for ($i = 1; $i < $len; $i++)
-				$d[$i] = $c[array_rand($c)];
+			{
+				$y = array_rand($c);
+				$d[$i] = $c[$y];
+				array_splice($c, $y, 1);
+			}
 
 			$pred = $prea = 0;
 			for ($i = $len; $i > 0; $i--)
 			{
-				if (($i > 1 && strstr('/*', $d[$i - 1])) || ($i < $len && $d[$i] == '*'))
-					$a[$i] = mt_rand(1, 5);
-				else
-					$a[$i] = mt_rand(1, 9);
+				$a[$i] = mt_rand(1, 9);
 
 				if ($i < $len && $d[$i] == '/')
 				{
