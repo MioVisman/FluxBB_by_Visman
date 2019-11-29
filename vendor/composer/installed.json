@@ -6,18 +6,18 @@
         "source": {
             "type": "git",
             "url": "https://github.com/MioVisman/Parserus.git",
-            "reference": "e5672b86dcafe37ddebf3ff96acdca967686cea6"
+            "reference": "ac9a8fa047083229f7e50df0342fd3871cdbe931"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/MioVisman/Parserus/zipball/e5672b86dcafe37ddebf3ff96acdca967686cea6",
-            "reference": "e5672b86dcafe37ddebf3ff96acdca967686cea6",
+            "url": "https://api.github.com/repos/MioVisman/Parserus/zipball/ac9a8fa047083229f7e50df0342fd3871cdbe931",
+            "reference": "ac9a8fa047083229f7e50df0342fd3871cdbe931",
             "shasum": ""
         },
         "require": {
             "php": ">=5.4.0"
         },
-        "time": "2017-11-15 08:46:49",
+        "time": "2019-10-11 12:06:27",
         "type": "library",
         "installation-source": "dist",
         "autoload": {

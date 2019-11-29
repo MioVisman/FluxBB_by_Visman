@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "36463b37e470c544c7273c5122412404",
-    "content-hash": "0df696db4d44bc13d80573fda270eb39",
+    "hash": "3db732e6232da3bbd257c5b27ee2cdd2",
+    "content-hash": "c7a8634939b62dea638e34af509b91e3",
     "packages": [
         {
             "name": "miovisman/parserus",
@@ -13,12 +13,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/MioVisman/Parserus.git",
-                "reference": "e5672b86dcafe37ddebf3ff96acdca967686cea6"
+                "reference": "ac9a8fa047083229f7e50df0342fd3871cdbe931"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/MioVisman/Parserus/zipball/e5672b86dcafe37ddebf3ff96acdca967686cea6",
-                "reference": "e5672b86dcafe37ddebf3ff96acdca967686cea6",
+                "url": "https://api.github.com/repos/MioVisman/Parserus/zipball/ac9a8fa047083229f7e50df0342fd3871cdbe931",
+                "reference": "ac9a8fa047083229f7e50df0342fd3871cdbe931",
                 "shasum": ""
             },
             "require": {
@@ -47,7 +47,7 @@
                 "bbcode",
                 "parser"
             ],
-            "time": "2017-11-15 08:46:49"
+            "time": "2019-10-11 12:06:27"
         }
     ],
     "packages-dev": [],
@@ -59,7 +59,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=5.4.0"
+        "php": ">=5.6.12"
     },
     "platform-dev": []
 }

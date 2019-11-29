@@ -1082,7 +1082,7 @@ class Parserus
             $body = '';
             foreach ($this->data[$id]['children'] as $cid) {
                 $child = $this->getText($cid);
-                if (isset($body{0}, $child{0})) {
+                if (isset($body[0], $child[0])) {
                     $body .= ' ' . $child;
                 } else {
                     $body .= $child;
