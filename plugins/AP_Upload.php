@@ -13,7 +13,7 @@ if (! defined('PUN')) {
 
 // Tell admin_loader.php that this is indeed a plugin and that it is loaded
 define('PUN_PLUGIN_LOADED', 1);
-define('PLUGIN_VERSION', '3.0.0');
+define('PLUGIN_VERSION', '3.0.1');
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin=' . $plugin));
 define('PLUGIN_EXTS', 'webp,jpg,jpeg,png,gif,mp3,zip,rar,7z');
 define('PLUGIN_NF', 25);
@@ -46,7 +46,7 @@ if (isset($pun_config['o_uploadile_other'])) {
 		$aconf['pic_mass'] = (int) ($aconf['pic_mass'] / 1024);
 		$pun_config['o_upload_config'] = serialize($aconf);
 
-		$db->query('INSERT INTO ' . $db->prefix . 'config (conf_name, conf_value) VALUES(\'o_upload_config\', \'' . $db->escape(serialize($pun_config['o_upload_config'])) . '\')') or error($lang_up['Error DB ins-up'], __FILE__, __LINE__, $db->error());
+		$db->query('INSERT INTO ' . $db->prefix . 'config (conf_name, conf_value) VALUES(\'o_upload_config\', \'' . $db->escape($pun_config['o_upload_config']) . '\')') or error($lang_up['Error DB ins-up'], __FILE__, __LINE__, $db->error());
 	}
 
 	$db->query('DELETE FROM ' . $db->prefix . 'config WHERE conf_name=\'o_uploadile_other\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
