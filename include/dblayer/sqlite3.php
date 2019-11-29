@@ -303,13 +303,20 @@ class DBLayer
 
 	function field_exists($table_name, $field_name, $no_prefix = false)
 	{
-		$result = $this->query('SELECT sql FROM sqlite_master WHERE name = \''.($no_prefix ? '' : $this->prefix).$this->escape($table_name).'\' AND type=\'table\'');
-		$sql = $this->result($result);
+		$result = $this->query('PRAGMA table_info(\'' . ($no_prefix ? '' : $this->prefix) . $this->escape($table_name) . '\');');
 
-		if (is_null($sql) || $sql === false)
-			return false;
-
-		return (preg_match('%[\r\n]'.preg_quote($field_name).' %', $sql) === 1);
+		if ($result instanceof Sqlite3Result)
+		{
+			while ($row = $this->fetch_assoc($result))
+			{
+				if ($row['name'] == $field_name)
+				{
+					$this->free_result($result);
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 
