@@ -401,9 +401,6 @@ while ($cur_post = $db->fetch_assoc($result))
 
 		$user_title = get_title($cur_post);
 
-		if ($pun_config['o_censoring'] == '1')
-			$user_title = censor_words($user_title);
-
 		// Format the online indicator
 		$is_online = (isset($onl_u[$cur_post['poster_id']])) ? '<strong>'.$lang_topic['Online'].'</strong>' : '<span>'.$lang_topic['Offline'].'</span>';
 
