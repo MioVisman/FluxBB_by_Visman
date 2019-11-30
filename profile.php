@@ -1120,7 +1120,7 @@ if ($pun_user['id'] != $id &&																	// If we aren't the user (i.e. edi
 
 	$user_title_field = get_title($user);
 	$user_personal[] = '<dt>'.$lang_common['Title'].'</dt>';
-	$user_personal[] = '<dd>'.(($pun_config['o_censoring'] == '1') ? censor_words($user_title_field) : $user_title_field).'</dd>';
+	$user_personal[] = '<dd>'.get_title($user).'</dd>';
 
 	if ($user['realname'] != '')
 	{

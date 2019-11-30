@@ -231,11 +231,6 @@ while ($cur_post = $db->fetch_assoc($result))
 	else
 		$username = pun_htmlspecialchars($cur_post['username']);
 
-	$user_title = get_title($cur_post);
-
-	if ($pun_config['o_censoring'] == '1')
-		$user_title = censor_words($user_title);
-
 	if ($cur_post['g_id'] == PUN_GUEST)
 	{
 		$is_online = '&#160;';
@@ -312,7 +307,7 @@ while ($cur_post = $db->fetch_assoc($result))
 						<div class="postleft">
 							<dl>
 								<dt><strong<?php echo(is_null($cur_post['gender']) ? '' : ' class="gender '.$cur_post['gender'].'"'); ?>><?php echo $username ?></strong></dt>
-								<dd class="usertitle"><strong><?php echo $user_title ?></strong></dd>
+								<dd class="usertitle"><strong><?php echo get_title($cur_post) ?></strong></dd>
 <?php if ($user_avatar != '') echo "\t\t\t\t\t\t\t\t".'<dd class="postavatar">'.$user_avatar.'</dd>'."\n"; ?>
 <?php if (count($user_info)) echo "\t\t\t\t\t\t\t\t".implode("\n\t\t\t\t\t\t\t\t", $user_info)."\n"; ?>
 <?php if (count($user_contacts)) echo "\t\t\t\t\t\t\t\t".'<dd class="usercontacts">'.implode(' ', $user_contacts).'</dd>'."\n"; ?>
