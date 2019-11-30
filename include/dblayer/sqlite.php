@@ -43,14 +43,14 @@ class DBLayer
 			@touch($db_name);
 			@chmod($db_name, 0666);
 			if (!file_exists($db_name))
-				error('Unable to create new database \''.$db_name.'\'. Permission denied', __FILE__, __LINE__);
+				error('Unable to create new SQLite database. Permission denied', __FILE__, __LINE__);
 		}
 
 		if (!is_readable($db_name))
-			error('Unable to open database \''.$db_name.'\' for reading. Permission denied', __FILE__, __LINE__);
+			error('Unable to open SQLite database for reading. Permission denied', __FILE__, __LINE__);
 
 		if (!forum_is_writable($db_name))
-			error('Unable to open database \''.$db_name.'\' for writing. Permission denied', __FILE__, __LINE__);
+			error('Unable to open SQLite database for writing. Permission denied', __FILE__, __LINE__);
 
 		if ($p_connect)
 			$this->link_id = @sqlite_popen($db_name, 0666, $sqlite_error);
@@ -58,7 +58,7 @@ class DBLayer
 			$this->link_id = @sqlite_open($db_name, 0666, $sqlite_error);
 
 		if (!$this->link_id)
-			error('Unable to open database \''.$db_name.'\'. SQLite reported: '.$sqlite_error, __FILE__, __LINE__);
+			error('Unable to open SQLite database. SQLite reported: '.$sqlite_error, __FILE__, __LINE__);
 	}
 
 

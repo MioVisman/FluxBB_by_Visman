@@ -44,19 +44,19 @@ class DBLayer
 			@touch($db_name);
 			@chmod($db_name, 0666);
 			if (!file_exists($db_name))
-				error('Unable to create new database \''.$db_name.'\'. Permission denied', __FILE__, __LINE__);
+				error('Unable to create new SQLite3 database. Permission denied', __FILE__, __LINE__);
 		}
 
 		if (!is_readable($db_name))
-			error('Unable to open database \''.$db_name.'\' for reading. Permission denied', __FILE__, __LINE__);
+			error('Unable to open SQLite3 database for reading. Permission denied', __FILE__, __LINE__);
 
 		if (!forum_is_writable($db_name))
-			error('Unable to open database \''.$db_name.'\' for writing. Permission denied', __FILE__, __LINE__);
+			error('Unable to open SQLite3 database for writing. Permission denied', __FILE__, __LINE__);
 
 		@$this->link_id = new SQLite3($db_name, SQLITE3_OPEN_READWRITE);
 
-		if (!$this->link_id)
-			error('Unable to open database \''.$db_name.'\'.', __FILE__, __LINE__);
+		if (! $this->link_id instanceof SQLite3)
+			error('Unable to open SQLite3 database.', __FILE__, __LINE__);
 
 		if (defined('FORUM_SQLITE3_BUSY_TIMEOUT'))
 			$this->link_id->busyTimeout(FORUM_SQLITE3_BUSY_TIMEOUT);
