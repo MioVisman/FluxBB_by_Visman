@@ -1118,7 +1118,6 @@ if ($pun_user['id'] != $id &&																	// If we aren't the user (i.e. edi
 	$user_personal[] = '<dt>'.$lang_common['Username'].'</dt>';
 	$user_personal[] = '<dd>'.pun_htmlspecialchars($user['username']).'</dd>';
 
-	$user_title_field = get_title($user);
 	$user_personal[] = '<dt>'.$lang_common['Title'].'</dt>';
 	$user_personal[] = '<dd>'.get_title($user).'</dd>';
 
