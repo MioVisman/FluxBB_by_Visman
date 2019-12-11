@@ -126,9 +126,11 @@ class DBLayer
 			$this->error_msg = @pg_result_error($this->query_result);
 
 			if ($this->in_transaction)
-				@pg_query($this->link_id, 'ROLLBACK');
+			{
+				--$this->in_transaction;
 
-			--$this->in_transaction;
+				@pg_query($this->link_id, 'ROLLBACK');
+			}
 
 			return false;
 		}

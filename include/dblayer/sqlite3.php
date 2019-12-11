@@ -113,9 +113,11 @@ class DBLayer
 			$this->error_msg = $this->link_id->lastErrorMsg();
 
 			if ($this->in_transaction)
-				$this->link_id->exec('ROLLBACK');
+			{
+				--$this->in_transaction;
 
-			--$this->in_transaction;
+				$this->link_id->exec('ROLLBACK');
+			}
 
 			return false;
 		}

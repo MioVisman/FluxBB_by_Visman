@@ -112,9 +112,11 @@ class DBLayer
 			$this->error_msg = @sqlite_error_string($this->error_no);
 
 			if ($this->in_transaction)
-				@sqlite_query($this->link_id, 'ROLLBACK');
+			{
+				--$this->in_transaction;
 
-			--$this->in_transaction;
+				@sqlite_query($this->link_id, 'ROLLBACK');
+			}
 
 			return false;
 		}
