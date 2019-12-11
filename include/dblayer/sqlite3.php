@@ -485,17 +485,9 @@ class DBLayer
 		if ($this->field_exists($table_name, $field_name, $no_prefix))
 			return true;
 
-		$table = $this->get_table_info($table_name, $no_prefix);
-
-		// Create temp table
-		$now = time();
-		$tmptable = str_replace('CREATE TABLE '.($no_prefix ? '' : $this->prefix).$this->escape($table_name).' (', 'CREATE TABLE '.($no_prefix ? '' : $this->prefix).$this->escape($table_name).'_t'.$now.' (', $table['sql']);
-		$result = $this->query($tmptable) ? true : false;
-		$result &= $this->query('INSERT INTO '.($no_prefix ? '' : $this->prefix).$this->escape($table_name).'_t'.$now.' SELECT * FROM '.($no_prefix ? '' : $this->prefix).$this->escape($table_name)) ? true : false;
-
-		// Create new table sql
 		$field_type = preg_replace(array_keys($this->datatype_transformations), array_values($this->datatype_transformations), $field_type);
-		$query = $field_type;
+
+		$query = 'ALTER TABLE '.($no_prefix ? '' : $this->prefix).$this->escape($table_name).' ADD '.$field_name.' '.$field_type;
 
 		if (!$allow_null)
 			$query .= ' NOT NULL';
@@ -505,57 +497,11 @@ class DBLayer
 
 		if (!is_null($default_value))
 			$query .= ' DEFAULT '.$default_value;
+		else if (!$allow_null)
+			$query .= ' DEFAULT \'\'';
 
-		$old_columns = array_keys($table['columns']);
-
-		// Determine the proper offset
-		if (!is_null($after_field))
-			$offset = array_search($after_field, array_keys($table['columns']), true) + 1;
-		else
-			$offset = count($table['columns']);
-
-		// Out of bounds checks
-		if ($offset > count($table['columns']))
-			$offset = count($table['columns']);
-		else if ($offset < 0)
-			$offset = 0;
-
-		if (!is_null($field_name) && $field_name !== '')
-			$table['columns'] = array_merge(array_slice($table['columns'], 0, $offset), array($field_name => $query), array_slice($table['columns'], $offset));
-
-		$new_table = 'CREATE TABLE '.($no_prefix ? '' : $this->prefix).$this->escape($table_name).' (';
-
-		foreach ($table['columns'] as $cur_column => $column_details)
-			$new_table .= "\n".$cur_column.' '.$column_details.',';
-
-		if (isset($table['unique']))
-			$new_table .= "\n".$table['unique'].',';
-
-		if (isset($table['primary_key']))
-			$new_table .= "\n".$table['primary_key'].',';
-
-		$new_table = trim($new_table, ',')."\n".');';
-
-		// Drop old table
-		$result &= $this->drop_table($table_name, $no_prefix);
-
-		// Create new table
-		$result &= $this->query($new_table) ? true : false;
-
-		// Recreate indexes
-		if (!empty($table['indices']))
-		{
-			foreach ($table['indices'] as $cur_index)
-				$result &= $this->query($cur_index) ? true : false;
-		}
-
-		// Copy content back
-		$result &= $this->query('INSERT INTO '.($no_prefix ? '' : $this->prefix).$this->escape($table_name).' ('.implode(', ', $old_columns).') SELECT * FROM '.($no_prefix ? '' : $this->prefix).$this->escape($table_name).'_t'.$now) ? true : false;
-
-		// Drop temp table
-		$result &= $this->drop_table($table_name.'_t'.$now, $no_prefix);
-
-		return $result;
+		$this->query($query) or error(__FILE__, __LINE__);
+		return true;
 	}
 
 
