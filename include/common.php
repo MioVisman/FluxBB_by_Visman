@@ -9,6 +9,11 @@
 if (!defined('PUN_ROOT'))
 	exit('The constant PUN_ROOT must be defined and point to a valid FluxBB installation root directory.');
 
+// Make sure PHP reports all errors except E_NOTICE. FluxBB supports E_ALL, but a lot of scripts it may interact with, do not
+error_reporting(E_ALL ^ E_NOTICE);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+
 // Record the start time (will be used to calculate the generation time for the page)
 $pun_start = empty($_SERVER['REQUEST_TIME_FLOAT']) ? microtime(true) : (float) $_SERVER['REQUEST_TIME_FLOAT'];
 
@@ -68,10 +73,6 @@ forum_remove_bad_characters();
 
 // The addon manager is responsible for storing the hook listeners and communicating with the addons
 $flux_addons = new flux_addon_manager();
-
-// Make sure PHP reports all errors except E_NOTICE. FluxBB supports E_ALL, but a lot of scripts it may interact with, do not
-error_reporting(E_ALL ^ E_NOTICE);
-//error_reporting(E_ALL);
 
 // Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
 setlocale(LC_CTYPE, 'C');
