@@ -2017,7 +2017,7 @@ else
 		'o_smtp_pass'				=> NULL,
 		'o_smtp_ssl'				=> 0,
 		'o_regs_allow'				=> 1,
-		'o_regs_verify'				=> 0,
+		'o_regs_verify'				=> 1,
 		'o_announcement'			=> 0,
 		'o_announcement_message'	=> $lang_install['Announcement'],
 		'o_rules'					=> 0,
@@ -2036,7 +2036,7 @@ else
 		'p_sig_img_tag'				=> 0,
 		'p_sig_length'				=> 400,
 		'p_sig_lines'				=> 4,
-		'p_allow_banned_email'		=> 1,
+		'p_allow_banned_email'		=> 0,
 		'p_allow_dupe_email'		=> 0,
 		'p_force_guest_email'		=> 1,
 		'o_pms_enabled'				=> 1,					// New PMS - Visman
