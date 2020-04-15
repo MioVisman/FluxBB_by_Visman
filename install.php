@@ -111,7 +111,7 @@ function generate_config_file()
 		."define('PUN_MAX_POSTSIZE', 65535);\n"
 		.'//define(\'FORUM_EOL\', "\r\n"); // possible values can be PHP_EOL, "\r\n", "\n" or "\r"'."\n"
 		."//define('FORUM_UA_OFF', 1);\n"
-		."define('FORUM_AJAX_JQUERY', '//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js');\n"
+		."define('FORUM_AJAX_JQUERY', 'https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js');\n"
 		."//define('FORUM_SQLITE3_BUSY_TIMEOUT', 10000);\n"
 		."//define('FORUM_SQLITE3_WAL_ON', 1);\n";
 }
