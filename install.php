@@ -113,7 +113,10 @@ function generate_config_file()
 		."//define('FORUM_UA_OFF', 1);\n"
 		."define('FORUM_AJAX_JQUERY', 'https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js');\n"
 		."//define('FORUM_SQLITE3_BUSY_TIMEOUT', 10000);\n"
-		."//define('FORUM_SQLITE3_WAL_ON', 1);\n";
+		."//define('FORUM_SQLITE3_WAL_ON', 1);\n\n"
+		."//error_reporting(E_ALL);\n"
+		."//ini_set('display_errors', 1);\n"
+		."//ini_set('log_errors', 1);\n";
 }
 
 
