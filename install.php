@@ -103,6 +103,7 @@ function generate_config_file()
 		.'$cookie_domain = '."'';\n"
 		.'$cookie_path = '."'/';\n"
 		.'$cookie_secure = 0;'."\n"
+		.'$cookie_samesite = \'Lax\'; // Strict, Lax or None'."\n"
 		.'$cookie_seed = \''.random_key(16, false, true)."';\n\n"
 		.'$salt1 = \''.$salt1."';\n\n"
 		."define('PUN', 1);\n\n"
