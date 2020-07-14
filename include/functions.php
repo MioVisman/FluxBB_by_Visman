@@ -361,15 +361,30 @@ function pun_setcookie($user_id, $password_hash, $expire)
 //
 function forum_setcookie($name, $value, $expire)
 {
-	global $cookie_path, $cookie_domain, $cookie_secure, $pun_config;
+	global $cookie_path, $cookie_domain, $cookie_secure, $pun_config, $cookie_samesite;
 
 	if ($expire - time() - $pun_config['o_timeout_visit'] < 1)
 		$expire = 0;
 
+	if (empty($cookie_samesite))
+		$cookie_samesite = 'Lax';
+	else if ($cookie_samesite !== 'Strict' && $cookie_samesite !== 'Lax' && $cookie_samesite !== 'None')
+		$cookie_samesite = 'Lax';
+
 	// Enable sending of a P3P header
 	header('P3P: CP="CUR ADM"');
 
-	setcookie($name, $value, $expire, $cookie_path, $cookie_domain, $cookie_secure, true);
+	if (PHP_VERSION_ID < 70300)
+		setcookie($name, $value, $expire, $cookie_path.'; SameSite='.$cookie_samesite, $cookie_domain, $cookie_secure, true);
+	else
+		setcookie($name, $value, [
+			'expires'  => $expire,
+			'path'     => $cookie_path,
+			'domain'   => $cookie_domain,
+			'secure'   => $cookie_secure,
+			'httponly' => true,
+			'samesite' => $cookie_samesite,
+		]);
 }
 
 
