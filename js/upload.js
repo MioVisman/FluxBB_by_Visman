@@ -1,4 +1,4 @@
-// upload.js v3.0.0 BETA Copyright (C) 2019 Visman (mio.visman@yandex.ru)
+// upload.js v3.0.2 Copyright (C) 2020 Visman (mio.visman@yandex.ru)
 if (typeof FluxBB === 'undefined' || !FluxBB) {var FluxBB = {};}
 
 FluxBB.upload = (function (doc, win) {
@@ -367,9 +367,9 @@ FluxBB.upload = (function (doc, win) {
 
 		buttonHandler : function(event) {
 			var event;
-			if (typeof MouseEvent === 'function') {
+			try {
 				event = new MouseEvent('click');
-			} else {
+			} catch (e) {
 				event = document.createEvent('MouseEvent');
 				event.initEvent('click', false, false);
 			}

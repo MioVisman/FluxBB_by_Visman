@@ -33,7 +33,7 @@ $lang_up = array(
 'px'								=> 'Pixel',
 'kbytes'							=> 'KBytes',
 'pictures'					=> 'Pictures',
-'for pictures'			=> 'For a picture in weight it is more',
+'for pictures'			=> 'For files greater than',
 'Install quality'		=> 'Install quality:',
 'Size not more'			=> 'Size not more (WxH):',
 'to jpeg'						=> 'Convert to jpeg',
@@ -47,7 +47,7 @@ $lang_up = array(
 'popup_title'				=> 'File manager',
 
 'info_2'						=> '%1$s (%2$s max file size)',
-'info_4'						=> 'Storage space used: <span>%s</span> in %s',
+'info_4'						=> 'Storage space used: <span>%s</span> of %s allowed.',
 'legend'						=> 'File',
 'fichier'						=> 'Select a file',
 

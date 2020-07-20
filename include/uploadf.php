@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (C) 2011-2019 Visman (visman@inbox.ru)
+ * Copyright (C) 2011-2020 Visman (visman@inbox.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -50,7 +50,7 @@ FluxBB.uploadvars = {
 </script>
 <script type="text/javascript" src="js/upload.js"></script>
 
-<div id="upf-template" style="display: none;">
+<div id="upf-template" style="width: 0; height: 0; overflow: hidden; margin: 0; padding: 0;">
 	<div class="inform upf-fmess">
 		<fieldset>
 			<legend><?= $lang_up['upfiles'] ?></legend>
