@@ -165,3 +165,7 @@ ul#upf-list {
 	content: " ";
 	vertical-align: middle;
 }
+
+.upf-fmess #upf-- {
+	visibility: hidden;
+}
