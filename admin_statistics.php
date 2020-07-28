@@ -36,30 +36,6 @@ if ($action == 'phpinfo' && $pun_user['g_id'] == PUN_ADMIN)
 
 
 // Get the server load averages (if possible)
-/*
-if (@file_exists('/proc/loadavg') && is_readable('/proc/loadavg'))
-{
-	// We use @ just in case
-	$fh = @fopen('/proc/loadavg', 'r');
-	$load_averages = @fread($fh, 64);
-	@fclose($fh);
-
-	if (($fh = @fopen('/proc/loadavg', 'r')))
-	{
-		$load_averages = fread($fh, 64);
-		fclose($fh);
-	}
-	else
-		$load_averages = '';
-
-	$load_averages = @explode(' ', $load_averages);
-	$server_load = isset($load_averages[2]) ? $load_averages[0].' '.$load_averages[1].' '.$load_averages[2] : $lang_admin_index['Not available'];
-}
-else if (!in_array(PHP_OS, array('WINNT', 'WIN32')) && preg_match('%averages?: ([0-9\.]+),?\s+([0-9\.]+),?\s+([0-9\.]+)%i', @exec('uptime'), $load_averages))
-	$server_load = $load_averages[1].' '.$load_averages[2].' '.$load_averages[3];
-else
-	$server_load = $lang_admin_index['Not available'];
-*/
 $server_load = $lang_admin_index['Not available'];
 switch (strtoupper(substr(PHP_OS, 0, 3)))
 {
@@ -74,14 +50,14 @@ switch (strtoupper(substr(PHP_OS, 0, 3)))
 		if (function_exists('sys_getloadavg'))
 		{
 			$load_averages = sys_getloadavg();
-			$server_load = $load_averages[0].' '.$load_averages[1].' '.$load_averages[2];
+			$server_load = forum_number_format($load_averages[0], 2).' '.forum_number_format($load_averages[1], 2).' '.forum_number_format($load_averages[2], 2);
 			break;
 		}
 
 		@exec('uptime', $output_load);
 		if (!empty($output_load) && preg_match('%averages?: ([0-9\.]+),?\s+([0-9\.]+),?\s+([0-9\.]+)%i', implode(' ', $output_load) , $load_averages))
 		{
-			$server_load = $load_averages[1].' '.$load_averages[2].' '.$load_averages[3];
+			$server_load = forum_number_format($load_averages[1], 2).' '.forum_number_format($load_averages[2], 2).' '.forum_number_format($load_averages[3], 2);
 			break;
 		}
 }
