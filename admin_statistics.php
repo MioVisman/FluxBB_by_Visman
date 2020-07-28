@@ -36,6 +36,7 @@ if ($action == 'phpinfo' && $pun_user['g_id'] == PUN_ADMIN)
 
 
 // Get the server load averages (if possible)
+/*
 if (@file_exists('/proc/loadavg') && is_readable('/proc/loadavg'))
 {
 	// We use @ just in case
@@ -58,7 +59,32 @@ else if (!in_array(PHP_OS, array('WINNT', 'WIN32')) && preg_match('%averages?: (
 	$server_load = $load_averages[1].' '.$load_averages[2].' '.$load_averages[3];
 else
 	$server_load = $lang_admin_index['Not available'];
+*/
+$server_load = $lang_admin_index['Not available'];
+switch (strtoupper(substr(PHP_OS, 0, 3)))
+{
+	case 'WIN':
+		@exec('wmic cpu get loadpercentage /all', $output_load);
+		if (!empty($output_load) && preg_match('%(?:^|==)(\d+)(?:$|==)%', implode('==', $output_load) , $load_percentage))
+		{
+			$server_load = $load_percentage[1].' %';
+		}
+		break;
+	default:
+		if (function_exists('sys_getloadavg'))
+		{
+			$load_averages = sys_getloadavg();
+			$server_load = $load_averages[0].' '.$load_averages[1].' '.$load_averages[2];
+			break;
+		}
 
+		@exec('uptime', $output_load);
+		if (!empty($output_load) && preg_match('%averages?: ([0-9\.]+),?\s+([0-9\.]+),?\s+([0-9\.]+)%i', implode(' ', $output_load) , $load_averages))
+		{
+			$server_load = $load_averages[1].' '.$load_averages[2].' '.$load_averages[3];
+			break;
+		}
+}
 
 // Get number of current visitors
 $result = $db->query('SELECT COUNT(user_id) FROM '.$db->prefix.'online WHERE idle=0') or error('Unable to fetch online count', __FILE__, __LINE__, $db->error());
