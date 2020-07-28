@@ -111,7 +111,7 @@ class DBLayer
 			$this->error_no = @sqlite_last_error($this->link_id);
 			$this->error_msg = @sqlite_error_string($this->error_no);
 
-			if ($this->in_transaction)
+			if ($this->in_transaction > 0)
 			{
 				--$this->in_transaction;
 
@@ -230,7 +230,7 @@ class DBLayer
 	{
 		if ($this->link_id)
 		{
-			if ($this->in_transaction)
+			if ($this->in_transaction > 0)
 			{
 				if (defined('PUN_SHOW_QUERIES'))
 					$this->saved_queries[] = array('COMMIT', 0);

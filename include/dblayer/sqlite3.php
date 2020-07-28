@@ -112,7 +112,7 @@ class DBLayer
 			$this->error_no = $this->link_id->lastErrorCode();
 			$this->error_msg = $this->link_id->lastErrorMsg();
 
-			if ($this->in_transaction)
+			if ($this->in_transaction > 0)
 			{
 				--$this->in_transaction;
 
@@ -247,10 +247,12 @@ class DBLayer
 	{
 		if ($this->link_id)
 		{
-			if ($this->in_transaction)
+			if ($this->in_transaction > 0)
 			{
 				if (defined('PUN_SHOW_QUERIES'))
 					$this->saved_queries[] = array('COMMIT', 0);
+
+				--$this->in_transaction;
 
 				$this->link_id->exec('COMMIT');
 			}
@@ -459,6 +461,9 @@ class DBLayer
 		if ($num_rows < 1)
 			return;
 
+
+		// fix multiple fields in one line
+		$table['sql'] = str_replace(', ', ",\n", $table['sql']);
 
 		// Work out the columns in the table currently
 		$table_lines = explode("\n", $table['sql']);
