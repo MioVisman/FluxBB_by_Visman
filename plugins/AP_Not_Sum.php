@@ -49,7 +49,6 @@ else
 		<div class="box">
 			<div class="inbox">
 				<p><?php echo $lang_admin_plugin_not_sum['Explanation 1'] ?></p>
-				<p><?php echo $lang_admin_plugin_not_sum['Explanation 2'] ?></p>
 			</div>
 		</div>
 
