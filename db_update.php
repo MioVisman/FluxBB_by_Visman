@@ -10,6 +10,7 @@
 define('UPDATE_TO', '1.5.11');
 
 define('UPDATE_TO_VER_REVISION', 81);	// номер сборки - Visman
+define('LATEST_REV_DB_CANGES', 79);	// последняя ревизия с изменениями БД - Visman
 
 define('UPDATE_TO_DB_REVISION', 21);
 define('UPDATE_TO_SI_REVISION', 2.1);
@@ -626,6 +627,34 @@ if (isset($_POST['req_db_pass']))
 
 			break;
 	}
+
+	// Visman - test for DB for a list of actions required to update
+	if (empty($pun_config['o_cur_ver_revision']) || $pun_config['o_cur_ver_revision'] < LATEST_REV_DB_CANGES)
+	{
+		$test_table = 'test_tb_for_update';
+
+		if ($db->table_exists($test_table))
+			error("The {$test_table} table already exists. Delete it.");
+
+		$schema = array(
+			'FIELDS'		=> array(
+				'id'			=> array(
+					'datatype'		=> 'SERIAL',
+					'allow_null'	=> false
+				),
+			),
+			'INDEXES'		=> array(
+				'id_idx'	=> array('id')
+			)
+		);
+
+		$db->create_table($test_table, $schema) or error("Unable to create {$test_table} table", __FILE__, __LINE__, $db->error());
+		$db->add_field($test_table, 'test_field', 'VARCHAR(80)', false, '') or error('Unable to add test_field field', __FILE__, __LINE__, $db->error());
+		$db->query('INSERT INTO '.$db->prefix.$test_table.' (test_field) VALUES (\'TEST_VALUE\')') or error("Unable to insert line to {$test_table} table" , __FILE__, __LINE__, $db->error());
+		$db->drop_field($test_table, 'test_field') or error('Unable to drop test_field field', __FILE__, __LINE__, $db->error());
+		$db->drop_table($test_table) or error("Unable to drop {$test_table} table", __FILE__, __LINE__, $db->error());
+	}
+	// Visman - test for DB for a list of actions required to update
 
 	// Generate a unique id to identify this session, only if this is a valid session
 	$uid = pun_hash($req_db_pass.'|'.uniqid(rand(), true));
