@@ -30,6 +30,7 @@ $lang_up = array(
 'quality'						=> 'Quality: ',
 'maxsize_member'		=> 'Max size members can upload (MBytes).',
 'limit_member'			=> 'Space allocated to members (MBytes).',
+'allow_delete'			=> 'Allow to delete files used in posts.',
 'px'								=> 'Pixel',
 'kbytes'							=> 'KBytes',
 'pictures'					=> 'Pictures',
@@ -89,4 +90,7 @@ $lang_up = array(
 'UPLOAD_ERR_CANT_WRITE' => 'Failed to write file to disk.',
 'UPLOAD_ERR_EXTENSION' => 'A PHP extension stopped the file upload.',
 'UPLOAD_ERR_UNKNOWN' => 'Unknown upload error.',
+
+'Deleting file' => 'Deleting file',
+'%s file' => '<b>%s</b> file',
 );

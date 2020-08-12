@@ -169,3 +169,20 @@ ul#upf-list {
 .upf-fmess #upf-- {
 	visibility: hidden;
 }
+
+#adminconsole .upf-gr-set .tcl {
+	width: 9em;
+}
+
+#adminconsole .upf-gr-set .tc2 {
+	width: 70%;
+}
+
+#adminconsole .upf-gr-set .tcr {
+	width: 7em;
+	min-width: 3em;
+}
+
+#adminconsole .upf-gr-set .tc3 {
+	width: 2em;
+}

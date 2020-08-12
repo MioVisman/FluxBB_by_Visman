@@ -126,7 +126,7 @@ FluxBB.upload = (function (doc, win) {
 						}
 					}
 					if ('error' in data) {
-						errorHandler && errorHandler(0, data.error);
+						errorHandler && errorHandler('confirm' in data ? data.confirm : 0, data.error);
 					} else {
 						successHandler && successHandler(data);
 					}
@@ -264,8 +264,25 @@ FluxBB.upload = (function (doc, win) {
 			delete files[key];
 			updateData(data);
 		}, function (status, text) {
-			file.link.classList.remove('upf-removal');
-			alert(text);
+			if (typeof status === 'string') {
+				if (!confirm(text + ' ' + FluxBB.uploadvars.lang.confirmation)) {
+					file.link.classList.remove('upf-removal');
+					return;
+				}
+
+				postData({action: 'delete', confirm: status, file: file.filename, p: page}, function (data) {
+					file.link.parentNode.removeChild(file.link);
+					file.link = null;
+					delete files[key];
+					updateData(data);
+				}, function (status, text) {
+					file.link.classList.remove('upf-removal');
+					alert(text);
+				});
+			} else {
+				file.link.classList.remove('upf-removal');
+				alert(text);
+			}
 		});
 	}
 

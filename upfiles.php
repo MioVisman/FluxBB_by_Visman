@@ -114,7 +114,7 @@ if (! isset($_GET['id'])) {
 	$result = $db->query('SELECT u.username, u.upload_size, g.g_up_ext, g.g_up_max, g.g_up_limit FROM ' . $db->prefix . 'users AS u INNER JOIN '.$db->prefix.'groups AS g ON u.group_id=g.g_id WHERE u.id=' . $id) or error('Unable to fetch user information', __FILE__, __LINE__, $db->error());
 	$user_info = $db->fetch_row($result);
 
-	if (!$user_info) {
+	if (! $user_info) {
 		upf_message($lang_common['Bad request'], false, '404 Not Found');
 	}
 
@@ -140,13 +140,17 @@ $upf_dir = 'img/members/' . $id . '/';
 $upf_conf = unserialize($pun_config['o_upload_config']);
 $upf_exts = explode(',', $upf_exts . ',' . strtoupper($upf_exts));
 $upf_new_files = [];
+$upf_token = function_exists('csrf_hash') ? csrf_hash() : pun_csrf_token();
 
 // #############################################################################
 
 // Удаление файла
 if ('delete' === $upf_action) {
 	$error = false;
+	$count = null;
+	$confirm = upf_get_pg('confirm');
 
+	// наличие файла
 	if (
 		is_dir(PUN_ROOT . $upf_dir)
 		&& preg_match('%^([\w-]+)\.(\w+)$%', pun_trim(upf_get_pg('file')), $matches)
@@ -154,8 +158,31 @@ if ('delete' === $upf_action) {
 		&& 'mini_' !== substr($matches[1], 0, 5)
 		&& is_file(PUN_ROOT . $upf_dir . $matches[1] . '.' . $matches[2])
 	) {
+		$fileName = $matches[1] . '.' . $matches[2];
+		$filePath = PUN_ROOT . $upf_dir . $matches[1] . '.' . $matches[2];
+	} else {
+		$error = $lang_up['Error delete'];
+		$confirm = null;
+	}
+
+	// проверка подтверждения
+	if (
+		false === $error
+		&& null !== $confirm
+	) {
+		if (! hash_equals(pun_hash($filePath), (string) $confirm)) {
+			$error = $lang_up['Error delete'];
+			$confirm = null;
+		}
+	}
+
+	// проверка для удаления
+	if (
+		false === $error
+		&& null === $confirm
+	) {
 		include PUN_ROOT . 'include/search_idx.php';
-		$like = '/' . $upf_dir . $matches[1] . '.' . $matches[2];
+		$like = '/' . $upf_dir . $fileName;
 		$words = split_words(utf8_strtolower($like), true);
 
 		if (count($words) > 2) {
@@ -178,9 +205,25 @@ if ('delete' === $upf_action) {
 			$count = $db->result($result);
 		}
 
-		if (empty($count) && unlink(PUN_ROOT . $upf_dir . $matches[1] . '.' . $matches[2])) {
-			if (is_file(PUN_ROOT . $upf_dir . 'mini_' . $matches[1] . '.' . $matches[2])) {
-				unlink(PUN_ROOT . $upf_dir . 'mini_' . $matches[1] . '.' . $matches[2]);
+		if ($count > 0) {
+			$error = sprintf($lang_up['Error usage'], $count);
+
+			if (
+				isset($pun_user['g_up_perm_del'])
+				&& 1 == $pun_user['g_up_perm_del']
+			) {
+				$confirm = pun_hash($filePath);
+			}
+		}
+	}
+
+	// удаление
+	if (false === $error) {
+		$confirm = null;
+
+		if (unlink($filePath)) {
+			if (is_file(PUN_ROOT . $upf_dir . 'mini_' . $fileName)) {
+				unlink(PUN_ROOT . $upf_dir . 'mini_' . $fileName);
 			}
 
 			$upf_dir_size = $upf_class->dirSize(PUN_ROOT . $upf_dir);
@@ -188,20 +231,72 @@ if ('delete' === $upf_action) {
 
 			$db->query('UPDATE ' . $db->prefix . 'users SET upload_size=' . ((int) ($upf_dir_size / 10485.76)) . ' WHERE id=' . $id) or error($lang_up['Error DB ins-up'], __FILE__, __LINE__, $db->error());
 		} else {
-			$error = true;
+			$error = $lang_up['Error delete'];
 		}
-	} else {
-		$error = true;
 	}
 
-	if ($error) {
+	// запрос подтверждения
+	if (
+		null !== $confirm
+		&& null !== $count
+	) {
+		if ($upf_ajax) {
+			upf_return_json(['error' => $error, 'confirm' => $confirm]);
+		} else {
+			if (file_exists(PUN_ROOT . 'style/' . $pun_user['style'] . '/upfiles.css')) {
+				$page_head['pmsnewstyle'] = '<link rel="stylesheet" type="text/css" href="style/' . $pun_user['style'] . '/upfiles.css" />';
+			} else {
+				$page_head['pmsnewstyle'] = '<link rel="stylesheet" type="text/css" href="style/imports/upfiles.css" />';
+			}
+
+			define('PUN_ACTIVE_PAGE', 'profile');
+			require PUN_ROOT . 'header.php';
+			$tpl_main = str_replace('id="punhelp"', 'id="punupfiles"', $tpl_main);
+
+			$tabindex = 1;
+
+			if ($fpr) {
+				// Load the profile.php language file
+				require PUN_ROOT . 'lang/' . $pun_user['language'] . '/profile.php';
+
+				generate_profile_menu('upload');
+			}
+
+?>
+<div class="blockform">
+	<h2><span><?php echo $lang_up['Deleting file'] ?></span></h2>
+	<div class="box">
+		<form method="post" action="<?= PLUGIN_URL ?>">
+			<div class="inform">
+				<input type="hidden" name="csrf_hash" value="<?= $upf_token ?>" />
+				<input type="hidden" name="action" value="delete" />
+				<input type="hidden" name="confirm" value="<?= $confirm ?>" />
+				<input type="hidden" name="file" value="<?= pun_htmlspecialchars($fileName) ?>" />
+				<input type="hidden" name="p" value="<?= $upf_page ?>" />
+				<div class="forminfo">
+					<h3><span><?= sprintf($lang_up['%s file'], pun_htmlspecialchars($fileName)) ?></span></h3>
+					<p><?= $error ?></p>
+				</div>
+			</div>
+			<p class="buttons"><input type="submit" name="delete" value="<?= $lang_up['delete'] ?>" /> <a href="javascript:history.go(-1)"><?= $lang_common['Go back'] ?></a></p>
+		</form>
+	</div>
+</div>
+<?php
+
+			require PUN_ROOT . 'footer.php';
+		}
+
+	// вывод ошибки
+	} else if (false !== $error) {
 		if ($pun_config['o_redirect_delay'] < 5) {
 			$pun_config['o_redirect_delay'] = 5;
 		}
-		$message = empty($count) ? $lang_up['Error delete'] : sprintf($lang_up['Error usage'], $count);
-		upf_redirect(($upf_page < 2 ? PLUGIN_URL : PLUGIN_URLD . 'p=' . $upf_page ) . '#gofile', $message);
+		upf_redirect($upf_page < 2 ? PLUGIN_URL : PLUGIN_URLD . 'p=' . $upf_page, $error);
+
+	// все ок для не ajax
 	} else if (! $upf_ajax) {
-		redirect(($upf_page < 2 ? PLUGIN_URL : PLUGIN_URLD . 'p=' . $upf_page ) . '#gofile', $lang_up['Redirect delete']);
+		redirect($upf_page < 2 ? PLUGIN_URL : PLUGIN_URLD . 'p=' . $upf_page, $lang_up['Redirect delete']);
 	}
 }
 
@@ -362,7 +457,7 @@ $num_pages = 1;
 if (is_dir(PUN_ROOT . $upf_dir)) {
 	$tmp = get_base_url(true) . '/' . $upf_dir;
 	foreach (new DirectoryIterator(PUN_ROOT . $upf_dir) as $file) {
-		if (!$file->isFile() || true === $upf_class->inBlackList($file->getExtension())) {
+		if (! $file->isFile() || true === $upf_class->inBlackList($file->getExtension())) {
 			continue;
 		}
 
@@ -385,7 +480,7 @@ if (is_dir(PUN_ROOT . $upf_dir)) {
 	}
 	if (! empty($files)) {
 		$num_pages = ceil($count / PLUGIN_NF);
-		if ($upf_page > $num_pages && !$upf_ajax) {
+		if ($upf_page > $num_pages && ! $upf_ajax) {
 			header('Location: ' . str_replace('&amp;', '&', PLUGIN_URLD) . 'p=' . $num_pages . '#gofile');
 			exit;
 		}
@@ -423,8 +518,6 @@ require PUN_ROOT . 'header.php';
 $tpl_main = str_replace('id="punhelp"', 'id="punupfiles"', $tpl_main);
 
 $tabindex = 1;
-
-$upf_token = function_exists('csrf_hash') ? csrf_hash() : pun_csrf_token();
 
 if ($fpr) {
 	// Load the profile.php language file
@@ -648,7 +741,20 @@ FluxBB.upfile = (function (doc, win) {
 					}
 				} else {
 					if ('error' in data) {
-						alert(data.error);
+						if ('confirm' in data) {
+							if (confirm(data.error + ' <?= addslashes($lang_up['delete file']) ?>')) {
+								var req2 = cr_req();
+								if (req2) {
+									req2.onreadystatechange = function() {
+										orsc(req2, ref);
+									};
+									req2.open('GET', ref.href + '&ajx=1&confirm=' + data.confirm, true);
+									req2.send();
+								}
+							}
+						} else {
+							alert(data.error);
+						}
 					} else {
 						error = false;
 					}

@@ -13,7 +13,7 @@ if (! defined('PUN')) {
 
 // Tell admin_loader.php that this is indeed a plugin and that it is loaded
 define('PUN_PLUGIN_LOADED', 1);
-define('PLUGIN_VERSION', '3.0.3');
+define('PLUGIN_VERSION', '3.1.0');
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin=' . $plugin));
 define('PLUGIN_EXTS', 'webp,jpg,jpeg,png,gif,mp3,zip,rar,7z');
 define('PLUGIN_NF', 25);
@@ -94,12 +94,18 @@ if (isset($pun_config['o_uploadile_other'])) {
 	$db->drop_field('users', 'upload') or error('Unable to drop upload field', __FILE__, __LINE__, $db->error());
 }
 
+// обновление до версии 3.1.0
+if (isset($pun_config['o_upload_config']) && !isset($pun_user['g_up_perm_del'])) {
+	$db->add_field('groups', 'g_up_perm_del', 'TINYINT(1)', false, 0) or error(sprintf($lang_up['Error DB'], 'groups'), __FILE__, __LINE__, $db->error());
+}
+
 // Установка плагина/мода
 if (isset($_POST['installation'])) {
 	$db->add_field('users', 'upload_size', 'INT(10)', false, 0) or error(sprintf($lang_up['Error DB'], 'users'), __FILE__, __LINE__, $db->error());
 	$db->add_field('groups', 'g_up_ext', 'VARCHAR(255)', false, PLUGIN_EXTS) or error(sprintf($lang_up['Error DB'], 'groups'), __FILE__, __LINE__, $db->error());
 	$db->add_field('groups', 'g_up_max', 'INT(10)', false, 0) or error(sprintf($lang_up['Error DB'], 'groups'), __FILE__, __LINE__, $db->error());
 	$db->add_field('groups', 'g_up_limit', 'INT(10)', false, 0) or error(sprintf($lang_up['Error DB'], 'groups'), __FILE__, __LINE__, $db->error());
+	$db->add_field('groups', 'g_up_perm_del', 'TINYINT(1)', false, 0) or error(sprintf($lang_up['Error DB'], 'groups'), __FILE__, __LINE__, $db->error());
 
 	$adm_max = (int) (min($upf_class->size(ini_get('upload_max_filesize')), $upf_class->size(ini_get('post_max_size'))) / 10485.76);
 	$db->query('UPDATE ' . $db->prefix . 'groups SET g_up_ext=\'' . $db->escape(PLUGIN_EXTS) . '\', g_up_limit=1024, g_up_max=' . $adm_max . ' WHERE g_id=' . PUN_ADMIN) or error('Unable to update user group list', __FILE__, __LINE__, $db->error());
@@ -121,6 +127,7 @@ else if (isset($_POST['update'])) {
 	$g_up_ext = isset($_POST['g_up_ext']) ? array_map('pun_trim', $_POST['g_up_ext']) : [];
 	$g_up_max = isset($_POST['g_up_max']) ? array_map('floatval', $_POST['g_up_max']) : [];
 	$g_up_limit = isset($_POST['g_up_limit']) ? array_map('intval', $_POST['g_up_limit']) : [];
+	$g_up_perm_del = isset($_POST['g_up_perm_del']) ? array_map('intval', $_POST['g_up_perm_del']) : [];
 
 	if (empty($g_up_limit)) {
 		$g_up_limit[PUN_ADMIN] = 1024;
@@ -149,7 +156,9 @@ else if (isset($_POST['update'])) {
 		$g_lim = (! isset($g_up_limit[$cur_group['g_id']]) || $g_up_limit[$cur_group['g_id']] < 0) ? 0 : $g_up_limit[$cur_group['g_id']];
 		$g_lim = min($g_lim, 20971520);
 
-		$db->query('UPDATE ' . $db->prefix . 'groups SET g_up_ext=\'' . $db->escape($g_ext) . '\', g_up_limit=' . $g_lim . ', g_up_max=' . $g_max . ' WHERE g_id=' . $cur_group['g_id']) or error('Unable to update user group list', __FILE__, __LINE__, $db->error());
+		$g_perm_del = (! isset($g_up_perm_del[$cur_group['g_id']]) || $g_up_perm_del[$cur_group['g_id']] < 1) ? 0 : 1;
+
+		$db->query('UPDATE ' . $db->prefix . 'groups SET g_up_ext=\'' . $db->escape($g_ext) . '\', g_up_limit=' . $g_lim . ', g_up_max=' . $g_max . ', g_up_perm_del=' . $g_perm_del . ' WHERE g_id=' . $cur_group['g_id']) or error('Unable to update user group list', __FILE__, __LINE__, $db->error());
 	}
 
 	if (isset($_POST['thumb'])) {
@@ -193,6 +202,7 @@ else if (isset($_POST['restore'])) {
 	$db->drop_field('groups', 'g_up_ext') or error('Unable to drop g_up_ext field', __FILE__, __LINE__, $db->error());
 	$db->drop_field('groups', 'g_up_max') or error('Unable to drop g_up_max field', __FILE__, __LINE__, $db->error());
 	$db->drop_field('groups', 'g_up_limit') or error('Unable to drop g_up_limit field', __FILE__, __LINE__, $db->error());
+	$db->drop_field('groups', 'g_up_perm_del') or error('Unable to drop g_up_perm_del field', __FILE__, __LINE__, $db->error());
 
 	$db->query('DELETE FROM ' . $db->prefix . 'config WHERE conf_name=\'o_upload_config\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
 
@@ -354,14 +364,15 @@ if (defined('PLUGIN_OFF')) {
 					</fieldset>
 				</div>
 
-				<div class="inform">
+				<div class="inform upf-gr-set">
 					<fieldset>
 						<legend><?= $lang_up['groups'] ?></legend>
 						<div class="infldset">
 							<div class="inbox">
-								<p>1* - <?= $lang_up['laws'] ?></p>
-								<p>2* - <?= $lang_up['maxsize_member'] ?></p>
-								<p>3* - <?= $lang_up['limit_member'] ?></p>
+								<p>1* - <?= $lang_up['laws'] ?><br />
+								2* - <?= $lang_up['maxsize_member'] ?><br />
+								3* - <?= $lang_up['limit_member'] ?><br />
+								4* - <?= $lang_up['allow_delete'] ?></p>
 							</div>
 							<table class="aligntop">
 							<thead>
@@ -370,6 +381,7 @@ if (defined('PLUGIN_OFF')) {
 									<th class="tc2" scope="col">1*</th>
 									<th class="tcr" scope="col">2*</th>
 									<th class="tcr" scope="col">3*</th>
+									<th class="tc3" scope="col">4*</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -380,7 +392,7 @@ if (defined('PLUGIN_OFF')) {
 	while ($cur_group = $db->fetch_assoc($result)) {
 		if ($cur_group['g_id'] != PUN_GUEST) {
 			if (! isset($cur_group['g_up_ext'])) {
-				$cur_group['g_up_max'] = $cur_group['g_up_limit'] = 0;
+				$cur_group['g_up_max'] = $cur_group['g_up_limit'] = $cur_group['g_up_perm_del'] = 0;
 				$cur_group['g_up_ext'] = '';
 			}
 
@@ -390,6 +402,7 @@ if (defined('PLUGIN_OFF')) {
 									<td class="tc2"><input type="text" name="g_up_ext[<?= $cur_group['g_id'] ?>]" value="<?= pun_htmlspecialchars($cur_group['g_up_ext']) ?>" tabindex="<?= $tabindex++ ?>" size="40" maxlength="255" /></td>
 									<td class="tcr"><input type="text" name="g_up_max[<?= $cur_group['g_id'] ?>]" value="<?= $cur_group['g_up_max'] / 100 ?>" tabindex="<?= $tabindex++ ?>" size="10" maxlength="10" /></td>
 									<td class="tcr"><input type="text" name="g_up_limit[<?= $cur_group['g_id'] ?>]" value="<?= $cur_group['g_up_limit'] ?>" tabindex="<?= $tabindex++ ?>" size="10" maxlength="10" /></td>
+									<td class="tc3"><input type="checkbox" name="g_up_perm_del[<?= $cur_group['g_id'] ?>]" value="1" tabindex="<?= $tabindex++ ?>"<?= ($cur_group['g_up_perm_del'] == 1 ? ' checked="checked"' : '')?>></td>
 								</tr>
 <?php
 
