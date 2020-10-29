@@ -1,4 +1,4 @@
-// upload.js v3.0.2 Copyright (C) 2020 Visman (mio.visman@yandex.ru)
+// upload.js v3.1.0 Copyright (C) 2020 Visman (mio.visman@yandex.ru)
 if (typeof FluxBB === 'undefined' || !FluxBB) {var FluxBB = {};}
 
 FluxBB.upload = (function (doc, win) {

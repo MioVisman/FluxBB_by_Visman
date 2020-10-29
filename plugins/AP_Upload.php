@@ -553,7 +553,6 @@ if (empty($files)) {
 		$au[$u['id']] = $u['username'];
 		$ag[$u['id']] = $u['group_id'];
 	}
-	$db->free_result($result);
 	// данные по группам
 	$extsup = [];
 	$result = $db->query('SELECT * FROM ' . $db->prefix . 'groups') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
@@ -564,7 +563,6 @@ if (empty($files)) {
 			$extsup[$g['g_id']] = [];
 		}
 	}
-	$db->free_result($result);
 
 	$upf_img_exts = ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'webp'];
 	foreach ($files as $file) {
