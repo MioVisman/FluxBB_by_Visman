@@ -2310,7 +2310,7 @@ function forum_http_headers($type = 'text/html')
 	$now = gmdate('D, d M Y H:i:s') . ' GMT';
 
 	header('Content-type: ' . $type . '; charset=utf-8');
-	header('Cache-Control: no-cache, no-store, must-revalidate');
+	header('Cache-Control: private, no-cache');
 	header('Date: ' . $now);
 	header('Last-Modified: ' . $now);
 	header('Expires: ' . $now);
