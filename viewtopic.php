@@ -711,7 +711,7 @@ else
 <?php
 // START Merge mod
 	$checkboxes = array();
-	if ($is_admmod)
+	if ($is_admmod && isset($pun_config['o_merge_timeout']) && $pun_config['o_merge_timeout']>0)
 		$checkboxes[] = '<label><input type="checkbox" name="merge" value="1" tabindex="'.($cur_index++).'" checked="checked" />'.$lang_post['Merge posts'].'<br /></label>';
 
 	if (!empty($checkboxes))
