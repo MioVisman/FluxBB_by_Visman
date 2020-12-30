@@ -746,7 +746,7 @@ if (!$pun_user['is_guest'])
 		$checkboxes[] = '<label><input type="checkbox" name="subscribe" value="1" tabindex="'.($cur_index++).'"'.($subscr_checked ? ' checked="checked"' : '').' />'.($is_subscribed ? $lang_post['Stay subscribed'] : $lang_post['Subscribe']).'<br /></label>';
 	}
 
-	if ($is_admmod && !$fid) // Merge mod - Visman
+	if ($is_admmod && !$fid && isset($pun_config['o_merge_timeout']) && $pun_config['o_merge_timeout'] > 0) // Merge mod - Visman
 		$checkboxes[] = '<label><input type="checkbox" name="merge" value="1" tabindex="'.($cur_index++).'"'.((isset($_POST['merge']) || (!isset($_POST['merge']) && !isset($_POST['form_sent']))) ? ' checked="checked"' : '').' />'.$lang_post['Merge posts'].'<br /></label>';
 	if ($is_admmod && $fid) // StickFP - Visman
 		$checkboxes[] = '<label><input type="checkbox" name="stickfp" value="1" tabindex="'.($cur_index++).'"'.((isset($_POST['stickfp'])) ? ' checked="checked"' : '').' />'.$lang_post['Stick first post'].'<br /></label>';
