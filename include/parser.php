@@ -704,7 +704,7 @@ function handle_url_tag($url, $link = '', $bbcode = false)
 			$link = stripslashes($link);
 
 		$page_js['f']['media'] = 'js/media.min.js'; // Visman - media.js
-		return '<a href="'.$full_url.'" rel="nofollow">'.$link.'</a>';
+		return '<a href="'.$full_url.'" rel="ugc">'.$link.'</a>';
 	}
 }
 
@@ -719,7 +719,7 @@ function handle_img_tag($url, $is_signature = false, $alt = null, $float = '')
 	if (is_null($alt))
 		$alt = basename($url);
 
-	$img_tag = '<a href="'.$url.'" rel="nofollow">&lt;'.$lang_common['Image link'].' - '.$alt.'&gt;</a>';
+	$img_tag = '<a href="'.$url.'" rel="ugc">&lt;'.$lang_common['Image link'].' - '.$alt.'&gt;</a>';
 
 	if ($is_signature && $pun_user['show_img_sig'] != '0')
 		$img_tag = '<img class="sigimage" src="'.$url.'" alt="'.$alt.'" />';
