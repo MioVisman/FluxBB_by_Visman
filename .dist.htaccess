@@ -1,0 +1,27 @@
+AddDefaultCharset UTF-8
+
+<IfModule mod_autoindex.c>
+    Options -Indexes
+</IfModule>
+
+<ifModule mod_headers.c>
+  # Set security headers if missing.
+  # (This Content-Security-Policy makes almost no sense (there are many inline scripts and styles on the forum, frames from media sites are allowed).)
+  Header always set Content-Security-Policy "object-src 'none';frame-ancestors 'none';base-uri 'none';form-action 'self'" "expr=-z %{resp:Content-Security-Policy}"
+  Header always set Feature-Policy "accelerometer 'none';ambient-light-sensor 'none';autoplay 'none';battery 'none';camera 'none';document-domain 'self';fullscreen 'self';geolocation 'none';gyroscope 'none';magnetometer 'none';microphone 'none';midi 'none';payment 'none';picture-in-picture 'none';sync-xhr 'self';usb 'none'" "expr=-z %{resp:Feature-Policy}"
+  Header always set Referrer-Policy "origin-when-cross-origin" "expr=-z %{resp:Referrer-Policy}"
+#  Header set Strict-Transport-Security "max-age=31536000" "expr=-z %{resp:Strict-Transport-Security}"
+  Header always set X-Content-Type-Options "nosniff" "expr=-z %{resp:X-Content-Type-Options}"
+  Header always set X-Frame-Options "DENY" "expr=-z %{resp:X-Frame-Options}"
+  Header always set X-XSS-Protection "1; mode=block" "expr=-z %{resp:X-XSS-Protection}"
+
+  # Remove headers containing php information
+  Header unset X-Powered-By
+  Header always unset X-Powered-By
+</ifModule>
+
+# Hiding information about the system (Probably a ban on changes through .htaccess)
+#ServerTokens ProductOnly
+#ServerSignature Off
+
+# More info: https://github.com/h5bp/server-configs-apache/blob/master/dist/.htaccess
