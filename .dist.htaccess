@@ -14,14 +14,15 @@ AddDefaultCharset UTF-8
   Header always set X-Content-Type-Options "nosniff" "expr=-z %{resp:X-Content-Type-Options}"
   Header always set X-Frame-Options "DENY" "expr=-z %{resp:X-Frame-Options}"
   Header always set X-XSS-Protection "1; mode=block" "expr=-z %{resp:X-XSS-Protection}"
+  Header always set Permissions-Policy "accelerometer=(),ambient-light-sensor=(),autoplay=(),battery=(),camera=(),document-domain=(self),fullscreen=(self),geolocation=(),gyroscope=(),magnetometer=(),microphone=(),midi=(),payment=(),picture-in-picture=(),sync-xhr=(self),usb=()" "expr=-z %{resp:Permissions-Policy}"
 
   # Remove headers containing php information
   Header unset X-Powered-By
   Header always unset X-Powered-By
 </ifModule>
 
-# Hiding information about the system (Probably a ban on changes through .htaccess)
-#ServerTokens ProductOnly
-#ServerSignature Off
+# Hiding information about the system
+ServerSignature Off
+#ServerTokens ProductOnly # Use only in server config, do not use in .htaccess
 
 # More info: https://github.com/h5bp/server-configs-apache/blob/master/dist/.htaccess
