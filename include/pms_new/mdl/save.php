@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2018 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2021 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2008-2010 FluxBB
  * based on code by Rickard Andersson copyright (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -66,16 +66,13 @@ else
 ?>
 <script type="text/javascript">
 /* <![CDATA[ */
-function ChekUncheck()
+function ChekUncheck(el)
 {
-	var i;
-	for (i = 0; i < document.posttopic.elements.length; i++)
+	var i, form = el.form;
+	for (i = 0; i < form.elements.length; i++)
 	{
-		if(document.posttopic.chek.checked==true)
-		{
-			document.posttopic.elements[i].checked = true;
-		} else {
-			document.posttopic.elements[i].checked = false;
+		if (form.elements[i].type && form.elements[i].type === "checkbox") {
+			form.elements[i].checked = el.checked;
 		}
 	}
 }
@@ -101,7 +98,7 @@ function ChekUncheck()
 							<th class="tc2" scope="col"><?php echo $lang_pmsn['tTo'] ?></th>
 							<th class="tc3" scope="col"><?php echo $lang_pmsn['tReplies'] ?></th>
 							<th class="tc2" scope="col"><?php echo $lang_pmsn['tLast'] ?></th>
-							<th class="tce" scope="col"><input name="chek" type="checkbox" value="" onclick="ChekUncheck()" /></th>
+							<th class="tce" scope="col"><input name="chek" type="checkbox" value="" onclick="ChekUncheck(this)" /></th>
 						</tr>
 					</thead>
 					<tbody>

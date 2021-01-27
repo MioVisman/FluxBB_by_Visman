@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2018 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2021 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2008-2010 FluxBB
  * based on code by Rickard Andersson copyright (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -103,11 +103,12 @@ if (!isset($_POST['req_addressee']) && (isset($_GET['uid']) || $sid))
 			message($lang_pmsn['More maximum']);
 	}
 
-	$result = $db->query('SELECT bl_id FROM '.$db->prefix.'pms_new_block WHERE (bl_id='.$pun_user['id'].' AND bl_user_id='.$cur_user['id'].') OR (bl_id='.$cur_user['id'].' AND bl_user_id='.$pun_user['id'].')') or error('Unable to fetch pms_new_block', __FILE__, __LINE__, $db->error());
-	$tmp_bl = $db->fetch_assoc($result);
-	if ($tmp_bl['bl_id'] == $pun_user['id'])
+	$result = $db->query('SELECT bl_id FROM '.$db->prefix.'pms_new_block WHERE (bl_id='.$pun_user['id'].' AND bl_user_id='.$cur_user['id'].') OR (bl_id='.$cur_user['id'].' AND bl_user_id='.$pun_user['id'].') LIMIT 1') or error('Unable to fetch pms_new_block', __FILE__, __LINE__, $db->error());
+	$tmp_bl = $db->result($result);
+
+	if ($tmp_bl == $pun_user['id'])
 		message($lang_pmsn['You block addr']);
-	else if ($pun_user['g_id'] != PUN_ADMIN && $tmp_bl['bl_id'] == $cur_user['id'])
+	else if ($pun_user['g_id'] != PUN_ADMIN && $tmp_bl == $cur_user['id'])
 		message($lang_pmsn['Addr block you']);
 
 	$addressee = $cur_user['username'];
@@ -194,16 +195,13 @@ if (isset($_POST['csrf_hash']))
 
 	if (empty($errors) && !empty($cur_addressee['id']))
 	{
-		$result = $db->query('SELECT bl_id FROM '.$db->prefix.'pms_new_block WHERE (bl_id='.$pun_user['id'].' AND bl_user_id='.$cur_addressee['id'].') OR (bl_id='.$cur_addressee['id'].' AND bl_user_id='.$pun_user['id'].')') or error('Unable to fetch pms_new_block', __FILE__, __LINE__, $db->error());
-		$tmp_bl = $db->fetch_assoc($result);
+		$result = $db->query('SELECT bl_id FROM '.$db->prefix.'pms_new_block WHERE (bl_id='.$pun_user['id'].' AND bl_user_id='.$cur_addressee['id'].') OR (bl_id='.$cur_addressee['id'].' AND bl_user_id='.$pun_user['id'].') LIMIT 1') or error('Unable to fetch pms_new_block', __FILE__, __LINE__, $db->error());
+		$tmp_bl = $db->result($result);
 
-		if (isset($tmp_bl['bl_id']))
-		{
-			if ($tmp_bl['bl_id'] == $pun_user['id'])
-				$errors[] = $lang_pmsn['You block addr'];
-			else if ($pun_user['g_id'] != PUN_ADMIN && $tmp_bl['bl_id'] == $cur_addressee['id'])
-				$errors[] = $lang_pmsn['Addr block you'];
-		}
+		if ($tmp_bl == $pun_user['id'])
+			$errors[] = $lang_pmsn['You block addr'];
+		else if ($pun_user['g_id'] != PUN_ADMIN && $tmp_bl == $cur_addressee['id'])
+			$errors[] = $lang_pmsn['Addr block you'];
 	}
 
 	$message = pun_linebreaks(pun_trim($_POST['req_message']));

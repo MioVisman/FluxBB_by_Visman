@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2018 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2021 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2008-2010 FluxBB
  * based on code by Rickard Andersson copyright (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -45,16 +45,13 @@ $pmsn_f_savedel = '<input type="submit" name="delete" value="'.$lang_pmsn['Delet
 ?>
 <script type="text/javascript">
 /* <![CDATA[ */
-function ChekUncheck()
+function ChekUncheck(el)
 {
-	var i;
-	for (i = 0; i < document.usernumb.elements.length; i++)
+	var i, form = el.form;
+	for (i = 0; i < form.elements.length; i++)
 	{
-		if(document.usernumb.chek.checked==true)
-		{
-			document.usernumb.elements[i].checked = true;
-		} else {
-			document.usernumb.elements[i].checked = false;
+		if (form.elements[i].type && form.elements[i].type === "checkbox") {
+			form.elements[i].checked = el.checked;
 		}
 	}
 }
@@ -77,7 +74,7 @@ function ChekUncheck()
 							<th class="tcl" scope="col"><?php echo $lang_common['Username'] ?></th>
 							<th class="tc2" scope="col"><?php echo $lang_common['Title'] ?></th>
 							<th class="tcr" scope="col"><?php echo $lang_common['Registered'] ?></th>
-							<th class="tce" scope="col"><input name="chek" type="checkbox" value="" onclick="ChekUncheck()" /></th>
+							<th class="tce" scope="col"><input name="chek" type="checkbox" value="" onclick="ChekUncheck(this)" /></th>
 						</tr>
 					</thead>
 					<tbody>
