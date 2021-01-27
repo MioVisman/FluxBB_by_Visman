@@ -487,9 +487,9 @@ function poll_save($tid)
 		}
 		$db->query('UPDATE '.$db->prefix.'topics SET poll_type=1, poll_time='.$top[1].', poll_term='.$term.', poll_kol='.$top[3].' WHERE id='.$tid) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
 
-		foreach($cur_ch as $k => $ch)
+		foreach ($cur_ch as $k => $ch)
 		{
-			foreach($ch as $i => $c)
+			foreach ($ch as $i => $c)
 			{
 				$db->query('DELETE FROM '.$db->prefix.'poll WHERE tid='.$tid.' AND question='.$k.' AND field='.$i) or error('Unable to delete poll choice', __FILE__, __LINE__, $db->error());
 			}
@@ -633,7 +633,7 @@ function poll_display($tid, $uid, $info, $top, $prev = false)
 	}
 	$amax = array();
 
-	foreach($questions as $k => $question)
+	foreach ($questions as $k => $question)
 	{
 		$choice = $choices[$k];
 		$vote = $votes[$k];
@@ -756,13 +756,13 @@ function poll_vote($tid, $uid)
 	if ($csrf2 != $csrf) poll_mess('Err2');
 
 	$kol = 0;
-	foreach($votes as $k => $vote)
+	foreach ($votes as $k => $vote)
 	{
 		if ($k < 1 || $k > $ques) poll_mess('Err3');
 		$kol++;
 		$kk = 0;
 		$vote = array_map('intval', $vote);
-		foreach($vote as $i => $vo)
+		foreach ($vote as $i => $vo)
 		{
 			if ($type[$k] < 2 && $i != 0) poll_mess('Err2');
 			if ($type[$k] < 2 && $vo < 1) poll_mess('Err2');
@@ -778,10 +778,10 @@ function poll_vote($tid, $uid)
 	if ($kol != $ques) poll_mess('Err6');
 
 	$arr = array();
-	foreach($votes as $k => $vote)
+	foreach ($votes as $k => $vote)
 	{
 		$vote = array_map('intval', $vote);
-		foreach($vote as $i => $vo)
+		foreach ($vote as $i => $vo)
 		{
 			if ($type[$k] < 2) $j = $vo;
 			else $j = $i;

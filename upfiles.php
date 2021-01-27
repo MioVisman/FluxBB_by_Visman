@@ -593,7 +593,7 @@ if (empty($files)) {
 <?php
 
 	$upf_img_exts = ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'webp'];
-	foreach($files as $file) {
+	foreach ($files as $file) {
 		$fb = in_array($file['ext'], $upf_img_exts) ? '" class="fancy_zoom" rel="vi001' : '';
 
 ?>

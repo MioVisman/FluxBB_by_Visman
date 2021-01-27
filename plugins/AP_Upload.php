@@ -443,7 +443,7 @@ if (is_dir(PUN_ROOT . $upf_mem)) {
 	$af = [];
 	$ad = scandir(PUN_ROOT . $upf_mem);
 
-	foreach($ad as $f) {
+	foreach ($ad as $f) {
 		if ('.' === $f[0] || ! is_dir(PUN_ROOT . $upf_mem . $f)) {
 			continue;
 		}
