@@ -1554,7 +1554,7 @@ else
 			'group_id'			=> array(
 				'datatype'		=> 'INT(10) UNSIGNED',
 				'allow_null'	=> false,
-				'default'		=> '3'
+				'default'		=> '0'
 			),
 			'username'			=> array(
 				'datatype'		=> 'VARCHAR(200)',
