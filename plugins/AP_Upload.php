@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2011-2020 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2011-2021 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2007 BN (bnmaster@la-bnbox.info)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
@@ -13,7 +13,7 @@ if (! defined('PUN')) {
 
 // Tell admin_loader.php that this is indeed a plugin and that it is loaded
 define('PUN_PLUGIN_LOADED', 1);
-define('PLUGIN_VERSION', '3.1.0');
+define('PLUGIN_VERSION', '3.1.1');
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin=' . $plugin));
 define('PLUGIN_EXTS', 'webp,jpg,jpeg,png,gif,mp3,zip,rar,7z');
 define('PLUGIN_NF', 25);
@@ -300,6 +300,9 @@ $upf_token = function_exists('csrf_hash') ? csrf_hash('AP_Upload.php') : pun_csr
 						<input type="hidden" name="csrf_hash" value="<?= $upf_token ?>" />
 <?php
 
+$disbl = (true === $upf_class->isResize()) ? '' : '" disabled="disabled';
+$stthumb = ('' === $disbl && 1 == $aconf['thumb']) ? '' : '" disabled="disabled';
+
 if (defined('PLUGIN_OFF')) {
 
 ?>
@@ -311,8 +314,6 @@ if (defined('PLUGIN_OFF')) {
 <?php
 
 } else {
-	$disbl = (true === $upf_class->isResize()) ? '' : '" disabled="disabled';
-	$stthumb = ('' === $disbl && 1 == $aconf['thumb']) ? '' : '" disabled="disabled';
 
 ?>
 						<input type="submit" name="update" value="<?= $lang_up['Update'] ?>" />&#160;<?= $lang_up['Update info'] ?><br />
