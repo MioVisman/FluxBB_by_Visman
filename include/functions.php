@@ -1115,33 +1115,21 @@ function forum_number_format($number, $decimals = 0)
 function random_key($len, $readable = false, $hash = false)
 {
 	$key = '';
-	if (function_exists('random_bytes')) {
-		$key .= (string) random_bytes($len);
-	}
-	if (strlen($key) < $len && function_exists('mcrypt_create_iv')) {
-		$key .= (string) mcrypt_create_iv($len, MCRYPT_DEV_URANDOM);
-	}
-	if (strlen($key) < $len && function_exists('openssl_random_pseudo_bytes')) {
-		$tmp = (string) openssl_random_pseudo_bytes($len, $strong);
-		if ($strong) {
-			$key .= $tmp;
-		}
-	}
-	if (strlen($key) < $len) {
-		exit('Could not gather sufficient random data');
-	}
 
 	if ($hash)
-		return substr(bin2hex($key), 0, $len);
+		$key = substr(bin2hex(random_bytes(intdiv($len, 2) + 1)), 0, $len);
 	else if ($readable)
 	{
 		$chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+		$max = strlen($chars) - 1;
 
-		$result = '';
 		for ($i = 0; $i < $len; ++$i)
-		$result .= substr($chars, (ord($key[$i]) % strlen($chars)), 1);
-
-		return $result;
+			$key .= $chars[random_int(0, $max)];
+	}
+	else
+	{
+		for ($i = 0; $i < $len; ++$i)
+			$key .= chr(random_int(33, 126));
 	}
 
 	return $key;
