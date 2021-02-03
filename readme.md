@@ -15,7 +15,7 @@ of the other forums have whilst not sacrificing essential functionality or usabi
 
 ## Recommendations
 
-* Make use of a PHP accelerator such as Zend OPcache or XCache
+* Make use of a PHP accelerator such as Zend OPcache
 * Make sure PHP has the zlib module installed to allow FluxBB to gzip output
 
 ## Links
@@ -24,4 +24,4 @@ of the other forums have whilst not sacrificing essential functionality or usabi
 * Documentation: https://fluxbb.org/docs/v1.5
 * Community: https://fluxbb.org/forums/
 * Resources: https://fluxbb.org/resources/
-* Development: https://github.com/fluxbb/fluxbb
+* Development: https://github.com/MioVisman/FluxBB_by_Visman
