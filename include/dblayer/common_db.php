@@ -28,10 +28,6 @@ switch ($db_type)
 		require_once PUN_ROOT.'include/dblayer/pgsql.php';
 		break;
 
-	case 'sqlite':
-		require_once PUN_ROOT.'include/dblayer/sqlite.php';
-		break;
-
 	case 'sqlite3':
 		require_once PUN_ROOT.'include/dblayer/sqlite3.php';
 		break;

@@ -241,8 +241,6 @@ if (!isset($_POST['form_sent']) || !empty($alerts))
 		$db_extensions[] = array('mysqli', 'MySQL Improved');
 		$mysql_innodb = true;
 	}
-	if (function_exists('sqlite_open'))
-		$db_extensions[] = array('sqlite', 'SQLite');
 	if (class_exists('SQLite3'))
 		$db_extensions[] = array('sqlite3', 'SQLite3');
 	if (function_exists('pg_connect'))
@@ -527,10 +525,6 @@ else
 			require PUN_ROOT.'include/dblayer/pgsql.php';
 			break;
 
-		case 'sqlite':
-			require PUN_ROOT.'include/dblayer/sqlite.php';
-			break;
-
 		case 'sqlite3':
 			require PUN_ROOT.'include/dblayer/sqlite3.php';
 			break;
@@ -564,7 +558,6 @@ else
 				error(sprintf($lang_install['You are running error'], 'PostgreSQL', $pgsql_info['version'], FORUM_VERSION, MIN_PGSQL_VERSION));
 			break;
 
-		case 'sqlite':
 		case 'sqlite3':
 			if (strtolower($db_prefix) == 'sqlite_')
 				error($lang_install['Prefix reserved']);
@@ -1231,7 +1224,7 @@ else
 		)
 	);
 
-	if ($db_type == 'sqlite' || $db_type == 'sqlite3')
+	if ($db_type == 'sqlite3')
 	{
 		$schema['PRIMARY KEY'] = array('id');
 		$schema['UNIQUE KEYS'] = array('word_idx'	=> array('word'));
