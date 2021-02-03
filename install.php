@@ -237,8 +237,8 @@ if (!isset($_POST['form_sent']) || !empty($alerts))
 	$mysql_innodb = false;
 	if (function_exists('mysqli_connect'))
 	{
-		$db_extensions[] = array('mysqli', 'MySQL Improved');
 		$db_extensions[] = array('mysqli_innodb', 'MySQL Improved (InnoDB)');
+		$db_extensions[] = array('mysqli', 'MySQL Improved');
 		$mysql_innodb = true;
 	}
 	if (function_exists('sqlite_open'))
