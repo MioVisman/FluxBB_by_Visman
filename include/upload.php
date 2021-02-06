@@ -298,6 +298,12 @@ class upfClass
         } else {
             $type = 0;
         }
+        if (13 === $type)
+        {
+            $code = \file_get_contents($path, false, null, 0, 3);
+            if ('FWS' === $code || 'CWS' === $code)
+                $type = 4;
+        }
         return isset($this->imageType[$type]) ? $this->imageType[$type] : false;
     }
 
