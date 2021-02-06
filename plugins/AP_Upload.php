@@ -13,7 +13,7 @@ if (! defined('PUN')) {
 
 // Tell admin_loader.php that this is indeed a plugin and that it is loaded
 define('PUN_PLUGIN_LOADED', 1);
-define('PLUGIN_VERSION', '3.1.1');
+define('PLUGIN_VERSION', '3.1.2');
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin=' . $plugin));
 define('PLUGIN_EXTS', 'webp,jpg,jpeg,png,gif,mp3,zip,rar,7z');
 define('PLUGIN_NF', 25);
