@@ -36,9 +36,6 @@ if (isset($_SERVER['HTTP_X_MOZ']) && $_SERVER['HTTP_X_MOZ'] == 'prefetch')
 {
 	header('HTTP/1.1 403 Prefetching Forbidden');
 
-	// Send no-cache headers
-	forum_http_headers();
-
 	exit;
 }
 
