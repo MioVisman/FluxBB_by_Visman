@@ -875,10 +875,10 @@ function do_bbcode($text, $is_signature = false)
 	}
 
 	$pattern_callback[] = '%\[after=(\d+)\]%';
-	$pattern_callback[] = '%\[url\]([^\[\r\n\t]*?)\[/url\]%';
-	$pattern_callback[] = '%\[url=([^\[\r\n\t]+?)\](.*?)\[/url\]%';
-	$pattern[] = '%\[email\]([^\[\r\n\t]+?@[^\[\r\n\t]+?)\[/email\]%';
-	$pattern[] = '%\[email=([^\[\r\n\t]+?@[^\[\r\n\t]+?)\](.*?)\[/email\]%';
+	$pattern_callback[] = '%\[url\]([^\[\x00-\x1f]*?)\[/url\]%';
+	$pattern_callback[] = '%\[url=([^\[\x00-\x1f]+?)\]([^\x00\x01]*?)\[/url\]%';
+	$pattern[] = '%\[email\]([^\[\x00-\x1f]+?@[^\[\x00-\x1f]+?)\[/email\]%';
+	$pattern[] = '%\[email=([^\[\x00-\x1f]+?@[^\[\x00-\x1f]+?)\]([^\x00\x01]*?)\[/email\]%';
 	$pattern_callback[] = '%\[topic\]([1-9]\d*)\[/topic\]%';
 	$pattern_callback[] = '%\[topic=([1-9]\d*)\](.*?)\[/topic\]%';
 	$pattern_callback[] = '%\[post\]([1-9]\d*)\[/post\]%';
