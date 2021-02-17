@@ -88,8 +88,8 @@ function preparse_bbcode($text, &$errors, $is_signature = false)
 	}
 
 	// If the message contains a code tag we have to split it up (text within [code][/code] shouldn't be touched)
-#	if (strpos($text, '[code]') !== false && strpos($text, '[/code]') !== false)
-#		list($inside, $text) = extract_blocks($text, '[code]', '[/code]');
+	if (strpos($text, '[code]') !== false && strpos($text, '[/code]') !== false)
+		list($inside, $text) = extract_blocks($text, '[code]', '[/code]');
 
 	// Tidy up lists
 	$temp = preg_replace_callback($re_list, function($matches) { return preparse_list_tag($matches[2], $matches[1]); }, $text);
@@ -102,13 +102,6 @@ function preparse_bbcode($text, &$errors, $is_signature = false)
 
 	if ($pun_config['o_make_links'] == '1')
 		$text = do_clickable($text);
-
-	$temp_text = false;
-	if (empty($errors))
-		$temp_text = preparse_tags($text, $errors, $is_signature);
-
-	if ($temp_text !== false)
-		$text = $temp_text;
 
 	// If we split up the message before we have to concatenate it together again (code tags)
 	if (isset($inside))
@@ -126,6 +119,13 @@ function preparse_bbcode($text, &$errors, $is_signature = false)
 
 		unset($inside);
 	}
+
+	$temp_text = false;
+	if (empty($errors))
+		$temp_text = preparse_tags($text, $errors, $is_signature);
+
+	if ($temp_text !== false)
+		$text = $temp_text;
 
 	// Remove empty tags
 	while (($new_text = strip_empty_bbcode($text)) !== false)
