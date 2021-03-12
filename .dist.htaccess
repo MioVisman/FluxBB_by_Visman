@@ -12,7 +12,7 @@ AddDefaultCharset UTF-8
   #
   Header always set Content-Security-Policy "object-src 'none';frame-ancestors 'none';base-uri 'none';form-action 'self'" "expr=-z %{resp:Content-Security-Policy}"
   Header always set Feature-Policy "accelerometer 'none';ambient-light-sensor 'none';autoplay 'none';battery 'none';camera 'none';document-domain 'self';fullscreen 'self';geolocation 'none';gyroscope 'none';magnetometer 'none';microphone 'none';midi 'none';payment 'none';picture-in-picture 'none';sync-xhr 'self';usb 'none'" "expr=-z %{resp:Feature-Policy}"
-  Header always set Referrer-Policy "origin-when-cross-origin" "expr=-z %{resp:Referrer-Policy}"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin" "expr=-z %{resp:Referrer-Policy}"
 # for https only mode
 #  Header set Strict-Transport-Security "max-age=31536000" "expr=-z %{resp:Strict-Transport-Security}"
   Header always set X-Content-Type-Options "nosniff" "expr=-z %{resp:X-Content-Type-Options}"
