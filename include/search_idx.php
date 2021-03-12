@@ -270,7 +270,7 @@ function update_search_index($mode, $post_id, $message, $subject = null)
 			$cur_words[$match_in][$row[1]] = $row[0];
 		}
 
-		$db->free_result($result);
+#		$db->free_result($result);
 
 		$words['add']['post'] = array_diff($words_message, array_keys($cur_words['post']));
 		$words['add']['subject'] = array_diff($words_subject, array_keys($cur_words['subject']));
@@ -299,7 +299,7 @@ function update_search_index($mode, $post_id, $message, $subject = null)
 		while ($row = $db->fetch_row($result))
 			$word_ids[$row[1]] = $row[0];
 
-		$db->free_result($result);
+#		$db->free_result($result);
 
 		$new_words = array_diff($unique_words, array_keys($word_ids));
 		unset($unique_words);

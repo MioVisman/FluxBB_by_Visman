@@ -254,7 +254,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 							}
 
 							++$word_count;
-							$db->free_result($result);
+#							$db->free_result($result);
 
 							break;
 						}
@@ -300,7 +300,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 					while ($temp = $db->fetch_assoc($result))
 						$author_results[$temp['post_id']] = $temp['topic_id'];
 
-					$db->free_result($result);
+#					$db->free_result($result);
 				}
 			}
 
@@ -417,7 +417,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 			if (!$num_hits)
 				message($no_hits_mess);
 
-			$db->free_result($result);
+#			$db->free_result($result);
 		}
 		// MOD warnings - Visman
 		else if ($action == 'show_user_warn')
@@ -438,7 +438,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 
 			$search_type = array('warn', $user_id);
 
-			$db->free_result($result);
+#			$db->free_result($result);
 		}
 		else
 			message($lang_common['Bad request'], false, '404 Not Found');
