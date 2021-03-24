@@ -2249,7 +2249,7 @@ function forum_password_verify($password, $user)
 {
 	global $salt1;
 
-	if (empty($user['password']) || ! is_string($user['password']) || ! is_string($password))
+	if (empty($user['password']) || ! is_string($user['password']) || ! is_string($password) || pun_strlen($password) > 100000)
 	{
 		return false;
 	}

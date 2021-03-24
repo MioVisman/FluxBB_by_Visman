@@ -93,7 +93,7 @@ if ($action == 'change_pass')
 		$new_password1 = pun_trim($_POST['req_new_password1']);
 		$new_password2 = pun_trim($_POST['req_new_password2']);
 
-		if ($new_password1 != $new_password2)
+		if ($new_password1 != $new_password2 || pun_strlen($new_password1) > 100000)
 			message($lang_prof_reg['Pass not match']);
 		if (pun_strlen($new_password1) < 9)
 			message($lang_prof_reg['Pass too short']);

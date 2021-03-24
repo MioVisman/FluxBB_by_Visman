@@ -200,7 +200,7 @@ else
 
 	if (pun_strlen($password1) < 9)
 		$alerts[] = $lang_install['Short password'];
-	else if ($password1 != $password2)
+	else if ($password1 != $password2 || pun_strlen($password1) > 100000)
 		$alerts[] = $lang_install['Passwords not match'];
 
 	// Validate email

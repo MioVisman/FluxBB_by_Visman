@@ -98,7 +98,7 @@ if (isset($_POST['form_sent']))
 
 	if (pun_strlen($password1) < 9)
 		$errors[] = $lang_prof_reg['Pass too short'];
-	else if ($password1 != $password2)
+	else if ($password1 != $password2 || pun_strlen($password1) > 100000)
 		$errors[] = $lang_prof_reg['Pass not match'];
 
 	// Validate email
