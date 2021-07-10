@@ -772,8 +772,8 @@ function handle_time_tag($after_time)
 
 	$content = array();
 	$merged_sec = $after_time % 60;
-	$merged_min = ($after_time/60) % 60;
-	$merged_hours = ($after_time/3600) % 24;
+	$merged_min = intval($after_time/60) % 60;
+	$merged_hours = intval($after_time/3600) % 24;
 	$merged_days = intval($after_time/86400);
 	if ($merged_days > 0)
 		$content[] = $merged_days.$lang_common['After time d'];
