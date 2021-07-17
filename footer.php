@@ -21,9 +21,7 @@ ob_start();
 require PUN_ROOT.'include/uploadf.php'; // Upload mod - Visman
 
 // START быстрое переключение языка - Visman
-if (!isset($languages) || !is_array($languages))
-	$languages = forum_list_langs();
-
+$languages = forum_list_langs();
 $lang_temp = '';
 if (count($languages) > 1)
 {
