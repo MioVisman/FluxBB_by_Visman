@@ -1833,20 +1833,25 @@ function forum_list_styles()
 //
 function forum_list_langs()
 {
-	$languages = array();
+	static $languages;
 
-	$d = dir(PUN_ROOT.'lang');
-	while (($entry = $d->read()) !== false)
+	if (!isset($languages))
 	{
-		if ($entry[0] == '.')
-			continue;
+		$languages = array();
 
-		if (is_dir(PUN_ROOT.'lang/'.$entry) && file_exists(PUN_ROOT.'lang/'.$entry.'/common.php'))
-			$languages[] = $entry;
+		$d = dir(PUN_ROOT.'lang');
+		while (($entry = $d->read()) !== false)
+		{
+			if ($entry[0] == '.')
+				continue;
+
+			if (is_dir(PUN_ROOT.'lang/'.$entry) && file_exists(PUN_ROOT.'lang/'.$entry.'/common.php'))
+				$languages[] = $entry;
+		}
+		$d->close();
+
+		natcasesort($languages);
 	}
-	$d->close();
-
-	natcasesort($languages);
 
 	return $languages;
 }
