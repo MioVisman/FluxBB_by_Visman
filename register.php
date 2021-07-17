@@ -416,7 +416,7 @@ if (!empty($errors))
 
 			foreach ($languages as $temp)
 			{
-				if ($pun_config['o_default_lang'] == $temp)
+				if ($pun_user['language'] == $temp) // $pun_config['o_default_lang'] // быстрое переключение языка - Visman
 					echo "\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.$temp.'</option>'."\n";
 				else
 					echo "\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.$temp.'</option>'."\n";
