@@ -122,7 +122,7 @@ function utf8_substr($str, $offset, $length = false)
 */
 function utf8_strtolower($str)
 {
-	return null === $str ? '' : mb_strtolower($str);
+	return is_string($str) ? mb_strtolower($str) : '';
 }
 
 /**
@@ -140,5 +140,5 @@ function utf8_strtolower($str)
 */
 function utf8_strtoupper($str)
 {
-	return null === $str ? '' : mb_strtoupper($str);
+	return is_string($str) ? mb_strtoupper($str) : '';
 }

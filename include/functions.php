@@ -1297,7 +1297,7 @@ function get_remote_address()
 //
 function pun_htmlspecialchars($str)
 {
-	return null === $str ? '' : htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
+	return is_string($str) ? htmlspecialchars($str, ENT_QUOTES, 'UTF-8') : '';
 }
 
 
@@ -1306,7 +1306,7 @@ function pun_htmlspecialchars($str)
 //
 function pun_htmlspecialchars_decode($str)
 {
-	return null === $str ? '' : htmlspecialchars_decode($str, ENT_QUOTES);
+	return is_string($str) ? htmlspecialchars_decode($str, ENT_QUOTES) : '';
 }
 
 
