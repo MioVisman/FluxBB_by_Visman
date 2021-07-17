@@ -270,7 +270,7 @@ function get_admin_ids()
 //
 function set_default_user()
 {
-	global $db, $db_type, $pun_user, $pun_config, $cookie_name, $languages;
+	global $db, $db_type, $pun_user, $pun_config, $cookie_name;
 
 	$remote_addr = get_remote_address();
 
@@ -322,14 +322,11 @@ function set_default_user()
 	$pun_user['is_bot'] = (strpos($remote_addr, '[Bot]') !== false); // MOD определения ботов - Visman
 	$pun_user['ident'] = $remote_addr; // Кто в этой теме - Visman
 
-	if (!empty($_COOKIE[$cookie_name.'_glang'])) // быстрое переключение языка - Visman
-	{
-		$language = preg_replace('%[^\w]%', '', $_COOKIE[$cookie_name.'_glang']);
-		$languages = forum_list_langs();
-		if (in_array($language, $languages))
-			$pun_user['language'] = $language;
-	}
-
+	// быстрое переключение языка - Visman
+	$language = $_COOKIE[$cookie_name.'_glang'] ?? null;
+	if (is_string($language) && in_array($language, forum_list_langs(), true))
+		$pun_user['language'] = $language;
+	// быстрое переключение языка - Visman
 }
 
 
