@@ -731,6 +731,18 @@ function handle_img_tag($url, $is_signature = false, $alt = null, $float = '')
 	return $img_tag;
 }
 
+//
+// Email bbcode replace to <a href="mailto:... - Visman
+//
+function handle_email_tag($mail, $body = null)
+{
+	if (null === $body)
+		$body = $mail;
+
+	$mail = implode('@', array_map('rawurlencode', array_map('rawurldecode', explode('@', $mail))));
+
+	return "<a href=\"mailto:{$mail}\">{$body}</a>";
+}
 
 //
 // Parse the contents of [list] bbcode
@@ -879,8 +891,8 @@ function do_bbcode($text, $is_signature = false)
 	$pattern_callback[] = '%\[after=(\d+)\]%';
 	$pattern_callback[] = '%\[url\]([^\[\x00-\x1f]*?)\[/url\]%';
 	$pattern_callback[] = '%\[url=([^\[\x00-\x1f]+?)\]([^\x00\x01]*?)\[/url\]%';
-	$pattern[] = '%\[email\]([^\[\x00-\x1f]+?@[^\[\x00-\x1f]+?)\[/email\]%';
-	$pattern[] = '%\[email=([^\[\x00-\x1f]+?@[^\[\x00-\x1f]+?)\]([^\x00\x01]*?)\[/email\]%';
+	$pattern_callback[] = '%\[email\]([^\[\x00-\x1f]+?@[^\[\x00-\x1f]+?)\[/email\]%';
+	$pattern_callback[] = '%\[email=([^\[\x00-\x1f]+?@[^\[\x00-\x1f]+?)\]([^\x00\x01]*?)\[/email\]%';
 	$pattern_callback[] = '%\[topic\]([1-9]\d*)\[/topic\]%';
 	$pattern_callback[] = '%\[topic=([1-9]\d*)\](.*?)\[/topic\]%';
 	$pattern_callback[] = '%\[post\]([1-9]\d*)\[/post\]%';
@@ -893,8 +905,8 @@ function do_bbcode($text, $is_signature = false)
 	$replace_callback[] = function($matches) { return handle_time_tag($matches[1]); };
 	$replace_callback[] = function($matches) { return handle_url_tag($matches[1]); };
 	$replace_callback[] = function($matches) { return handle_url_tag($matches[1], $matches[2]); };
-	$replace[] = '<a href="mailto:$1">$1</a>';
-	$replace[] = '<a href="mailto:$1">$2</a>';
+	$replace_callback[] = function($matches) { return handle_email_tag($matches[1]); };
+	$replace_callback[] = function($matches) { return handle_email_tag($matches[1], $matches[2]); };
 	$replace_callback[] = function($matches) { return handle_url_tag(get_base_url(true).'/viewtopic.php?id='.$matches[1]); };
 	$replace_callback[] = function($matches) { return handle_url_tag(get_base_url(true).'/viewtopic.php?id='.$matches[1], $matches[2]); };
 	$replace_callback[] = function($matches) { return handle_url_tag(get_base_url(true).'/viewtopic.php?pid='.$matches[1].'#p'.$matches[1]); };
