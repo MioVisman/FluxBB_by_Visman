@@ -988,8 +988,7 @@ function parse_message($text, $hide_smilies)
 	if ($pun_config['p_message_bbcode'] == '1' && strpos($text, '[') !== false && strpos($text, ']') !== false)
 		$text = do_bbcode($text);
 
-	if ($pun_config['o_smilies'] == '1' && $pun_user['show_smilies'] == '1' && $hide_smilies == '0')
-		$text = do_smilies($text);
+	$text = sva_do_for_only_text($text, $pun_config['o_smilies'] == '1' && $pun_user['show_smilies'] == '1' && $hide_smilies == '0');
 
 	// Deal with newlines, tabs and multiple spaces
 	$pattern = array("\n", "\t", '  ', '  ');
@@ -1068,8 +1067,7 @@ function parse_signature($text)
 	if ($pun_config['p_sig_bbcode'] == '1' && strpos($text, '[') !== false && strpos($text, ']') !== false)
 		$text = do_bbcode($text, true);
 
-	if ($pun_config['o_smilies_sig'] == '1' && $pun_user['show_smilies'] == '1')
-		$text = do_smilies($text);
+	$text = sva_do_for_only_text($text, $pun_config['o_smilies_sig'] == '1' && $pun_user['show_smilies'] == '1');
 
 
 	// Deal with newlines, tabs and multiple spaces
@@ -1078,4 +1076,31 @@ function parse_signature($text)
 	$text = str_replace($pattern, $replace, $text);
 
 	return clean_paragraphs($text);
+}
+
+
+//
+// Обработчик для текста, но не для кода html тегов - Visman
+//
+function sva_do_for_only_text($text, $do_smilies)
+{
+	if (! $do_smilies || '' === $text)
+		return $text;
+
+	if (false === strpos($text, '<'))
+		$arr = [$text];
+	else
+		$arr = preg_split('%(<[^>]*+>)%', $text, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+
+	foreach ($arr as &$cur)
+	{
+		if ('<' === $cur[0])
+			continue;
+
+		if ($do_smilies)
+			$cur = do_smilies($cur);
+	}
+	unset($cur);
+
+	return implode('', $arr);
 }
