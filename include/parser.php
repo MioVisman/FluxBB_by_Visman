@@ -919,7 +919,7 @@ function do_bbcode($text, $is_signature = false)
 	// This thing takes a while! :)
 	$text = preg_replace($pattern, $replace, $text);
 	$count = count($pattern_callback);
-	for($i = 0 ; $i < $count ; $i++)
+	for($i = 0; $i < $count; $i++)
 	{
 		$text = preg_replace_callback($pattern_callback[$i], $replace_callback[$i], $text);
 	}
