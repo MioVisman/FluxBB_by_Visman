@@ -1089,7 +1089,7 @@ function parse_signature($text)
 //
 function sva_do_for_only_text($text, $do_smilies)
 {
-	if (! $do_smilies || '' === $text)
+	if ('' === $text)
 		return $text;
 
 	if (false === strpos($text, '<'))
@@ -1102,10 +1102,25 @@ function sva_do_for_only_text($text, $do_smilies)
 		if ('<' === $cur[0])
 			continue;
 
+		$cur = preg_replace_callback('%:[\w\-+]++:%', 'sva_do_emoji', $cur);
+
 		if ($do_smilies)
 			$cur = do_smilies($cur);
 	}
 	unset($cur);
 
 	return implode('', $arr);
+}
+
+//
+// Обработчик emoji
+//
+function sva_do_emoji($matches)
+{
+	static $emoji;
+
+	if (! isset($emoji))
+		$emoji = include PUN_ROOT.'include/emoji.inc.php';
+
+	return $emoji[substr($matches[0], 1, -1)] ?? $matches[0];
 }
