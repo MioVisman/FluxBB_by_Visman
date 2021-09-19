@@ -955,16 +955,21 @@ function forum_array_key($arr, $key)
 function do_smilies($text)
 {
 	global $smilies;
+	static $base;
 
-	$text = ' '.$text.' ';
+	if (! isset($base))
+		$base = pun_htmlspecialchars(get_base_url(true));
 
 	foreach ($smilies as $smiley_text => $smiley_img)
 	{
 		if (strpos($text, $smiley_text) !== false)
-			$text = preg_replace('%(?<=[>\s])'.preg_quote($smiley_text, '%').'(?=[^\p{L}\p{N}])%um', '<img src="'.pun_htmlspecialchars(get_base_url(true).'/img/smilies/'.$smiley_img).'" alt="'.substr($smiley_img, 0, strrpos($smiley_img, '.')).'" />', $text);
+		{
+			$smiley_img = pun_htmlspecialchars($smiley_img);
+			$text = preg_replace('%(?<=\s|^)'.preg_quote($smiley_text, '%').'(?![\p{L}\p{N}])%u', '<img src="'.$base.'/img/smilies/'.$smiley_img.'" alt="'.substr($smiley_img, 0, strrpos($smiley_img, '.')).'" />', $text);
+		}
 	}
 
-	return substr($text, 1, -1);
+	return $text;
 }
 
 
