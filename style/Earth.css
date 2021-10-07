@@ -1725,7 +1725,7 @@ html, body, .pun {
 }
 .pun .postwarn cite {
 	font-weight: bold;
-}	
+}
 
 .pun .postwarn:before {
 	content: "M";
@@ -2115,4 +2115,45 @@ span.shlight {
 .pun #quickpost legend, #punpost legend, #punedit legend {
 	width: 18em;
 }
+}
+
+/* emoji-autocomplete
+----------------------------------------------------------------*/
+#sva-autocomplete-div {
+	position: absolute;
+	border: 1px solid #bbc6b2;
+	display: block;
+	background-color: #eaede2;
+	z-index: 9999;
+}
+
+#sva-autocomplete-ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	max-height: 300px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	white-space: nowrap;
+}
+
+#sva-autocomplete-ul > li {
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+	padding: 2px 4px;
+}
+
+#sva-autocomplete-ul > li > i {
+	font-weight: normal;
+	font-style: normal;
+}
+
+#sva-autocomplete-ul > li > span {
+	font-size: 2em;
+	margin-right: 4px;
+}
+
+#sva-autocomplete-ul .sva-autocomplete-ali {
+	background-color: #ccd7c1;
 }

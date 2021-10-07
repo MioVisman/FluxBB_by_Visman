@@ -1221,7 +1221,7 @@ body {
 }
 .pun .postwarn cite {
 	font-weight: bold;
-}	
+}
 
 .pun .postwarn:before {
 	content: "M";
@@ -1330,4 +1330,45 @@ span.shlight {
 ----------------------------------------------------------------*/
 #brdmenu-button {
 	display: none;
+}
+
+/* emoji-autocomplete
+----------------------------------------------------------------*/
+#sva-autocomplete-div {
+	position: absolute;
+	border: 1px solid #0066b9;
+	display: block;
+	background-color: #fff;
+	z-index: 9999;
+}
+
+#sva-autocomplete-ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	max-height: 300px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	white-space: nowrap;
+}
+
+#sva-autocomplete-ul > li {
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+	padding: 2px 4px;
+}
+
+#sva-autocomplete-ul > li > i {
+	font-weight: normal;
+	font-style: normal;
+}
+
+#sva-autocomplete-ul > li > span {
+	font-size: 2em;
+	margin-right: 4px;
+}
+
+#sva-autocomplete-ul .sva-autocomplete-ali {
+	background-color: #dedfdf;
 }
