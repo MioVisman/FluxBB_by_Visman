@@ -55,3 +55,6 @@ FluxBB.post.init();';
 $cur_index += 19;
 
 unset($smil_g, $smil_i, $smil_t);
+
+$page_js['f']['textarea-caret-position'] = 'js/textarea-caret-position/index.js';
+$page_js['f']['emoji-autocomplete'] = 'js/emoji-autocomplete.js';
