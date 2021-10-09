@@ -1,5 +1,5 @@
 //
-// emoji-autocomplete.js v0.2.0 Copyright (C) 2021 Visman (https://github.com/MioVisman, mio.visman@yandex.ru)
+// emoji-autocomplete.js v0.3.0 Copyright (C) 2021 Visman (https://github.com/MioVisman, mio.visman@yandex.ru)
 //
 
 document.addEventListener("DOMContentLoaded", (function (doc, win) {
@@ -15,7 +15,8 @@ document.addEventListener("DOMContentLoaded", (function (doc, win) {
         posFirst,
         posEnd,
         list = [],
-        activeItemNum;
+        activeItemNum,
+        offset = 4;
 
     function blur(event) {
       posFirst = -1;
@@ -185,20 +186,21 @@ document.addEventListener("DOMContentLoaded", (function (doc, win) {
           left = box.left + win.pageXOffset - area.scrollLeft,
           caret = getCaretCoordinates(area, curPos);
 
-      autoDiv.style.top = (4 + top + caret.top + caret.height) + "px";
-      autoDiv.style.left = (4 + left + caret.left) + "px";
+      autoDiv.style.top = (offset + top + caret.top + caret.height) + "px";
+      autoDiv.style.left = (offset + left + caret.left) + "px";
       autoDiv.style.display = "block";
-
       autoDivVisible = true;
+      box = autoDiv.getBoundingClientRect();
 
-      var offsetX = autoDiv.offsetLeft + autoDiv.offsetWidth - doc.documentElement.clientWidth - win.pageXOffset;
+      var offsetX = box.right - doc.documentElement.clientWidth,
+          halfH =  doc.documentElement.clientHeight / 2,
+          divH = box.bottom - box.top;
 
       if (offsetX > 0) {
-        if (autoDiv.offsetLeft > offsetX) {
-          autoDiv.style.left = (autoDiv.offsetLeft - offsetX) + "px";
-        } else {
-          autoDiv.style.left = "0";
-        }
+        autoDiv.style.left = (autoDiv.offsetLeft - (box.left > offsetX ? offsetX : box.left)) + "px";
+      }
+      if (box.top > halfH && box.top > divH && box.bottom > 2 * halfH) {
+        autoDiv.style.top = (autoDiv.offsetTop - 2 * offset - divH - caret.height) + "px";
       }
 
       setActiveItem();
