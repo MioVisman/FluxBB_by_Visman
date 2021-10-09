@@ -1,5 +1,5 @@
 //
-// emoji-autocomplete.js v0.1.0 Copyright (C) 2021 Visman (https://github.com/MioVisman, mio.visman@yandex.ru)
+// emoji-autocomplete.js v0.2.0 Copyright (C) 2021 Visman (https://github.com/MioVisman, mio.visman@yandex.ru)
 //
 
 document.addEventListener("DOMContentLoaded", (function (doc, win) {
@@ -18,14 +18,12 @@ document.addEventListener("DOMContentLoaded", (function (doc, win) {
         activeItemNum;
 
     function blur(event) {
-      console.log('blur');
       posFirst = -1;
       esc = false;
       hideList();
     }
 
     function click(event) {
-      console.log('click');
       handler(event.target);
     }
 
@@ -88,6 +86,7 @@ document.addEventListener("DOMContentLoaded", (function (doc, win) {
       }
 
       autoDivVisible = false;
+      activeItemNum = 0;
     }
 
     function mouseLi(event) {
@@ -145,11 +144,6 @@ document.addEventListener("DOMContentLoaded", (function (doc, win) {
     function showList(target, curPos, items) {
       area = target;
 
-      var box = target.getBoundingClientRect(),
-          top = box.top + win.pageYOffset - target.scrollTop,
-          left = box.left + win.pageXOffset - target.scrollLeft,
-          caret = getCaretCoordinates(target, curPos); // , {debug:true}
-
       if (typeof autoDiv === "undefined") {
         autoDiv = document.createElement('div');
         autoDiv.id = "sva-autocomplete-div";
@@ -161,14 +155,8 @@ document.addEventListener("DOMContentLoaded", (function (doc, win) {
         doc.body.appendChild(autoDiv);
       }
 
-      autoDiv.style.top = top + caret.top + caret.height + "px";
-      autoDiv.style.left = left + caret.left + "px";
-      autoDiv.style.display = "block";
-
-      autoDivVisible = true;
-
       if (items.length === list.length && JSON.stringify(items) === JSON.stringify(list)) {
-        return setActiveItem();
+        return showListEnd(curPos);
       }
 
       list = items;
@@ -186,6 +174,31 @@ document.addEventListener("DOMContentLoaded", (function (doc, win) {
         li.appendChild(ch1);
         li.appendChild(ch2);
         autoUl.appendChild(li);
+      }
+
+      showListEnd(curPos);
+    }
+
+    function showListEnd(curPos) {
+      var box = area.getBoundingClientRect(),
+          top = box.top + win.pageYOffset - area.scrollTop,
+          left = box.left + win.pageXOffset - area.scrollLeft,
+          caret = getCaretCoordinates(area, curPos);
+
+      autoDiv.style.top = (4 + top + caret.top + caret.height) + "px";
+      autoDiv.style.left = (4 + left + caret.left) + "px";
+      autoDiv.style.display = "block";
+
+      autoDivVisible = true;
+
+      var offsetX = autoDiv.offsetLeft + autoDiv.offsetWidth - doc.documentElement.clientWidth - win.pageXOffset;
+
+      if (offsetX > 0) {
+        if (autoDiv.offsetLeft > offsetX) {
+          autoDiv.style.left = (autoDiv.offsetLeft - offsetX) + "px";
+        } else {
+          autoDiv.style.left = "0";
+        }
       }
 
       setActiveItem();
