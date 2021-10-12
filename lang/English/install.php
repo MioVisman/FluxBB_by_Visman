@@ -51,7 +51,7 @@ $lang_install = array(
 'Info 5'						=>	'Your MySQL username and password (ignore of SQLite).',
 'Database password'				=>	'Database password',
 'Database enter prefix'			=>	'Enter database table prefix',
-'Info 6'						=>	'If you want to run multiple FluxBB installations in a single database, change this. <b>For MySQL 8, the table prefix must be specified without fail.</b>',
+'Info 6'						=>	'If you want to run multiple FluxBB installations in a single database, change this. <b style="color:red;">For MySQL 8+, the table prefix must be specified without fail.</b>',
 'Table prefix'					=>	'Table prefix',
 'Administration setup'			=>	'Administration setup',
 'Info 7'						=>	'Create the very first account on your board.',
