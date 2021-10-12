@@ -2116,3 +2116,44 @@ span.shlight {
 	width: 18em;
 }
 }
+
+/* emoji-autocomplete
+----------------------------------------------------------------*/
+#sva-autocomplete-div {
+	position: absolute;
+	border: 1px solid #e7e2d9;
+	display: block;
+	background-color: #eeedea;
+	z-index: 9999;
+}
+
+#sva-autocomplete-ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	max-height: 300px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	white-space: nowrap;
+}
+
+#sva-autocomplete-ul > li {
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+	padding: 2px 4px;
+}
+
+#sva-autocomplete-ul > li > i {
+	font-weight: normal;
+	font-style: normal;
+}
+
+#sva-autocomplete-ul > li > span {
+	font-size: 2em;
+	margin-right: 4px;
+}
+
+#sva-autocomplete-ul .sva-autocomplete-ali {
+	background-color: #cec7b9;
+}
