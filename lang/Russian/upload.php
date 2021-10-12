@@ -93,4 +93,6 @@ $lang_up = array(
 
 'Deleting file' => 'Удаление файла',
 '%s file' => 'Файл <b>%s</b>',
+'Bad file extensions' => 'Плохие расширения файлов: %s.<br />',
+
 );

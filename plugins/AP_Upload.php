@@ -13,7 +13,7 @@ if (! defined('PUN')) {
 
 // Tell admin_loader.php that this is indeed a plugin and that it is loaded
 define('PUN_PLUGIN_LOADED', 1);
-define('PLUGIN_VERSION', '3.1.2');
+define('PLUGIN_VERSION', '3.2.0');
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin=' . $plugin));
 define('PLUGIN_EXTS', 'webp,jpg,jpeg,png,gif,mp3,zip,rar,7z');
 define('PLUGIN_NF', 25);
@@ -134,6 +134,7 @@ else if (isset($_POST['update'])) {
 		$g_up_max[PUN_ADMIN] = 1024;
 	}
 
+	$ext_bad = [];
 	$result = $db->query('SELECT g_id FROM ' . $db->prefix . 'groups ORDER BY g_id') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
 	while ($cur_group = $db->fetch_assoc($result)) {
 		if ($cur_group['g_id'] == PUN_GUEST) {
@@ -141,12 +142,19 @@ else if (isset($_POST['update'])) {
 		}
 
 		if (isset($g_up_ext[$cur_group['g_id']])) {
-			$g_ext = str_replace(' ', '', $g_up_ext[$cur_group['g_id']]);
-			$g_ext = preg_replace('%[,]+%u', ',', $g_ext);
-			if (preg_match('%^[0-9a-zA-Z][0-9a-zA-Z,]*[0-9a-zA-Z]$%uD', $g_ext) == 0) {
-				$g_ext = PLUGIN_EXTS;
+			$arr = explode(',', strtolower($g_up_ext[$cur_group['g_id']]));
+			$arr = array_map('pun_trim', $arr);
+			$g_ext = [];
+
+			foreach ($arr as $ext)
+			{
+				if (preg_match('%^[0-9a-z]+$%', $ext) && ! $upf_class->inBlackList($ext))
+					$g_ext[] = $ext;
+				else
+					$ext_bad[] = $ext;
 			}
-			$g_ext = strtolower($g_ext);
+
+			$g_ext = implode(',', $g_ext);
 		} else {
 			$g_ext = PLUGIN_EXTS;
 		}
@@ -193,7 +201,17 @@ else if (isset($_POST['update'])) {
 
 	generate_config_cache();
 
-	redirect(PLUGIN_URL, $lang_up['Redirect']);
+	$mess = $lang_up['Redirect'];
+
+	if (! empty($ext_bad))
+	{
+		$mess = sprintf($lang_up['Bad file extensions'], pun_htmlspecialchars(implode(', ', $ext_bad))).$mess;
+
+		if ($pun_config['o_redirect_delay'] < 5)
+			$pun_config['o_redirect_delay'] = 5;
+	}
+
+	redirect(PLUGIN_URL, $mess);
 }
 
 // Удаление мода

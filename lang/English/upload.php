@@ -93,4 +93,6 @@ $lang_up = array(
 
 'Deleting file' => 'Deleting file',
 '%s file' => '<b>%s</b> file',
+'Bad file extensions' => 'Bad file extensions: %s.<br />',
+
 );
