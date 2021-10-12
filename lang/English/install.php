@@ -55,7 +55,7 @@ $lang_install = array(
 'Table prefix'					=>	'Table prefix',
 'Administration setup'			=>	'Administration setup',
 'Info 7'						=>	'Create the very first account on your board.',
-'Info 8'						=>	'Your username should be between 2 and 25 characters long. Your password must be at least 9 characters long. Salt must be at least 10 characters long. Remember that passwords and salt are case-sensitive.',
+'Info 8'						=>	'Your username should be between 2 and 25 characters long. Your password must be at least 9 characters long. Remember that passwords are case-sensitive.',
 'Password'						=>	'Password',
 'Confirm password'				=>	'Confirm password',
 'Board setup'					=>	'Board setup',
@@ -96,6 +96,5 @@ $lang_install = array(
 'Info 18'						=>	'Once you have uploaded config.php, FluxBB will be fully installed! At that point, you may <a href="index.php">go to the forum index</a>.',
 'Download config.php file'		=>	'Download config.php file',
 'FluxBB fully installed'		=>	'FluxBB has been fully installed! You may now <a href="index.php">go to the forum index</a>.',
-'Salt for password' => 'Salt for passwords',
 
 );

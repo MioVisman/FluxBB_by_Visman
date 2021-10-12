@@ -89,7 +89,7 @@ if (!function_exists('version_compare') || version_compare(PHP_VERSION, MIN_PHP_
 //
 function generate_config_file()
 {
-	global $db_type, $db_host, $db_name, $db_username, $db_password, $db_prefix, $cookie_name, $cookie_seed, $salt1;
+	global $db_type, $db_host, $db_name, $db_username, $db_password, $db_prefix, $cookie_name, $cookie_seed;
 
 	return '<?php'."\n\n"
 		.'$db_type = \''.$db_type."';\n"
@@ -104,8 +104,8 @@ function generate_config_file()
 		.'$cookie_path = '."'/';\n"
 		.'$cookie_secure = 0;'."\n"
 		.'$cookie_samesite = \'Lax\'; // Strict, Lax or None'."\n"
-		.'$cookie_seed = \''.random_key(16, false, true)."';\n\n"
-		.'$salt1 = \''.$salt1."';\n\n"
+		.'$cookie_seed = \''.addslashes(random_key(16, false, true))."';\n\n"
+		.'$salt1 = \''.addslashes(random_pass(15))."';\n\n"
 		."define('PUN', 1);\n\n"
 		."define('PUN_DEBUG', 1);\n"
 		."//define('PUN_SHOW_QUERIES', 1);\n"
@@ -134,7 +134,6 @@ if (isset($_POST['generate_config']))
 	$db_prefix = $_POST['db_prefix'];
 	$cookie_name = $_POST['cookie_name'];
 	$cookie_seed = $_POST['cookie_seed'];
-	$salt1 = $_POST['req_salt']; // cоль для паролей - Visman
 
 	echo generate_config_file();
 	exit;
@@ -151,7 +150,7 @@ if (!isset($_POST['form_sent']))
 	if (substr($base_url, -1) == '/')
 		$base_url = substr($base_url, 0, -1);
 
-	$db_type = $db_name = $db_username = $db_prefix = $username = $email = $salt1 = '';
+	$db_type = $db_name = $db_username = $db_prefix = $username = $email = '';
 	$db_host = 'localhost';
 	$title = $lang_install['My FluxBB Forum'];
 	$description = '<p><span>'.$lang_install['Description'].'</span></p>';
@@ -175,7 +174,6 @@ else
 	$base_url = pun_trim($_POST['req_base_url']);
 	$default_lang = pun_trim($_POST['req_default_lang']);
 	$default_style = pun_trim($_POST['req_default_style']);
-	$salt1 = pun_trim($_POST['req_salt']); // cоль для паролей - Visman
 	$alerts = array();
 
 	// Make sure base_url doesn't end with a slash
@@ -195,8 +193,6 @@ else
 		$alerts[] = $lang_install['Username 5'];
 	else if (preg_match('%(?:\[/?(?:b|u|i|h|colou?r|quote|code|img|url|email|list)\]|\[(?:code|quote|list)=)%i', $username))
 		$alerts[] = $lang_install['Username 6'];
-	else if (pun_strlen($salt1) < 10)
-		$alerts[] = 'Salt must be at least 10 characters long.';
 
 	if (pun_strlen($password1) < 9)
 		$alerts[] = $lang_install['Short password'];
@@ -435,7 +431,6 @@ foreach ($alerts as $cur_alert)
 						<label class="required"><strong><?php echo $lang_install['Administrator username'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input type="text" name="req_username" value="<?php echo pun_htmlspecialchars($username) ?>" size="25" maxlength="25" /><br /></label>
 						<label class="conl required"><strong><?php echo $lang_install['Password'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input id="req_password1" type="password" name="req_password1" size="16" /><br /></label>
 						<label class="conl required"><strong><?php echo $lang_install['Confirm password'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input type="password" name="req_password2" size="16" /><br /></label>
-						<label class="conl required"><strong><?php echo $lang_install['Salt for password'] ?></strong><br /><input type="password" name="req_salt" value="<?php echo pun_htmlspecialchars($salt1) ?>" size="20" maxlength="20" /><br /></label>
 						<div class="clearer"></div>
 						<label class="required"><strong><?php echo $lang_install['Administrator email'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input id="req_email" type="text" name="req_email" value="<?php echo pun_htmlspecialchars($email) ?>" size="50" maxlength="80" /><br /></label>
 					</div>
@@ -2167,7 +2162,6 @@ if (!$written)
 				<input type="hidden" name="db_prefix" value="<?php echo pun_htmlspecialchars($db_prefix); ?>" />
 				<input type="hidden" name="cookie_name" value="<?php echo pun_htmlspecialchars($cookie_name); ?>" />
 				<input type="hidden" name="cookie_seed" value="<?php echo pun_htmlspecialchars($cookie_seed); ?>" />
-				<input type="hidden" name="req_salt" value="<?php echo pun_htmlspecialchars($salt1); ?>" />
 
 <?php if (!empty($alerts)): ?>				<div class="forminfo error-info">
 					<ul class="error-list">
