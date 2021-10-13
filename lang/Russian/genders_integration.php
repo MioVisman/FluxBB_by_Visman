@@ -5,5 +5,4 @@ $lang_genders_integration = array(
 'Male' => 'Мужской',
 'Female' => 'Женский',
 'Unknown' => 'Неизвестно',
-'Unknown_prof' => '(Неизвестно)',
 );

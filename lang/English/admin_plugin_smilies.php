@@ -41,7 +41,6 @@ $lang_smiley = array(
 'No tmp directory'		=>	'PHP was unable to save the uploaded file to a temporary location.',
 'No file'			=>	'You did not select a file for upload.',
 'Bad type'			=>	'The file you tried to upload is not of an allowed type. Allowed types are gif, jpeg and png.',
-'Bad name' => 'Bad name of file.',
 'Too wide or high'		=>	'The file you tried to upload is wider and/or higher than the maximum allowed:',
 'Too large'			=>	'The file you tried to upload is larger than the maximum allowed:',
 'pixels'			=>	'pixels',
