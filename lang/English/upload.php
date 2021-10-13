@@ -2,7 +2,7 @@
 
 $lang_up = array(
 'No upfiles'				=> 'No upload.',
-'Error'             => '<strong>Error</strong> : ',
+'Error'             => '<strong>Error</strong>: ',
 'Error DB'					=> 'Unable to insert in table %s',
 'Error DB ins-up'		=> 'Error in the DB insert/update',
 'Error space'				=> 'You exceeded your storage space. Delete files and try again.',
