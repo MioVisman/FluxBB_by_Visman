@@ -28,7 +28,7 @@ function get_useragent_names($usrag)
 	$browser_img = $browser_version = '';
 
 	// Browser detection
-	$browsers = array('Opera', 'Avant', 'Maxthon', 'Edge', 'MSIE', 'OPR', 'YaBrowser', 'Chromium', 'Vivaldi', 'Chrome', 'Arora', 'Epiphany', 'Galeon', 'iCab', 'Konqueror', 'Safari', 'Flock', 'Iceweasel', 'SeaMonkey', 'Netscape', 'K-Meleon', 'Firefox', 'Camino', 'Trident');
+	$browsers = array('Opera', 'Avant', 'Maxthon', 'Edg', 'MSIE', 'OPR', 'YaBrowser', 'Chromium', 'Vivaldi', 'Chrome', 'Arora', 'Epiphany', 'Galeon', 'iCab', 'Konqueror', 'Safari', 'Flock', 'Iceweasel', 'SeaMonkey', 'Netscape', 'K-Meleon', 'Firefox', 'Camino', 'Trident');
 
 	$browser = ua_search_for_item($browsers, $usrag);
 
@@ -49,7 +49,7 @@ function get_useragent_names($usrag)
 		$browser = 'Internet Explorer';
 	}
 
-	elseif ($browser == 'Edge')
+	elseif ($browser == 'Edg')
 		$browser = 'Microsoft Edge';
 
 	elseif ($browser == 'OPR')
