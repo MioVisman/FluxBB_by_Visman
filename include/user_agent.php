@@ -56,7 +56,7 @@ function get_useragent_names($usrag)
 		$browser = 'Opera';
 
 	// System detection
-	$systems = array('Windows', 'Linux', 'Mac', 'Android', 'Amiga', 'BeOS', 'FreeBSD', 'HP-UX', 'NetBSD', 'OS/2', 'SunOS', 'Symbian', 'Unix', 'J2ME/MIDP', 'BlackBerry', 'BB10');
+	$systems = array('Windows', 'Linux', 'iPhone', 'iPad', 'Mac', 'Android', 'Amiga', 'BeOS', 'FreeBSD', 'HP-UX', 'NetBSD', 'OS/2', 'SunOS', 'Symbian', 'Unix', 'J2ME/MIDP', 'BlackBerry', 'BB10');
 
 	$system = ua_search_for_item($systems, $usrag);
 
