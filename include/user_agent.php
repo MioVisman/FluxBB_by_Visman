@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2014-2016 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2014-2021 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2012 Daris (daris91@gmail.com)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
@@ -16,7 +16,7 @@ function ua_search_for_item($items, $usrag)
 {
 	foreach ($items as $item)
 	{
-		if (strpos($usrag, strtolower($item)) !== false)
+		if (strpos($usrag, $item) !== false)
 			return $item;
 	}
 
@@ -26,15 +26,13 @@ function ua_search_for_item($items, $usrag)
 function get_useragent_names($usrag)
 {
 	$browser_img = $browser_version = '';
-	
-	$usrag = strtolower($usrag);
-	
+
 	// Browser detection
 	$browsers = array('Opera', 'Avant', 'Maxthon', 'Edge', 'MSIE', 'OPR', 'YaBrowser', 'Chromium', 'Vivaldi', 'Chrome', 'Arora', 'Epiphany', 'Galeon', 'iCab', 'Konqueror', 'Safari', 'Flock', 'Iceweasel', 'SeaMonkey', 'Netscape', 'K-Meleon', 'Firefox', 'Camino', 'Trident');
 
 	$browser = ua_search_for_item($browsers, $usrag);
 
-	if (preg_match('#'.preg_quote(strtolower((in_array($browser, array('Safari', 'Opera')) ? 'Version' : ($browser == 'Trident' ? 'rv:' : $browser)))).'[\s/]*([\.0-9]+)#', $usrag, $matches))
+	if (preg_match('#'.preg_quote((in_array($browser, ['Safari', 'Opera']) ? 'Version' : ($browser == 'Trident' ? 'rv:' : $browser))).'[\s/]*([\.0-9]+)#', $usrag, $matches))
 	{
 		$matches = explode('.', $matches[1]);
 		$browser_version = $matches[0].(isset($matches[1]) ? '.'.$matches[1] : '');
@@ -59,9 +57,9 @@ function get_useragent_names($usrag)
 
 	// System detection
 	$systems = array('Windows', 'Linux', 'Mac', 'Android', 'Amiga', 'BeOS', 'FreeBSD', 'HP-UX', 'NetBSD', 'OS/2', 'SunOS', 'Symbian', 'Unix', 'J2ME/MIDP', 'BlackBerry', 'BB10');
-	
+
 	$system = ua_search_for_item($systems, $usrag);
-	
+
 	if ($system == 'Linux')
 	{
 		$systems = array('Android', 'CentOS', 'Debian', 'Fedora', 'Freespire', 'Gentoo', 'Katonix', 'KateOS', 'Knoppix', 'Kubuntu', 'Linspire', 'Mandriva', 'Mandrake', 'RedHat', 'Slackware', 'Slax', 'Suse', 'Xubuntu', 'Ubuntu', 'Xandros', 'Arch', 'Ark');
@@ -77,7 +75,7 @@ function get_useragent_names($usrag)
 
 	elseif ($system == 'Windows')
 	{
-		preg_match('#windows nt ([\.0-9]+)#', $usrag, $matches);
+		preg_match('#Windows NT ([\.0-9]+)#', $usrag, $matches);
 		$version = isset($matches[1]) ? $matches[1] : '';
 
 		switch ($version) {
@@ -127,9 +125,9 @@ function get_useragent_icons($usrag)
 	static $uac = array();
 
 	if ($usrag == '') return '';
-		
+
 	if (isset($uac[$usrag])) return $uac[$usrag];
-		
+
 	$agent = get_useragent_names($usrag);
 
 	$result = '<img src="'.ua_get_filename($agent['system'], 'system').'" title="'.pun_htmlspecialchars($agent['system']).'" alt="'.pun_htmlspecialchars($agent['system']).'" style="margin-right: 1px"/>';
