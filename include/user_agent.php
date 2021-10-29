@@ -30,9 +30,22 @@ function get_useragent_names($usrag)
 	// Browser detection
 	$browsers = array('Opera', 'Avant', 'Maxthon', 'Edg', 'MSIE', 'OPR', 'YaBrowser', 'Chromium', 'Vivaldi', 'Chrome', 'Arora', 'Epiphany', 'Galeon', 'iCab', 'Konqueror', 'Safari', 'Flock', 'Iceweasel', 'SeaMonkey', 'Netscape', 'K-Meleon', 'Firefox', 'Camino', 'Trident');
 
-	$browser = ua_search_for_item($browsers, $usrag);
+	$browser = $subpt = ua_search_for_item($browsers, $usrag);
 
-	if (preg_match('#'.preg_quote((in_array($browser, ['Safari', 'Opera']) ? 'Version' : ($browser == 'Trident' ? 'rv:' : $browser))).'[\s/]*([\.0-9]+)#', $usrag, $matches))
+	switch ($browser) {
+		case 'Safari':
+		case 'Opera':
+			$subpt = 'Version';
+			break;
+		case 'Trident':
+			$subpt = 'rv:';
+			break;
+		case 'Edg':
+			$subpt = 'Edg(?:e|A|iOS)?';
+			break;
+	}
+
+	if (preg_match('#'.$subpt.'[\s/]*([\.0-9]+)#', $usrag, $matches))
 	{
 		$matches = explode('.', $matches[1]);
 		$browser_version = $matches[0].(isset($matches[1]) ? '.'.$matches[1] : '');
@@ -110,11 +123,11 @@ function get_useragent_names($usrag)
 	if (empty($browser_img))
 		$browser_img = $browser;
 
-	$result = array(
-		'system'					=> $system,
-		'browser_img'			=> $browser_img,
-		'browser_name'		=> $browser.' '.$browser_version
-	);
+	$result = [
+		'system' => $system,
+		'browser_img' => $browser_img,
+		'browser_name' => $browser.' '.$browser_version
+	];
 
 	return $result;
 }
@@ -133,7 +146,7 @@ function get_useragent_icons($usrag)
 	$result = '<img src="'.ua_get_filename($agent['system'], 'system').'" title="'.pun_htmlspecialchars($agent['system']).'" alt="'.pun_htmlspecialchars($agent['system']).'" style="margin-right: 1px"/>';
 	$result .= '<img src="'.ua_get_filename($agent['browser_img'], 'browser').'" title="'.pun_htmlspecialchars($agent['browser_name']).'" alt="'.pun_htmlspecialchars($agent['browser_name']).'" style="margin-left: 1px"/>';
 
-	$desc = ($pun_user['is_admmod']) ? ' style="cursor: pointer" onclick="alert(\''.pun_htmlspecialchars(addslashes($usrag).'\n\nSystem:\t'.addslashes($agent['system']).'\nBrowser:\t'.addslashes($agent['browser_name'])).'\')"' : '';
+	$desc = $pun_user['is_admmod'] ? ' style="cursor: pointer" onclick="alert(\''.pun_htmlspecialchars(addslashes($usrag).'\n\nSystem:\t'.addslashes($agent['system']).'\nBrowser:\t'.addslashes($agent['browser_name'])).'\')"' : '';
 
 	$result = "\t\t\t\t\t\t".'<dd class="usercontacts"><span class="user-agent"'.$desc.'>'.$result.'</span></dd>'."\n";
 
