@@ -1723,7 +1723,10 @@ foreach ($errors[$id] as $cur_error)
 		if (isset($pun_config['o_parser_revision']) && $pun_config['o_parser_revision'] >= UPDATE_TO_PARSER_REVISION)
 			break;
 
-		$smilies = [];
+		if (! isset($smilies))
+			$smilies = [];
+		if (! isset($pun_user))
+			$pun_user = ['g_post_links' => 1];
 
 		require PUN_ROOT.'include/parser.php';
 
@@ -1766,12 +1769,15 @@ foreach ($errors[$id] as $cur_error)
 		if (isset($pun_config['o_parser_revision']) && $pun_config['o_parser_revision'] >= UPDATE_TO_PARSER_REVISION)
 			break;
 
-		$smilies = [];
+		if (! isset($smilies))
+			$smilies = [];
+		if (! isset($pun_user))
+			$pun_user = ['g_post_links' => 1];
 
 		require PUN_ROOT.'include/parser.php';
 
 		// Fetch users to process this cycle
-		$result = $db->query('SELECT id, signature FROM '.$db->prefix.'users WHERE id > '.$start_at.' ORDER BY id ASC LIMIT '.PER_PAGE) or error('Unable to fetch users', __FILE__, __LINE__, $db->error());
+		$result = $db->query('SELECT id, signature FROM '.$db->prefix.'users WHERE id > '.$start_at.' AND signature IS NOT NULL ORDER BY id ASC LIMIT '.PER_PAGE) or error('Unable to fetch users', __FILE__, __LINE__, $db->error());
 
 		$temp = array();
 		$end_at = 0;
