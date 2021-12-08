@@ -1723,6 +1723,8 @@ foreach ($errors[$id] as $cur_error)
 		if (isset($pun_config['o_parser_revision']) && $pun_config['o_parser_revision'] >= UPDATE_TO_PARSER_REVISION)
 			break;
 
+		$smilies = [];
+
 		require PUN_ROOT.'include/parser.php';
 
 		// Fetch posts to process this cycle
@@ -1763,6 +1765,8 @@ foreach ($errors[$id] as $cur_error)
 		// If we don't need to parse the sigs, skip this stage
 		if (isset($pun_config['o_parser_revision']) && $pun_config['o_parser_revision'] >= UPDATE_TO_PARSER_REVISION)
 			break;
+
+		$smilies = [];
 
 		require PUN_ROOT.'include/parser.php';
 
