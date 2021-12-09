@@ -445,6 +445,9 @@ $old_charset = isset($_REQUEST['req_old_charset']) ? str_replace('ISO8859', 'ISO
 $start_at = isset($_REQUEST['start_at']) ? intval($_REQUEST['start_at']) : 0;
 $query_str = '';
 
+if (0 !== preg_match('%[^\w-]%', $old_charset))
+	exit('Bad charset. Invalid character found.');
+
 // Show form
 if (empty($stage))
 {
