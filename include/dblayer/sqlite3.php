@@ -63,6 +63,8 @@ class DBLayer
 
 		if (defined('FORUM_SQLITE3_WAL_ON'))
 			$this->link_id->exec('PRAGMA journal_mode=WAL;');
+
+		$this->link_id->createFunction('CONCAT', function(...$args) {return implode('', $args);});
 	}
 
 	function start_transaction()
