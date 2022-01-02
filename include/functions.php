@@ -166,15 +166,17 @@ function authenticate_user($user, $password, $password_is_hash = false)
 	$result = $db->query('SELECT u.*, g.*, o.logged, o.idle FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'groups AS g ON g.g_id=u.group_id LEFT JOIN '.$db->prefix.'online AS o ON o.user_id=u.id WHERE '.(is_int($user) ? 'u.id='.intval($user) : 'u.username=\''.$db->escape($user).'\'')) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
 	$pun_user = $db->fetch_assoc($result);
 
-	$is_password_authorized = hash_equals($password, $pun_user['password']);
-	$is_hash_authorized = forum_password_verify($password, $pun_user);
-
-	if (!isset($pun_user['id']) ||
-		($password_is_hash && !$is_password_authorized ||
-		(!$password_is_hash && !$is_hash_authorized)))
-		set_default_user();
-	else
+	if (
+		isset($pun_user['id'])
+		&& (
+			($password_is_hash && true === hash_equals((string) $password, $pun_user['password']))
+			|| (! $password_is_hash && false !== forum_password_verify($password, $pun_user))
+		)
+	) {
 		$pun_user['is_guest'] = false;
+	} else {
+		set_default_user();
+	}
 }
 
 
