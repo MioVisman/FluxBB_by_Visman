@@ -84,7 +84,7 @@ if (isset($_POST['delete']))
 			$db->query('UPDATE '.$db->prefix.'users SET num_posts=num_posts-1 WHERE id='.$cur_post['poster_id']) or error('Unable to update user', __FILE__, __LINE__, $db->error());
 
 		// Redirect towards the previous post
-		$result = $db->query('SELECT id FROM '.$db->prefix.'posts WHERE topic_id='.$cur_post['tid'].' AND id < '.$id.' ORDER BY id DESC LIMIT 1') or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
+		$result = $db->query('SELECT MAX(id) FROM '.$db->prefix.'posts WHERE topic_id='.$cur_post['tid'].' AND id < '.$id) or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
 		$post_id = $db->result($result);
 
 		redirect('viewtopic.php?pid='.$post_id.'#p'.$post_id, $lang_delete['Post del redirect']);
