@@ -168,12 +168,15 @@ function authenticate_user($user, $password, $password_is_hash = false)
 
 	if (
 		isset($pun_user['id'])
+		&& $pun_user['id'] > 1
 		&& (
 			($password_is_hash && true === hash_equals((string) $password, $pun_user['password']))
 			|| (! $password_is_hash && false !== forum_password_verify($password, $pun_user))
 		)
 	) {
 		$pun_user['is_guest'] = false;
+		$pun_user['is_admmod'] = $pun_user['g_id'] == PUN_ADMIN || $pun_user['g_moderator'] == '1';
+		$pun_user['is_bot'] = false; // MOD определения ботов - Visman
 	} else {
 		set_default_user();
 	}
