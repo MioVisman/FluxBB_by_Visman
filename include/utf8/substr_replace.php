@@ -23,5 +23,5 @@ function utf8_substr_replace($str, $repl, $start , $length=null)
 
 	array_splice($ar[0], $start, $length, $rar[0]);
 
-	return implode($ar[0]);
+	return implode('', $ar[0]);
 }

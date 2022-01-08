@@ -18,5 +18,5 @@
 function utf8_strrev($str)
 {
 	preg_match_all('/./us', $str, $ar);
-	return implode(array_reverse($ar[0]));
+	return implode('', array_reverse($ar[0]));
 }
