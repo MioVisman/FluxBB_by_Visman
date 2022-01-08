@@ -17,12 +17,14 @@ if (isset($_GET['get_host']))
 	if ($pun_user['g_id'] != PUN_ADMIN) // IP пользователей видят только админы - Visman
 		message($lang_common['No permission'], false, '403 Forbidden');
 
+	$host = is_string($_GET['get_host']) ? $_GET['get_host'] : '';
+
 	// Is get_host an IP address or a post ID?
-	if (@preg_match('%^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$%D', $_GET['get_host']) || @preg_match('%^((([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(([0-9A-Fa-f]{1,4}:){0,5}:((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(::([0-9A-Fa-f]{1,4}:){0,5}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:))$%D', $_GET['get_host']))
-		$ip = $_GET['get_host'];
+	if (preg_match('%^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$%D', $host) || preg_match('%^((([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(([0-9A-Fa-f]{1,4}:){0,5}:((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(::([0-9A-Fa-f]{1,4}:){0,5}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:))$%D', $host))
+		$ip = $host;
 	else
 	{
-		$get_host = intval($_GET['get_host']);
+		$get_host = intval($host);
 		if ($get_host < 1)
 			message($lang_common['Bad request'], false, '404 Not Found');
 
@@ -120,7 +122,7 @@ if (isset($_GET['tid']))
 	// Delete one or more posts
 	if (isset($_POST['delete_posts']) || isset($_POST['delete_posts_comply']))
 	{
-		$posts = isset($_POST['posts']) ? $_POST['posts'] : array();
+		$posts = isset($_POST['posts']) ? $_POST['posts'] : null;
 		if (empty($posts))
 			message($lang_misc['No posts selected']);
 
@@ -128,14 +130,17 @@ if (isset($_GET['tid']))
 		{
 			confirm_referrer('moderate.php');
 
-			if (@preg_match('%[^0-9,]%', $posts))
+			if (! is_string($posts) || preg_match('%[^0-9,]%', $posts))
 				message($lang_common['Bad request'], false, '404 Not Found');
+
+			// How many posts did we just delete?
+			$num_posts_deleted = substr_count($posts, ',') + 1;
 
 			// Verify that the post IDs are valid
 			$admins_sql = ($pun_user['g_id'] != PUN_ADMIN) ? ' AND poster_id NOT IN('.implode(',', get_admin_ids()).')' : '';
-			$result = $db->query('SELECT COUNT(*) FROM '.$db->prefix.'posts WHERE id IN('.$posts.') AND topic_id='.$tid.$admins_sql) or error('Unable to check posts', __FILE__, __LINE__, $db->error());
+			$result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'posts WHERE id IN('.$posts.') AND topic_id='.$tid.$admins_sql) or error('Unable to check posts', __FILE__, __LINE__, $db->error());
 
-			if ($db->result($result) != substr_count($posts, ',') + 1)
+			if ($db->result($result) != $num_posts_deleted)
 				message($lang_common['Bad request'], false, '404 Not Found');
 
 			// уменьшение постов у юзеров и not sum - Visman
@@ -160,9 +165,6 @@ if (isset($_GET['tid']))
 			// Get last_post, last_post_id, and last_poster for the topic after deletion
 			$result = $db->query('SELECT id, poster, posted FROM '.$db->prefix.'posts WHERE topic_id='.$tid.' ORDER BY id DESC LIMIT 1') or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
 			$last_post = $db->fetch_assoc($result);
-
-			// How many posts did we just delete?
-			$num_posts_deleted = substr_count($posts, ',') + 1;
 
 			// Update the topic
 			$db->query('UPDATE '.$db->prefix.'topics SET last_post='.$last_post['posted'].', last_post_id='.$last_post['id'].', last_poster=\''.$db->escape($last_post['poster']).'\', num_replies=num_replies-'.$num_posts_deleted.' WHERE id='.$tid) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
@@ -202,7 +204,7 @@ if (isset($_GET['tid']))
 	}
 	else if (isset($_POST['split_posts']) || isset($_POST['split_posts_comply']))
 	{
-		$posts = isset($_POST['posts']) ? $_POST['posts'] : array();
+		$posts = isset($_POST['posts']) ? $_POST['posts'] : null;
 		if (empty($posts))
 			message($lang_misc['No posts selected']);
 
@@ -210,7 +212,7 @@ if (isset($_GET['tid']))
 		{
 			confirm_referrer('moderate.php');
 
-			if (@preg_match('%[^0-9,]%', $posts))
+			if (! is_string($posts) || preg_match('%[^0-9,]%', $posts))
 				message($lang_common['Bad request'], false, '404 Not Found');
 
 			$move_to_forum = isset($_POST['move_to_forum']) ? intval($_POST['move_to_forum']) : 0;
@@ -221,7 +223,7 @@ if (isset($_GET['tid']))
 			$num_posts_splitted = substr_count($posts, ',') + 1;
 
 			// Verify that the post IDs are valid
-			$result = $db->query('SELECT COUNT(*) FROM '.$db->prefix.'posts WHERE id IN('.$posts.') AND topic_id='.$tid) or error('Unable to check posts', __FILE__, __LINE__, $db->error());
+			$result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'posts WHERE id IN('.$posts.') AND topic_id='.$tid) or error('Unable to check posts', __FILE__, __LINE__, $db->error());
 			if ($db->result($result) != $num_posts_splitted)
 				message($lang_common['Bad request'], false, '404 Not Found');
 
@@ -318,7 +320,7 @@ if (isset($_GET['tid']))
 	// Перемещение одного и более сообщений в другую тему
 	else if (isset($_POST['move_posts']) || isset($_POST['move_posts_forum']) || isset($_POST['move_posts_topic']))
 	{
-		$posts = isset($_POST['posts']) ? $_POST['posts'] : array();
+		$posts = isset($_POST['posts']) ? $_POST['posts'] : null;
 		if (empty($posts))
 			message($lang_misc['No posts selected']);
 
@@ -326,7 +328,7 @@ if (isset($_GET['tid']))
 		{
 			confirm_referrer('moderate.php');
 
-			if (@preg_match('%[^0-9,]%', $posts))
+			if (! is_string($posts) || preg_match('%[^0-9,]%', $posts))
 				message($lang_common['Bad request'], false, '404 Not Found');
 
 			$move_to_forum = isset($_POST['move_to_forum']) ? intval($_POST['move_to_forum']) : 0;
@@ -347,9 +349,11 @@ if (isset($_GET['tid']))
 				if (!$db->result($result))
 					message($lang_common['Bad request'], false, '404 Not Found');
 
+				$num_posts_deleted = substr_count($posts, ',') + 1;
+
 				// Verify that the post IDs are valid
-				$result = $db->query('SELECT COUNT(*) FROM '.$db->prefix.'posts WHERE id IN('.$posts.') AND topic_id='.$tid) or error('Unable to check posts', __FILE__, __LINE__, $db->error());
-				if ($db->result($result) != substr_count($posts, ',') + 1)
+				$result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'posts WHERE id IN('.$posts.') AND topic_id='.$tid) or error('Unable to check posts', __FILE__, __LINE__, $db->error());
+				if ($db->result($result) != $num_posts_deleted)
 					message($lang_common['Bad request'], false, '404 Not Found');
 
 				// перемещаем
@@ -357,7 +361,6 @@ if (isset($_GET['tid']))
 				$db->query('UPDATE '.$db->prefix.'posts SET topic_id='.$move_to_topic.', message=CONCAT(\''.$db->escape($add_text).'\', message) WHERE topic_id='.$tid.' AND id IN('.$posts.')') or error('Unable to update posts/topic', __FILE__, __LINE__, $db->error());
 
 				// обновим темы
-				$num_posts_deleted = substr_count($posts, ',') + 1;
 				$result = $db->query('SELECT id, poster, posted FROM '.$db->prefix.'posts WHERE topic_id='.$tid.' ORDER BY id DESC LIMIT 1') or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
 				$last_post = $db->fetch_assoc($result);
 				$db->query('UPDATE '.$db->prefix.'topics SET last_post='.$last_post['posted'].', last_post_id='.$last_post['id'].', last_poster=\''.$db->escape($last_post['poster']).'\', num_replies=num_replies-'.$num_posts_deleted.' WHERE id='.$tid) or error('Unable to update topic', __FILE__, __LINE__, $db->error());
@@ -450,7 +453,7 @@ if (isset($_GET['tid']))
 ?>
 						</select>
 						</label>
-						<input type="hidden" name="posts" value="<?php echo implode(',', array_keys($posts)) ?>" />
+						<input type="hidden" name="posts" value="<?php echo implode(',', array_map('intval', array_keys($posts))) ?>" />
 						<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 					</div>
 				</fieldset>
@@ -621,7 +624,7 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to']))
 	{
 		confirm_referrer('moderate.php');
 
-		if (@preg_match('%[^0-9,]%', $_POST['topics']))
+		if (! is_string($_POST['topics'] ?? null) || preg_match('%[^0-9,]%', $_POST['topics']))
 			message($lang_common['Bad request'], false, '404 Not Found');
 
 		$topics = explode(',', $_POST['topics']);
@@ -630,7 +633,7 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to']))
 			message($lang_common['Bad request'], false, '404 Not Found');
 
 		// Verify that the topic IDs are valid
-		$result = $db->query('SELECT COUNT(*) FROM '.$db->prefix.'topics WHERE id IN('.implode(',', $topics).') AND forum_id='.$fid) or error('Unable to check topics', __FILE__, __LINE__, $db->error());
+		$result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'topics WHERE id IN('.implode(',', $topics).') AND forum_id='.$fid) or error('Unable to check topics', __FILE__, __LINE__, $db->error());
 		if ($db->result($result) != count($topics))
 			message($lang_common['Bad request'], false, '404 Not Found');
 
@@ -668,7 +671,7 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to']))
 
 	if (isset($_POST['move_topics']))
 	{
-		$topics = isset($_POST['topics']) ? $_POST['topics'] : array();
+		$topics = is_array($_POST['topics'] ?? null) ? $_POST['topics'] : null;
 		if (empty($topics))
 			message($lang_misc['No topics selected']);
 
@@ -740,7 +743,7 @@ else if (isset($_POST['merge_topics']) || isset($_POST['merge_topics_comply']))
 	{
 		confirm_referrer('moderate.php');
 
-		if (@preg_match('%[^0-9,]%', $_POST['topics']))
+		if (! is_string($_POST['topics'] ?? null) || preg_match('%[^0-9,]%', $_POST['topics']))
 			message($lang_common['Bad request'], false, '404 Not Found');
 
 		$topics = explode(',', $_POST['topics']);
@@ -801,7 +804,7 @@ else if (isset($_POST['merge_topics']) || isset($_POST['merge_topics_comply']))
 		redirect('viewforum.php?id='.$fid, $lang_misc['Merge topics redirect']);
 	}
 
-	$topics = isset($_POST['topics']) ? $_POST['topics'] : array();
+	$topics = is_array($_POST['topics'] ?? null) ? $_POST['topics'] : array();
 	if (count($topics) < 2)
 		message($lang_misc['Not enough topics selected']);
 
@@ -846,20 +849,20 @@ else if (isset($_POST['delete_topics']) || isset($_POST['delete_topics_comply'])
 	{
 		confirm_referrer('moderate.php');
 
-		if (@preg_match('%[^0-9,]%', $topics))
+		if (! is_string($topics) || preg_match('%[^0-9,]%', $topics))
 			message($lang_common['Bad request'], false, '404 Not Found');
 
 		require PUN_ROOT.'include/search_idx.php';
 
 		// Verify that the topic IDs are valid
-		$result = $db->query('SELECT COUNT(*) FROM '.$db->prefix.'topics WHERE id IN('.$topics.') AND forum_id='.$fid) or error('Unable to check topics', __FILE__, __LINE__, $db->error());
+		$result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'topics WHERE id IN('.$topics.') AND forum_id='.$fid) or error('Unable to check topics', __FILE__, __LINE__, $db->error());
 		if ($db->result($result) != substr_count($topics, ',') + 1)
 			message($lang_common['Bad request'], false, '404 Not Found');
 
 		// Verify that the posts are not by admins
 		if ($pun_user['g_id'] != PUN_ADMIN)
 		{
-			$result = $db->query('SELECT COUNT(*) FROM '.$db->prefix.'posts WHERE topic_id IN('.$topics.') AND poster_id IN('.implode(',', get_admin_ids()).')') or error('Unable to check posts', __FILE__, __LINE__, $db->error());
+			$result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'posts WHERE topic_id IN('.$topics.') AND poster_id IN('.implode(',', get_admin_ids()).')') or error('Unable to check posts', __FILE__, __LINE__, $db->error());
 			if ($db->result($result))
 				message($lang_common['No permission'], false, '403 Forbidden');
 		}
@@ -945,7 +948,7 @@ else if (isset($_REQUEST['open']) || isset($_REQUEST['close']))
 	{
 		confirm_referrer('moderate.php');
 
-		$topics = isset($_POST['topics']) ? @array_map('intval', @array_keys($_POST['topics'])) : array();
+		$topics = is_array($_POST['topics'] ?? null) ? array_map('intval', array_keys($_POST['topics'])) : null;
 		if (empty($topics))
 			message($lang_misc['No topics selected']);
 
