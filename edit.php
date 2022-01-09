@@ -71,7 +71,7 @@ if (isset($_POST['form_sent']))
 	// If it's a topic it must contain a subject
 	if ($can_edit_subject)
 	{
-		$subject = pun_trim($_POST['req_subject']);
+		$subject = pun_trim($_POST['req_subject'] ?? '');
 
 		if ($pun_config['o_censoring'] == '1')
 			$censored_subject = pun_trim(censor_words($subject));
@@ -94,7 +94,7 @@ if (isset($_POST['form_sent']))
 	}
 
 	// Clean up message from POST
-	$message = pun_linebreaks(pun_trim($_POST['req_message']));
+	$message = pun_linebreaks(pun_trim($_POST['req_message'] ?? ''));
 
 	// Here we use strlen() not pun_strlen() as we want to limit the post to PUN_MAX_POSTSIZE bytes, not characters
 	if (pun_strlen($message) > PUN_MAX_POSTSIZE)
@@ -174,14 +174,14 @@ if (isset($_POST['form_sent']))
 
 		if ($is_admmod)
 		{
-			$warning = pun_linebreaks(pun_trim($_POST['warning']));
+			$warning = pun_linebreaks(pun_trim($_POST['warning'] ?? ''));
 			if ($warning != $cur_post['warning'])
 			{
 				$db->query('DELETE FROM '.$db->prefix.'warnings WHERE id='.$id) or error('Unable to remove warning', __FILE__, __LINE__, $db->error());
 				$sql_warm = '';
-				if (strlen($_POST['warning']) > 0 )
+				if (strlen($warning) > 0 )
 				{
-					$db->query('INSERT INTO '.$db->prefix.'warnings (id, poster, poster_id, posted, message) VALUES('.$id.', \''.$db->escape($pun_user['username']).'\', '.$pun_user['id'].', '.time().', \''.$db->escape($_POST['warning']).'\')') or error('Unable to insert warning', __FILE__, __LINE__, $db->error());
+					$db->query('INSERT INTO '.$db->prefix.'warnings (id, poster, poster_id, posted, message) VALUES('.$id.', \''.$db->escape($pun_user['username']).'\', '.$pun_user['id'].', '.time().', \''.$db->escape($warning).'\')') or error('Unable to insert warning', __FILE__, __LINE__, $db->error());
 					$sql_warm = ', warning_flag=1';
 				}
 				$result = $db->query('SELECT COUNT(p.id) FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'warnings AS w ON w.id=p.id WHERE p.poster_id='.$cur_post['poster_id']) or error('Unable to sum for posts', __FILE__, __LINE__, $db->error());
