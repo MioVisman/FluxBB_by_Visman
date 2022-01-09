@@ -26,8 +26,8 @@ if (isset($_POST['form_sent']) && $action == 'in')
 	// Make sure they got here from the site
 	confirm_referrer('login.php');
 
-	$form_username = pun_trim($_POST['req_username']);
-	$form_password = pun_trim($_POST['req_password']);
+	$form_username = pun_trim($_POST['req_username'] ?? '');
+	$form_password = pun_trim($_POST['req_password'] ?? '');
 	$save_pass = isset($_POST['save_pass']);
 
 	$username_sql = ($db_type == 'mysql' || $db_type == 'mysqli' || $db_type == 'mysql_innodb' || $db_type == 'mysqli_innodb') ? 'username=\''.$db->escape($form_username).'\'' : 'LOWER(username)=LOWER(\''.$db->escape($form_username).'\')';
@@ -94,7 +94,7 @@ if (isset($_POST['form_sent']) && $action == 'in')
 		set_tracked_topics(null);
 
 		// Try to determine if the data in redirect_url is valid (if not, we redirect to index.php after login)
-		$redirect_url = validate_redirect($_POST['redirect_url'], 'index.php');
+		$redirect_url = validate_redirect($_POST['redirect_url'] ?? '', 'index.php');
 
 		redirect(pun_htmlspecialchars($redirect_url), $lang_login['Login redirect']);
 	}
@@ -143,7 +143,7 @@ else if ($action == 'forget' || $action == 'forget_2')
 		require PUN_ROOT.'include/email.php';
 
 		// Validate the email address
-		$email = strtolower(pun_trim($_POST['req_email']));
+		$email = strtolower(pun_trim($_POST['req_email'] ?? ''));
 		if (!is_valid_email($email))
 			$errors[] = $lang_common['Invalid email'];
 
