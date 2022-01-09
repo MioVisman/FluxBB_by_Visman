@@ -77,20 +77,20 @@ if (isset($_POST['form_sent']))
 		message($lang_register['Registration flood']);
 
 
-	$username = pun_trim($_POST['req_user']);
-	$email1 = strtolower(pun_trim($_POST['req_email1']));
+	$username = pun_trim($_POST['req_user'] ?? '');
+	$email1 = strtolower(pun_trim($_POST['req_email1'] ?? ''));
 
 	if ($pun_config['o_regs_verify'] == '1')
 	{
-		$email2 = strtolower(pun_trim($_POST['req_email2']));
+		$email2 = strtolower(pun_trim($_POST['req_email2'] ?? ''));
 
 		$password1 = random_pass(12);
 		$password2 = $password1;
 	}
 	else
 	{
-		$password1 = pun_trim($_POST['req_password1']);
-		$password2 = pun_trim($_POST['req_password2']);
+		$password1 = pun_trim($_POST['req_password1'] ?? '');
+		$password2 = pun_trim($_POST['req_password2'] ?? '');
 	}
 
 	// Validate username and passwords
@@ -132,7 +132,7 @@ if (isset($_POST['form_sent']))
 		$errors[] = $lang_prof_reg['Dupe email'];
 
 	// Make sure we got a valid language string
-	if (isset($_POST['language']))
+	if (is_string($_POST['language'] ?? null))
 	{
 		$language = preg_replace('%[\.\\\/]%', '', $_POST['language']);
 		if (!file_exists(PUN_ROOT.'lang/'.$language.'/common.php'))
@@ -141,13 +141,13 @@ if (isset($_POST['form_sent']))
 	else
 		$language = $pun_config['o_default_lang'];
 
-	$timezone = round($_POST['timezone'], 1);
+	$timezone = round($_POST['timezone'] ?? -12, 1);
 	// мод запоминания пароля - Visman
 	$save_pass = isset($_POST['save_pass']) ? $_POST['save_pass'] : '0';
 
 	$dst = isset($_POST['dst']) ? '1' : '0';
 
-	$email_setting = intval($_POST['email_setting']);
+	$email_setting = intval($_POST['email_setting'] ?? -1);
 	if ($email_setting < 0 || $email_setting > 2)
 		$email_setting = $pun_config['o_default_email_setting'];
 
