@@ -83,7 +83,7 @@ if (isset($_POST['form_sent']))
 	// If it's a new topic
 	if ($fid)
 	{
-		$subject = pun_trim($_POST['req_subject']);
+		$subject = pun_trim($_POST['req_subject'] ?? '');
 
 		if ($pun_config['o_censoring'] == '1')
 			$censored_subject = pun_trim(censor_words($subject));
@@ -109,8 +109,8 @@ if (isset($_POST['form_sent']))
 	// Otherwise it should be in $_POST
 	else
 	{
-		$username = pun_trim($_POST['req_username']);
-		$email = strtolower(pun_trim(($pun_config['p_force_guest_email'] == '1') ? $_POST['req_email'] : $_POST['email']));
+		$username = pun_trim($_POST['req_username'] ?? '');
+		$email = strtolower(pun_trim(($pun_config['p_force_guest_email'] == '1') ? ($_POST['req_email'] ?? '') : ($_POST['email'] ?? '')));
 		$banned_email = false;
 
 		// Load the register.php/prof_reg.php language files
@@ -139,7 +139,7 @@ if (isset($_POST['form_sent']))
 	}
 
 	// Clean up message from POST
-	$orig_message = $message = pun_linebreaks(pun_trim($_POST['req_message']));
+	$orig_message = $message = pun_linebreaks(pun_trim($_POST['req_message'] ?? ''));
 
 	// Here we use strlen() not pun_strlen() as we want to limit the post to PUN_MAX_POSTSIZE bytes, not characters
 	if (pun_strlen($message) > PUN_MAX_POSTSIZE)
