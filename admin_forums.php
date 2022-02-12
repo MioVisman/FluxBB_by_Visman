@@ -189,7 +189,7 @@ else if (isset($_GET['edit_forum']))
 			$result = $db->query('SELECT g_id, g_read_board, g_post_replies, g_post_topics FROM '.$db->prefix.'groups WHERE g_id!='.PUN_ADMIN) or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
 			while ($cur_group = $db->fetch_assoc($result))
 			{
-				$read_forum_new = ($cur_group['g_read_board'] == '1') ? isset($_POST['read_forum_new'][$cur_group['g_id']]) ? '1' : '0' : intval($_POST['read_forum_old'][$cur_group['g_id']]);
+				$read_forum_new = $cur_group['g_read_board'] == '1' ? (isset($_POST['read_forum_new'][$cur_group['g_id']]) ? '1' : '0') : intval($_POST['read_forum_old'][$cur_group['g_id']]);
 				$post_replies_new = isset($_POST['post_replies_new'][$cur_group['g_id']]) ? '1' : '0';
 				$post_topics_new = isset($_POST['post_topics_new'][$cur_group['g_id']]) ? '1' : '0';
 
