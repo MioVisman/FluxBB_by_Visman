@@ -1683,11 +1683,11 @@ H2 {MARGIN: 0; COLOR: #FFFFFF; BACKGROUND-COLOR: #B84623; FONT-SIZE: 1.1em; PADD
 	{
 		$file = str_replace(realpath(PUN_ROOT), '', $file);
 
-		echo "\t\t".'<strong>File:</strong> '.$file.'<br />'."\n\t\t".'<strong>Line:</strong> '.$line.'<br /><br />'."\n\t\t".'<strong>FluxBB reported</strong>: '.$message."\n";
+		echo "\t\t".'<strong>File:</strong> '.pun_htmlspecialchars($file).'<br />'."\n\t\t".'<strong>Line:</strong> '.((int) $line).'<br /><br />'."\n\t\t".'<strong>FluxBB reported</strong>: '.pun_htmlspecialchars($message)."\n";
 
 		if ($db_error)
 		{
-			echo "\t\t".'<br /><br /><strong>Database reported:</strong> '.pun_htmlspecialchars($db_error['error_msg']).(($db_error['error_no']) ? ' (Errno: '.$db_error['error_no'].')' : '')."\n";
+			echo "\t\t".'<br /><br /><strong>Database reported:</strong> '.pun_htmlspecialchars($db_error['error_msg']).($db_error['error_no'] ? ' (Errno: '.$db_error['error_no'].')' : '')."\n";
 
 			if ($db_error['error_sql'] != '')
 				echo "\t\t".'<br /><br /><strong>Failed query:</strong> '.pun_htmlspecialchars($db_error['error_sql'])."\n";
