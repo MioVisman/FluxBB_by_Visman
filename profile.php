@@ -14,9 +14,9 @@ require PUN_ROOT.'include/utf8/substr_replace.php';
 require PUN_ROOT.'include/utf8/ucwords.php'; // utf8_ucwords needs utf8_substr_replace
 require PUN_ROOT.'include/utf8/strcasecmp.php';
 
-$action = isset($_GET['action']) ? $_GET['action'] : null;
-$section = isset($_GET['section']) ? $_GET['section'] : null;
-$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+$action = (string) ($_GET['action'] ?? '');
+$section = (string) ($_GET['section'] ?? '');
+$id = (int) ($_GET['id'] ?? 0);
 if ($id < 2)
 	message($lang_common['Bad request'], false, '404 Not Found');
 
@@ -40,7 +40,7 @@ require PUN_ROOT.'lang/'.$pun_user['language'].'/genders_integration.php';
 
 if ($action == 'change_pass')
 {
-	if (isset($_GET['key']))
+	if (isset($_GET['key']) && is_string($_GET['key']))
 	{
 		// If the user is already logged in we shouldn't be here :)
 		if (!$pun_user['is_guest'])
@@ -181,7 +181,7 @@ else if ($action == 'change_email')
 		}
 	}
 
-	if (isset($_GET['key']))
+	if (isset($_GET['key']) && is_string($_GET['key']))
 	{
 		$key = $_GET['key'];
 
