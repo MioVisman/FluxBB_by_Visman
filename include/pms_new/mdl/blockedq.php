@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2015 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2022 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2008-2010 FluxBB
  * based on code by Rickard Andersson copyright (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -19,13 +19,13 @@ if (defined('PUN_PMS_NEW_CONFIRM'))
 
 	if (isset($_POST['action2']))
 	{
-		if (!isset($_POST['user_numb']))
+		if (!isset($_POST['user_numb']) || !is_string($_POST['user_numb']))
 			message($lang_common['Bad request'], false, '404 Not Found');
 
-		if (@preg_match('/[^0-9,]/', $_POST['user_numb']))
+		if (preg_match('%[^0-9,]%', $_POST['user_numb']))
 			message($lang_common['Bad request'], false, '404 Not Found');
 
-		$unumbs = explode(',', $_POST['user_numb']);
+		$unumbs = array_map('intval', explode(',', $_POST['user_numb']));
 	}
 	else
 	{
