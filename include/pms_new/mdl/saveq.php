@@ -21,7 +21,7 @@ if (defined('PUN_PMS_NEW_CONFIRM'))
 
 	if (isset($_POST['action2']))
 	{
-		if (!isset($_POST['topics']) || !is_string($_POST['topics']))
+		if (!isset($_POST['topics']) || !is_string($_POST['topics']) || isset($_POST['topics'][2000]))
 			message($lang_common['Bad request'], false, '404 Not Found');
 
 		if (preg_match('%[^0-9,]%', $_POST['topics']))
@@ -31,7 +31,7 @@ if (defined('PUN_PMS_NEW_CONFIRM'))
 	}
 	else
 	{
-		if (!isset($_POST['post_topic']))
+		if (!isset($_POST['post_topic']) || !is_array($_POST['post_topic']))
 			message($lang_common['Bad request'], false, '404 Not Found');
 
 		$topics = array_map('intval', array_keys($_POST['post_topic']));

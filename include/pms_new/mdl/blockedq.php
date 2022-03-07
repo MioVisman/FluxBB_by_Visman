@@ -17,22 +17,21 @@ if (defined('PUN_PMS_NEW_CONFIRM'))
 	if (!isset($_POST['delete']))
 		message($lang_common['Bad request'], false, '404 Not Found');
 
+	$unumbs = $_POST['user_numb'] ?? null;
+
 	if (isset($_POST['action2']))
 	{
-		if (!isset($_POST['user_numb']) || !is_string($_POST['user_numb']))
+		if (!is_string($unumbs) || isset($unumbs[2000]) || preg_match('%[^0-9,]%', $unumbs))
 			message($lang_common['Bad request'], false, '404 Not Found');
 
-		if (preg_match('%[^0-9,]%', $_POST['user_numb']))
-			message($lang_common['Bad request'], false, '404 Not Found');
-
-		$unumbs = array_map('intval', explode(',', $_POST['user_numb']));
+		$unumbs = array_map('intval', explode(',', $unumbs));
 	}
 	else
 	{
-		if (!isset($_POST['user_numb']))
+		if (!is_array($unumbs))
 			message($lang_common['Bad request'], false, '404 Not Found');
 
-		$unumbs = array_map('intval', array_keys($_POST['user_numb']));
+		$unumbs = array_map('intval', array_keys($unumbs));
 	}
 
 	if (count($unumbs) < 1)
