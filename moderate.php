@@ -54,7 +54,7 @@ if (!$forum_info)
 	message($lang_common['Bad request'], false, '404 Not Found');
 
 list($moderators, $flag_f) = $forum_info;
-$mods_array = ($moderators != '') ? unserialize($moderators) : array();
+$mods_array = $moderators != '' ? unserialize($moderators) : array();
 
 if ($pun_user['g_id'] != PUN_ADMIN && ($pun_user['g_moderator'] == '0' || !array_key_exists($pun_user['username'], $mods_array)))
 	message($lang_common['No permission'], false, '403 Forbidden');
@@ -122,7 +122,7 @@ if (isset($_GET['tid']))
 	// Delete one or more posts
 	if (isset($_POST['delete_posts']) || isset($_POST['delete_posts_comply']))
 	{
-		$posts = isset($_POST['posts']) ? $_POST['posts'] : null;
+		$posts = $_POST['posts'] ?? null;
 		if (empty($posts))
 			message($lang_misc['No posts selected']);
 
@@ -130,14 +130,14 @@ if (isset($_GET['tid']))
 		{
 			confirm_referrer('moderate.php');
 
-			if (! is_string($posts) || preg_match('%[^0-9,]%', $posts))
+			if (! is_string($posts) || isset($posts[2000]) || ! preg_match('%^[0-9]+(?:,[0-9]+)*$%D', $posts))
 				message($lang_common['Bad request'], false, '404 Not Found');
 
 			// How many posts did we just delete?
 			$num_posts_deleted = substr_count($posts, ',') + 1;
 
 			// Verify that the post IDs are valid
-			$admins_sql = ($pun_user['g_id'] != PUN_ADMIN) ? ' AND poster_id NOT IN('.implode(',', get_admin_ids()).')' : '';
+			$admins_sql = $pun_user['g_id'] != PUN_ADMIN ? ' AND poster_id NOT IN('.implode(',', get_admin_ids()).')' : '';
 			$result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'posts WHERE id IN('.$posts.') AND topic_id='.$tid.$admins_sql) or error('Unable to check posts', __FILE__, __LINE__, $db->error());
 
 			if ($db->result($result) != $num_posts_deleted)
@@ -204,7 +204,7 @@ if (isset($_GET['tid']))
 	}
 	else if (isset($_POST['split_posts']) || isset($_POST['split_posts_comply']))
 	{
-		$posts = isset($_POST['posts']) ? $_POST['posts'] : null;
+		$posts = $_POST['posts'] ?? null;
 		if (empty($posts))
 			message($lang_misc['No posts selected']);
 
@@ -212,7 +212,7 @@ if (isset($_GET['tid']))
 		{
 			confirm_referrer('moderate.php');
 
-			if (! is_string($posts) || preg_match('%[^0-9,]%', $posts))
+			if (! is_string($posts) || isset($posts[2000]) || ! preg_match('%^[0-9]+(?:,[0-9]+)*$%D', $posts))
 				message($lang_common['Bad request'], false, '404 Not Found');
 
 			$move_to_forum = isset($_POST['move_to_forum']) ? intval($_POST['move_to_forum']) : 0;
@@ -320,7 +320,7 @@ if (isset($_GET['tid']))
 	// Перемещение одного и более сообщений в другую тему
 	else if (isset($_POST['move_posts']) || isset($_POST['move_posts_forum']) || isset($_POST['move_posts_topic']))
 	{
-		$posts = isset($_POST['posts']) ? $_POST['posts'] : null;
+		$posts = $_POST['posts'] ?? null;
 		if (empty($posts))
 			message($lang_misc['No posts selected']);
 
@@ -328,7 +328,7 @@ if (isset($_GET['tid']))
 		{
 			confirm_referrer('moderate.php');
 
-			if (! is_string($posts) || preg_match('%[^0-9,]%', $posts))
+			if (! is_string($posts) || isset($posts[2000]) || ! preg_match('%^[0-9]+(?:,[0-9]+)*$%D', $posts))
 				message($lang_common['Bad request'], false, '404 Not Found');
 
 			$move_to_forum = isset($_POST['move_to_forum']) ? intval($_POST['move_to_forum']) : 0;
@@ -475,15 +475,15 @@ if (isset($_GET['tid']))
 	require PUN_ROOT.'lang/'.$pun_user['language'].'/topic.php';
 
 	// Used to disable the Move and Delete buttons if there are no replies to this topic
-	$button_status = ($cur_topic['num_replies'] == 0) ? ' disabled="disabled"' : '';
+	$button_status = $cur_topic['num_replies'] == 0 ? ' disabled="disabled"' : '';
 
-	if (isset($_GET['action']) && $_GET['action'] == 'all')
+	if (isset($_GET['action']) && $_GET['action'] === 'all')
 		$pun_user['disp_posts'] = $cur_topic['num_replies'] + 1;
 
 	// Determine the post offset (based on $_GET['p'])
 	$num_pages = ceil(($cur_topic['num_replies'] + 1) / $pun_user['disp_posts']);
 
-	$p = (!isset($_GET['p']) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages) ? 1 : intval($_GET['p']);
+	$p = !isset($_GET['p']) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages ? 1 : intval($_GET['p']);
 	$start_from = $pun_user['disp_posts'] * ($p - 1);
 
 	// Generate paging links
@@ -624,10 +624,11 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to']))
 	{
 		confirm_referrer('moderate.php');
 
-		if (! is_string($_POST['topics'] ?? null) || preg_match('%[^0-9,]%', $_POST['topics']))
+		$topics = $_POST['topics'] ?? null;
+		if (! is_string($topics) || isset($topics[2000]) || ! preg_match('%^[0-9]+(?:,[0-9]+)*$%D', $topics))
 			message($lang_common['Bad request'], false, '404 Not Found');
 
-		$topics = explode(',', $_POST['topics']);
+		$topics = explode(',', $topics);
 		$move_to_forum = isset($_POST['move_to_forum']) ? intval($_POST['move_to_forum']) : 0;
 		if (empty($topics) || $move_to_forum < 1)
 			message($lang_common['Bad request'], false, '404 Not Found');
@@ -665,7 +666,7 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to']))
 		update_forum($fid); // Update the forum FROM which the topic was moved
 		update_forum($move_to_forum); // Update the forum TO which the topic was moved
 
-		$redirect_msg = (count($topics) > 1) ? $lang_misc['Move topics redirect'] : $lang_misc['Move topic redirect'];
+		$redirect_msg = count($topics) > 1 ? $lang_misc['Move topics redirect'] : $lang_misc['Move topic redirect'];
 		redirect('viewforum.php?id='.$move_to_forum, $redirect_msg);
 	}
 
@@ -680,7 +681,7 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to']))
 	}
 	else
 	{
-		$topics = intval($_GET['move_topics']);
+		$topics = intval($_GET['move_topics'] ?? 0);
 		if ($topics < 1)
 			message($lang_common['Bad request'], false, '404 Not Found');
 
@@ -743,10 +744,11 @@ else if (isset($_POST['merge_topics']) || isset($_POST['merge_topics_comply']))
 	{
 		confirm_referrer('moderate.php');
 
-		if (! is_string($_POST['topics'] ?? null) || preg_match('%[^0-9,]%', $_POST['topics']))
+		$topics = $_POST['topics'] ?? null;
+		if (! is_string($topics) || isset($topics[2000]) || ! preg_match('%^[0-9]+(?:,[0-9]+)*$%D', $topics))
 			message($lang_common['Bad request'], false, '404 Not Found');
 
-		$topics = explode(',', $_POST['topics']);
+		$topics = explode(',', $topics);
 		if (count($topics) < 2)
 			message($lang_misc['Not enough topics selected']);
 
@@ -841,7 +843,7 @@ else if (isset($_POST['merge_topics']) || isset($_POST['merge_topics_comply']))
 // Delete one or more topics
 else if (isset($_POST['delete_topics']) || isset($_POST['delete_topics_comply']))
 {
-	$topics = isset($_POST['topics']) ? $_POST['topics'] : array();
+	$topics = $_POST['topics'] ?? null;
 	if (empty($topics))
 		message($lang_misc['No topics selected']);
 
@@ -849,7 +851,7 @@ else if (isset($_POST['delete_topics']) || isset($_POST['delete_topics_comply'])
 	{
 		confirm_referrer('moderate.php');
 
-		if (! is_string($topics) || preg_match('%[^0-9,]%', $topics))
+		if (! is_string($topics) || isset($topics[2000]) || ! preg_match('%^[0-9]+(?:,[0-9]+)*$%D', $topics))
 			message($lang_common['Bad request'], false, '404 Not Found');
 
 		require PUN_ROOT.'include/search_idx.php';
@@ -889,7 +891,7 @@ else if (isset($_POST['delete_topics']) || isset($_POST['delete_topics_comply'])
 
 		$post_ids = '';
 		while ($row = $db->fetch_row($result))
-			$post_ids .= ($post_ids != '') ? ','.$row[0] : $row[0];
+			$post_ids .= $post_ids != '' ? ','.$row[0] : $row[0];
 
 		// We have to check that we actually have a list of post IDs since we could be deleting just a redirect topic
 		if ($post_ids != '')
@@ -941,7 +943,7 @@ else if (isset($_POST['delete_topics']) || isset($_POST['delete_topics_comply'])
 // Open or close one or more topics
 else if (isset($_REQUEST['open']) || isset($_REQUEST['close']))
 {
-	$action = (isset($_REQUEST['open'])) ? 0 : 1;
+	$action = isset($_REQUEST['open']) ? 0 : 1;
 
 	// There could be an array of topic IDs in $_POST
 	if (isset($_POST['open']) || isset($_POST['close']))
@@ -954,7 +956,7 @@ else if (isset($_REQUEST['open']) || isset($_REQUEST['close']))
 
 		$db->query('UPDATE '.$db->prefix.'topics SET closed='.$action.' WHERE id IN('.implode(',', $topics).') AND forum_id='.$fid) or error('Unable to close topics', __FILE__, __LINE__, $db->error());
 
-		$redirect_msg = ($action) ? $lang_misc['Close topics redirect'] : $lang_misc['Open topics redirect'];
+		$redirect_msg = $action ? $lang_misc['Close topics redirect'] : $lang_misc['Open topics redirect'];
 		redirect('moderate.php?fid='.$fid, $redirect_msg);
 	}
 	// Or just one in $_GET
@@ -962,13 +964,13 @@ else if (isset($_REQUEST['open']) || isset($_REQUEST['close']))
 	{
 		confirm_referrer('viewtopic.php');
 
-		$topic_id = ($action) ? intval($_GET['close']) : intval($_GET['open']);
+		$topic_id = $action ? intval($_GET['close']) : intval($_GET['open']);
 		if ($topic_id < 1)
 			message($lang_common['Bad request'], false, '404 Not Found');
 
 		$db->query('UPDATE '.$db->prefix.'topics SET closed='.$action.' WHERE id='.$topic_id.' AND forum_id='.$fid) or error('Unable to close topic', __FILE__, __LINE__, $db->error());
 
-		$redirect_msg = ($action) ? $lang_misc['Close topic redirect'] : $lang_misc['Open topic redirect'];
+		$redirect_msg = $action ? $lang_misc['Close topic redirect'] : $lang_misc['Open topic redirect'];
 		redirect('viewtopic.php?id='.$topic_id, $redirect_msg);
 	}
 }
@@ -1039,7 +1041,7 @@ switch ($cur_forum['sort_by'])
 // Determine the topic offset (based on $_GET['p'])
 $num_pages = ceil($cur_forum['num_topics'] / $pun_user['disp_topics']);
 
-$p = (!isset($_GET['p']) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages) ? 1 : intval($_GET['p']);
+$p = !isset($_GET['p']) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages ? 1 : intval($_GET['p']);
 $start_from = $pun_user['disp_topics'] * ($p - 1);
 
 // Generate paging links
@@ -1105,7 +1107,7 @@ if (!empty($topic_ids))
 
 		++$topic_count;
 		$status_text = array();
-		$item_status = ($topic_count % 2 == 0) ? 'roweven' : 'rowodd';
+		$item_status = $topic_count % 2 == 0 ? 'roweven' : 'rowodd';
 		$icon_type = 'icon';
 
 		if (is_null($cur_topic['moved_to']))
@@ -1191,7 +1193,7 @@ if (!empty($topic_ids))
 }
 else
 {
-	$colspan = ($pun_config['o_topic_views'] == '1') ? 5 : 4;
+	$colspan = $pun_config['o_topic_views'] == '1' ? 5 : 4;
 	$button_status = ' disabled="disabled"';
 	echo "\t\t\t\t\t".'<tr><td class="tcl" colspan="'.$colspan.'">'.$lang_forum['Empty forum'].'</td></tr>'."\n";
 }
