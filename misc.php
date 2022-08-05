@@ -59,7 +59,7 @@ else if ($action == 'lang')
 		forum_setcookie($cookie_name.'_glang', $language, time()+ 31536000);
 	}
 	else
-		$db->query('UPDATE '.$db->prefix.'users SET language="'.$db->escape($language).'" WHERE id='.$pun_user['id']) or error('Unable to update profile', __FILE__, __LINE__, $db->error());
+		$db->query('UPDATE '.$db->prefix.'users SET language=\''.$db->escape($language).'\' WHERE id='.$pun_user['id']) or error('Unable to update profile', __FILE__, __LINE__, $db->error());
 
 	// Try to determine if the data in HTTP_REFERER is valid (if not, we redirect to index.php after login)
 	if (!empty($_SERVER['HTTP_REFERER']))
