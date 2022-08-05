@@ -963,17 +963,29 @@ function paginate($num_pages, $cur_page, $link)
 	global $lang_common;
 
 	$pages = array();
-	$link_to_all = false;
-
-	// If $cur_page == -1, we link to all pages (used in viewforum.php)
-	if ($cur_page == -1)
-	{
-		$cur_page = 1;
-		$link_to_all = true;
-	}
 
 	if ($num_pages <= 1)
-		$pages = array('<strong class="item1">1</strong>');
+	{
+		$pages = $cur_page < 0 ? [] : ['<strong class="item1">1</strong>'];
+	}
+	// If $cur_page == -1, we link to all pages (used in viewforum.php)
+	else if ($cur_page == -1)
+	{
+		if ($num_pages > 999)
+			$d = 2;
+		else if ($num_pages > 99)
+			$d = 3;
+		else
+			$d = \min(4, $num_pages - 2);
+
+		$current = $num_pages - $d;
+
+		if ($current > 2)
+			$pages[] = '<span class="spacer">'.$lang_common['Spacer'].'</span>';
+
+		for ($current; $current <= $num_pages; ++$current)
+			$pages[] = '<a href="'.$link.'&amp;p='.$current.'">'.forum_number_format($current).'</a>';
+	}
 	else
 	{
 		// Add a previous page link
@@ -993,7 +1005,7 @@ function paginate($num_pages, $cur_page, $link)
 		{
 			if ($current < 1 || $current > $num_pages)
 				continue;
-			else if ($current != $cur_page || $link_to_all)
+			else if ($current != $cur_page)
 				$pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.($current == 1 ? '' : '&amp;p='.$current).'">'.forum_number_format($current).'</a>';
 			else
 				$pages[] = '<strong'.(empty($pages) ? ' class="item1"' : '').'>'.forum_number_format($current).'</strong>';
@@ -1008,7 +1020,7 @@ function paginate($num_pages, $cur_page, $link)
 		}
 
 		// Add a next page link
-		if ($num_pages > 1 && !$link_to_all && $cur_page < $num_pages)
+		if ($num_pages > 1 && $cur_page < $num_pages)
 			$pages[] = '<a rel="next"'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.'&amp;p='.($cur_page +1).'">'.$lang_common['Next'].'</a>';
 	}
 
