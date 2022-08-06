@@ -976,7 +976,7 @@ function paginate($num_pages, $cur_page, $link)
 		else if ($num_pages > 99)
 			$d = 3;
 		else
-			$d = \min(4, $num_pages - 2);
+			$d = min(4, $num_pages - 2);
 
 		$current = $num_pages - $d;
 
