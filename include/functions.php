@@ -420,7 +420,7 @@ function check_bans()
 			continue;
 		}
 
-		if ($cur_ban['username'] != '' && $username == mb_strtolower($cur_ban['username']))
+		if (!$pun_user['is_guest'] && $cur_ban['username'] != '' && $username == mb_strtolower($cur_ban['username']))
 			$is_banned = true;
 
 		if ($cur_ban['ip'] != '')
