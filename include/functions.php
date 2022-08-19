@@ -405,7 +405,7 @@ function check_bans()
 	$add = strpos($user_ip, '.') !== false ? '.' : ':';
 	$user_ip .= $add;
 
-	$username = utf8_strtolower($pun_user['username']);
+	$username = mb_strtolower($pun_user['username']);
 
 	$bans_altered = false;
 	$is_banned = false;
@@ -420,7 +420,7 @@ function check_bans()
 			continue;
 		}
 
-		if ($cur_ban['username'] != '' && $username == utf8_strtolower($cur_ban['username']))
+		if ($cur_ban['username'] != '' && $username == mb_strtolower($cur_ban['username']))
 			$is_banned = true;
 
 		if ($cur_ban['ip'] != '')
@@ -466,9 +466,6 @@ function check_username($username, $exclude_id = null)
 {
 	global $db, $pun_config, $errors, $lang_prof_reg, $lang_register, $lang_common, $pun_bans;
 
-	// Include UTF-8 function
-	require_once PUN_ROOT.'include/utf8/strcasecmp.php';
-
 	// Convert multiple whitespace characters into one (to prevent people from registering with indistinguishable usernames)
 	$username = preg_replace('%\s+%s', ' ', $username);
 
@@ -479,7 +476,7 @@ function check_username($username, $exclude_id = null)
 		$errors[] = $lang_prof_reg['Username too long'];
 	else if (!preg_match('%^\p{L}[\p{L}\p{N}_ ]+$%uD', $username)) // строгая проверка имени пользователя - Visman
 		$errors[] = $lang_prof_reg['Username Error'];
-	else if (!strcasecmp($username, 'Guest') || !utf8_strcasecmp($username, $lang_common['Guest']))
+	else if (!strcasecmp($username, 'Guest') || !pun_strcasecmp($username, $lang_common['Guest']))
 		$errors[] = $lang_prof_reg['Username guest'];
 	else if (preg_match('%[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}%', $username) || preg_match('%((([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(([0-9A-Fa-f]{1,4}:){0,5}:((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(::([0-9A-Fa-f]{1,4}:){0,5}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:))%', $username))
 		$errors[] = $lang_prof_reg['Username IP'];
@@ -506,7 +503,7 @@ function check_username($username, $exclude_id = null)
 	// Check username for any banned usernames
 	foreach ($pun_bans as $cur_ban)
 	{
-		if ($cur_ban['username'] != '' && utf8_strtolower($username) == utf8_strtolower($cur_ban['username']))
+		if ($cur_ban['username'] != '' && mb_strtolower($username) == mb_strtolower($cur_ban['username']))
 		{
 			$errors[] = $lang_prof_reg['Banned username'];
 			break;
@@ -931,12 +928,15 @@ function get_title($user)
 	{
 		$ban_list = array();
 
-		foreach ($pun_bans as $cur_ban)
-			$ban_list[] = utf8_strtolower($cur_ban['username']);
+		foreach ($pun_bans as $cur_ban) {
+			if (is_string($cur_ban['username'])) {
+				$ban_list[] = mb_strtolower($cur_ban['username']);
+			}
+		}
 	}
 
 	// If the user is banned
-	if (in_array(utf8_strtolower($user['username']), $ban_list))
+	if (in_array(mb_strtolower($user['username']), $ban_list))
 		$user_title = $lang_common['Banned'];
 	// If the user has a custom title
 	else if ($user['title'] != '')
@@ -1328,11 +1328,11 @@ function pun_htmlspecialchars_decode($str)
 
 
 //
-// A wrapper for utf8_strlen for compatibility
+// A wrapper for mb_strlen for compatibility
 //
 function pun_strlen($str)
 {
-	return utf8_strlen($str);
+	return mb_strlen($str);
 }
 
 
@@ -1350,15 +1350,32 @@ function pun_linebreaks($str)
 //
 function pun_trim($str, $charlist = false)
 {
-	return is_string($str) ? utf8_trim($str, $charlist) : '';
+	if (is_string($charlist)) {
+		$charlist = preg_quote($charlist, '%');
+		$str = preg_replace('%^[' . $charlist . ']+%u', '', $str);
+
+		return preg_replace('%[' . $charlist . ']+$%u', '', $str);
+	} else {
+		return trim($str);
+	}
 }
+
 
 //
 // Checks if a string is in all uppercase
 //
 function is_all_uppercase($string)
 {
-	return utf8_strtoupper($string) == $string && utf8_strtolower($string) != $string;
+	return mb_strtoupper($string) === $string && mb_strtolower($string) !== $string;
+}
+
+
+//
+// strcmp() for UTF-8 - Visman
+//
+function pun_strcasecmp($strX, $strY)
+{
+	return strcmp(mb_strtolower($strX), mb_strtolower($strY));
 }
 
 

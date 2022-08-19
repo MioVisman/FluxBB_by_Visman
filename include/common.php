@@ -14,6 +14,13 @@ error_reporting(E_ALL ^ E_NOTICE);
 ini_set('display_errors', 0);
 ini_set('log_errors', 1);
 
+// Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
+setlocale(LC_CTYPE, 'C');
+
+mb_language('uni');
+mb_internal_encoding('UTF-8');
+mb_substitute_character(0xFFFD);
+
 // Record the start time (will be used to calculate the generation time for the page)
 $pun_start = empty($_SERVER['REQUEST_TIME_FLOAT']) ? microtime(true) : (float) $_SERVER['REQUEST_TIME_FLOAT'];
 
@@ -60,17 +67,11 @@ require PUN_ROOT.'include/functions.php';
 // Load addon functionality
 require PUN_ROOT.'include/addons.php';
 
-// Load UTF-8 functions
-require PUN_ROOT.'include/utf8/utf8.php';
-
 // Strip out "bad" UTF-8 characters
 forum_remove_bad_characters();
 
 // The addon manager is responsible for storing the hook listeners and communicating with the addons
 $flux_addons = new flux_addon_manager();
-
-// Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
-setlocale(LC_CTYPE, 'C');
 
 // If a cookie name is not specified in config.php, we use the default (pun_cookie)
 if (empty($cookie_name))

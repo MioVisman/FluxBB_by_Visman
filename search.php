@@ -56,8 +56,8 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 	// If it's a regular search (keywords and/or author)
 	else if ($action == 'search')
 	{
-		$keywords = isset($_GET['keywords']) ? utf8_strtolower(pun_trim($_GET['keywords'])) : '';
-		$author = isset($_GET['author']) ? utf8_strtolower(pun_trim($_GET['author'])) : '';
+		$keywords = isset($_GET['keywords']) ? mb_strtolower(pun_trim($_GET['keywords'])) : '';
+		$author = isset($_GET['author']) ? mb_strtolower(pun_trim($_GET['author'])) : '';
 
 		if (preg_match('%^[\*\%]+$%', $keywords) || (pun_strlen(str_replace(array('*', '%'), '', $keywords)) < PUN_SEARCH_MIN_WORD && !is_cjk($keywords)))
 			$keywords = '';
@@ -277,7 +277,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 			}
 
 			// If it's a search for author name (and that author name isn't Guest)
-			if ($author && $author != 'guest' && $author != utf8_strtolower($lang_common['Guest']))
+			if ($author && $author != 'guest' && $author != mb_strtolower($lang_common['Guest']))
 			{
 				switch ($db_type)
 				{

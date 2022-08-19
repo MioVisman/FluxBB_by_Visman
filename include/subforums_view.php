@@ -187,7 +187,7 @@ foreach ($sf_array[$sf_cur_forum] as $cur_subforum)
 		if ($pun_config['o_censoring'] == '1')
 			$cur_subforum['last_topic'] = censor_words($cur_subforum['last_topic']);
 
-		$last_post = '<a href="viewtopic.php?pid='.$cur_subforum['last_post_id'].'#p'.$cur_subforum['last_post_id'].'">'.pun_htmlspecialchars(pun_strlen($cur_subforum['last_topic']) > 30 ? utf8_substr($cur_subforum['last_topic'], 0, 30).'…' : $cur_subforum['last_topic']).'</a> <span class="byuser">'.format_time($cur_subforum['last_post']).' '.$lang_common['by'].' '.pun_htmlspecialchars($cur_subforum['last_poster']).'</span>'; // last topic on index - Visman
+		$last_post = '<a href="viewtopic.php?pid='.$cur_subforum['last_post_id'].'#p'.$cur_subforum['last_post_id'].'">'.pun_htmlspecialchars(pun_strlen($cur_subforum['last_topic']) > 30 ? mb_substr($cur_subforum['last_topic'], 0, 30).'…' : $cur_subforum['last_topic']).'</a> <span class="byuser">'.format_time($cur_subforum['last_post']).' '.$lang_common['by'].' '.pun_htmlspecialchars($cur_subforum['last_poster']).'</span>'; // last topic on index - Visman
 	}
 	else if ($cur_subforum['redirect_url'] != '')
 		$last_post = '- - -';

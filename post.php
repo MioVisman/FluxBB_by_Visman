@@ -193,7 +193,7 @@ if (isset($_POST['form_sent']))
 		}
 // END Merge Post
 
-		$http_uagent = utf8_substr(remove_bad_characters($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 255); // MOD user agent - Visman
+		$http_uagent = mb_substr(remove_bad_characters($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 255); // MOD user agent - Visman
 
 		// If it's a reply
 		if ($tid)

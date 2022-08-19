@@ -14,7 +14,6 @@ if (!defined('PUN'))
 if (!defined('FORUM_EOL'))
 	define('FORUM_EOL', PHP_EOL);
 
-require PUN_ROOT.'include/utf8/utils/ascii.php';
 
 //
 // Validate an email address
@@ -69,10 +68,11 @@ function is_banned_email($email, $id = false)
 //
 function encode_mail_text($str)
 {
-	if (utf8_is_ascii($str))
+	if (preg_match('%[^\x20-\x7F]%', $str)) {
+		return '=?UTF-8?B?' . base64_encode($str) . '?=';
+	} else {
 		return $str;
-
-	return '=?UTF-8?B?'.base64_encode($str).'?=';
+	}
 }
 
 

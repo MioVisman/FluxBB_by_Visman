@@ -52,7 +52,7 @@ function split_words_clear_link_minor($arr)
 			$res.= split_words_clear_link_minor($text);
 			continue;
 		}
-		$text = utf8_strtolower(rawurldecode($text));
+		$text = mb_strtolower(rawurldecode($text));
 		$text = preg_replace('%[^\p{L}\p{N}]+%u', ' ', $text);
 		$text = preg_replace('%\b((\d+(?=[a-z])|[a-z]+(?=\d)){3,}\w*)\b%u', ' ', $text);
 		$text = preg_replace('%\b\d+|\d+\b%u', '', $text);
@@ -246,15 +246,15 @@ function update_search_index($mode, $post_id, $message, $subject = null)
 {
 	global $db_type, $db;
 
-	$message = utf8_strtolower($message);
-	$subject = utf8_strtolower($subject);
+	$message = mb_strtolower($message);
+	$subject = is_string($subject) ? mb_strtolower($subject) : null;
 
 	// Remove any bbcode that we shouldn't index
 	$message = strip_bbcode($message);
 
 	// Split old and new post/subject to obtain array of 'words'
 	$words_message = split_words($message, true);
-	$words_subject = ($subject) ? split_words($subject, true) : array();
+	$words_subject = $subject ? split_words($subject, true) : array();
 
 	if ($mode == 'edit')
 	{

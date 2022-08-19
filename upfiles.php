@@ -183,7 +183,7 @@ if ('delete' === $upf_action) {
 	) {
 		include PUN_ROOT . 'include/search_idx.php';
 		$like = '/' . $upf_dir . $fileName;
-		$words = split_words(utf8_strtolower($like), true);
+		$words = split_words(mb_strtolower($like), true);
 
 		if (count($words) > 2) {
 			$words = array_diff($words, ['img', 'members']);
@@ -471,7 +471,7 @@ if (is_dir(PUN_ROOT . $upf_dir)) {
 			$files[$file->getMTime() . $filename] = [
 				'filename' => $filename,
 				'ext' => $file->getExtension(),
-				'alt' => pun_strlen($filename) > 18 ? utf8_substr($filename, 0, 16) . '…' : $filename,
+				'alt' => pun_strlen($filename) > 18 ? mb_substr($filename, 0, 16) . '…' : $filename,
 				'size' => file_size($file->getSize()),
 				'url' => $tmp . $filename,
 				'mini' => is_file(PUN_ROOT . $upf_dir . 'mini_' . $filename) ? $tmp . 'mini_' . $filename : null,

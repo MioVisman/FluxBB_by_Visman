@@ -6,6 +6,16 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
+// Turn on full PHP error reporting
+error_reporting(E_ALL);
+
+// Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
+setlocale(LC_CTYPE, 'C');
+
+mb_language('uni');
+mb_internal_encoding('UTF-8');
+mb_substitute_character(0xFFFD);
+
 // The FluxBB version this script updates to
 define('UPDATE_TO', '1.5.11');
 
@@ -26,7 +36,6 @@ define('PUN_SEARCH_MAX_WORD', 20);
 // but can be overridden using the below constant if required.
 //define('FORUM_DEFAULT_CHARSET', 'latin1');
 define('FORUM_DEFAULT_CHARSET', 'cp1251'); // For RUSSIAN - Visman
-
 
 // The number of items to process per page view (lower this if the update script times out during UTF-8 conversion)
 define('PER_PAGE', 300);
@@ -62,17 +71,8 @@ if (!defined('PUN_DEBUG'))
 // Load the functions script
 require PUN_ROOT.'include/functions.php';
 
-// Load UTF-8 functions
-require PUN_ROOT.'include/utf8/utf8.php';
-
 // Strip out "bad" UTF-8 characters
 forum_remove_bad_characters();
-
-// Turn on full PHP error reporting
-error_reporting(E_ALL);
-
-// Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
-setlocale(LC_CTYPE, 'C');
 
 // If a cookie name is not specified in config.php, we use the default (forum_cookie)
 if (empty($cookie_name))
@@ -257,8 +257,6 @@ function convert_to_utf8(&$str, $old_charset)
 			$str = iconv(!empty($old_charset) ? $old_charset : 'ISO-8859-1', 'UTF-8', $str);
 		else if (function_exists('mb_convert_encoding'))
 			$str = mb_convert_encoding($str, 'UTF-8', !empty($old_charset) ? $old_charset : 'ISO-8859-1');
-		else if ($old_charset == 'ISO-8859-1')
-			$str = utf8_encode($str);
 	}
 
 	// Replace literal entities (for UTF-8 compliant html_entity_encode)
@@ -1608,7 +1606,7 @@ switch ($stage)
 							{
 								unset($cur_moderators[$old_username]);
 								$cur_moderators[$username] = $id;
-								uksort($cur_moderators, 'utf8_strcasecmp');
+								uksort($cur_moderators, 'pun_strcasecmp');
 
 								$db->query('UPDATE '.$db->prefix.'forums SET moderators=\''.$db->escape(serialize($cur_moderators)).'\' WHERE id='.$cur_forum['id']) or error('Unable to update forum', __FILE__, __LINE__, $db->error());
 							}

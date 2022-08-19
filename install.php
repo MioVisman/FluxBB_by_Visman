@@ -6,6 +6,16 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
+// Disable error reporting for uninitialized variables
+error_reporting(E_ALL);
+
+// Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
+setlocale(LC_CTYPE, 'C');
+
+mb_language('uni');
+mb_internal_encoding('UTF-8');
+mb_substitute_character(0xFFFD);
+
 // The FluxBB version this script installs
 define('FORUM_VERSION', '1.5.11');
 
@@ -30,17 +40,8 @@ header('Content-type: text/html; charset=utf-8');
 // Load the functions script
 require PUN_ROOT.'include/functions.php';
 
-// Load UTF-8 functions
-require PUN_ROOT.'include/utf8/utf8.php';
-
 // Strip out "bad" UTF-8 characters
 forum_remove_bad_characters();
-
-// Disable error reporting for uninitialized variables
-error_reporting(E_ALL);
-
-// Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
-setlocale(LC_CTYPE, 'C');
 
 // Turn off PHP time limit
 @set_time_limit(0);
