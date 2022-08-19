@@ -420,10 +420,12 @@ function check_bans()
 			continue;
 		}
 
-		if (!$pun_user['is_guest'] && $cur_ban['username'] != '' && $username == mb_strtolower($cur_ban['username']))
+		if (! $pun_user['is_guest'] && $cur_ban['username'] != '' && $username == mb_strtolower($cur_ban['username'])) {
 			$is_banned = true;
+			$suffix = '';
+		}
 
-		if ($cur_ban['ip'] != '')
+		else if ($cur_ban['ip'] != '')
 		{
 			$cur_ban_ips = explode(' ', $cur_ban['ip']);
 
@@ -436,6 +438,7 @@ function check_bans()
 				if (substr($user_ip, 0, strlen($cur_ban_ips[$i])) == $cur_ban_ips[$i])
 				{
 					$is_banned = true;
+					$suffix = ' ip';
 					break;
 				}
 			}
@@ -443,8 +446,12 @@ function check_bans()
 
 		if ($is_banned)
 		{
-			$db->query('DELETE FROM '.$db->prefix.'online WHERE ident=\''.$db->escape($pun_user['username']).'\'') or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
-			message($lang_common['Ban message'].' '.(($cur_ban['expire'] != '') ? $lang_common['Ban message 2'].' '.strtolower(format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? $lang_common['Ban message 3'].'<br /><br /><strong>'.pun_htmlspecialchars($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').$lang_common['Ban message 4'].' <a href="mailto:'.pun_htmlspecialchars($pun_config['o_admin_email']).'">'.pun_htmlspecialchars($pun_config['o_admin_email']).'</a>.', true);
+			if (! $pun_user['is_guest']) {
+				$db->query('DELETE FROM '.$db->prefix.'online WHERE ident=\''.$db->escape($pun_user['username']).'\'') or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
+			}
+
+			$prefix = $lang_common['Ban message' . $suffix] ?? $lang_common['Ban message'];
+			message($prefix.' '.(($cur_ban['expire'] != '') ? $lang_common['Ban message 2'].' '.strtolower(format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? $lang_common['Ban message 3'].'<br /><br /><strong>'.pun_htmlspecialchars($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').$lang_common['Ban message 4'].' <a href="mailto:'.pun_htmlspecialchars($pun_config['o_admin_email']).'">'.pun_htmlspecialchars($pun_config['o_admin_email']).'</a>.', true);
 		}
 	}
 
