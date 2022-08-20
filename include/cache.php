@@ -39,7 +39,7 @@ function generate_bans_cache()
 	global $db;
 
 	// Get the ban list from the DB
-	$result = $db->query('SELECT * FROM '.$db->prefix.'bans', true) or error('Unable to fetch ban list', __FILE__, __LINE__, $db->error());
+	$result = $db->query('SELECT id, username, ip, email, message, expire FROM '.$db->prefix.'bans', true) or error('Unable to fetch ban list', __FILE__, __LINE__, $db->error());
 
 	$output = array();
 	while ($cur_ban = $db->fetch_assoc($result))
