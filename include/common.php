@@ -150,7 +150,7 @@ if ($pun_config['o_maintenance'] && $pun_user['g_id'] > PUN_ADMIN && !defined('P
 if (file_exists(FORUM_CACHE_DIR.'cache_bans.php'))
 	include FORUM_CACHE_DIR.'cache_bans.php';
 
-if (!defined('PUN_BANS_LOADED'))
+if (!defined('PUN_SVA_BANS_LOADED'))
 {
 	if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
 		require PUN_ROOT.'include/cache.php';

@@ -420,7 +420,7 @@ function check_bans()
 			continue;
 		}
 
-		if (! $pun_user['is_guest'] && $cur_ban['username'] != '' && $username == mb_strtolower($cur_ban['username'])) {
+		if (! $pun_user['is_guest'] && $cur_ban['username'] != '' && $username == $cur_ban['username']) {
 			$is_banned = true;
 			$suffix = '';
 		}
@@ -510,7 +510,7 @@ function check_username($username, $exclude_id = null)
 	// Check username for any banned usernames
 	foreach ($pun_bans as $cur_ban)
 	{
-		if ($cur_ban['username'] != '' && mb_strtolower($username) == mb_strtolower($cur_ban['username']))
+		if ($cur_ban['username'] != '' && mb_strtolower($username) == $cur_ban['username'])
 		{
 			$errors[] = $lang_prof_reg['Banned username'];
 			break;
@@ -937,7 +937,7 @@ function get_title($user)
 
 		foreach ($pun_bans as $cur_ban) {
 			if (is_string($cur_ban['username'])) {
-				$ban_list[] = mb_strtolower($cur_ban['username']);
+				$ban_list[] = $cur_ban['username'];
 			}
 		}
 	}
