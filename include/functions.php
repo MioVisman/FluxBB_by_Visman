@@ -471,7 +471,7 @@ function check_bans()
 //
 function check_username($username, $exclude_id = null)
 {
-	global $db, $pun_config, $errors, $lang_prof_reg, $lang_register, $lang_common, $pun_bans;
+	global $db, $pun_config, $errors, $lang_prof_reg, $lang_register, $lang_common;
 
 	// Convert multiple whitespace characters into one (to prevent people from registering with indistinguishable usernames)
 	$username = preg_replace('%\s+%s', ' ', $username);
@@ -508,13 +508,8 @@ function check_username($username, $exclude_id = null)
 	}
 
 	// Check username for any banned usernames
-	foreach ($pun_bans as $cur_ban)
-	{
-		if ($cur_ban['username'] != '' && mb_strtolower($username) == $cur_ban['username'])
-		{
-			$errors[] = $lang_prof_reg['Banned username'];
-			break;
-		}
+	if (isset(get_usernames_banlist()[mb_strtolower($username)])) {
+		$errors[] = $lang_prof_reg['Banned username'];
 	}
 }
 
@@ -920,6 +915,28 @@ function censor_words($text)
 	return $text;
 }
 
+//
+// This function returns an array in which the banned usernames are the keys - Visman
+//
+function get_usernames_banlist()
+{
+	global $pun_bans;
+	static $ban_list;
+
+	if (! isset($ban_list))
+	{
+		$ban_list = [];
+
+		foreach ($pun_bans as $cur_ban) {
+			if (is_string($cur_ban['username'])) {
+				$ban_list[$cur_ban['username']] = true;
+			}
+		}
+	}
+
+	return $ban_list;
+}
+
 
 //
 // Determines the correct title for $user
@@ -927,23 +944,10 @@ function censor_words($text)
 //
 function get_title($user)
 {
-	global $pun_bans, $lang_common, $pun_config;
-	static $ban_list;
-
-	// If not already built in a previous call, build an array of lowercase banned usernames
-	if (!isset($ban_list))
-	{
-		$ban_list = array();
-
-		foreach ($pun_bans as $cur_ban) {
-			if (is_string($cur_ban['username'])) {
-				$ban_list[] = $cur_ban['username'];
-			}
-		}
-	}
+	global $lang_common, $pun_config;
 
 	// If the user is banned
-	if (in_array(mb_strtolower($user['username']), $ban_list))
+	if (isset(get_usernames_banlist()[mb_strtolower($user['username'])]))
 		$user_title = $lang_common['Banned'];
 	// If the user has a custom title
 	else if ($user['title'] != '')
