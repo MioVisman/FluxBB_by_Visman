@@ -291,8 +291,11 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 				}
 
 				$user_ids = array();
-				while ($row = $db->fetch_row($result))
-					$user_ids[] = $row[0];
+				while ($row = $db->fetch_row($result)) {
+					if ($row[0] > 1) { // exclude the guest, the condition above can skip the non-english guest name - Visman
+						$user_ids[] = $row[0];
+					}
+				}
 
 				if (!empty($user_ids))
 				{
