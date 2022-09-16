@@ -26,7 +26,7 @@ function upf_get_pg($key, $default = null)
 {
 	if (isset($_POST[$key])) {
 		return $_POST[$key];
-	} else if (isset($_GET[$key])) {
+	} elseif (isset($_GET[$key])) {
 		return $_GET[$key];
 	} else {
 		return $default;
@@ -288,20 +288,25 @@ if ('delete' === $upf_action) {
 		}
 
 	// вывод ошибки
-	} else if (false !== $error) {
+	} elseif (false !== $error) {
 		if ($pun_config['o_redirect_delay'] < 5) {
 			$pun_config['o_redirect_delay'] = 5;
 		}
 		upf_redirect($upf_page < 2 ? PLUGIN_URL : PLUGIN_URLD . 'p=' . $upf_page, $error);
 
 	// все ок для не ajax
-	} else if (! $upf_ajax) {
+	} elseif (! $upf_ajax) {
 		redirect($upf_page < 2 ? PLUGIN_URL : PLUGIN_URLD . 'p=' . $upf_page, $lang_up['Redirect delete']);
 	}
 }
 
 // Загрузка файла
-else if ('upload' === $upf_action && isset($_FILES['upfile']) && $id == $pun_user['id']) {
+elseif (
+	'upload' === $upf_action
+	&& $id == $pun_user['id']
+	&& isset($_FILES['upfile']['tmp_name'], $_FILES['upfile']['name'], $_FILES['upfile']['size'])
+	&& is_string($_FILES['upfile']['tmp_name'])
+) {
 	$upf_redir_delay = $pun_config['o_redirect_delay'];
 	if ($upf_redir_delay < 5) {
 		$pun_config['o_redirect_delay'] = 5;
@@ -445,7 +450,7 @@ else if ('upload' === $upf_action && isset($_FILES['upfile']) && $id == $pun_use
 }
 
 // Unknown failure
-else if (($upf_ajax && 'view' !== $upf_action) || (! $upf_ajax && ! empty($_POST))) {
+elseif (($upf_ajax && 'view' !== $upf_action) || (! $upf_ajax && ! empty($_POST))) {
 	upf_redirect(PLUGIN_URL, $lang_up['Unknown failure']);
 }
 

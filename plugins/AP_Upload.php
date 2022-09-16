@@ -13,7 +13,7 @@ if (! defined('PUN')) {
 
 // Tell admin_loader.php that this is indeed a plugin and that it is loaded
 define('PUN_PLUGIN_LOADED', 1);
-define('PLUGIN_VERSION', '3.2.1');
+define('PLUGIN_VERSION', '3.2.2');
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin=' . $plugin));
 define('PLUGIN_EXTS', 'webp,jpg,jpeg,png,gif,mp3,zip,rar,7z');
 define('PLUGIN_NF', 25);
@@ -351,18 +351,18 @@ if (defined('PLUGIN_OFF')) {
 						<table>
 							<tr>
 								<th scope="row"><label><?= $upf_class->getLibName() ?></label></th>
-								<td><?= pun_htmlspecialchars($upf_class->getLibVersion()) ?></td>
+								<td><?= pun_htmlspecialchars((string) $upf_class->getLibVersion()) ?></td>
 							</tr>
 							<tr>
 								<th scope="row"><label><?= $lang_up['pictures'] ?></label></th>
 								<td>
 									<?= $lang_up['for pictures'] . "\n" ?>
-									<input type="text" name="pic_mass" size="8" maxlength="8" tabindex="<?= $tabindex++ ?>" value="<?= pun_htmlspecialchars($aconf['pic_mass']) . $disbl ?>" />&#160;<?= $lang_up['kbytes'] . ":\n" ?><br />
+									<input type="text" name="pic_mass" size="8" maxlength="8" tabindex="<?= $tabindex++ ?>" value="<?= pun_htmlspecialchars((string) $aconf['pic_mass']) . $disbl ?>" />&#160;<?= $lang_up['kbytes'] . ":\n" ?><br />
 									&#160;*&#160;<?= $lang_up['Install quality'] . "\n" ?>
-									<input type="text" name="pic_perc" size="4" maxlength="3" tabindex="<?= $tabindex++ ?>" value="<?= pun_htmlspecialchars($aconf['pic_perc']) . $disbl ?>" />&#160;%<br />
+									<input type="text" name="pic_perc" size="4" maxlength="3" tabindex="<?= $tabindex++ ?>" value="<?= pun_htmlspecialchars((string) $aconf['pic_perc']) . $disbl ?>" />&#160;%<br />
 									&#160;*&#160;<?= $lang_up['Size not more'] . "\n" ?>
-									<input type="text" name="pic_w" size="4" maxlength="4" tabindex="<?= $tabindex++ ?>" value="<?= pun_htmlspecialchars($aconf['pic_w']) . $disbl ?>" />&#160;x
-									<input type="text" name="pic_h" size="4" maxlength="4" tabindex="<?= $tabindex++ ?>" value="<?= pun_htmlspecialchars($aconf['pic_h']) . $disbl ?>" />&#160;<?= $lang_up['px'] . "\n" ?>
+									<input type="text" name="pic_w" size="4" maxlength="4" tabindex="<?= $tabindex++ ?>" value="<?= pun_htmlspecialchars((string) $aconf['pic_w']) . $disbl ?>" />&#160;x
+									<input type="text" name="pic_h" size="4" maxlength="4" tabindex="<?= $tabindex++ ?>" value="<?= pun_htmlspecialchars((string) $aconf['pic_h']) . $disbl ?>" />&#160;<?= $lang_up['px'] . "\n" ?>
 								</td>
 							</tr>
 							<tr>
@@ -373,9 +373,9 @@ if (defined('PLUGIN_OFF')) {
 									<input type="radio" tabindex="<?= ($tabindex++) . $disbl ?>" name="thumb" value="0"<?= $aconf['thumb'] == 0 ? ' checked="checked"' : '' ?> /> <strong><?= $lang_admin_common['No'] ?></strong>
 									<br />
 									&#160;*&#160;<?= $lang_up['thumb_size'] . "\n" ?>
-									<input type="text" name="thumb_size" size="4" maxlength="4" tabindex="<?= $tabindex++ ?>" value="<?= pun_htmlspecialchars($aconf['thumb_size']) . $disbl ?>" />&#160;<?= $lang_up['px'] . "\n" ?><br />
+									<input type="text" name="thumb_size" size="4" maxlength="4" tabindex="<?= $tabindex++ ?>" value="<?= pun_htmlspecialchars((string) $aconf['thumb_size']) . $disbl ?>" />&#160;<?= $lang_up['px'] . "\n" ?><br />
 									&#160;*&#160;<?= $lang_up['quality'] . "\n" ?>
-									<input type="text" name="thumb_perc" size="4" maxlength="3" tabindex="<?= $tabindex++ ?>" value="<?= pun_htmlspecialchars($aconf['thumb_perc']) . $disbl ?>" />&#160;%
+									<input type="text" name="thumb_perc" size="4" maxlength="3" tabindex="<?= $tabindex++ ?>" value="<?= pun_htmlspecialchars((string) $aconf['thumb_perc']) . $disbl ?>" />&#160;%
 								</td>
 							</tr>
 						</table>

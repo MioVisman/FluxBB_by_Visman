@@ -139,17 +139,17 @@ class upfClass
 
     public function __construct()
     {
-        if (\extension_loaded('imagick') && \class_exists('\Imagick')) {
+        if (extension_loaded('imagick') && class_exists('Imagick')) {
             $this->resizeFlag = true;
             $this->libType = self::IMAGICK;
             $this->libName = 'ImageMagick';
-            $imagick = \Imagick::getVersion();
-            $this->libVersion = \trim(\preg_replace(['%ImageMagick%i', '%http[^\s]+%i'], '', $imagick['versionString']));
-        } elseif (\extension_loaded('gd') && \function_exists('\\imagecreatetruecolor')) {
+            $imagick = Imagick::getVersion();
+            $this->libVersion = trim(preg_replace(['%ImageMagick%i', '%http[^\s]+%i'], '', $imagick['versionString']));
+        } elseif (extension_loaded('gd') && function_exists('imagecreatetruecolor')) {
             $this->resizeFlag = true;
             $this->libType = self::GD;
             $this->libName = 'GD';
-            $gd = \gd_info();
+            $gd = gd_info();
             $this->libVersion = $gd['GD Version'];
         }
     }
@@ -178,7 +178,12 @@ class upfClass
 
     protected function isBadLink($link)
     {
-        if (false !== \strpos($link, ':', 2) || false !== \strpos($link, '//') || \preg_match('%\bphar\b%i', $link)) {
+        if (
+            ! is_string($link)
+            || false !== strpos($link, ':', 2)
+            || false !== strpos($link, '//')
+            || preg_match('%\bphar\b%i', $link)
+        ) {
             $this->error = 'Bad link';
             return true;
         } else {
@@ -188,36 +193,34 @@ class upfClass
 
     public function inBlackList($ext)
     {
-        return isset($this->blackList[\strtolower($ext)]);
+        return isset($this->blackList[strtolower($ext)]);
     }
 
     public function dirSize($dir)
     {
         if ($this->isBadLink($dir)) {
             return false;
-        }
-        if (! \is_dir($dir)) {
+        } elseif (! is_dir($dir)) {
             $this->error = 'Directory expected';
             return false;
-        }
-        if (false === ($dh = \opendir($dir))) {
+        } elseif (false === ($dh = opendir($dir))) {
             $this->error = 'Could not open directory';
             return false;
         }
 
         $size = 0;
-        while (false !== ($file = \readdir($dh))) {
-            if ('' == \trim($file) || '.' === $file[0] || '#' === $file[0] || ! \is_file($dir . $file)) {
+        while (false !== ($file = readdir($dh))) {
+            if ('' == trim($file) || '.' === $file[0] || '#' === $file[0] || ! is_file($dir . $file)) {
                 continue;
             }
-            $ext = \strtolower(\substr(\strrchr($file, '.'), 1)); // расширение файла
+            $ext = strtolower(substr(strrchr($file, '.'), 1)); // расширение файла
             if (isset($this->blackList[$ext])) {
                 continue;
             }
-            $size += \filesize($dir . $file);
+            $size += filesize($dir . $file);
         }
 
-        \closedir($dh);
+        closedir($dh);
         return $size;
     }
 
@@ -232,12 +235,12 @@ class upfClass
      */
     public function size($value, $to = null)
     {
-        if (\is_string($value)) {
-            if (! \preg_match('%^([^a-z]+)([a-z]+)?$%i', \trim($value), $matches)) {
+        if (is_string($value)) {
+            if (! preg_match('%^([^a-z]+)([a-z]+)?$%i', trim($value), $matches)) {
                 $this->error = 'Expected string indicating the amount of information';
                 return false;
             }
-            if (! \is_numeric($matches[1])) {
+            if (! is_numeric($matches[1])) {
                 $this->error = 'String does not contain number';
                 return false;
             }
@@ -245,8 +248,8 @@ class upfClass
             $value = 0 + $matches[1];
 
             if (! empty($matches[2])) {
-                $unit = \strtoupper($matches[2][0]);
-                $expo = \strpos($this->units, $unit);
+                $unit = strtoupper($matches[2][0]);
+                $expo = strpos($this->units, $unit);
 
                 if (false === $expo) {
                     $this->error = 'Unknown unit';
@@ -257,10 +260,10 @@ class upfClass
             }
         }
 
-        if (\is_string($to)) {
-            $to = \trim($to);
-            $unit = \strtoupper($to[0]);
-            $expo = \strpos($this->units, $unit);
+        if (is_string($to)) {
+            $to = trim($to);
+            $unit = strtoupper($to[0]);
+            $expo = strpos($this->units, $unit);
 
             if (false === $expo) {
                 $this->error = 'Unknown unit';
@@ -286,11 +289,11 @@ class upfClass
             return false;
         }
 
-        if (\function_exists('\\exif_imagetype')) {
-            $type = \exif_imagetype($path);
+        if (function_exists('exif_imagetype')) {
+            $type = exif_imagetype($path);
         } elseif (
-            \function_exists('\\getimagesize')
-            && false !== ($type = @\getimagesize($path))
+            function_exists('getimagesize')
+            && false !== ($type = @getimagesize($path))
             && $type[0] > 0
             && $type[1] > 0
         ) {
@@ -300,7 +303,7 @@ class upfClass
         }
         if (13 === $type)
         {
-            $code = \file_get_contents($path, false, null, 0, 3);
+            $code = file_get_contents($path, false, null, 0, 3);
             if ('FWS' === $code || 'CWS' === $code)
                 $type = 4;
         }
@@ -317,17 +320,17 @@ class upfClass
     protected function filterName($name)
     {
         $new = false;
-        if (\function_exists('\\transliterator_transliterate')) {
-            $new = \transliterator_transliterate("Any-Latin; NFD; [:Nonspacing Mark:] Remove; NFC;", $name);
+        if (function_exists('transliterator_transliterate')) {
+            $new = transliterator_transliterate("Any-Latin; NFD; [:Nonspacing Mark:] Remove; NFC;", $name);
         }
-        if (! \is_string($new)) {
+        if (! is_string($new)) {
             $new = str_replace(array_keys($this->UTF8AR), array_values($this->UTF8AR), $name);
         }
 
-        $name = \trim(\preg_replace('%[^\w-]+%', '-', $new), '-_');
+        $name = trim(preg_replace('%[^\w-]+%', '-', $new), '-_');
 
         if (! isset($name[0])) {
-            $name = $this->filterName(\date('Ymd\-His'));
+            $name = $this->filterName(date('Ymd\-His'));
         }
 
         return $name;
@@ -345,11 +348,11 @@ class upfClass
 
     public function prepFileName()
     {
-        if ('mini_' === \substr($this->fileName, 0, 5)) {
-            $this->fileName = \substr($this->fileName, 5);
+        if ('mini_' === substr($this->fileName, 0, 5)) {
+            $this->fileName = substr($this->fileName, 5);
         }
-        if (\strlen($this->fileName) > 100) {
-            $this->fileName = \substr($this->fileName, 0, 100);
+        if (strlen($this->fileName) > 100) {
+            $this->fileName = substr($this->fileName, 0, 100);
         }
         if ('' == $this->fileName) {
             $this->fileName = 'none';
@@ -363,7 +366,7 @@ class upfClass
 
     public function setImageQuality($quality)
     {
-        $this->quality = \min(\max((int) $quality, 1), 100);
+        $this->quality = min(max((int) $quality, 1), 100);
     }
 
     protected $filePath;
@@ -397,35 +400,35 @@ class upfClass
             $pattern = '%[\\/]([\w-]+)\.(\w+)$%';
             $subject = $path;
         }
-        if (! \preg_match($pattern, $subject, $matches)) {
+        if (! preg_match($pattern, $subject, $matches)) {
             $this->error = 'Bad file name or extension';
             return false;
         }
 
-        $this->fileExt = $this->fileCalcExt = \strtolower($matches[2]);
+        $this->fileExt = $this->fileCalcExt = strtolower($matches[2]);
         if (isset($this->blackList[$this->fileExt])) {
             $this->error = 'Bad file extension';
             return false;
         }
 
         if (null !== $basename) {
-            if (! \is_uploaded_file($path)) {
+            if (! is_uploaded_file($path)) {
                 $this->error = 'File was not uploaded';
                 return false;
             }
         } else {
-            if (! \is_file($path)) {
+            if (! is_file($path)) {
                 $this->error = 'No file';
                 return false;
             }
         }
-        if (! \is_readable($path)) {
+        if (! is_readable($path)) {
             $this->error = 'File unreadable';
             return false;
         }
 
         $imageInfo = $this->imageExt($path);
-        if (\is_array($imageInfo)) {
+        if (is_array($imageInfo)) {
             if (null !== $basename) {
                 $this->fileExt = $imageInfo[0];
             }
@@ -445,20 +448,20 @@ class upfClass
             return true;
         }
 
-        $f = \fopen($this->filePath, "rb");
+        $f = fopen($this->filePath, "rb");
         if (false === $f) {
             return true;
         }
 
         $buf1 = '';
-        while ($buf2 = \fread($f, 4096)) {
-            if (\preg_match( "%<(?:script|html|head|title|body|table|a\s+href|img\s|plaintext|cross\-domain\-policy|embed|applet|i?frame|\?php)%msi", $buf1 . $buf2)) {
-                \fclose($f);
+        while ($buf2 = fread($f, 4096)) {
+            if (preg_match( "%<(?:script|html|head|title|body|table|a\s+href|img\s|plaintext|cross\-domain\-policy|embed|applet|i?frame|\?php)%msi", $buf1 . $buf2)) {
+                fclose($f);
                 return true;
             }
-            $buf1 = \substr($buf2, -30);
+            $buf1 = substr($buf2, -30);
         }
-        \fclose($f);
+        fclose($f);
         return false;
     }
 
@@ -471,10 +474,10 @@ class upfClass
         switch ($this->libType) {
             case self::IMAGICK:
                 try {
-                    $image = new \Imagick(\realpath($this->filePath));
+                    $image = new Imagick(realpath($this->filePath));
                     $width = $image->getImageWidth();
                     $height = $image->getImageHeight();
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $this->error = $this->hidePath($e->getMessage());
                     return false;
                 }
@@ -487,8 +490,8 @@ class upfClass
                         break;
                 }
 
-                $func = '\\imagecreatefrom' . $type;
-                if (! \function_exists($func)) {
+                $func = 'imagecreatefrom' . $type;
+                if (! function_exists($func)) {
                     $this->error = 'No function to create image';
                     return false;
                 }
@@ -498,12 +501,12 @@ class upfClass
                     $this->error = 'Failed to create image';
                     return false;
                 }
-                if (false === \imagealphablending($image, false) || false === \imagesavealpha($image, true)) {
+                if (false === imagealphablending($image, false) || false === imagesavealpha($image, true)) {
                     $this->error = 'Failed to adjust image';
                     return false;
                 }
-                $width = \imagesx($image);
-                $height = \imagesy($image);
+                $width = imagesx($image);
+                $height = imagesy($image);
                 break;
             default:
                 $this->error = 'Graphics library type not defined';
@@ -538,12 +541,12 @@ class upfClass
             return false;
         }
 
-        if (! \preg_match('%^(.+[\\/])([\w-]+)\.(\w+)$%', $path, $matches)) {
+        if (! preg_match('%^(.+[\\/])([\w-]+)\.(\w+)$%', $path, $matches)) {
             $this->error = 'Bad dir name, file name or extension';
             return false;
         }
 
-        $ext = \strtolower($matches[3]);
+        $ext = strtolower($matches[3]);
         if (isset($this->blackList[$ext])) {
             $this->error = 'Bad file extension';
             return false;
@@ -554,7 +557,7 @@ class upfClass
         if (true !== $overwrite) {
             $tmp = '';
             $i = 0;
-            while (\is_file($dir . $name . $tmp . '.' . $ext) && $i < 100) {
+            while (is_file($dir . $name . $tmp . '.' . $ext) && $i < 100) {
                 $tmp = '-' . random_pass(4);
                 ++$i;
             }
@@ -567,7 +570,7 @@ class upfClass
         $path = $dir . $name . '.' . $ext;
 
         if (false === $isImage) {
-            $func = $this->fileIsUp ? '\\move_uploaded_file' : '\\copy';
+            $func = $this->fileIsUp ? 'move_uploaded_file' : 'copy';
             $result = @$func($this->filePath, $path);
             if (! $result) {
                 $this->error = 'Failed to copy file';
@@ -588,7 +591,7 @@ class upfClass
                                 break;
                         }
                         $this->image->writeImages($path, true);
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         $this->error = $this->hidePath($e->getMessage(), $path);
                         return false;
                     }
@@ -604,7 +607,7 @@ class upfClass
                             break;
                         case 'png':
                             //$args[] = -1;
-                            //$args[] = \PNG_ALL_FILTERS; // \PNG_NO_FILTER;
+                            //$args[] = PNG_ALL_FILTERS; // PNG_NO_FILTER;
                             // imagecolorstotal
                             // , int $quality = -1 , int $filters = -1
                             break;
@@ -612,8 +615,8 @@ class upfClass
                             $args[] = $this->quality;
                             break;
                     }
-                    $func = '\\image' . $type;
-                    if (! \function_exists($func)) {
+                    $func = 'image' . $type;
+                    if (! function_exists($func)) {
                         $this->error = 'No function to save image';
                         return false;
                     }
@@ -630,7 +633,7 @@ class upfClass
             }
         }
 
-        @\chmod($path, 0644);
+        @chmod($path, 0644);
 
         return [
             'path' => $path,
@@ -652,14 +655,14 @@ class upfClass
                 try {
                     $oldWidth = $this->image->getImageWidth();
                     $oldHeight = $this->image->getImageHeight();
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $this->error = $this->hidePath($e->getMessage());
                     return false;
                 }
                 break;
             case self::GD:
-                $oldWidth = \imagesx($this->image);
-                $oldHeight = \imagesy($this->image);
+                $oldWidth = imagesx($this->image);
+                $oldHeight = imagesy($this->image);
                 break;
             default:
                 $this->error = 'Graphics library type not defined';
@@ -668,12 +671,12 @@ class upfClass
 
         $w = (empty($width) || $width < 16) ? 1 : $width / $oldWidth;
         $h = (empty($height) || $height < 16) ? 1 : $height / $oldHeight;
-        $r = \min(1, $w, $h);
+        $r = min(1, $w, $h);
         if (1 == $r) { // ?
             return 1;
         }
-        $width = (int) \round($oldWidth * $r);
-        $height = (int) \round($oldHeight * $r);
+        $width = (int) round($oldWidth * $r);
+        $height = (int) round($oldHeight * $r);
 
         switch ($this->libType) {
             case self::IMAGICK:
@@ -683,7 +686,7 @@ class upfClass
                         $image = $this->image->coalesceImages();
 
                         foreach ($image as $frame) {
-                            $frame->resizeImage($width, $height, \Imagick::FILTER_LANCZOS, 1);
+                            $frame->resizeImage($width, $height, Imagick::FILTER_LANCZOS, 1);
                             $frame->setImagePage($width, $height, 0, 0);
                         }
 
@@ -692,37 +695,37 @@ class upfClass
                     // нет анимации
                     } else {
                         $image = clone $this->image;
-                        $image->resizeImage($width, $height, \Imagick::FILTER_LANCZOS, 1);
+                        $image->resizeImage($width, $height, Imagick::FILTER_LANCZOS, 1);
                     }
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $this->error = $this->hidePath($e->getMessage());
                     return false;
                 }
                 break;
             case self::GD:
-                if (false === ($image = \imagecreatetruecolor($width, $height))) {
+                if (false === ($image = imagecreatetruecolor($width, $height))) {
                     $this->error = 'Failed to create new truecolor image';
                     return false;
                 }
-                if (false === ($transparent = \imagecolorallocatealpha($image, 255, 255, 255, 127))) {
+                if (false === ($transparent = imagecolorallocatealpha($image, 255, 255, 255, 127))) {
                     $this->error = 'Failed to create color for image';
                     return false;
                 }
-                if (false === \imagefill($image, 0, 0, $transparent)) {
+                if (false === imagefill($image, 0, 0, $transparent)) {
                     $this->error = 'Failed to fill image with color';
                     return false;
                 }
-                \imagecolortransparent($image, $transparent);
-                $colors = \imagecolorstotal($this->image);
-                if ($colors > 0 && false === \imagetruecolortopalette($image, true, $colors)) {
+                imagecolortransparent($image, $transparent);
+                $colors = imagecolorstotal($this->image);
+                if ($colors > 0 && false === imagetruecolortopalette($image, true, $colors)) {
                     $this->error = 'Failed to convert image to palette';
                     return false;
                 }
-                if (false === \imagealphablending($image, false) || false === \imagesavealpha($image, true)) {
+                if (false === imagealphablending($image, false) || false === imagesavealpha($image, true)) {
                     $this->error = 'Failed to adjust image';
                     return false;
                 }
-                if (false === \imagecopyresampled($image, $this->image, 0, 0, 0, 0, $width, $height, $oldWidth, $oldHeight)) {
+                if (false === imagecopyresampled($image, $this->image, 0, 0, 0, 0, $width, $height, $oldWidth, $oldHeight)) {
                     $this->error = 'Failed to resize image';
                     return false;
                 }
@@ -749,12 +752,12 @@ class upfClass
             case self::IMAGICK:
                 try {
                     $result = $this->image->clear();
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $result = false;
                 }
                 break;
             case self::GD:
-                $result = \imagedestroy($this->image);
+                $result = imagedestroy($this->image);
                 break;
         }
 
@@ -776,14 +779,14 @@ class upfClass
     {
         $search = [];
         if (null !== $this->filePath) {
-            $search[] = \realpath($this->filePath);
+            $search[] = realpath($this->filePath);
             $search[] = $this->filePath;
         }
         if (null !== $path) {
-            $search[] = \realpath($path);
+            $search[] = realpath($path);
             $search[] = $path;
         }
-        return empty($search) ? $str : \str_replace($search, '', $str);
+        return empty($search) ? $str : str_replace($search, '', $str);
     }
 }
 
