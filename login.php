@@ -119,7 +119,7 @@ else if ($action == 'out')
 	if (isset($pun_user['logged']))
 		$db->query('UPDATE '.$db->prefix.'users SET last_visit='.$pun_user['logged'].' WHERE id='.$pun_user['id']) or error('Unable to update user visit data', __FILE__, __LINE__, $db->error());
 
-	pun_setcookie(1, pun_hash(uniqid(rand(), true)), time() + 31536000);
+	forum_setcookie($cookie_name, '', 1);
 
 	redirect('index.php', $lang_login['Logout redirect']);
 }

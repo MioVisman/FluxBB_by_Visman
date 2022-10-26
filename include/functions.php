@@ -34,8 +34,7 @@ function check_cookie(&$pun_user)
 		$is_authorized = hash_equals(forum_hmac($cookie['user_id'].'|'.$cookie['expiration_time'], $cookie_seed.'_cookie_hash'), $cookie['cookie_hash']);
 		if (!$is_authorized)
 		{
-			$expire = $now + 31536000; // The cookie expires after a year
-			pun_setcookie(1, pun_hash(uniqid(rand(), true)), $expire);
+			forum_setcookie($cookie_name, '', 1);
 			set_default_user();
 
 			return;
@@ -50,8 +49,7 @@ function check_cookie(&$pun_user)
 		$is_authorized = hash_equals(forum_hmac($pun_user['password'], $cookie_seed.'_password_hash'), $cookie['password_hash']);
 		if (!isset($pun_user['id']) || !$is_authorized)
 		{
-			$expire = $now + 31536000; // The cookie expires after a year
-			pun_setcookie(1, pun_hash(uniqid(rand(), true)), $expire);
+			forum_setcookie($cookie_name, '', 1);
 			set_default_user();
 
 			return;
@@ -60,8 +58,7 @@ function check_cookie(&$pun_user)
 		// проверка ip админа и модератора - Visman
 		if ($pun_config['o_check_ip'] == '1' && ($pun_user['g_id'] == PUN_ADMIN || $pun_user['g_moderator'] == '1') && $pun_user['registration_ip'] != get_remote_address())
 		{
-			$expire = $now + 31536000; // The cookie expires after a year
-			pun_setcookie(1, pun_hash(uniqid(rand(), true)), $expire);
+			forum_setcookie($cookie_name, '', 1);
 			set_default_user();
 
 			return;
@@ -363,7 +360,7 @@ function forum_setcookie($name, $value, $expire)
 {
 	global $cookie_path, $cookie_domain, $cookie_secure, $pun_config, $cookie_samesite;
 
-	if ($expire - time() - $pun_config['o_timeout_visit'] < 1)
+	if ($expire > 1 && $expire - time() - $pun_config['o_timeout_visit'] < 1)
 		$expire = 0;
 
 	if (empty($cookie_samesite))
