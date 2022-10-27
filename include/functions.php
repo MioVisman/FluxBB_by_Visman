@@ -28,16 +28,12 @@ function check_cookie(&$pun_user)
 	}
 
 	// If it has a non-guest user, and hasn't expired
-	if (isset($cookie) && $cookie['user_id'] > 1 && $cookie['expiration_time'] > $now)
+	// Use WHILE instead of IF to simplify this function - Visman
+	while (isset($cookie) && $cookie['user_id'] > 1 && $cookie['expiration_time'] > $now)
 	{
 		// If the cookie has been tampered with
 		if (!hash_equals(forum_hmac($cookie['user_id'].'|'.$cookie['expiration_time'], $cookie_seed.'_cookie_hash'), $cookie['cookie_hash']))
-		{
-			forum_setcookie($cookie_name, '', 1);
-			set_default_user();
-
-			return;
-		}
+			break; // jump to the end - Visman
 
 		// Кто в этой теме - , o.witt_data - Visman
 		// Check if there's a user with the user ID and password hash from the cookie
@@ -46,21 +42,11 @@ function check_cookie(&$pun_user)
 
 		// If user authorisation failed
 		if (!isset($pun_user['id']) || !hash_equals(forum_hmac($pun_user['password'], $cookie_seed.'_password_hash'), $cookie['password_hash']))
-		{
-			forum_setcookie($cookie_name, '', 1);
-			set_default_user();
-
-			return;
-		}
+			break; // jump to the end - Visman
 
 		// проверка ip админа и модератора - Visman
 		if ($pun_config['o_check_ip'] == '1' && ($pun_user['g_id'] == PUN_ADMIN || $pun_user['g_moderator'] == '1') && $pun_user['registration_ip'] != get_remote_address())
-		{
-			forum_setcookie($cookie_name, '', 1);
-			set_default_user();
-
-			return;
-		}
+			break; // jump to the end - Visman
 
 		// Send a new, updated cookie with a new expiration timestamp
 		$expire = ($cookie['expiration_time'] > $now + $pun_config['o_timeout_visit']) ? $now + 1209600 : $now + $pun_config['o_timeout_visit'];
@@ -133,9 +119,15 @@ function check_cookie(&$pun_user)
 		$pun_user['is_admmod'] = $pun_user['g_id'] == PUN_ADMIN || $pun_user['g_moderator'] == '1';
 
 		$pun_user['is_bot'] = false; // MOD определения ботов - Visman
+
+		return;
 	}
-	else
-		set_default_user();
+
+	// delete an expired or invalid cookie - Visman
+	if (isset($_COOKIE[$cookie_name]))
+		forum_setcookie($cookie_name, '', 1);
+
+	set_default_user();
 }
 
 
