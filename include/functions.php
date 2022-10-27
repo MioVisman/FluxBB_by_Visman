@@ -46,8 +46,7 @@ function check_cookie(&$pun_user)
 		$pun_user = $db->fetch_assoc($result);
 
 		// If user authorisation failed
-		$is_authorized = hash_equals(forum_hmac($pun_user['password'], $cookie_seed.'_password_hash'), $cookie['password_hash']);
-		if (!isset($pun_user['id']) || !$is_authorized)
+		if (!isset($pun_user['id']) || !hash_equals(forum_hmac($pun_user['password'], $cookie_seed.'_password_hash'), $cookie['password_hash']))
 		{
 			forum_setcookie($cookie_name, '', 1);
 			set_default_user();
