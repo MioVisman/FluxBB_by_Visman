@@ -86,17 +86,17 @@ function security_random_name($s)
 	if (!isset($s1_ar))
 		$s1_ar = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-	$key = substr($s1_ar, (mt_rand() % strlen($s1_ar)), 1);
+	$key = $s1_ar[random_int(0, strlen($s1_ar) - 1)];
 	$s1_ar = str_replace($key, '', $s1_ar);
 
-	$key .= mt_rand(1, 9);
+	$key .= random_int(1, 9);
 
 	$chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
-	$len = mt_rand(1, 5);
+	$len = random_int(1, 5);
 
 	for ($i = 0; $i < $len; ++$i)
-		$key .= substr($chars, (mt_rand() % strlen($chars)), 1);
+		$key .= $chars[random_int(0, strlen($chars) - 1)];
 
 	$sar[$s] = $key;
 	return $key;
@@ -125,8 +125,8 @@ function security_show_captcha($tabindex, $acaptcha = true, $qcaptcha = false)
 
 			if (isset($pun_config['o_coding_forms']) && $pun_config['o_coding_forms'] == '1')
 			{
-				$inp_name = 'jst_'.mt_rand(1, 1000);
-				$inp_code = mt_rand(2, 99);
+				$inp_name = 'jst_'.random_int(1, 1000);
+				$inp_code = random_int(2, 99);
 				$result[$inp_name] = $inp_code;
 
 				$page_js['c'][] = 'document.getElementById("id'.$inp_name.'").value="'.$inp_code.'";';
@@ -137,8 +137,8 @@ function security_show_captcha($tabindex, $acaptcha = true, $qcaptcha = false)
 <?php
 
 			}
-			$inp_name = security_random_name('form_qcaptha'.mt_rand(1, 1000));
-			$inp_code = mt_rand(2, 99);
+			$inp_name = security_random_name('form_qcaptha'.random_int(1, 1000));
+			$inp_code = random_int(2, 99);
 			$result[$inp_name] = $inp_code;
 
 ?>
@@ -149,7 +149,7 @@ function security_show_captcha($tabindex, $acaptcha = true, $qcaptcha = false)
 
 		if ($acaptcha)
 		{
-			$len = mt_rand(2, 3);
+			$len = random_int(2, 3);
 			$c = array('+', '-', '*', '/');
 			$a = $d = array();
 
@@ -163,7 +163,7 @@ function security_show_captcha($tabindex, $acaptcha = true, $qcaptcha = false)
 			$pred = $prea = 0;
 			for ($i = $len; $i > 0; $i--)
 			{
-				$a[$i] = mt_rand(1, 9);
+				$a[$i] = random_int(1, 9);
 
 				if ($i < $len && $d[$i] == '/')
 				{
@@ -198,9 +198,9 @@ function security_show_captcha($tabindex, $acaptcha = true, $qcaptcha = false)
 
 			eval('$sum = '.$str.';');
 
-			$inp_idx = mt_rand(1, $len + 1);
-			$type = mt_rand(0, 1);
-			$inp_name = security_random_name('form_captha'.mt_rand(1, 1000));
+			$inp_idx = random_int(1, $len + 1);
+			$type = random_int(0, 1);
+			$inp_name = security_random_name('form_captha'.random_int(1, 1000));
 			$inp_code = '<input type="text" name="'.$inp_name.'" size="4" maxlength="4"'.($tabindex > 0 ? ' tabindex="'.($tabindex++).'"' : (empty($cur_index) ? '' : ' tabindex="'.($cur_index++).'"')).' />';
 			$result[$inp_name] = ($inp_idx > $len ? $sum : $a[$inp_idx]);
 			security_show_random_value(false);

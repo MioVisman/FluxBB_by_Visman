@@ -2111,7 +2111,7 @@ function forum_is_writable($path)
 	if (is_dir($path))
 	{
 		$path = rtrim($path, '/').'/';
-		return forum_is_writable($path.uniqid(mt_rand()).'.tmp');
+		return forum_is_writable($path.random_key(8, true).'.tmp');
 	}
 
 	// Check temporary file for read/write capabilities
