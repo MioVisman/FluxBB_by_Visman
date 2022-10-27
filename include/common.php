@@ -24,9 +24,6 @@ mb_substitute_character(0xFFFD);
 // Record the start time (will be used to calculate the generation time for the page)
 $pun_start = empty($_SERVER['REQUEST_TIME_FLOAT']) ? microtime(true) : (float) $_SERVER['REQUEST_TIME_FLOAT'];
 
-// Seed the random number generator for systems where this does not happen automatically
-mt_srand();
-
 // Define the version and database revision that this code was written for
 define('FORUM_VERSION', '1.5.11');
 
