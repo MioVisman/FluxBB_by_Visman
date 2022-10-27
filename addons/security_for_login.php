@@ -93,7 +93,7 @@ class addon_security_for_login extends flux_addon
 
 		$now = time();
 		$ip = get_remote_address();
-		$key = pun_hash($now.$ip.uniqid(rand(), true));
+		$key = pun_hash(random_key(9).$now.$ip);
 		$form_captcha = '';
 
 		$result = $db->query('SELECT COUNT(*) FROM '.$db->prefix.'sec_of_login WHERE form_time>'.($now - $this->att_period)) or error('Unable to get sec_of_login data', __FILE__, __LINE__, $db->error());

@@ -98,7 +98,7 @@ class addon_security_for_post extends flux_addon
 
 		$now = time();
 		$ip = get_remote_address();
-		$key = pun_hash($now.$ip.uniqid(rand(), true));
+		$key = pun_hash(random_key(9).$now.$ip);
 
 		$enable_acaptcha = isset($pun_config['o_enable_acaptcha']) && $pun_config['o_enable_acaptcha'] == '1';
 

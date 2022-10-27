@@ -657,7 +657,7 @@ if (isset($_POST['req_db_pass']))
 	// Visman - test for DB for a list of actions required to update
 
 	// Generate a unique id to identify this session, only if this is a valid session
-	$uid = pun_hash($req_db_pass.'|'.uniqid(rand(), true));
+	$uid = pun_hash($req_db_pass.'|'.random_key(11));
 	if ($lock) // We already have a lock file
 		$lock_error = true;
 	else // Create the lock file
