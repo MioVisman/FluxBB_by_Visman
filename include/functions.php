@@ -31,8 +31,7 @@ function check_cookie(&$pun_user)
 	if (isset($cookie) && $cookie['user_id'] > 1 && $cookie['expiration_time'] > $now)
 	{
 		// If the cookie has been tampered with
-		$is_authorized = hash_equals(forum_hmac($cookie['user_id'].'|'.$cookie['expiration_time'], $cookie_seed.'_cookie_hash'), $cookie['cookie_hash']);
-		if (!$is_authorized)
+		if (!hash_equals(forum_hmac($cookie['user_id'].'|'.$cookie['expiration_time'], $cookie_seed.'_cookie_hash'), $cookie['cookie_hash']))
 		{
 			forum_setcookie($cookie_name, '', 1);
 			set_default_user();
