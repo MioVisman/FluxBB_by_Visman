@@ -837,7 +837,7 @@ else if (isset($_POST['form_sent']))
 		{
 			$form = array(
 				'realname'		=> isset($_POST['form']['realname']) ? pun_trim($_POST['form']['realname']) : '',
-				'gender'		=> isset($_POST['form']['gender']) ? pun_trim($_POST['form']['gender']) : '', // мод пола - Visman
+				'gender'		=> isset($_POST['form']['gender']) && in_array($_POST['form']['gender'], ['0', '1', '2'], true) ? $_POST['form']['gender'] : '0', // мод пола - Visman
 				'url'			=> isset($_POST['form']['url']) ? pun_trim($_POST['form']['url']) : '',
 				'location'		=> isset($_POST['form']['location']) ? pun_trim($_POST['form']['location']) : '',
 			);
