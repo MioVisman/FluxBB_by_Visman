@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2011-2021 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2011-2022 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2007 BN (bnmaster@la-bnbox.info)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
@@ -13,7 +13,7 @@ if (! defined('PUN')) {
 
 // Tell admin_loader.php that this is indeed a plugin and that it is loaded
 define('PUN_PLUGIN_LOADED', 1);
-define('PLUGIN_VERSION', '3.2.2');
+define('PLUGIN_VERSION', '3.2.3');
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin=' . $plugin));
 define('PLUGIN_EXTS', 'webp,jpg,jpeg,png,gif,mp3,zip,rar,7z');
 define('PLUGIN_NF', 25);
@@ -124,10 +124,14 @@ if (isset($_POST['installation'])) {
 
 // Обновления параметров
 else if (isset($_POST['update'])) {
-	$g_up_ext = isset($_POST['g_up_ext']) ? array_map('pun_trim', $_POST['g_up_ext']) : [];
-	$g_up_max = isset($_POST['g_up_max']) ? array_map('floatval', $_POST['g_up_max']) : [];
-	$g_up_limit = isset($_POST['g_up_limit']) ? array_map('intval', $_POST['g_up_limit']) : [];
-	$g_up_perm_del = isset($_POST['g_up_perm_del']) ? array_map('intval', $_POST['g_up_perm_del']) : [];
+	$g_up_ext = $_POST['g_up_ext'] ?? null;
+	$g_up_ext = is_array($g_up_ext) ? array_map('pun_trim', $g_up_ext) : [];
+	$g_up_max = $_POST['g_up_max'] ?? null;
+	$g_up_max = is_array($g_up_max) ? array_map('floatval', $g_up_max) : [];
+	$g_up_limit = $_POST['g_up_limit'] ?? null;
+	$g_up_limit = is_array($g_up_limit) ? array_map('intval', $g_up_limit) : [];
+	$g_up_perm_del = $_POST['g_up_perm_del'] ?? null;
+	$g_up_perm_del = is_array($g_up_perm_del) ? array_map('intval', $g_up_perm_del) : [];
 
 	if (empty($g_up_limit)) {
 		$g_up_limit[PUN_ADMIN] = 1024;
@@ -137,12 +141,14 @@ else if (isset($_POST['update'])) {
 	$ext_bad = [];
 	$result = $db->query('SELECT g_id FROM ' . $db->prefix . 'groups ORDER BY g_id') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
 	while ($cur_group = $db->fetch_assoc($result)) {
-		if ($cur_group['g_id'] == PUN_GUEST) {
+		$gid = $cur_group['g_id'];
+
+		if ($gid == PUN_GUEST) {
 			continue;
 		}
 
-		if (isset($g_up_ext[$cur_group['g_id']])) {
-			$arr = explode(',', strtolower($g_up_ext[$cur_group['g_id']]));
+		if (isset($g_up_ext[$gid])) {
+			$arr = explode(',', strtolower($g_up_ext[$gid]));
 			$arr = array_map('pun_trim', $arr);
 			$g_ext = [];
 
@@ -159,37 +165,48 @@ else if (isset($_POST['update'])) {
 			$g_ext = PLUGIN_EXTS;
 		}
 
-		$g_max = (! isset($g_up_max[$cur_group['g_id']]) || $g_up_max[$cur_group['g_id']] < 0) ? 0 : $g_up_max[$cur_group['g_id']];
+		$g_max = (! isset($g_up_max[$gid]) || $g_up_max[$gid] < 0) ? 0 : $g_up_max[$gid];
 		$g_max = (int) (100 * min($g_max, $upf_class->size(ini_get('upload_max_filesize')) / 1048576, $upf_class->size(ini_get('post_max_size')) / 1048576));
-		$g_lim = (! isset($g_up_limit[$cur_group['g_id']]) || $g_up_limit[$cur_group['g_id']] < 0) ? 0 : $g_up_limit[$cur_group['g_id']];
+		$g_lim = (! isset($g_up_limit[$gid]) || $g_up_limit[$gid] < 0) ? 0 : $g_up_limit[$gid];
 		$g_lim = min($g_lim, 20971520);
 
-		$g_perm_del = (! isset($g_up_perm_del[$cur_group['g_id']]) || $g_up_perm_del[$cur_group['g_id']] < 1) ? 0 : 1;
+		$g_perm_del = (! isset($g_up_perm_del[$gid]) || $g_up_perm_del[$gid] < 1) ? 0 : 1;
 
-		$db->query('UPDATE ' . $db->prefix . 'groups SET g_up_ext=\'' . $db->escape($g_ext) . '\', g_up_limit=' . $g_lim . ', g_up_max=' . $g_max . ', g_up_perm_del=' . $g_perm_del . ' WHERE g_id=' . $cur_group['g_id']) or error('Unable to update user group list', __FILE__, __LINE__, $db->error());
+		$db->query('UPDATE ' . $db->prefix . 'groups SET g_up_ext=\'' . $db->escape($g_ext) . '\', g_up_limit=' . $g_lim . ', g_up_max=' . $g_max . ', g_up_perm_del=' . $g_perm_del . ' WHERE g_id=' . $gid) or error('Unable to update user group list', __FILE__, __LINE__, $db->error());
 	}
 
 	if (isset($_POST['thumb'])) {
 		$sconf['thumb'] = $_POST['thumb'] == '1' ? 1 : 0;
 	}
-	if (isset($_POST['thumb_size']) && $_POST['thumb_size'] > 0) {
-		$sconf['thumb_size'] = (int) $_POST['thumb_size'];
-	}
-	if (isset($_POST['thumb_perc']) && $_POST['thumb_perc'] > 0 && $_POST['thumb_perc'] <= 100) {
-		$sconf['thumb_perc'] = (int) $_POST['thumb_perc'];
+
+	$v = $_POST['thumb_size'] ?? null;
+	if (is_string($v) && $_POST['thumb_size'] > 0) {
+		$sconf['thumb_size'] = (int) $v;
 	}
 
-	if (isset($_POST['pic_mass']) && $_POST['pic_mass'] >= 0) {
-		$sconf['pic_mass'] = (int) $_POST['pic_mass'];
+	$v = $_POST['thumb_perc'] ?? null;
+	if (is_string($v) && $v > 0 && $v <= 100) {
+		$sconf['thumb_perc'] = (int) $v;
 	}
-	if (isset($_POST['pic_perc']) && $_POST['pic_perc'] > 0 && $_POST['pic_perc'] <= 100) {
-		$sconf['pic_perc'] = (int) $_POST['pic_perc'];
+
+	$v = $_POST['pic_mass'] ?? null;
+	if (is_string($v) && $v >= 0) {
+		$sconf['pic_mass'] = (int) $v;
 	}
-	if (isset($_POST['pic_w']) && $_POST['pic_w'] >= 100) {
-		$sconf['pic_w'] = (int) $_POST['pic_w'];
+
+	$v = $_POST['pic_perc'] ?? null;
+	if (is_string($v) && $v > 0 && $v <= 100) {
+		$sconf['pic_perc'] = (int) $v;
 	}
-	if (isset($_POST['pic_h']) && $_POST['pic_h'] >= 100) {
-		$sconf['pic_h'] = (int) $_POST['pic_h'];
+
+	$v = $_POST['pic_w'] ?? null;
+	if (is_string($v) && $v >= 100) {
+		$sconf['pic_w'] = (int) $v;
+	}
+
+	$v = $_POST['pic_h'] ?? null;
+	if (is_string($v) && $v >= 100) {
+		$sconf['pic_h'] = (int) $v;
 	}
 
 	$db->query('DELETE FROM ' . $db->prefix . 'config WHERE conf_name=\'o_upload_config\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
@@ -254,7 +271,8 @@ if (isset($_POST['delete'], $_POST['delete_f']) && is_array($_POST['delete_f']))
 		$au = [];
 		foreach ($_POST['delete_f'] as $file) {
 			if (
-				preg_match($upf_regx, $file, $matches)
+				is_string($file)
+				&& preg_match($upf_regx, $file, $matches)
 				&& false === $upf_class->inBlackList($matches[3])
 				&& 'mini_' !== substr($matches[2], 0, 5)
 				&& is_file(PUN_ROOT . $file)
@@ -309,7 +327,7 @@ $upf_token = function_exists('csrf_hash') ? csrf_hash('AP_Upload.php') : pun_csr
 
 ?>
 	<div id="upf-block" class="plugin blockform">
-		<h2><span>Plugin Upload Files v.<?= PLUGIN_VERSION ?></span></h2>
+		<h2><span>Plugin Upload Files v<?= PLUGIN_VERSION ?></span></h2>
 		<div class="box">
 			<div class="inbox">
 				<p><?= $lang_up['plugin_desc'] ?></p>
