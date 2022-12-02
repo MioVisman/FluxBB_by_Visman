@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2015 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2022 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -22,12 +22,12 @@ else
 // If the "Show text" button was clicked
 if (isset($_POST['show_text']))
 {
-	$b_coding_forms = isset($_POST['coding_forms']) ? intval($_POST['coding_forms']) : 0;
-	$b_check_ip = isset($_POST['check_ip']) ? intval($_POST['check_ip']) : 0;
+	$b_coding_forms = isset($_POST['coding_forms']) ? 1 : 0;
+	$b_check_ip = isset($_POST['check_ip']) ? 1 : 0;
 	$b_redirect = isset($_POST['board_redirect']) ? pun_trim($_POST['board_redirect']) : '';
-	$b_redirectg = isset($_POST['board_redirectg']) ? intval($_POST['board_redirectg']) : 0;
-	$b_crypto = isset($_POST['crypto_enable']) ? intval($_POST['crypto_enable']) : 0;
-	$b_enable_acaptcha = isset($_POST['enable_acaptcha']) ? intval($_POST['enable_acaptcha']) : 0;
+	$b_redirectg = isset($_POST['board_redirectg']) ? 1 : 0;
+	$b_crypto = isset($_POST['crypto_enable']) ? 1 : 0;
+	$b_enable_acaptcha = isset($_POST['enable_acaptcha']) ? 1 : 0;
 
 	$db->query('UPDATE '.$db->prefix.'config SET conf_value=\''.$b_coding_forms.'\' WHERE conf_name=\'o_coding_forms\'') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
 	$db->query('UPDATE '.$db->prefix.'config SET conf_value=\''.$b_check_ip.'\' WHERE conf_name=\'o_check_ip\'') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
@@ -49,7 +49,7 @@ else
 	generate_admin_menu($plugin);
 
 	$tabindex = 1;
-	
+
 ?>
 	<div class="plugin blockform">
 		<h2><span><?php echo $lang_admin_plugin_security['Plugin title'] ?></span></h2>
