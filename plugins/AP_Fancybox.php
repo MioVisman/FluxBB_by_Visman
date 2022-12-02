@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2011-2015 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2011-2022 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -11,8 +11,7 @@ if (!defined('PUN'))
 
 // Tell admin_loader.php that this is indeed a plugin and that it is loaded
 define('PUN_PLUGIN_LOADED', 1);
-define('PLUGIN_VERSION', '1.3.5');
-define('PLUGIN_REVISION', 4);
+define('PLUGIN_VERSION', '1.3.6');
 define('PLUGIN_NAME', 'Fancybox for FluxBB');
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin='.$plugin));
 define('PLUGIN_FILES', 'viewtopic.php,search.php,pmsnew.php,upfiles.php,AP_Upload.php');
@@ -137,12 +136,14 @@ if (isset($_POST['installation']))
 else if (isset($_POST['update']))
 {
 	$gst = isset($_POST['guest_on']) ? 1 : 0;
-	$files = isset($_POST['files']) ? array_map('pun_trim', $_POST['files']) : array();
-	$fls = array();
+	$files = $_POST['files'] ?? null;
+	$files = is_array($files) ? array_map('pun_trim', $files) : [];
+	$fls = [];
+
 	foreach ($files as $file)
 	{
-		$file = str_replace(array('/','\\','\'','`','"'), array('','','','',''), $file);
-		if ((substr($file, -4) == '.php' && file_exists(PUN_ROOT.$file)) || ($file == 'AP_Upload.php') && file_exists(PUN_ROOT.'plugins/'.$file))
+		$file = preg_replace('%(?:\.\.|[^\.\w-])%', '', $file);
+		if ((substr($file, -4) == '.php' && file_exists(PUN_ROOT.$file)) || $file == 'AP_Upload.php')
 			$fls[] = $file;
 	}
 
@@ -204,7 +205,7 @@ $tabindex = 1;
 
 ?>
 	<div id="loginza" class="plugin blockform">
-		<h2><span><?php echo PLUGIN_NAME.' v.'.PLUGIN_VERSION ?></span></h2>
+		<h2><span><?php echo PLUGIN_NAME.' v'.PLUGIN_VERSION ?></span></h2>
 		<div class="box">
 			<div class="inbox">
 				<p><?php echo $lang_fb['plugin_desc'] ?></p>
