@@ -11,7 +11,7 @@ if (!defined('PUN'))
 
 // Tell admin_loader.php that this is indeed a plugin and that it is loaded
 define('PUN_PLUGIN_LOADED', 1);
-define('PLUGIN_VERSION', '1.9.2');
+define('PLUGIN_VERSION', '1.9.3');
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin='.$plugin));
 
 // Load language file
@@ -24,9 +24,11 @@ else
 if (isset($_POST['show_text']))
 {
 	$en_pms = isset($_POST['enable_pms']) ? 1 : 0;
-	$g_limit = isset($_POST['g_limit']) ? array_map('pun_trim', $_POST['g_limit']) : array();
-	$g_pm = isset($_POST['g_pm']) ? array_map('pun_trim', $_POST['g_pm']) : array();
-	$min_kolvo = isset($_POST['min_kolvo']) ? intval($_POST['min_kolvo']) : 0;
+	$g_limit = $_POST['g_limit'] ?? null;
+	$g_limit = is_array($g_limit) ? array_map('pun_trim', $g_limit) : [];
+	$g_pm = $_POST['g_pm'] ?? null;
+	$g_pm = is_array($g_pm) ? array_map('pun_trim', $g_pm) : [];
+	$min_kolvo = isset($_POST['min_kolvo']) ? max(intval($_POST['min_kolvo']), 0) : 0;
 	$flash_pms = isset($_POST['flasher_pms']) ? 1 : 0;
 
 	$db->query('UPDATE '.$db->prefix.'config SET conf_value=\''.$en_pms.'\' WHERE conf_name=\'o_pms_enabled\'') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
@@ -38,15 +40,14 @@ if (isset($_POST['show_text']))
 
 	$result = $db->query('SELECT g_id FROM '.$db->prefix.'groups ORDER BY g_id') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
 
-	while ($cur_group = $db->fetch_assoc($result))
-		if ($cur_group['g_id'] > PUN_ADMIN && $cur_group['g_id'] != PUN_GUEST)
-			if (isset($g_limit[$cur_group['g_id']]))
-			{
-				$g_lim = isset($g_limit[$cur_group['g_id']]) ? intval($g_limit[$cur_group['g_id']]) : 0;
-				$g_p = (isset($g_pm[$cur_group['g_id']]) || $cur_group['g_id'] == PUN_ADMIN) ? 1 : 0;
+	while ($cur_group = $db->fetch_assoc($result)) {
+		if ($cur_group['g_id'] != PUN_ADMIN && $cur_group['g_id'] != PUN_GUEST) {
+			$g_p = isset($g_pm[$cur_group['g_id']]) ? 1 : 0;
+			$g_lim = max(intval($g_limit[$cur_group['g_id']] ?? 0), 0);
 
-				$db->query('UPDATE '.$db->prefix.'groups SET g_pm='.$g_p.', g_pm_limit='.$g_lim.' WHERE g_id='.$cur_group['g_id']) or error('Unable to update user group list', __FILE__, __LINE__, $db->error());
-			}
+			$db->query('UPDATE '.$db->prefix.'groups SET g_pm='.$g_p.', g_pm_limit='.$g_lim.' WHERE g_id='.$cur_group['g_id']) or error('Unable to update user group list', __FILE__, __LINE__, $db->error());
+		}
+	}
 
 	if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
 		require PUN_ROOT.'include/cache.php';
@@ -64,7 +65,7 @@ else
 
 ?>
 	<div class="plugin blockform">
-		<h2><span><?php echo $lang_apmsn['Plugin title'].' v.'.PLUGIN_VERSION ?></span></h2>
+		<h2><span><?php echo $lang_apmsn['Plugin title'].' v'.PLUGIN_VERSION ?></span></h2>
 		<div class="box">
 			<div class="inbox">
 				<p><?php echo $lang_apmsn['Explanation 1'] ?></p>
@@ -132,9 +133,8 @@ if ($pun_config['o_pms_enabled'] == '1')
 
 	$result = $db->query('SELECT g_id, g_title, g_pm, g_pm_limit FROM '.$db->prefix.'groups ORDER BY g_id') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
 
-	while ($cur_group = $db->fetch_assoc($result))
-		if ($cur_group['g_id'] > PUN_ADMIN && $cur_group['g_id'] != PUN_GUEST)
-		{
+	while ($cur_group = $db->fetch_assoc($result)) {
+		if ($cur_group['g_id'] != PUN_ADMIN && $cur_group['g_id'] != PUN_GUEST) {
 
 ?>
 								<tr>
@@ -145,6 +145,7 @@ if ($pun_config['o_pms_enabled'] == '1')
 <?php
 
 		}
+	}
 
 ?>
 							</tbody>
