@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2011-2015 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2011-2022 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -27,7 +27,7 @@ if (isset($_POST['show_text']))
 
 	while ($cur_forum = $db->fetch_assoc($result))
 	{
-		$nosu = isset($_POST['no_sum_mess'][$cur_forum['id']]) ? intval($_POST['no_sum_mess'][$cur_forum['id']]) : 0;
+		$nosu = isset($_POST['no_sum_mess'][$cur_forum['id']]) ? '1' : '0';
 		$db->query('UPDATE '.$db->prefix.'forums SET no_sum_mess='.$nosu.' WHERE id='.$cur_forum['id']) or error('Unable to update forums', __FILE__, __LINE__, $db->error());
 	}
 
