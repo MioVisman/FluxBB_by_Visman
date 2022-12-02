@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2015 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2022 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -11,7 +11,7 @@ if (!defined('PUN'))
 
 // Tell admin_loader.php that this is indeed a plugin and that it is loaded
 define('PUN_PLUGIN_LOADED', 1);
-define('PLUGIN_VERSION', '1.3.5');
+define('PLUGIN_VERSION', '1.3.6');
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin='.$plugin));
 
 // Load language file
@@ -24,26 +24,27 @@ else
 if (isset($_POST['show_text']))
 {
 
-	$en_poll = isset($_POST['enable_poll']) ? intval($_POST['enable_poll']) : 0;
-	$en_poll = ($en_poll == 1) ? 1 : 0;
-	
+	$en_poll = isset($_POST['enable_poll']) ? 1 : 0;
+
 	$db->query('UPDATE '.$db->prefix.'config SET conf_value=\''.$en_poll.'\' WHERE conf_name=\'o_poll_enabled\'') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
 
 	if ($en_poll == 1)
 	{
-		$poll_max_ques = isset($_POST['poll_max_ques']) ? $_POST['poll_max_ques'] : $pun_config['o_poll_max_ques'];
-		$poll_max_field = isset($_POST['poll_max_field']) ? $_POST['poll_max_field'] : $pun_config['o_poll_max_field'];
-		$poll_time = isset($_POST['poll_time']) ? $_POST['poll_time'] : $pun_config['o_poll_time'];
-		$poll_term = isset($_POST['poll_term']) ? $_POST['poll_term'] : $pun_config['o_poll_term'];
-		$poll_guest = isset($_POST['poll_guest']) ? 1 : 0;
+		$poll_max_ques = intval($_POST['poll_max_ques'] ?? $pun_config['o_poll_max_ques']);
 		$poll_max_ques = min(10, max(1, $poll_max_ques));
+		$poll_max_field = intval($_POST['poll_max_field'] ?? $pun_config['o_poll_max_field']);
 		$poll_max_field = min(90, max(2, $poll_max_field));
+		$poll_time = intval($_POST['poll_time'] ?? $pun_config['o_poll_time']);
+		$poll_time = max(0, $poll_time);
+		$poll_term = intval($_POST['poll_term'] ?? $pun_config['o_poll_term']);
+		$poll_term = max(0, $poll_term);
+		$poll_guest = isset($_POST['poll_guest']) ? 1 : 0;
 
-		$db->query('UPDATE '.$db->prefix.'config SET conf_value=\''.intval($poll_max_ques).'\' WHERE conf_name=\'o_poll_max_ques\'') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
-		$db->query('UPDATE '.$db->prefix.'config SET conf_value=\''.intval($poll_max_field).'\' WHERE conf_name=\'o_poll_max_field\'') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
-		$db->query('UPDATE '.$db->prefix.'config SET conf_value=\''.intval($poll_time).'\' WHERE conf_name=\'o_poll_time\'') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
-		$db->query('UPDATE '.$db->prefix.'config SET conf_value=\''.intval($poll_term).'\' WHERE conf_name=\'o_poll_term\'') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
-		$db->query('UPDATE '.$db->prefix.'config SET conf_value=\''.intval($poll_guest).'\' WHERE conf_name=\'o_poll_guest\'') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
+		$db->query('UPDATE '.$db->prefix.'config SET conf_value=\''.$poll_max_ques.'\' WHERE conf_name=\'o_poll_max_ques\'') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
+		$db->query('UPDATE '.$db->prefix.'config SET conf_value=\''.$poll_max_field.'\' WHERE conf_name=\'o_poll_max_field\'') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
+		$db->query('UPDATE '.$db->prefix.'config SET conf_value=\''.$poll_time.'\' WHERE conf_name=\'o_poll_time\'') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
+		$db->query('UPDATE '.$db->prefix.'config SET conf_value=\''.$poll_term.'\' WHERE conf_name=\'o_poll_term\'') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
+		$db->query('UPDATE '.$db->prefix.'config SET conf_value=\''.$poll_guest.'\' WHERE conf_name=\'o_poll_guest\'') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
 	}
 
 	if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
@@ -62,7 +63,7 @@ else
 
 ?>
 	<div class="plugin blockform">
-		<h2><span><?php echo $lang_admin_plugin_poll['Plugin title'].' v.'.PLUGIN_VERSION ?></span></h2>
+		<h2><span><?php echo $lang_admin_plugin_poll['Plugin title'].' v'.PLUGIN_VERSION ?></span></h2>
 		<div class="box">
 			<div class="inbox">
 				<p><?php echo $lang_admin_plugin_poll['Explanation 1'] ?></p>
