@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2011-2015 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2011-2022 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -22,12 +22,12 @@ else
 // If the "Show text" button was clicked
 if (isset($_POST['show_text']))
 {
-	// Make sure something was entered
-	if (!isset($_POST['text_to_show']) || pun_trim($_POST['text_to_show']) == '')
+	$t = $_POST['text_to_show'] ?? null;
+
+	if (! is_string($t) || ! preg_match('%^\d+$%', $t))
 		message($lang_admin_plugin_merge_posts['No text']);
 
-	$merge_timeout = intval($_POST['text_to_show']);
-	$db->query('UPDATE '.$db->prefix.'config SET conf_value=\''.$merge_timeout.'\' WHERE conf_name=\'o_merge_timeout\'') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
+	$db->query('UPDATE '.$db->prefix.'config SET conf_value=\''.intval($t).'\' WHERE conf_name=\'o_merge_timeout\'') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
 
 	// Regenerate the config cache
 	if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
