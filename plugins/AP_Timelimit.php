@@ -11,7 +11,7 @@ if (!defined('PUN'))
 
 // Tell admin_loader.php that this is indeed a plugin and that it is loaded
 define('PUN_PLUGIN_LOADED', 1);
-define('PLUGIN_VERSION', '1.0.5');
+define('PLUGIN_VERSION', '1.0.6');
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin='.$plugin));
 
 // Load language file
@@ -23,18 +23,19 @@ else
 // If the "Show text" button was clicked
 if (isset($_POST['show_text']))
 {
-
-	$g_order = array_map('pun_trim', $_POST['g_order']);
+	$g_order = $_POST['g_order'] ?? null;
+	$g_order = is_array($g_order) ? array_map('pun_trim', $g_order) : [];
 
 	$result = $db->query('SELECT g_id, g_title, g_deledit_interval FROM '.$db->prefix.'groups ORDER BY g_id') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
 
-	while ($cur_group = $db->fetch_assoc($result))
-		if ($cur_group['g_id'] > PUN_ADMIN && $cur_group['g_id'] != PUN_GUEST)
-			if ($g_order[$cur_group['g_id']] != '')
-			{
-				$g_time = intval($g_order[$cur_group['g_id']]);
-				$db->query('UPDATE '.$db->prefix.'groups SET g_deledit_interval='.$g_time.' WHERE g_id='.$cur_group['g_id']) or error('Unable to update user group list', __FILE__, __LINE__, $db->error());
-			}
+	while ($cur_group = $db->fetch_assoc($result)) {
+		if ($cur_group['g_id'] != PUN_ADMIN && $cur_group['g_id'] != PUN_GUEST) {
+			$g_time = intval($g_order[$cur_group['g_id']] ?? 0);
+			$g_time = max(0, $g_time);
+
+			$db->query('UPDATE '.$db->prefix.'groups SET g_deledit_interval='.$g_time.' WHERE g_id='.$cur_group['g_id']) or error('Unable to update user group list', __FILE__, __LINE__, $db->error());
+		}
+	}
 
 	redirect(PLUGIN_URL, $lang_admin_plugin_timelimit['Plugin redirect']);
 }
@@ -45,7 +46,7 @@ else
 
 ?>
 	<div class="plugin blockform">
-		<h2><span><?php echo $lang_admin_plugin_timelimit['Plugin title'].' v.'.PLUGIN_VERSION ?></span></h2>
+		<h2><span><?php echo $lang_admin_plugin_timelimit['Plugin title'].' v'.PLUGIN_VERSION ?></span></h2>
 		<div class="box">
 			<div class="inbox">
 				<p><?php echo $lang_admin_plugin_timelimit['Explanation 1'] ?></p>
@@ -73,9 +74,8 @@ else
 	$tabindex = 2;
 	$result = $db->query('SELECT g_id, g_title, g_deledit_interval FROM '.$db->prefix.'groups ORDER BY g_id') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
 
-	while ($cur_group = $db->fetch_assoc($result))
-		if ($cur_group['g_id'] > PUN_ADMIN && $cur_group['g_id'] != PUN_GUEST)
-		{
+	while ($cur_group = $db->fetch_assoc($result)) {
+		if ($cur_group['g_id'] != PUN_ADMIN && $cur_group['g_id'] != PUN_GUEST) {
 
 ?>
 								<tr>
@@ -85,6 +85,7 @@ else
 <?php
 
 		}
+	}
 
 ?>
 							</tbody>
