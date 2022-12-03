@@ -1348,6 +1348,9 @@ function pun_linebreaks($str)
 //
 function pun_trim($str, $charlist = false)
 {
+	if (! is_scalar($str)) {
+		$str = '';
+	}
 	if (is_string($charlist)) {
 		$charlist = preg_quote($charlist, '%');
 		$str = preg_replace('%^[' . $charlist . ']+%u', '', $str);
