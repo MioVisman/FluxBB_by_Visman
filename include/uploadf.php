@@ -69,7 +69,7 @@ FluxBB.uploadvars = {
 							<div class="upf-name" title="End">
 								<span>&#160;</span>
 							</div>
-							<div class="upf-file" style="height: <?= max((int) $upf_conf['thumb_size'], 100) ?>px;">
+							<div class="upf-file" style="height: <?= max(intval($upf_conf['thumb_size']), 100) ?>px;">
 								<a>
 									<span>&#160;</span>
 								</a>

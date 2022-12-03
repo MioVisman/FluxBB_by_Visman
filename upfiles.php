@@ -63,7 +63,7 @@ define('PLUGIN_NF', 25);
 
 $upf_ajax = ('1' == upf_get_pg('ajx'));
 $upf_action = upf_get_pg('action');
-$upf_page = (int) upf_get_pg('p', 1);
+$upf_page = intval(upf_get_pg('p', 1));
 
 if ($pun_user['g_read_board'] == '0') {
 	upf_message($lang_common['No view'], false, '403 Forbidden');

@@ -50,7 +50,7 @@ if (file_exists(PUN_ROOT.'lang/'.$pun_user['language'].'/subforums.php'))
 else
 	require PUN_ROOT.'lang/English/subforums.php';
 
-$sf_cur_forum = (isset($cur_forum) && $id > 0) ? (int)$id : 0;
+$sf_cur_forum = isset($cur_forum) && $id > 0 ? intval($id) : 0;
 
 if (!isset($lang_index))
 	require PUN_ROOT.'lang/'.$pun_user['language'].'/index.php';

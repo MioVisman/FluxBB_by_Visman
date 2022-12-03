@@ -300,7 +300,7 @@ if (isset($_POST['delete'], $_POST['delete_f']) && is_array($_POST['delete_f']))
 		}
 	}
 
-	$p = empty($_GET['p']) || $_GET['p'] < 1 ? 1 : (int) $_GET['p'];
+	$p = empty($_GET['p']) || $_GET['p'] < 1 ? 1 : intval($_GET['p']);
 
 	if ($error) {
 		if ($pun_config['o_redirect_delay'] < 5) {
@@ -508,7 +508,7 @@ if (is_dir(PUN_ROOT . $upf_mem)) {
 
 	if (! empty($af)) {
 		$num_pages = ceil(count($af) / PLUGIN_NF);
-		$p = (empty($_GET['p']) || $_GET['p'] < 1) ? 1 : (int) $_GET['p'];
+		$p = (empty($_GET['p']) || $_GET['p'] < 1) ? 1 : intval($_GET['p']);
 		if ($p > $num_pages) {
 			header('Location: ' . PLUGIN_URL . '&p=' . $num_pages . '#gofile');
 			exit;

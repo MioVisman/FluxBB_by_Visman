@@ -366,7 +366,7 @@ class upfClass
 
     public function setImageQuality($quality)
     {
-        $this->quality = min(max((int) $quality, 1), 100);
+        $this->quality = min(max(intval($quality), 1), 100);
     }
 
     protected $filePath;
