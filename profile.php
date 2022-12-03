@@ -11,7 +11,7 @@ require PUN_ROOT.'include/common.php';
 
 $action = (string) ($_GET['action'] ?? '');
 $section = (string) ($_GET['section'] ?? '');
-$id = (int) ($_GET['id'] ?? 0);
+$id = intval($_GET['id'] ?? 0);
 if ($id < 2)
 	message($lang_common['Bad request'], false, '404 Not Found');
 
@@ -84,9 +84,9 @@ if ($action == 'change_pass')
 		// Make sure they got here from the site
 		confirm_referrer('profile.php');
 
-		$old_password = isset($_POST['req_old_password']) ? pun_trim($_POST['req_old_password']) : '';
-		$new_password1 = pun_trim($_POST['req_new_password1']);
-		$new_password2 = pun_trim($_POST['req_new_password2']);
+		$old_password = pun_trim($_POST['req_old_password'] ?? '');
+		$new_password1 = pun_trim($_POST['req_new_password1'] ?? '');
+		$new_password2 = pun_trim($_POST['req_new_password2'] ?? '');
 
 		if ($new_password1 != $new_password2 || pun_strlen($new_password1) > 100000)
 			message($lang_prof_reg['Pass not match']);
@@ -203,7 +203,7 @@ else if ($action == 'change_email')
 		require PUN_ROOT.'include/email.php';
 
 		// Validate the email address
-		$new_email = strtolower(pun_trim($_POST['req_new_email']));
+		$new_email = strtolower(pun_trim($_POST['req_new_email'] ?? ''));
 		if (!is_valid_email($new_email))
 			message($lang_common['Invalid email']);
 
@@ -492,7 +492,7 @@ else if (isset($_POST['update_group_membership']))
 
 	confirm_referrer('profile.php');
 
-	$new_group_id = intval($_POST['group_id']);
+	$new_group_id = intval($_POST['group_id'] ?? 0);
 
 	$result = $db->query('SELECT group_id FROM '.$db->prefix.'users WHERE id='.$id) or error('Unable to fetch user group', __FILE__, __LINE__, $db->error());
 	$old_group_id = $db->result($result);
@@ -546,7 +546,7 @@ else if (isset($_POST['update_forums']))
 	$result = $db->query('SELECT username FROM '.$db->prefix.'users WHERE id='.$id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
 	$username = $db->result($result);
 
-	$moderator_in = (isset($_POST['moderator_in'])) ? array_keys($_POST['moderator_in']) : array();
+	$moderator_in = isset($_POST['moderator_in']) && is_array($_POST['moderator_in']) ? array_keys($_POST['moderator_in']) : array();
 
 	// Loop through all forums
 	$result = $db->query('SELECT id, moderators FROM '.$db->prefix.'forums') or error('Unable to fetch forum list', __FILE__, __LINE__, $db->error());
@@ -603,7 +603,7 @@ else if ($action == 'promote')
 
 	confirm_referrer('viewtopic.php');
 
-	$pid = isset($_GET['pid']) ? intval($_GET['pid']) : 0;
+	$pid = intval($_GET['pid'] ?? 0);
 
 	$sql = 'SELECT g.g_promote_next_group FROM '.$db->prefix.'groups AS g INNER JOIN '.$db->prefix.'users AS u ON u.group_id=g.g_id WHERE u.id='.$id.' AND g.g_promote_next_group>0';
 	$result = $db->query($sql) or error('Unable to fetch promotion information', __FILE__, __LINE__, $db->error());
@@ -775,10 +775,10 @@ else if (isset($_POST['form_sent']))
 		case 'essentials':
 		{
 			$form = array(
-				'timezone'		=> floatval($_POST['form']['timezone']),
+				'timezone'		=> floatval($_POST['form']['timezone'] ?? -12),
 				'dst'			=> isset($_POST['form']['dst']) ? '1' : '0',
-				'time_format'	=> intval($_POST['form']['time_format']),
-				'date_format'	=> intval($_POST['form']['date_format']),
+				'time_format'	=> max(0, intval($_POST['form']['time_format'] ?? 0)),
+				'date_format'	=> max(0, intval($_POST['form']['date_format'] ?? 0)),
 			);
 
 			// Make sure we got a valid language string
@@ -794,12 +794,12 @@ else if (isset($_POST['form_sent']))
 
 			if ($pun_user['is_admmod'])
 			{
-				$form['admin_note'] = pun_trim($_POST['admin_note']);
+				$form['admin_note'] = pun_trim($_POST['admin_note'] ?? '');
 
 				// Are we allowed to change usernames?
 				if ($pun_user['g_id'] == PUN_ADMIN || ($pun_user['g_moderator'] == '1' && $pun_user['g_mod_rename_users'] == '1'))
 				{
-					$form['username'] = pun_trim($_POST['req_username']);
+					$form['username'] = pun_trim($_POST['req_username'] ?? '');
 
 					if ($form['username'] != $old_username)
 					{
@@ -817,7 +817,7 @@ else if (isset($_POST['form_sent']))
 
 				// We only allow administrators to update the post count
 				if ($pun_user['g_id'] == PUN_ADMIN)
-					$form['num_posts'] = intval($_POST['num_posts']);
+					$form['num_posts'] = max(0, intval($_POST['num_posts'] ?? 0));
 			}
 
 			if ($pun_config['o_regs_verify'] == '0' || $pun_user['is_admmod'])
@@ -825,7 +825,7 @@ else if (isset($_POST['form_sent']))
 				require PUN_ROOT.'include/email.php';
 
 				// Validate the email address
-				$form['email'] = strtolower(pun_trim($_POST['req_email']));
+				$form['email'] = strtolower(pun_trim($_POST['req_email'] ?? ''));
 				if (!is_valid_email($form['email']))
 					message($lang_common['Invalid email']);
 			}
@@ -836,10 +836,10 @@ else if (isset($_POST['form_sent']))
 		case 'personal':
 		{
 			$form = array(
-				'realname'		=> isset($_POST['form']['realname']) ? pun_trim($_POST['form']['realname']) : '',
-				'gender'		=> isset($_POST['form']['gender']) && in_array($_POST['form']['gender'], ['0', '1', '2'], true) ? $_POST['form']['gender'] : '0', // мод пола - Visman
-				'url'			=> isset($_POST['form']['url']) ? pun_trim($_POST['form']['url']) : '',
-				'location'		=> isset($_POST['form']['location']) ? pun_trim($_POST['form']['location']) : '',
+				'realname'		=> pun_trim($_POST['form']['realname'] ?? ''),
+				'gender'		=> in_array($_POST['form']['gender'] ?? null, ['0', '1', '2'], true) ? $_POST['form']['gender'] : '0', // мод пола - Visman
+				'url'			=> pun_trim($_POST['form']['url'] ?? ''),
+				'location'		=> pun_trim($_POST['form']['location'] ?? ''),
 			);
 
 			// Add http:// if the URL doesn't contain it already (while allowing https://, too)
@@ -864,10 +864,10 @@ else if (isset($_POST['form_sent']))
 			}
 
 			if ($pun_user['g_id'] == PUN_ADMIN)
-				$form['title'] = pun_trim($_POST['title']);
+				$form['title'] = pun_trim($_POST['title'] ?? '');
 			else if ($pun_user['g_set_title'] == '1')
 			{
-				$form['title'] = pun_trim($_POST['title']);
+				$form['title'] = pun_trim($_POST['title'] ?? '');
 
 				if ($form['title'] != '')
 				{
@@ -886,8 +886,8 @@ else if (isset($_POST['form_sent']))
 		case 'messaging':
 		{
 			$form = array(
-				'jabber'		=> pun_trim($_POST['form']['jabber']),
-				'icq'			=> pun_trim($_POST['form']['icq']),
+				'jabber'		=> pun_trim($_POST['form']['jabber'] ?? ''),
+				'icq'			=> pun_trim($_POST['form']['icq'] ?? ''),
 			);
 
 			// If the ICQ UIN contains anything other than digits it's invalid
@@ -904,7 +904,7 @@ else if (isset($_POST['form_sent']))
 			// Clean up signature from POST
 			if ($pun_config['o_signatures'] == '1')
 			{
-				$form['signature'] = pun_linebreaks(pun_trim($_POST['signature']));
+				$form['signature'] = pun_linebreaks(pun_trim($_POST['signature'] ?? ''));
 
 				// Validate signature
 				if (pun_strlen($form['signature']) > $pun_config['p_sig_length'])
@@ -934,8 +934,8 @@ else if (isset($_POST['form_sent']))
 		case 'display':
 		{
 			$form = array(
-				'disp_topics'		=> pun_trim($_POST['form']['disp_topics']),
-				'disp_posts'		=> pun_trim($_POST['form']['disp_posts']),
+				'disp_topics'		=> pun_trim($_POST['form']['disp_topics'] ?? ''),
+				'disp_posts'		=> pun_trim($_POST['form']['disp_posts'] ?? ''),
 			);
 
 			if ($form['disp_topics'] != '')
@@ -986,7 +986,7 @@ else if (isset($_POST['form_sent']))
 		case 'privacy':
 		{
 			$form = array(
-				'email_setting'			=> intval($_POST['form']['email_setting']),
+				'email_setting'			=> intval($_POST['form']['email_setting'] ?? -1),
 				'notify_with_post'		=> isset($_POST['form']['notify_with_post']) ? '1' : '0',
 				'auto_notify'			=> isset($_POST['form']['auto_notify']) ? '1' : '0',
 			);
