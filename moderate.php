@@ -137,8 +137,8 @@ if (isset($_GET['tid']))
 			$num_posts_deleted = substr_count($posts, ',') + 1;
 
 			// Verify that the post IDs are valid
-			$admins_sql = $pun_user['g_id'] != PUN_ADMIN ? ' AND poster_id NOT IN('.implode(',', get_admin_ids()).')' : '';
-			$result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'posts WHERE id IN('.$posts.') AND topic_id='.$tid.$admins_sql) or error('Unable to check posts', __FILE__, __LINE__, $db->error());
+			$admins_sql = $pun_user['g_id'] != PUN_ADMIN ? ' AND poster_id NOT IN ('.implode(',', get_admin_ids()).')' : '';
+			$result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'posts WHERE id IN ('.$posts.') AND topic_id='.$tid.$admins_sql) or error('Unable to check posts', __FILE__, __LINE__, $db->error());
 
 			if ($db->result($result) != $num_posts_deleted)
 				message($lang_common['Bad request'], false, '404 Not Found');
@@ -146,7 +146,7 @@ if (isset($_GET['tid']))
 			// уменьшение постов у юзеров и not sum - Visman
 			if ($flag_f == 0)
 			{
-				$result = $db->query('SELECT COUNT(id), poster_id FROM '.$db->prefix.'posts WHERE id IN('.$posts.') GROUP BY poster_id', true) or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());
+				$result = $db->query('SELECT COUNT(id), poster_id FROM '.$db->prefix.'posts WHERE id IN ('.$posts.') GROUP BY poster_id', true) or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());
 				while ($row = $db->fetch_row($result))
 				{
 					if ($row[1] > 1)
@@ -155,7 +155,7 @@ if (isset($_GET['tid']))
 			}
 
 			// Delete the posts
-			$db->query('DELETE FROM '.$db->prefix.'posts WHERE id IN('.$posts.')') or error('Unable to delete posts', __FILE__, __LINE__, $db->error());
+			$db->query('DELETE FROM '.$db->prefix.'posts WHERE id IN ('.$posts.')') or error('Unable to delete posts', __FILE__, __LINE__, $db->error());
 			// MOD warnings - Visman
 			$db->query('DELETE FROM '.$db->prefix.'warnings WHERE id IN ('.$posts.')') or error('Unable to delete warnings', __FILE__, __LINE__, $db->error());
 
@@ -223,7 +223,7 @@ if (isset($_GET['tid']))
 			$num_posts_splitted = substr_count($posts, ',') + 1;
 
 			// Verify that the post IDs are valid
-			$result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'posts WHERE id IN('.$posts.') AND topic_id='.$tid) or error('Unable to check posts', __FILE__, __LINE__, $db->error());
+			$result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'posts WHERE id IN ('.$posts.') AND topic_id='.$tid) or error('Unable to check posts', __FILE__, __LINE__, $db->error());
 			if ($db->result($result) != $num_posts_splitted)
 				message($lang_common['Bad request'], false, '404 Not Found');
 
@@ -244,7 +244,7 @@ if (isset($_GET['tid']))
 				message($lang_post['Too long subject']);
 
 			// Get data from the new first post
-			$result = $db->query('SELECT p.id, p.poster, p.posted FROM '.$db->prefix.'posts AS p WHERE id IN('.$posts.') ORDER BY p.id ASC LIMIT 1') or error('Unable to get first post', __FILE__, __LINE__, $db->error());
+			$result = $db->query('SELECT p.id, p.poster, p.posted FROM '.$db->prefix.'posts AS p WHERE id IN ('.$posts.') ORDER BY p.id ASC LIMIT 1') or error('Unable to get first post', __FILE__, __LINE__, $db->error());
 			$first_post_data = $db->fetch_assoc($result);
 
 			// Create the new topic
@@ -252,7 +252,7 @@ if (isset($_GET['tid']))
 			$new_tid = $db->insert_id();
 
 			// Move the posts to the new topic
-			$db->query('UPDATE '.$db->prefix.'posts SET topic_id='.$new_tid.' WHERE id IN('.$posts.')') or error('Unable to move posts into new topic', __FILE__, __LINE__, $db->error());
+			$db->query('UPDATE '.$db->prefix.'posts SET topic_id='.$new_tid.' WHERE id IN ('.$posts.')') or error('Unable to move posts into new topic', __FILE__, __LINE__, $db->error());
 
 			// Apply every subscription to both topics
 			$db->query('INSERT INTO '.$db->prefix.'topic_subscriptions (user_id, topic_id) SELECT user_id, '.$new_tid.' FROM '.$db->prefix.'topic_subscriptions WHERE topic_id='.$tid) or error('Unable to copy existing subscriptions', __FILE__, __LINE__, $db->error());
@@ -352,13 +352,13 @@ if (isset($_GET['tid']))
 				$num_posts_deleted = substr_count($posts, ',') + 1;
 
 				// Verify that the post IDs are valid
-				$result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'posts WHERE id IN('.$posts.') AND topic_id='.$tid) or error('Unable to check posts', __FILE__, __LINE__, $db->error());
+				$result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'posts WHERE id IN ('.$posts.') AND topic_id='.$tid) or error('Unable to check posts', __FILE__, __LINE__, $db->error());
 				if ($db->result($result) != $num_posts_deleted)
 					message($lang_common['Bad request'], false, '404 Not Found');
 
 				// перемещаем
 				$add_text = '[color=#808080][i] '.$lang_misc['Post from topic'].' "'.$cur_topic['subject'].'"[/i]. '.$pun_user['username'].'[/color][hr]';
-				$db->query('UPDATE '.$db->prefix.'posts SET topic_id='.$move_to_topic.', message=CONCAT(\''.$db->escape($add_text).'\', message) WHERE topic_id='.$tid.' AND id IN('.$posts.')') or error('Unable to update posts/topic', __FILE__, __LINE__, $db->error());
+				$db->query('UPDATE '.$db->prefix.'posts SET topic_id='.$move_to_topic.', message=CONCAT(\''.$db->escape($add_text).'\', message) WHERE topic_id='.$tid.' AND id IN ('.$posts.')') or error('Unable to update posts/topic', __FILE__, __LINE__, $db->error());
 
 				// обновим темы
 				$result = $db->query('SELECT id, poster, posted FROM '.$db->prefix.'posts WHERE topic_id='.$tid.' ORDER BY id DESC LIMIT 1') or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
@@ -634,7 +634,7 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to']))
 			message($lang_common['Bad request'], false, '404 Not Found');
 
 		// Verify that the topic IDs are valid
-		$result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'topics WHERE id IN('.implode(',', $topics).') AND forum_id='.$fid) or error('Unable to check topics', __FILE__, __LINE__, $db->error());
+		$result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'topics WHERE id IN ('.implode(',', $topics).') AND forum_id='.$fid) or error('Unable to check topics', __FILE__, __LINE__, $db->error());
 		if ($db->result($result) != count($topics))
 			message($lang_common['Bad request'], false, '404 Not Found');
 
@@ -644,10 +644,10 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to']))
 			message($lang_common['Bad request'], false, '404 Not Found');
 
 		// Delete any redirect topics if there are any (only if we moved/copied the topic back to where it was once moved from)
-		$db->query('DELETE FROM '.$db->prefix.'topics WHERE forum_id='.$move_to_forum.' AND moved_to IN('.implode(',', $topics).')') or error('Unable to delete redirect topics', __FILE__, __LINE__, $db->error());
+		$db->query('DELETE FROM '.$db->prefix.'topics WHERE forum_id='.$move_to_forum.' AND moved_to IN ('.implode(',', $topics).')') or error('Unable to delete redirect topics', __FILE__, __LINE__, $db->error());
 
 		// Move the topic(s)
-		$db->query('UPDATE '.$db->prefix.'topics SET forum_id='.$move_to_forum.' WHERE id IN('.implode(',', $topics).')') or error('Unable to move topics', __FILE__, __LINE__, $db->error());
+		$db->query('UPDATE '.$db->prefix.'topics SET forum_id='.$move_to_forum.' WHERE id IN ('.implode(',', $topics).')') or error('Unable to move topics', __FILE__, __LINE__, $db->error());
 
 		// Should we create redirect topics?
 		if (isset($_POST['with_redirect']))
@@ -659,7 +659,7 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to']))
 				$moved_to = $db->fetch_assoc($result);
 
 				// Create the redirect topic
-				$db->query('INSERT INTO '.$db->prefix.'topics (poster, subject, posted, last_post, moved_to, forum_id) VALUES(\''.$db->escape($moved_to['poster']).'\', \''.$db->escape($moved_to['subject']).'\', '.$moved_to['posted'].', '.$moved_to['last_post'].', '.$cur_topic.', '.$fid.')') or error('Unable to create redirect topic', __FILE__, __LINE__, $db->error());
+				$db->query('INSERT INTO '.$db->prefix.'topics (poster, subject, posted, last_post, moved_to, forum_id) VALUES (\''.$db->escape($moved_to['poster']).'\', \''.$db->escape($moved_to['subject']).'\', '.$moved_to['posted'].', '.$moved_to['last_post'].', '.$cur_topic.', '.$fid.')') or error('Unable to create redirect topic', __FILE__, __LINE__, $db->error());
 			}
 		}
 
@@ -753,7 +753,7 @@ else if (isset($_POST['merge_topics']) || isset($_POST['merge_topics_comply']))
 			message($lang_misc['Not enough topics selected']);
 
 		// Verify that the topic IDs are valid (redirect links will point to the merged topic after the merge)
-		$result = $db->query('SELECT COUNT(id), MIN(id) FROM '.$db->prefix.'topics WHERE id IN('.implode(',', $topics).') AND forum_id='.$fid) or error('Unable to check topics', __FILE__, __LINE__, $db->error());
+		$result = $db->query('SELECT COUNT(id), MIN(id) FROM '.$db->prefix.'topics WHERE id IN ('.implode(',', $topics).') AND forum_id='.$fid) or error('Unable to check topics', __FILE__, __LINE__, $db->error());
 		$row = $db->fetch_row($result);
 
 		if ($row[0] != count($topics))
@@ -763,32 +763,32 @@ else if (isset($_POST['merge_topics']) || isset($_POST['merge_topics_comply']))
 		$merge_to_tid = $row[1];
 
 		// Make any redirect topics point to our new, merged topic
-		$query = 'UPDATE '.$db->prefix.'topics SET moved_to='.$merge_to_tid.' WHERE moved_to IN('.implode(',', $topics).')';
+		$query = 'UPDATE '.$db->prefix.'topics SET moved_to='.$merge_to_tid.' WHERE moved_to IN ('.implode(',', $topics).')';
 
 		// Should we create redirect topics?
 		if (isset($_POST['with_redirect']))
-			$query .= ' OR (id IN('.implode(',', $topics).') AND id != '.$merge_to_tid.')';
+			$query .= ' OR (id IN ('.implode(',', $topics).') AND id != '.$merge_to_tid.')';
 
 		$db->query($query) or error('Unable to make redirection topics', __FILE__, __LINE__, $db->error());
 
 		// Merge the posts into the topic
-		$db->query('UPDATE '.$db->prefix.'posts SET topic_id='.$merge_to_tid.' WHERE topic_id IN('.implode(',', $topics).')') or error('Unable to merge the posts into the topic', __FILE__, __LINE__, $db->error());
+		$db->query('UPDATE '.$db->prefix.'posts SET topic_id='.$merge_to_tid.' WHERE topic_id IN ('.implode(',', $topics).')') or error('Unable to merge the posts into the topic', __FILE__, __LINE__, $db->error());
 
 		// Update any subscriptions
-		$result = $db->query('SELECT DISTINCT user_id FROM '.$db->prefix.'topic_subscriptions WHERE topic_id IN('.implode(',', $topics).')') or error('Unable to fetch subscriptions of merged topics', __FILE__, __LINE__, $db->error());
+		$result = $db->query('SELECT DISTINCT user_id FROM '.$db->prefix.'topic_subscriptions WHERE topic_id IN ('.implode(',', $topics).')') or error('Unable to fetch subscriptions of merged topics', __FILE__, __LINE__, $db->error());
 
 		$subscribed_users = array();
 		while ($row = $db->fetch_row($result))
 			$subscribed_users[] = $row[0];
 
-		$db->query('DELETE FROM '.$db->prefix.'topic_subscriptions WHERE topic_id IN('.implode(',', $topics).')') or error('Unable to delete subscriptions of merged topics', __FILE__, __LINE__, $db->error());
+		$db->query('DELETE FROM '.$db->prefix.'topic_subscriptions WHERE topic_id IN ('.implode(',', $topics).')') or error('Unable to delete subscriptions of merged topics', __FILE__, __LINE__, $db->error());
 
 		foreach ($subscribed_users as $cur_user_id)
 			$db->query('INSERT INTO '.$db->prefix.'topic_subscriptions (topic_id, user_id) VALUES ('.$merge_to_tid.', '.$cur_user_id.')') or error('Unable to re-enter subscriptions for merge topic', __FILE__, __LINE__, $db->error());
 
 		// Without redirection the old topics are removed
 		if (!isset($_POST['with_redirect']))
-			$db->query('DELETE FROM '.$db->prefix.'topics WHERE id IN('.implode(',', $topics).') AND id != '.$merge_to_tid) or error('Unable to delete old topics', __FILE__, __LINE__, $db->error());
+			$db->query('DELETE FROM '.$db->prefix.'topics WHERE id IN ('.implode(',', $topics).') AND id != '.$merge_to_tid) or error('Unable to delete old topics', __FILE__, __LINE__, $db->error());
 
 		// Count number of replies in the topic
 		$result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'posts WHERE topic_id='.$merge_to_tid) or error('Unable to fetch post count for topic', __FILE__, __LINE__, $db->error());
@@ -857,28 +857,28 @@ else if (isset($_POST['delete_topics']) || isset($_POST['delete_topics_comply'])
 		require PUN_ROOT.'include/search_idx.php';
 
 		// Verify that the topic IDs are valid
-		$result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'topics WHERE id IN('.$topics.') AND forum_id='.$fid) or error('Unable to check topics', __FILE__, __LINE__, $db->error());
+		$result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'topics WHERE id IN ('.$topics.') AND forum_id='.$fid) or error('Unable to check topics', __FILE__, __LINE__, $db->error());
 		if ($db->result($result) != substr_count($topics, ',') + 1)
 			message($lang_common['Bad request'], false, '404 Not Found');
 
 		// Verify that the posts are not by admins
 		if ($pun_user['g_id'] != PUN_ADMIN)
 		{
-			$result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'posts WHERE topic_id IN('.$topics.') AND poster_id IN('.implode(',', get_admin_ids()).')') or error('Unable to check posts', __FILE__, __LINE__, $db->error());
+			$result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'posts WHERE topic_id IN ('.$topics.') AND poster_id IN ('.implode(',', get_admin_ids()).')') or error('Unable to check posts', __FILE__, __LINE__, $db->error());
 			if ($db->result($result))
 				message($lang_common['No permission'], false, '403 Forbidden');
 		}
 
 		// Delete the topics and any redirect topics
-		$db->query('DELETE FROM '.$db->prefix.'topics WHERE id IN('.$topics.') OR moved_to IN('.$topics.')') or error('Unable to delete topic', __FILE__, __LINE__, $db->error());
+		$db->query('DELETE FROM '.$db->prefix.'topics WHERE id IN ('.$topics.') OR moved_to IN ('.$topics.')') or error('Unable to delete topic', __FILE__, __LINE__, $db->error());
 
 		// Delete any subscriptions
-		$db->query('DELETE FROM '.$db->prefix.'topic_subscriptions WHERE topic_id IN('.$topics.')') or error('Unable to delete subscriptions', __FILE__, __LINE__, $db->error());
+		$db->query('DELETE FROM '.$db->prefix.'topic_subscriptions WHERE topic_id IN ('.$topics.')') or error('Unable to delete subscriptions', __FILE__, __LINE__, $db->error());
 
 		// уменьшение постов у юзеров и not sum - Visman
 		if ($flag_f == 0)
 		{
-			$result = $db->query('SELECT COUNT(id), poster_id FROM '.$db->prefix.'posts WHERE topic_id IN('.$topics.') GROUP BY poster_id', true) or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());
+			$result = $db->query('SELECT COUNT(id), poster_id FROM '.$db->prefix.'posts WHERE topic_id IN ('.$topics.') GROUP BY poster_id', true) or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());
 			while ($row = $db->fetch_row($result))
 			{
 				if ($row[1] > 1)
@@ -887,7 +887,7 @@ else if (isset($_POST['delete_topics']) || isset($_POST['delete_topics_comply'])
 		}
 
 		// Create a list of the post IDs in this topic and then strip the search index
-		$result = $db->query('SELECT id FROM '.$db->prefix.'posts WHERE topic_id IN('.$topics.')') or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());
+		$result = $db->query('SELECT id FROM '.$db->prefix.'posts WHERE topic_id IN ('.$topics.')') or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());
 
 		$post_ids = '';
 		while ($row = $db->fetch_row($result))
@@ -903,7 +903,7 @@ else if (isset($_POST['delete_topics']) || isset($_POST['delete_topics_comply'])
 		}
 
 		// Delete posts
-		$db->query('DELETE FROM '.$db->prefix.'posts WHERE topic_id IN('.$topics.')') or error('Unable to delete posts', __FILE__, __LINE__, $db->error());
+		$db->query('DELETE FROM '.$db->prefix.'posts WHERE topic_id IN ('.$topics.')') or error('Unable to delete posts', __FILE__, __LINE__, $db->error());
 
 		update_forum($fid);
 
@@ -954,7 +954,7 @@ else if (isset($_REQUEST['open']) || isset($_REQUEST['close']))
 		if (empty($topics))
 			message($lang_misc['No topics selected']);
 
-		$db->query('UPDATE '.$db->prefix.'topics SET closed='.$action.' WHERE id IN('.implode(',', $topics).') AND forum_id='.$fid) or error('Unable to close topics', __FILE__, __LINE__, $db->error());
+		$db->query('UPDATE '.$db->prefix.'topics SET closed='.$action.' WHERE id IN ('.implode(',', $topics).') AND forum_id='.$fid) or error('Unable to close topics', __FILE__, __LINE__, $db->error());
 
 		$redirect_msg = $action ? $lang_misc['Close topics redirect'] : $lang_misc['Open topics redirect'];
 		redirect('moderate.php?fid='.$fid, $redirect_msg);
@@ -1098,7 +1098,7 @@ while ($row = $db->fetch_row($result))
 if (!empty($topic_ids))
 {
 	// Select topics
-	$result = $db->query('SELECT id, poster, subject, posted, last_post, last_post_id, last_poster, num_views, num_replies, closed, sticky, moved_to FROM '.$db->prefix.'topics WHERE id IN('.implode(',', $topic_ids).') ORDER BY sticky DESC, '.$sort_by.', id DESC') or error('Unable to fetch topic list for forum', __FILE__, __LINE__, $db->error());
+	$result = $db->query('SELECT id, poster, subject, posted, last_post, last_post_id, last_poster, num_views, num_replies, closed, sticky, moved_to FROM '.$db->prefix.'topics WHERE id IN ('.implode(',', $topic_ids).') ORDER BY sticky DESC, '.$sort_by.', id DESC') or error('Unable to fetch topic list for forum', __FILE__, __LINE__, $db->error());
 
 	$button_status = '';
 	$topic_count = 0;

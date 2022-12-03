@@ -29,7 +29,7 @@ if (isset($_POST['add_cat']))
 	if ($new_cat_name == '')
 		message($lang_admin_categories['Must enter name message']);
 
-	$db->query('INSERT INTO '.$db->prefix.'categories (cat_name) VALUES(\''.$db->escape($new_cat_name).'\')') or error('Unable to create category', __FILE__, __LINE__, $db->error());
+	$db->query('INSERT INTO '.$db->prefix.'categories (cat_name) VALUES (\''.$db->escape($new_cat_name).'\')') or error('Unable to create category', __FILE__, __LINE__, $db->error());
 
 	redirect('admin_categories.php', $lang_admin_categories['Category added redirect']);
 }
@@ -67,7 +67,7 @@ else if (isset($_POST['del_cat']) || isset($_POST['del_cat_comply']))
 			$orphans[] = $row[0];
 
 		if (!empty($orphans))
-			$db->query('DELETE FROM '.$db->prefix.'topics WHERE id IN('.implode(',', $orphans).')') or error('Unable to delete redirect topics', __FILE__, __LINE__, $db->error());
+			$db->query('DELETE FROM '.$db->prefix.'topics WHERE id IN ('.implode(',', $orphans).')') or error('Unable to delete redirect topics', __FILE__, __LINE__, $db->error());
 
 		// Delete the category
 		$db->query('DELETE FROM '.$db->prefix.'categories WHERE id='.$cat_to_delete) or error('Unable to delete category', __FILE__, __LINE__, $db->error());

@@ -81,7 +81,7 @@ function check_cookie(&$pun_user)
 					case 'mysql_innodb':
 					case 'mysqli_innodb':
 					case 'sqlite3':
-						witt_query('REPLACE INTO '.$db->prefix.'online (user_id, ident, logged:?comma?::?column?:) VALUES('.$pun_user['id'].', \''.$db->escape($pun_user['username']).'\', '.$pun_user['logged'].':?comma?::?value?:)'); // MOD Кто в этой теме - Visman
+						witt_query('REPLACE INTO '.$db->prefix.'online (user_id, ident, logged:?comma?::?column?:) VALUES ('.$pun_user['id'].', \''.$db->escape($pun_user['username']).'\', '.$pun_user['logged'].':?comma?::?value?:)'); // MOD Кто в этой теме - Visman
 						break;
 
 					default:
@@ -292,7 +292,7 @@ function set_default_user()
 			case 'mysql_innodb':
 			case 'mysqli_innodb':
 			case 'sqlite3':
-				witt_query('REPLACE INTO '.$db->prefix.'online (user_id, ident, logged:?comma?::?column?:) VALUES(1, \''.$db->escape($remote_addr).'\', '.$pun_user['logged'].':?comma?::?value?:)'); // MOD Кто в этой теме - Visman
+				witt_query('REPLACE INTO '.$db->prefix.'online (user_id, ident, logged:?comma?::?column?:) VALUES (1, \''.$db->escape($remote_addr).'\', '.$pun_user['logged'].':?comma?::?value?:)'); // MOD Кто в этой теме - Visman
 				break;
 
 			default:

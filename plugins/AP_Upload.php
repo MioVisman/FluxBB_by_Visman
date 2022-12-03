@@ -46,7 +46,7 @@ if (isset($pun_config['o_uploadile_other'])) {
 		$aconf['pic_mass'] = (int) ($aconf['pic_mass'] / 1024);
 		$pun_config['o_upload_config'] = serialize($aconf);
 
-		$db->query('INSERT INTO ' . $db->prefix . 'config (conf_name, conf_value) VALUES(\'o_upload_config\', \'' . $db->escape($pun_config['o_upload_config']) . '\')') or error($lang_up['Error DB ins-up'], __FILE__, __LINE__, $db->error());
+		$db->query('INSERT INTO ' . $db->prefix . 'config (conf_name, conf_value) VALUES (\'o_upload_config\', \'' . $db->escape($pun_config['o_upload_config']) . '\')') or error($lang_up['Error DB ins-up'], __FILE__, __LINE__, $db->error());
 	}
 
 	$db->query('DELETE FROM ' . $db->prefix . 'config WHERE conf_name=\'o_uploadile_other\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
@@ -111,7 +111,7 @@ if (isset($_POST['installation'])) {
 	$db->query('UPDATE ' . $db->prefix . 'groups SET g_up_ext=\'' . $db->escape(PLUGIN_EXTS) . '\', g_up_limit=1024, g_up_max=' . $adm_max . ' WHERE g_id=' . PUN_ADMIN) or error('Unable to update user group list', __FILE__, __LINE__, $db->error());
 
 	$db->query('DELETE FROM ' . $db->prefix . 'config WHERE conf_name=\'o_upload_config\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
-	$db->query('INSERT INTO ' . $db->prefix . 'config (conf_name, conf_value) VALUES(\'o_upload_config\', \'' . $db->escape(serialize($sconf)) . '\')') or error($lang_up['Error DB ins-up'], __FILE__, __LINE__, $db->error());
+	$db->query('INSERT INTO ' . $db->prefix . 'config (conf_name, conf_value) VALUES (\'o_upload_config\', \'' . $db->escape(serialize($sconf)) . '\')') or error($lang_up['Error DB ins-up'], __FILE__, __LINE__, $db->error());
 
 	if (! defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
 		require PUN_ROOT . 'include/cache.php';
@@ -210,7 +210,7 @@ else if (isset($_POST['update'])) {
 	}
 
 	$db->query('DELETE FROM ' . $db->prefix . 'config WHERE conf_name=\'o_upload_config\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
-	$db->query('INSERT INTO ' . $db->prefix . 'config (conf_name, conf_value) VALUES(\'o_upload_config\', \'' . $db->escape(serialize($sconf)) . '\')') or error($lang_up['Error DB ins-up'], __FILE__, __LINE__, $db->error());
+	$db->query('INSERT INTO ' . $db->prefix . 'config (conf_name, conf_value) VALUES (\'o_upload_config\', \'' . $db->escape(serialize($sconf)) . '\')') or error($lang_up['Error DB ins-up'], __FILE__, __LINE__, $db->error());
 
 	if (! defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
 		require PUN_ROOT . 'include/cache.php';
@@ -584,7 +584,7 @@ if (empty($files)) {
 			$au[$id] = $id;
 		}
 	}
-	$result = $db->query('SELECT id, username, group_id FROM ' . $db->prefix . 'users WHERE id IN(' . implode(',', $au) . ')') or error('Unable to fetch user information', __FILE__, __LINE__, $db->error());
+	$result = $db->query('SELECT id, username, group_id FROM ' . $db->prefix . 'users WHERE id IN (' . implode(',', $au) . ')') or error('Unable to fetch user information', __FILE__, __LINE__, $db->error());
 	$au = $ag = [];
 	while ($u = $db->fetch_assoc($result)) {
 		$au[$u['id']] = $u['username'];

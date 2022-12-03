@@ -116,8 +116,8 @@ if (isset($_POST['installation']))
 {
 	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name=\'o_fbox_guest\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
 	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name=\'o_fbox_files\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
-	$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES(\'o_fbox_guest\', \'0\')') or error('Unable to insert into table config.', __FILE__, __LINE__, $db->error());
-	$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES(\'o_fbox_files\', \''.$db->escape(PLUGIN_FILES).'\')') or error('Unable to insert into table config.', __FILE__, __LINE__, $db->error());
+	$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_fbox_guest\', \'0\')') or error('Unable to insert into table config.', __FILE__, __LINE__, $db->error());
+	$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_fbox_files\', \''.$db->escape(PLUGIN_FILES).'\')') or error('Unable to insert into table config.', __FILE__, __LINE__, $db->error());
 
 	if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
 		require PUN_ROOT.'include/cache.php';
@@ -149,8 +149,8 @@ else if (isset($_POST['update']))
 
 	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name=\'o_fbox_guest\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
 	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name=\'o_fbox_files\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
-	$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES(\'o_fbox_guest\', \''.$gst.'\')') or error('Unable to insert into table config.', __FILE__, __LINE__, $db->error());
-	$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES(\'o_fbox_files\', \''.$db->escape(implode(',', $fls)).'\')') or error('Unable to insert into table config.', __FILE__, __LINE__, $db->error());
+	$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_fbox_guest\', \''.$gst.'\')') or error('Unable to insert into table config.', __FILE__, __LINE__, $db->error());
+	$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_fbox_files\', \''.$db->escape(implode(',', $fls)).'\')') or error('Unable to insert into table config.', __FILE__, __LINE__, $db->error());
 
 	if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
 		require PUN_ROOT.'include/cache.php';
@@ -187,8 +187,8 @@ if ($f_inst && !isset($pun_config['o_fbox_files'])) // непредвиденн�
 {
 	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name=\'o_fbox_guest\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
 	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name=\'o_fbox_files\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
-	$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES(\'o_fbox_guest\', \'0\')') or error('Unable to insert into table config.', __FILE__, __LINE__, $db->error());
-	$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES(\'o_fbox_files\', \''.$db->escape(PLUGIN_FILES).'\')') or error('Unable to insert into table config.', __FILE__, __LINE__, $db->error());
+	$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_fbox_guest\', \'0\')') or error('Unable to insert into table config.', __FILE__, __LINE__, $db->error());
+	$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_fbox_files\', \''.$db->escape(PLUGIN_FILES).'\')') or error('Unable to insert into table config.', __FILE__, __LINE__, $db->error());
 
 	if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
 		require PUN_ROOT.'include/cache.php';

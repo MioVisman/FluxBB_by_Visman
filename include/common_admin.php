@@ -159,7 +159,7 @@ function prune($forum_id, $prune_sticky, $prune_date)
 		// уменьшение постов у юзеров и not sum - Visman
 		if ($flag_f == 0)
 		{
-			$result = $db->query('SELECT COUNT(id), poster_id FROM '.$db->prefix.'posts WHERE topic_id IN('.$topic_ids.') GROUP BY poster_id', true) or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());
+			$result = $db->query('SELECT COUNT(id), poster_id FROM '.$db->prefix.'posts WHERE topic_id IN ('.$topic_ids.') GROUP BY poster_id', true) or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());
 			while ($row = $db->fetch_row($result))
 			{
 				if ($row[1] > 1)
@@ -168,7 +168,7 @@ function prune($forum_id, $prune_sticky, $prune_date)
 		}
 
 		// Fetch posts to prune
-		$result = $db->query('SELECT id FROM '.$db->prefix.'posts WHERE topic_id IN('.$topic_ids.')', true) or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());
+		$result = $db->query('SELECT id FROM '.$db->prefix.'posts WHERE topic_id IN ('.$topic_ids.')', true) or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());
 
 		$post_ids = '';
 		while ($row = $db->fetch_row($result))
@@ -177,13 +177,13 @@ function prune($forum_id, $prune_sticky, $prune_date)
 		if ($post_ids != '')
 		{
 			// Delete topics
-			$db->query('DELETE FROM '.$db->prefix.'topics WHERE id IN('.$topic_ids.')') or error('Unable to prune topics', __FILE__, __LINE__, $db->error());
+			$db->query('DELETE FROM '.$db->prefix.'topics WHERE id IN ('.$topic_ids.')') or error('Unable to prune topics', __FILE__, __LINE__, $db->error());
 			// Delete subscriptions
-			$db->query('DELETE FROM '.$db->prefix.'topic_subscriptions WHERE topic_id IN('.$topic_ids.')') or error('Unable to prune subscriptions', __FILE__, __LINE__, $db->error());
+			$db->query('DELETE FROM '.$db->prefix.'topic_subscriptions WHERE topic_id IN ('.$topic_ids.')') or error('Unable to prune subscriptions', __FILE__, __LINE__, $db->error());
 			// Delete posts
-			$db->query('DELETE FROM '.$db->prefix.'posts WHERE id IN('.$post_ids.')') or error('Unable to prune posts', __FILE__, __LINE__, $db->error());
+			$db->query('DELETE FROM '.$db->prefix.'posts WHERE id IN ('.$post_ids.')') or error('Unable to prune posts', __FILE__, __LINE__, $db->error());
 			// MOD warnings - Visman
-			$db->query('DELETE FROM '.$db->prefix.'warnings WHERE id IN('.$post_ids.')') or error('Unable to prune warnings', __FILE__, __LINE__, $db->error());
+			$db->query('DELETE FROM '.$db->prefix.'warnings WHERE id IN ('.$post_ids.')') or error('Unable to prune warnings', __FILE__, __LINE__, $db->error());
 
 			// We removed a bunch of posts, so now we have to update the search index
 			require_once PUN_ROOT.'include/search_idx.php';

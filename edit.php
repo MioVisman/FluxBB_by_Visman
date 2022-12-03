@@ -20,7 +20,7 @@ if ($id < 1)
 
 // MOD last topic on index - f.last_post_id, - мод ограничения времени редактирвания, добавил p.posted as pposted, p.edit_post - StickFP Add t.stick_fp, - MOD warnings Add , w.message AS warning - t.poll_type, t.poll_time, t.poll_term, t.poll_kol, - Visman
 // Fetch some info about the post, the topic and the forum
-$result = $db->query('SELECT f.id AS fid, f.forum_name, f.moderators, f.redirect_url, fp.post_replies, fp.post_topics, f.last_post_id, t.id AS tid, t.stick_fp, t.subject, t.posted, t.first_post_id, t.sticky, t.closed, t.poll_type, t.poll_time, t.poll_term, t.poll_kol, p.poster, p.poster_id, p.message, p.hide_smilies, p.posted as pposted, p.edit_post, w.message AS warning FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'topics AS t ON t.id=p.topic_id INNER JOIN '.$db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$db->prefix.'warnings AS w ON p.id=w.id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.id='.$id) or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
+$result = $db->query('SELECT f.id AS fid, f.forum_name, f.moderators, f.redirect_url, fp.post_replies, fp.post_topics, f.last_post_id, t.id AS tid, t.stick_fp, t.subject, t.posted, t.first_post_id, t.sticky, t.closed, t.poll_type, t.poll_time, t.poll_term, t.poll_kol, p.poster, p.poster_id, p.message, p.hide_smilies, p.posted AS pposted, p.edit_post, w.message AS warning FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'topics AS t ON t.id=p.topic_id INNER JOIN '.$db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$db->prefix.'warnings AS w ON p.id=w.id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.id='.$id) or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
 $cur_post = $db->fetch_assoc($result);
 
 if (!$cur_post)
@@ -181,7 +181,7 @@ if (isset($_POST['form_sent']))
 				$sql_warm = '';
 				if (strlen($warning) > 0 )
 				{
-					$db->query('INSERT INTO '.$db->prefix.'warnings (id, poster, poster_id, posted, message) VALUES('.$id.', \''.$db->escape($pun_user['username']).'\', '.$pun_user['id'].', '.time().', \''.$db->escape($warning).'\')') or error('Unable to insert warning', __FILE__, __LINE__, $db->error());
+					$db->query('INSERT INTO '.$db->prefix.'warnings (id, poster, poster_id, posted, message) VALUES ('.$id.', \''.$db->escape($pun_user['username']).'\', '.$pun_user['id'].', '.time().', \''.$db->escape($warning).'\')') or error('Unable to insert warning', __FILE__, __LINE__, $db->error());
 					$sql_warm = ', warning_flag=1';
 				}
 				$result = $db->query('SELECT COUNT(p.id) FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'warnings AS w ON w.id=p.id WHERE p.poster_id='.$cur_post['poster_id']) or error('Unable to sum for posts', __FILE__, __LINE__, $db->error());

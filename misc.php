@@ -264,7 +264,7 @@ else if (isset($_GET['report']))
 
 		// Should we use the internal report handling?
 		if ($pun_config['o_report_method'] == '0' || $pun_config['o_report_method'] == '2')
-			$db->query('INSERT INTO '.$db->prefix.'reports (post_id, topic_id, forum_id, reported_by, created, message) VALUES('.$post_id.', '.$topic_id.', '.$forum_id.', '.$pun_user['id'].', '.time().', \''.$db->escape($reason).'\')' ) or error('Unable to create report', __FILE__, __LINE__, $db->error());
+			$db->query('INSERT INTO '.$db->prefix.'reports (post_id, topic_id, forum_id, reported_by, created, message) VALUES ('.$post_id.', '.$topic_id.', '.$forum_id.', '.$pun_user['id'].', '.time().', \''.$db->escape($reason).'\')' ) or error('Unable to create report', __FILE__, __LINE__, $db->error());
 
 		// Should we email the report?
 		if ($pun_config['o_report_method'] == '1' || $pun_config['o_report_method'] == '2')
@@ -376,7 +376,7 @@ else if ($action == 'subscribe')
 		if ($db->result($result))
 			message($lang_misc['Already subscribed topic']);
 
-		$db->query('INSERT INTO '.$db->prefix.'topic_subscriptions (user_id, topic_id) VALUES('.$pun_user['id'].' ,'.$topic_id.')') or error('Unable to add subscription', __FILE__, __LINE__, $db->error());
+		$db->query('INSERT INTO '.$db->prefix.'topic_subscriptions (user_id, topic_id) VALUES ('.$pun_user['id'].' ,'.$topic_id.')') or error('Unable to add subscription', __FILE__, __LINE__, $db->error());
 
 		redirect('viewtopic.php?id='.$topic_id, $lang_misc['Subscribe redirect']);
 	}
@@ -395,7 +395,7 @@ else if ($action == 'subscribe')
 		if ($db->result($result))
 			message($lang_misc['Already subscribed forum']);
 
-		$db->query('INSERT INTO '.$db->prefix.'forum_subscriptions (user_id, forum_id) VALUES('.$pun_user['id'].' ,'.$forum_id.')') or error('Unable to add subscription', __FILE__, __LINE__, $db->error());
+		$db->query('INSERT INTO '.$db->prefix.'forum_subscriptions (user_id, forum_id) VALUES ('.$pun_user['id'].' ,'.$forum_id.')') or error('Unable to add subscription', __FILE__, __LINE__, $db->error());
 
 		redirect('viewforum.php?id='.$forum_id, $lang_misc['Subscribe redirect']);
 	}

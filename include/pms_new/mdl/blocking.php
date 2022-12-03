@@ -53,7 +53,7 @@ if (isset($_POST['action2']))
 
 	if ($mfl)
 	{
-		$db->query('INSERT INTO '.$db->prefix.'pms_new_block (bl_id, bl_user_id) VALUES('.$pun_user['id'].', '.$uid.')') or error('Unable to create line in pms_new_block', __FILE__, __LINE__, $db->error());
+		$db->query('INSERT INTO '.$db->prefix.'pms_new_block (bl_id, bl_user_id) VALUES ('.$pun_user['id'].', '.$uid.')') or error('Unable to create line in pms_new_block', __FILE__, __LINE__, $db->error());
 
 		if (isset($_POST['delete_dlg'])) // удаление диалогов
 		{
@@ -117,4 +117,3 @@ generate_pmsn_menu($pmsn_modul);
 		</div>
 	</div>
 <?php
-

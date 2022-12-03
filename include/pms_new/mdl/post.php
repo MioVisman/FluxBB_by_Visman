@@ -231,7 +231,7 @@ if (isset($_POST['csrf_hash']))
 		if ($tid) // new post
 		{
 			// создаем новое сообщение
-			$db->query('INSERT INTO '.$db->prefix.'pms_new_posts (poster, poster_id, poster_ip, message, hide_smilies, posted, post_new, topic_id) VALUES(\''.$db->escape($pun_user['username']).'\', '.$pun_user['id'].', \''.$db->escape(get_remote_address()).'\', \''.$db->escape($message).'\', '.$hide_smilies.', '.$now.', 1, '.$tid.')') or error('Unable to create pms_new_posts', __FILE__, __LINE__, $db->error());
+			$db->query('INSERT INTO '.$db->prefix.'pms_new_posts (poster, poster_id, poster_ip, message, hide_smilies, posted, post_new, topic_id) VALUES (\''.$db->escape($pun_user['username']).'\', '.$pun_user['id'].', \''.$db->escape(get_remote_address()).'\', \''.$db->escape($message).'\', '.$hide_smilies.', '.$now.', 1, '.$tid.')') or error('Unable to create pms_new_posts', __FILE__, __LINE__, $db->error());
 			$new_pid = $db->insert_id();
 
 			// обновляем тему
@@ -280,11 +280,11 @@ if (isset($_POST['csrf_hash']))
 				$m_all = $pmsn_kol_list+1;
 			}
 			// создаем новую тему
-			$db->query('INSERT INTO '.$db->prefix.'pms_new_topics (topic, starter, starter_id, to_user, to_id, replies, last_posted, last_poster, see_st, see_to, topic_st, topic_to) VALUES(\''.$db->escape($subject).'\', \''.$db->escape($pun_user['username']).'\', '.$pun_user['id'].', \''.$db->escape($cur_addressee['username']).'\', '.$cur_addressee['id'].', 0, '.$now.', 0, '.$now.', 0, '.$flag1.', '.$flag2.')') or error('Unable to create pms_new_topics', __FILE__, __LINE__, $db->error());
+			$db->query('INSERT INTO '.$db->prefix.'pms_new_topics (topic, starter, starter_id, to_user, to_id, replies, last_posted, last_poster, see_st, see_to, topic_st, topic_to) VALUES (\''.$db->escape($subject).'\', \''.$db->escape($pun_user['username']).'\', '.$pun_user['id'].', \''.$db->escape($cur_addressee['username']).'\', '.$cur_addressee['id'].', 0, '.$now.', 0, '.$now.', 0, '.$flag1.', '.$flag2.')') or error('Unable to create pms_new_topics', __FILE__, __LINE__, $db->error());
 			$new_tid = $db->insert_id();
 
 			// создаем новое сообщение
-			$db->query('INSERT INTO '.$db->prefix.'pms_new_posts (poster, poster_id, poster_ip, message, hide_smilies, posted, post_new, topic_id) VALUES(\''.$db->escape($pun_user['username']).'\', '.$pun_user['id'].', \''.$db->escape(get_remote_address()).'\', \''.$db->escape($message).'\', '.$hide_smilies.', '.$now.', 1, '.$new_tid.')') or error('Unable to create pms_new_posts', __FILE__, __LINE__, $db->error());
+			$db->query('INSERT INTO '.$db->prefix.'pms_new_posts (poster, poster_id, poster_ip, message, hide_smilies, posted, post_new, topic_id) VALUES (\''.$db->escape($pun_user['username']).'\', '.$pun_user['id'].', \''.$db->escape(get_remote_address()).'\', \''.$db->escape($message).'\', '.$hide_smilies.', '.$now.', 1, '.$new_tid.')') or error('Unable to create pms_new_posts', __FILE__, __LINE__, $db->error());
 			$new_pid = $db->insert_id();
 
 			// update users

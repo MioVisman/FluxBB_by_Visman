@@ -72,8 +72,8 @@ class addon_security_for_login extends flux_addon
 
 			$db->create_table('sec_of_login', $schema) or error('Unable to create sec_of_login table', __FILE__, __LINE__, $db->error());
 
-			$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES(\'o_sec_of_login\', \''.$db->escape($this->version).'\')') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
-			$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES(\'o_sec_of_login_time\', \''.$db->escape(time()).'\')') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
+			$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_sec_of_login\', \''.$db->escape($this->version).'\')') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
+			$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_sec_of_login_time\', \''.$db->escape(time()).'\')') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
 
 			$this->gen_cache();
 		}
@@ -105,7 +105,7 @@ class addon_security_for_login extends flux_addon
 			$form_captcha = security_show_captcha(4);
 		}
 
-		$db->query('INSERT INTO '.$db->prefix.'sec_of_login (form_key, form_time, form_ip, form_captcha) VALUES(\''.$db->escape($key).'\', '.$now.', \''.$db->escape($ip).'\', \''.$db->escape($form_captcha).'\')') or error('Unable to insert data in sec_of_login', __FILE__, __LINE__, $db->error());
+		$db->query('INSERT INTO '.$db->prefix.'sec_of_login (form_key, form_time, form_ip, form_captcha) VALUES (\''.$db->escape($key).'\', '.$now.', \''.$db->escape($ip).'\', \''.$db->escape($form_captcha).'\')') or error('Unable to insert data in sec_of_login', __FILE__, __LINE__, $db->error());
 
 		echo "\t\t\t".'<div><input type="hidden" name="'.pun_htmlspecialchars($this->form_key).'" value="'.pun_htmlspecialchars($key).'" /></div>'."\n";
 	}

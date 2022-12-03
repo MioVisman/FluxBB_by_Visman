@@ -32,7 +32,7 @@ if (isset($_POST['show_text']))
 	}
 
 	// Synchronize user post counts
-	$db->query('CREATE TEMPORARY TABLE IF NOT EXISTS '.$db->prefix.'post_counts SELECT poster_id, count(*) as new_num FROM '.$db->prefix.'posts AS p, '.$db->prefix.'topics as t, '.$db->prefix.'forums as f WHERE f.no_sum_mess=0 and f.id=t.forum_id and p.topic_id=t.id GROUP BY p.poster_id') or error('Creating temporary table failed', __FILE__, __LINE__, $db->error());
+	$db->query('CREATE TEMPORARY TABLE IF NOT EXISTS '.$db->prefix.'post_counts SELECT poster_id, COUNT(*) AS new_num FROM '.$db->prefix.'posts AS p, '.$db->prefix.'topics AS t, '.$db->prefix.'forums AS f WHERE f.no_sum_mess=0 AND f.id=t.forum_id AND p.topic_id=t.id GROUP BY p.poster_id') or error('Creating temporary table failed', __FILE__, __LINE__, $db->error());
 	$db->query('UPDATE '.$db->prefix.'users SET num_posts=0') or error('Could not reset post counts', __FILE__, __LINE__, $db->error()); // Zero posts
 	$db->query('UPDATE '.$db->prefix.'users, '.$db->prefix.'post_counts SET num_posts=new_num WHERE id=poster_id') or error('Could not update post counts', __FILE__, __LINE__, $db->error());
 

@@ -53,7 +53,7 @@ else
 		}
 		else
 		{
-			$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES(\'o_merge_timeout\', \'86400\')') or error('Unable to insert into table config', __FILE__, __LINE__, $db->error());
+			$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_merge_timeout\', \'86400\')') or error('Unable to insert into table config', __FILE__, __LINE__, $db->error());
 			$merge_timeout = '86400';
 		}
 

@@ -349,7 +349,7 @@ if ($action == 'feed')
 			$fids = array_map('intval', $fids);
 
 			if (!empty($fids))
-				$forum_sql .= ' AND t.forum_id IN('.implode(',', $fids).')';
+				$forum_sql .= ' AND t.forum_id IN ('.implode(',', $fids).')';
 
 			if (count($fids) == 1)
 			{
@@ -369,7 +369,7 @@ if ($action == 'feed')
 			$nfids = array_map('intval', $nfids);
 
 			if (!empty($nfids))
-				$forum_sql .= ' AND t.forum_id NOT IN('.implode(',', $nfids).')';
+				$forum_sql .= ' AND t.forum_id NOT IN ('.implode(',', $nfids).')';
 		}
 
 		// Only attempt to cache if caching is enabled and we have all or a single forum
