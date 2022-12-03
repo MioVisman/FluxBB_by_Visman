@@ -1,6 +1,7 @@
 <?php
 /***********************************************************************
 
+  Copyright (C) 2022 Visman (mio.visman@yandex.ru)
   Copyright (C) 2010 Mpok (mpok@fluxbb.fr)
   based on code Copyright (C) 2005 Vincent Garnier (vin100@forx.fr)
   License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -18,7 +19,7 @@ if (!defined('PUN'))
 
 // Tell admin_loader.php that this is indeed a plugin and that it is loaded
 define('PUN_PLUGIN_LOADED', 1);
-define('PLUGIN_VERSION', '1.4.2');
+define('PLUGIN_VERSION', '1.4.3');
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin='.$plugin));
 
 // Load the smilies language files
@@ -53,9 +54,17 @@ $d->close();
 // Change smilies texts, images and positions
 if (isset($_POST['reord']))
 {
-	$smilies_order = array_map('intval', array_map('pun_trim', $_POST['smilies_order']));
-	$smilies_img = array_map('pun_trim', $_POST['smilies_img']);
-	$smilies_code = array_map('pun_trim', $_POST['smilies_code']);
+	$smilies_order = $_POST['smilies_order'] ?? null;
+	$smilies_img = $_POST['smilies_img'] ?? null;
+	$smilies_code = $_POST['smilies_code'] ?? null;
+
+	if (! is_array($smilies_order) || ! is_array($smilies_img) || ! is_array($smilies_code)) {
+		message($lang_common['Bad request'], false, '404 Not Found');
+	}
+
+	$smilies_order = array_map('intval', array_map('pun_trim', $smilies_order));
+	$smilies_img = array_map('pun_trim', $smilies_img);
+	$smilies_code = array_map('pun_trim', $smilies_code);
 
 	// Checking smilies codes
 	$smiley_dups = array();
@@ -73,8 +82,13 @@ if (isset($_POST['reord']))
 	$result = $db->query('SELECT id FROM '.$db->prefix.'smilies ORDER BY disp_position') or error('Unable to retrieve smilies', __FILE__, __LINE__, $db->error());
 
 	// Update all smilies
-	while ($db_smilies = $db->fetch_assoc($result))
-		$db->query('UPDATE '.$db->prefix.'smilies SET disp_position='.$smilies_order[$db_smilies['id']].', text=\''.$db->escape($smilies_code[$db_smilies['id']]).'\', image=\''.$db->escape($smilies_img[$db_smilies['id']]).'\' WHERE id='.$db_smilies['id']) or error('Unable to edit smilies', __FILE__, __LINE__, $db->error());
+	while ($db_smilies = $db->fetch_assoc($result)) {
+		$id = $db_smilies['id'];
+
+		if (isset($smilies_order[$id], $smilies_code[$id], $smilies_img[$id])) {
+			$db->query('UPDATE '.$db->prefix.'smilies SET disp_position='.$smilies_order[$id].', text=\''.$db->escape($smilies_code[$id]).'\', image=\''.$db->escape($smilies_img[$id]).'\' WHERE id='.$id) or error('Unable to edit smilies', __FILE__, __LINE__, $db->error());
+		}
+	}
 
 	// Regenerate cache
 	if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
@@ -88,7 +102,7 @@ if (isset($_POST['reord']))
 // Remove smilies
 elseif (isset($_POST['remove']))
 {
-	if (empty($_POST['rem_smilies']))
+	if (empty($_POST['rem_smilies']) || ! is_array($_POST['rem_smilies']))
 		message($lang_smiley['No Smileys']);
 	$rem_smilies = array_map('intval', array_keys($_POST['rem_smilies']));
 
@@ -107,8 +121,8 @@ elseif (isset($_POST['remove']))
 // Add a smiley to the list
 elseif (isset($_POST['add_smiley']))
 {
-	$smiley_code = pun_trim($_POST['smiley_code']);
-	$smiley_image = pun_trim($_POST['smiley_image']);
+	$smiley_code = pun_trim($_POST['smiley_code'] ?? '');
+	$smiley_image = pun_trim($_POST['smiley_image'] ?? '');
 
 	// Checking text code and image
 	if ($smiley_code == '')
@@ -133,7 +147,7 @@ elseif (isset($_POST['add_smiley']))
 // Delete images
 elseif (isset($_POST['delete']))
 {
-	if (empty($_POST['del_smilies']))
+	if (empty($_POST['del_smilies']) || ! is_array($_POST['del_smilies']))
 		message($lang_smiley['No Images']);
 	$del_smilies = array_map('pun_trim', $_POST['del_smilies']);
 
@@ -156,6 +170,7 @@ elseif (isset($_POST['delete']))
 		// Delete each image
 		foreach ($to_delete as $img)
 		{
+			$img = preg_replace('%(?:\.\.|[^\.\w-])%', '-', $img);
 			if (!@unlink(PUN_ROOT.'img/smilies/'.$img))
 				$not_deleted[] = $img;
 		}
