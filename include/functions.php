@@ -735,10 +735,13 @@ function update_forum($forum_id)
 {
 	global $db;
 
-	$result = $db->query('SELECT COUNT(id), SUM(num_replies) FROM '.$db->prefix.'topics WHERE forum_id='.$forum_id.' AND moved_to IS NULL') or error('Unable to fetch forum topic count', __FILE__, __LINE__, $db->error());
+	$result = $db->query('SELECT COUNT(id), SUM(num_replies) FROM '.$db->prefix.'topics WHERE forum_id='.$forum_id) or error('Unable to fetch forum topic count', __FILE__, __LINE__, $db->error());
 	list($num_topics, $num_posts) = $db->fetch_row($result);
 
 	$num_posts = $num_posts + $num_topics; // $num_posts is only the sum of all replies (we have to add the topic posts)
+
+	$result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'topics WHERE forum_id='.$forum_id.' AND moved_to IS NOT NULL') or error('Unable to fetch moved topic count', __FILE__, __LINE__, $db->error());
+	$num_posts-= $db->result($result);
 
 	$result = $db->query('SELECT last_post, last_post_id, last_poster, subject FROM '.$db->prefix.'topics WHERE forum_id='.$forum_id.' AND moved_to IS NULL ORDER BY last_post DESC LIMIT 1') or error('Unable to fetch last_post/last_post_id/last_poster', __FILE__, __LINE__, $db->error()); // last topic on index - Visman
 	$post_info = $db->fetch_row($result);
