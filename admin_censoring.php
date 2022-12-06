@@ -25,8 +25,8 @@ if (isset($_POST['add_word']))
 {
 	confirm_referrer('admin_censoring.php');
 
-	$search_for = pun_trim($_POST['new_search_for']);
-	$replace_with = pun_trim($_POST['new_replace_with']);
+	$search_for = pun_trim($_POST['new_search_for'] ?? '');
+	$replace_with = pun_trim($_POST['new_replace_with'] ?? '');
 
 	if ($search_for == '')
 		message($lang_admin_censoring['Must enter word message']);
@@ -47,14 +47,14 @@ if (isset($_POST['add_word']))
 }
 
 // Update a censor word
-else if (isset($_POST['update']))
+else if (is_array($_POST['update'] ?? null))
 {
 	confirm_referrer('admin_censoring.php');
 
 	$id = intval(key($_POST['update']));
 
-	$search_for = pun_trim($_POST['search_for'][$id]);
-	$replace_with = pun_trim($_POST['replace_with'][$id]);
+	$search_for = pun_trim($_POST['search_for'][$id] ?? '');
+	$replace_with = pun_trim($_POST['replace_with'][$id] ?? '');
 
 	if ($search_for == '')
 		message($lang_admin_censoring['Must enter word message']);
@@ -75,7 +75,7 @@ else if (isset($_POST['update']))
 }
 
 // Remove a censor word
-else if (isset($_POST['remove']))
+else if (is_array($_POST['remove'] ?? null))
 {
 	confirm_referrer('admin_censoring.php');
 
