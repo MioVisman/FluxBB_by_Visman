@@ -16,10 +16,10 @@ require PUN_ROOT.'include/common.php';
 // Load the login.php language file
 require PUN_ROOT.'lang/'.$pun_user['language'].'/login.php';
 
-$action = isset($_GET['action']) ? $_GET['action'] : null;
+$action = $_GET['action'] ?? null;
 $errors = array();
 
-if (isset($_POST['form_sent']) && $action == 'in')
+if (isset($_POST['form_sent']) && $action === 'in')
 {
 	flux_hook('login_before_validation');
 
@@ -30,7 +30,7 @@ if (isset($_POST['form_sent']) && $action == 'in')
 	$form_password = pun_trim($_POST['req_password'] ?? '');
 	$save_pass = isset($_POST['save_pass']);
 
-	$username_sql = ($db_type == 'mysql' || $db_type == 'mysqli' || $db_type == 'mysql_innodb' || $db_type == 'mysqli_innodb') ? 'username=\''.$db->escape($form_username).'\'' : 'LOWER(username)=LOWER(\''.$db->escape($form_username).'\')';
+	$username_sql = $db_type == 'mysql' || $db_type == 'mysqli' || $db_type == 'mysql_innodb' || $db_type == 'mysqli_innodb' ? 'username=\''.$db->escape($form_username).'\'' : 'LOWER(username)=LOWER(\''.$db->escape($form_username).'\')';
 
 	// проверка IP админов и модераторов - Visman
 	if ($pun_config['o_check_ip'] == '1')
@@ -87,7 +87,7 @@ if (isset($_POST['form_sent']) && $action == 'in')
 		// Remove this users guest entry from the online list
 		$db->query('DELETE FROM '.$db->prefix.'online WHERE ident=\''.$db->escape(get_remote_address()).'\'') or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
 
-		$expire = ($save_pass == '1') ? time() + 1209600 : time() + $pun_config['o_timeout_visit'];
+		$expire = $save_pass == '1' ? time() + 1209600 : time() + $pun_config['o_timeout_visit'];
 		pun_setcookie($cur_user['id'], $cur_user['password'], $expire);
 
 		// Reset tracked topics
@@ -101,7 +101,7 @@ if (isset($_POST['form_sent']) && $action == 'in')
 }
 
 
-else if ($action == 'out')
+else if ($action === 'out')
 {
 	if ($pun_user['is_guest'] || !isset($_GET['id']) || $_GET['id'] != $pun_user['id'])
 	{
@@ -125,7 +125,7 @@ else if ($action == 'out')
 }
 
 
-else if ($action == 'forget' || $action == 'forget_2')
+else if ($action === 'forget' || $action === 'forget_2')
 {
 	if (!$pun_user['is_guest'])
 	{
