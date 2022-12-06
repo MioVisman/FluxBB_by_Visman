@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2013-2015 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2013-2022 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -189,7 +189,7 @@ function security_show_captcha($tabindex, $acaptcha = true, $qcaptcha = false)
 				else
 					$prea = 0;
 
-				$pred = ($i < $len) ? $d[$i] : '';
+				$pred = $i < $len ? $d[$i] : '';
 			}
 
 			$str = '';
@@ -202,7 +202,7 @@ function security_show_captcha($tabindex, $acaptcha = true, $qcaptcha = false)
 			$type = random_int(0, 1);
 			$inp_name = security_random_name('form_captha'.random_int(1, 1000));
 			$inp_code = '<input type="text" name="'.$inp_name.'" size="4" maxlength="4"'.($tabindex > 0 ? ' tabindex="'.($tabindex++).'"' : (empty($cur_index) ? '' : ' tabindex="'.($cur_index++).'"')).' />';
-			$result[$inp_name] = ($inp_idx > $len ? $sum : $a[$inp_idx]);
+			$result[$inp_name] = $inp_idx > $len ? $sum : $a[$inp_idx];
 			security_show_random_value(false);
 
 ?>
