@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2015 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2022 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -91,13 +91,13 @@ function pmsn_user_update($user, $flag = false)
 
 	while ($ttmp = $db->fetch_assoc($result))
 	{
-		$ftmp = ($ttmp['starter_id'] == $user) ? $ttmp['topic_st'] : $ftmp = $ttmp['topic_to'];
+		$ftmp = $ttmp['starter_id'] == $user ? $ttmp['topic_st'] : $ftmp = $ttmp['topic_to'];
 
 		$mkol++;
 		$mnew += $ftmp;
 	}
 
-	$tempf = ($flag && $mnew > 0) ? 'messages_flag=1, ' : '';
+	$tempf = $flag && $mnew > 0 ? 'messages_flag=1, ' : '';
 
 	$db->query('UPDATE '.$db->prefix.'users SET '.$tempf.'messages_new='.$mnew.', messages_all='.$mkol.' WHERE id='.$user) or error('Unable to update user', __FILE__, __LINE__, $db->error());
 }
@@ -169,12 +169,7 @@ function pmsn_user_delete($user, $mflag, $topics = array())
 
 function pmsn_get_var($name, $default = null)
 {
-	if (isset($_POST[$name]))
-		return $_POST[$name];
-	else if (isset($_GET[$name]))
-		return $_GET[$name];
-	else
-		return $default;
+	return $_POST[$name] ?? ($_GET[$name] ?? $default);
 }
 
 function pmsn_csrf_token($key)
