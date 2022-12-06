@@ -152,7 +152,7 @@ foreach ($sf_array[$sf_cur_forum] as $cur_subforum)
 	}
 
 	++$forum_count;
-	$item_status = ($forum_count % 2 == 0) ? 'roweven' : 'rowodd';
+	$item_status = $forum_count % 2 == 0 ? 'roweven' : 'rowodd';
 	$forum_field_new = '';
 	$icon_type = 'icon';
 
