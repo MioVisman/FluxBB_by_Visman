@@ -483,7 +483,7 @@ if (isset($_GET['tid']))
 	// Determine the post offset (based on $_GET['p'])
 	$num_pages = ceil(($cur_topic['num_replies'] + 1) / $pun_user['disp_posts']);
 
-	$p = !isset($_GET['p']) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages ? 1 : intval($_GET['p']);
+	$p = ! is_numeric($_GET['p'] ?? null) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages ? 1 : intval($_GET['p']);
 	$start_from = $pun_user['disp_posts'] * ($p - 1);
 
 	// Generate paging links
@@ -964,7 +964,7 @@ else if (isset($_REQUEST['open']) || isset($_REQUEST['close']))
 	{
 		confirm_referrer('viewtopic.php');
 
-		$topic_id = $action ? intval($_GET['close']) : intval($_GET['open']);
+		$topic_id = $action ? intval($_GET['close'] ?? 0) : intval($_GET['open'] ?? 0);
 		if ($topic_id < 1)
 			message($lang_common['Bad request'], false, '404 Not Found');
 
@@ -1041,7 +1041,7 @@ switch ($cur_forum['sort_by'])
 // Determine the topic offset (based on $_GET['p'])
 $num_pages = ceil($cur_forum['num_topics'] / $pun_user['disp_topics']);
 
-$p = !isset($_GET['p']) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages ? 1 : intval($_GET['p']);
+$p = ! is_numeric($_GET['p'] ?? null) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages ? 1 : intval($_GET['p']);
 $start_from = $pun_user['disp_topics'] * ($p - 1);
 
 // Generate paging links
