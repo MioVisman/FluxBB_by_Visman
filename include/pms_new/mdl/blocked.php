@@ -34,7 +34,7 @@ generate_pmsn_menu($pmsn_modul);
 $result = $db->query('SELECT COUNT(bl_user_id) FROM '.$db->prefix.'pms_new_block WHERE bl_id='.$pun_user['id']) or error('Unable to fetch pms_new_block', __FILE__, __LINE__, $db->error());
 $num_pages = ceil($db->result($result) / $pun_user['disp_topics']);
 
-$p = (!isset($_GET['p']) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages) ? 1 : intval($_GET['p']);
+$p = ! is_numeric($_GET['p'] ?? null) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages ? 1 : intval($_GET['p']);
 $start_from = $pun_user['disp_topics'] * ($p - 1);
 
 // Generate paging links
