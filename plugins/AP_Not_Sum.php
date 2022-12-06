@@ -100,7 +100,7 @@ do
 
 ?>
 								<tr>
-									<td class="tcl"><input type="checkbox" name="no_sum_mess[<?php echo $cur_forum['fid'] ?>]" value="1" tabindex="<?php echo ($tabindex++) ?>"<?php echo ($cur_forum['no_sum_mess'] == 1 ? ' checked="checked"' : '')?> /></td>
+									<td class="tcl"><input type="checkbox" name="no_sum_mess[<?php echo $cur_forum['fid'] ?>]" value="1" tabindex="<?php echo ($tabindex++) ?>"<?php echo ($cur_forum['no_sum_mess'] == 1 ? ' checked="checked"' : '') ?> /></td>
 									<td class="tcr"><strong><?php echo pun_htmlspecialchars($cur_forum['forum_name']) ?></strong></td>
 								</tr>
 <?php
