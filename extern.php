@@ -74,7 +74,7 @@ if ($pun_user['g_read_board'] == '0')
 	exit($lang_common['No view']);
 }
 
-$action = isset($_GET['action']) ? strtolower($_GET['action']) : 'feed';
+$action = is_string($_GET['action'] ?? null) ? strtolower($_GET['action']) : 'feed';
 
 // Handle a couple old formats, from FluxBB 1.2
 switch ($action)
@@ -172,7 +172,7 @@ function output_atom($feed)
 
 	echo "\t".'<id>'.pun_htmlspecialchars($feed['link']).'</id>'."\n";
 
-	$content_tag = ($feed['type'] == 'posts') ? 'content' : 'summary';
+	$content_tag = $feed['type'] == 'posts' ? 'content' : 'summary';
 
 	foreach ($feed['items'] as $item)
 	{
@@ -214,7 +214,7 @@ function output_xml($feed)
 	echo '<source>'."\n";
 	echo "\t".'<url>'.pun_htmlspecialchars($feed['link']).'</url>'."\n";
 
-	$forum_tag = ($feed['type'] == 'posts') ? 'post' : 'topic';
+	$forum_tag = $feed['type'] == 'posts' ? 'post' : 'topic';
 
 	foreach ($feed['items'] as $item)
 	{
@@ -263,12 +263,12 @@ function output_html($feed)
 }
 
 // Show recent discussions
-if ($action == 'feed')
+if ($action === 'feed')
 {
 	require PUN_ROOT.'include/parser.php';
 
 	// Determine what type of feed to output
-	$type = isset($_GET['type']) ? strtolower($_GET['type']) : 'html';
+	$type = is_string($_GET['type'] ?? null) ? strtolower($_GET['type']) : 'html';
 	if (!in_array($type, array('html', 'rss', 'atom', 'xml')))
 		$type = 'html';
 
@@ -338,12 +338,12 @@ if ($action == 'feed')
 	}
 	else
 	{
-		$order_posted = isset($_GET['order']) && strtolower($_GET['order']) == 'posted';
+		$order_posted = is_string($_GET['order'] ?? null) && strtolower($_GET['order']) == 'posted';
 		$forum_name = '';
 		$forum_sql = '';
 
 		// Were any forum IDs supplied?
-		if (isset($_GET['fid']) && is_scalar($_GET['fid']) && $_GET['fid'] != '')
+		if (is_string($_GET['fid'] ?? null) && $_GET['fid'] != '')
 		{
 			$fids = explode(',', pun_trim($_GET['fid']));
 			$fids = array_map('intval', $fids);
@@ -363,7 +363,7 @@ if ($action == 'feed')
 		}
 
 		// Any forum IDs to exclude?
-		if (isset($_GET['nfid']) && is_scalar($_GET['nfid']) && $_GET['nfid'] != '')
+		if (is_string($_GET['nfid'] ?? null) && $_GET['nfid'] != '')
 		{
 			$nfids = explode(',', pun_trim($_GET['nfid']));
 			$nfids = array_map('intval', $nfids);
@@ -459,7 +459,7 @@ if ($action == 'feed')
 }
 
 // Show users online
-else if ($action == 'online' || $action == 'online_full')
+else if ($action === 'online' || $action === 'online_full')
 {
 	// Load the index.php language file
 	require PUN_ROOT.'lang/'.$pun_config['o_default_lang'].'/index.php';
@@ -474,7 +474,7 @@ else if ($action == 'online' || $action == 'online_full')
 	{
 		if ($pun_user_online['user_id'] > 1)
 		{
-			$users[] = ($pun_user['g_view_users'] == '1') ? '<a href="'.pun_htmlspecialchars(get_base_url(true)).'/profile.php?id='.$pun_user_online['user_id'].'">'.pun_htmlspecialchars($pun_user_online['ident']).'</a>' : pun_htmlspecialchars($pun_user_online['ident']);
+			$users[] = $pun_user['g_view_users'] == '1' ? '<a href="'.pun_htmlspecialchars(get_base_url(true)).'/profile.php?id='.$pun_user_online['user_id'].'">'.pun_htmlspecialchars($pun_user_online['ident']).'</a>' : pun_htmlspecialchars($pun_user_online['ident']);
 			++$num_users;
 		}
 		else
@@ -486,7 +486,7 @@ else if ($action == 'online' || $action == 'online_full')
 
 	echo sprintf($lang_index['Guests online'], forum_number_format($num_guests)).'<br />'."\n";
 
-	if ($action == 'online_full' && !empty($users))
+	if ($action === 'online_full' && !empty($users))
 		echo sprintf($lang_index['Users online'], implode(', ', $users)).'<br />'."\n";
 	else
 		echo sprintf($lang_index['Users online'], forum_number_format($num_users)).'<br />'."\n";
@@ -495,7 +495,7 @@ else if ($action == 'online' || $action == 'online_full')
 }
 
 // Show board statistics
-else if ($action == 'stats')
+else if ($action === 'stats')
 {
 	// Load the index.php language file
 	require PUN_ROOT.'lang/'.$pun_config['o_default_lang'].'/index.php';
