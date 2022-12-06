@@ -9,13 +9,13 @@
 define('PUN_ROOT', dirname(__FILE__).'/');
 require PUN_ROOT.'include/common.php';
 
-$action = (string) ($_GET['action'] ?? '');
-$section = (string) ($_GET['section'] ?? '');
+$action = $_GET['action'] ?? null;
+$section = is_string($_GET['section'] ?? null) ? $_GET['section'] : '';
 $id = intval($_GET['id'] ?? 0);
 if ($id < 2)
 	message($lang_common['Bad request'], false, '404 Not Found');
 
-if ($action != 'change_pass' || !isset($_GET['key']))
+if ($action !== 'change_pass' || !isset($_GET['key']))
 {
 	if ($pun_user['g_read_board'] == '0')
 		message($lang_common['No view'], false, '403 Forbidden');
@@ -33,7 +33,7 @@ require PUN_ROOT.'lang/'.$pun_user['language'].'/profile.php';
 // Load the Genders Integration mod language file
 require PUN_ROOT.'lang/'.$pun_user['language'].'/genders_integration.php';
 
-if ($action == 'change_pass')
+if ($action === 'change_pass')
 {
 	if (isset($_GET['key']) && is_string($_GET['key']))
 	{
@@ -154,7 +154,7 @@ if ($action == 'change_pass')
 }
 
 
-else if ($action == 'change_email')
+else if ($action === 'change_email')
 {
 	// Make sure we are allowed to change this user's email
 	if ($pun_user['id'] != $id)
@@ -317,7 +317,7 @@ else if ($action == 'change_email')
 }
 
 
-else if ($action == 'upload_avatar' || $action == 'upload_avatar2')
+else if ($action === 'upload_avatar' || $action === 'upload_avatar2')
 {
 	if ($pun_config['o_avatars'] == '0')
 		message($lang_profile['Avatars disabled']);
@@ -327,7 +327,7 @@ else if ($action == 'upload_avatar' || $action == 'upload_avatar2')
 
 // Visman - auto resize avatar
 	require PUN_ROOT.'include/upload.php';
-	$max_filesize = (true === $upf_class->isResize()) ? min(2097152, $upf_class->size(ini_get('upload_max_filesize')), $upf_class->size(ini_get('post_max_size'))) : $pun_config['o_avatars_size'];
+	$max_filesize = true === $upf_class->isResize() ? min(2097152, $upf_class->size(ini_get('upload_max_filesize')), $upf_class->size(ini_get('post_max_size'))) : $pun_config['o_avatars_size'];
 // Visman - auto resize avatar
 
 	if (isset($_POST['form_sent']))
@@ -472,7 +472,7 @@ else if ($action == 'upload_avatar' || $action == 'upload_avatar2')
 }
 
 
-else if ($action == 'delete_avatar')
+else if ($action === 'delete_avatar')
 {
 	if ($pun_user['id'] != $id && !$pun_user['is_admmod'])
 		message($lang_common['No permission'], false, '403 Forbidden');
@@ -518,13 +518,13 @@ else if (isset($_POST['update_group_membership']))
 
 		while ($cur_forum = $db->fetch_assoc($result))
 		{
-			$cur_moderators = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : array();
+			$cur_moderators = $cur_forum['moderators'] != '' ? unserialize($cur_forum['moderators']) : array();
 
 			if (in_array($id, $cur_moderators))
 			{
 				$username = array_search($id, $cur_moderators);
 				unset($cur_moderators[$username]);
-				$cur_moderators = (!empty($cur_moderators)) ? '\''.$db->escape(serialize($cur_moderators)).'\'' : 'NULL';
+				$cur_moderators = !empty($cur_moderators) ? '\''.$db->escape(serialize($cur_moderators)).'\'' : 'NULL';
 
 				$db->query('UPDATE '.$db->prefix.'forums SET moderators='.$cur_moderators.' WHERE id='.$cur_forum['id']) or error('Unable to update forum', __FILE__, __LINE__, $db->error());
 			}
@@ -553,7 +553,7 @@ else if (isset($_POST['update_forums']))
 
 	while ($cur_forum = $db->fetch_assoc($result))
 	{
-		$cur_moderators = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : array();
+		$cur_moderators = $cur_forum['moderators'] != '' ? unserialize($cur_forum['moderators']) : array();
 		// If the user should have moderator access (and he/she doesn't already have it)
 		if (in_array($cur_forum['id'], $moderator_in) && !in_array($id, $cur_moderators))
 		{
@@ -566,7 +566,7 @@ else if (isset($_POST['update_forums']))
 		else if (!in_array($cur_forum['id'], $moderator_in) && in_array($id, $cur_moderators))
 		{
 			unset($cur_moderators[$username]);
-			$cur_moderators = (!empty($cur_moderators)) ? '\''.$db->escape(serialize($cur_moderators)).'\'' : 'NULL';
+			$cur_moderators = !empty($cur_moderators) ? '\''.$db->escape(serialize($cur_moderators)).'\'' : 'NULL';
 
 			$db->query('UPDATE '.$db->prefix.'forums SET moderators='.$cur_moderators.' WHERE id='.$cur_forum['id']) or error('Unable to update forum', __FILE__, __LINE__, $db->error());
 		}
@@ -596,7 +596,7 @@ else if (isset($_POST['ban']))
 }
 
 
-else if ($action == 'promote')
+else if ($action === 'promote')
 {
 	if ($pun_user['g_id'] != PUN_ADMIN && ($pun_user['g_moderator'] != '1' || $pun_user['g_mod_promote_users'] == '0'))
 		message($lang_common['No permission'], false, '403 Forbidden');
@@ -644,12 +644,12 @@ else if (isset($_POST['delete_user']) || isset($_POST['delete_user_comply']))
 
 			while ($cur_forum = $db->fetch_assoc($result))
 			{
-				$cur_moderators = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : array();
+				$cur_moderators = $cur_forum['moderators'] != '' ? unserialize($cur_forum['moderators']) : array();
 
 				if (in_array($id, $cur_moderators))
 				{
 					unset($cur_moderators[$username]);
-					$cur_moderators = (!empty($cur_moderators)) ? '\''.$db->escape(serialize($cur_moderators)).'\'' : 'NULL';
+					$cur_moderators = !empty($cur_moderators) ? '\''.$db->escape(serialize($cur_moderators)).'\'' : 'NULL';
 
 					$db->query('UPDATE '.$db->prefix.'forums SET moderators='.$cur_moderators.' WHERE id='.$cur_forum['id']) or error('Unable to update forum', __FILE__, __LINE__, $db->error());
 				}
@@ -1006,7 +1006,7 @@ else if (isset($_POST['form_sent']))
 	$temp = array();
 	foreach ($form as $key => $input)
 	{
-		$value = ($input !== '') ? '\''.$db->escape($input).'\'' : 'NULL';
+		$value = $input !== '' ? '\''.$db->escape($input).'\'' : 'NULL';
 
 		$temp[] = $key.'='.$value;
 	}
@@ -1050,7 +1050,7 @@ else if (isset($_POST['form_sent']))
 
 			while ($cur_forum = $db->fetch_assoc($result))
 			{
-				$cur_moderators = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : array();
+				$cur_moderators = $cur_forum['moderators'] != '' ? unserialize($cur_forum['moderators']) : array();
 
 				if (in_array($id, $cur_moderators))
 				{
@@ -1210,7 +1210,7 @@ if ($pun_user['id'] != $id &&																	// If we aren't the user (i.e. edi
 			$quick_searches[] = '<a href="search.php?action=show_subscriptions&amp;user_id='.$id.'">'.$lang_profile['Show subscriptions'].'</a>';
 
 		if (!empty($quick_searches))
-			$posts_field .= (($posts_field != '') ? ' - ' : '').implode(' - ', $quick_searches);
+			$posts_field .= ($posts_field != '' ? ' - ' : '').implode(' - ', $quick_searches);
 	}
 	if ($posts_field != '')
 	{
@@ -1890,7 +1890,7 @@ else
 						$cur_category = $cur_forum['cid'];
 					}
 
-					$moderators = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : array();
+					$moderators = $cur_forum['moderators'] != '' ? unserialize($cur_forum['moderators']) : array();
 
 					echo "\n\t\t\t\t\t\t\t\t\t".'<label><input type="checkbox" name="moderator_in['.$cur_forum['fid'].']" value="1"'.((in_array($id, $moderators)) ? ' checked="checked"' : '').' />'.pun_htmlspecialchars($cur_forum['forum_name']).'<br /></label>'."\n";
 				}
