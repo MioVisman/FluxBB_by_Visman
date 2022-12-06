@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2011-2019 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2011-2022 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -669,8 +669,8 @@ class upfClass
                 return false;
         }
 
-        $w = (empty($width) || $width < 16) ? 1 : $width / $oldWidth;
-        $h = (empty($height) || $height < 16) ? 1 : $height / $oldHeight;
+        $w = empty($width) || $width < 16 ? 1 : $width / $oldWidth;
+        $h = empty($height) || $height < 16 ? 1 : $height / $oldHeight;
         $r = min(1, $w, $h);
         if (1 == $r) { // ?
             return 1;
