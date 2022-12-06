@@ -101,7 +101,7 @@ function generate_quickjump_cache($group_id = false)
 				$cur_category = $cur_forum['cid'];
 			}
 
-			$redirect_tag = ($cur_forum['redirect_url'] != '') ? ' &gt;&gt;&gt;' : '';
+			$redirect_tag = $cur_forum['redirect_url'] != '' ? ' &gt;&gt;&gt;' : '';
 			$output .= "\t\t\t\t\t\t\t".'<option value="'.$cur_forum['fid'].'"<?php echo ($forum_id == '.$cur_forum['fid'].') ? \' selected="selected"\' : \'\' ?>>'.$space.pun_htmlspecialchars($cur_forum['forum_name']).$redirect_tag.'</option>'."\n";
 
 			$output .= generate_quickjump_sf_list($sf_array_tree, $cur_forum['fid'], $space.'&#160;&#160;&#160;');
