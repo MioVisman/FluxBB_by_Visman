@@ -18,7 +18,7 @@ if (!$pun_user['is_admmod'])
 	message($lang_common['No permission'], false, '403 Forbidden');
 
 // The plugin to load should be supplied via GET
-$plugin = isset($_GET['plugin']) ? $_GET['plugin'] : '';
+$plugin = is_string($_GET['plugin'] ?? null) ? $_GET['plugin'] : '';
 if (!preg_match('%^AM?P_(\w*?)\.php$%iD', $plugin))
 	message($lang_common['Bad request'], false, '404 Not Found');
 
