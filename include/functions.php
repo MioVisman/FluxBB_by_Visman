@@ -17,7 +17,7 @@ function check_cookie(&$pun_user)
 	$now = time();
 
 	// If the cookie is set and it matches the correct pattern, then read the values from it
-	if (isset($_COOKIE[$cookie_name]) && preg_match('%^(\d+)\|([0-9a-fA-F]+)\|(\d+)\|([0-9a-fA-F]+)$%', $_COOKIE[$cookie_name], $matches))
+	if (is_string($_COOKIE[$cookie_name] ?? null) && preg_match('%^(\d+)\|([0-9a-fA-F]+)\|(\d+)\|([0-9a-fA-F]+)$%', $_COOKIE[$cookie_name], $matches))
 	{
 		$cookie = array(
 			'user_id'			=> intval($matches[1]),
@@ -49,7 +49,7 @@ function check_cookie(&$pun_user)
 			break; // jump to the end - Visman
 
 		// Send a new, updated cookie with a new expiration timestamp
-		$expire = ($cookie['expiration_time'] > $now + $pun_config['o_timeout_visit']) ? $now + 1209600 : $now + $pun_config['o_timeout_visit'];
+		$expire = $cookie['expiration_time'] > $now + $pun_config['o_timeout_visit'] ? $now + 1209600 : $now + $pun_config['o_timeout_visit'];
 		pun_setcookie($pun_user['id'], $pun_user['password'], $expire);
 
 		// Set a default language if the user selected language no longer exists
@@ -101,11 +101,11 @@ function check_cookie(&$pun_user)
 					$pun_user['last_visit'] = $pun_user['logged'];
 				}
 
-				$idle_sql = ($pun_user['idle'] == '1') ? ', idle=0' : '';
+				$idle_sql = $pun_user['idle'] == '1' ? ', idle=0' : '';
 				witt_query('UPDATE '.$db->prefix.'online SET logged='.$now.$idle_sql.':?comma?::?column?::?equal?::?value?: WHERE user_id='.$pun_user['id']); // MOD Кто в этой теме - Visman
 
 				// Update tracked topics with the current expire time
-				if (isset($_COOKIE[$cookie_name.'_track']))
+				if (is_string($_COOKIE[$cookie_name.'_track'] ?? null))
 					forum_setcookie($cookie_name.'_track', $_COOKIE[$cookie_name.'_track'], $now + $pun_config['o_timeout_visit']);
 			}
 		}
@@ -176,7 +176,7 @@ function authenticate_user($user, $password, $password_is_hash = false)
 function get_current_url($max_length = 0)
 {
 	$protocol = get_current_protocol();
-	$port = (isset($_SERVER['SERVER_PORT']) && (($_SERVER['SERVER_PORT'] != '80' && $protocol == 'http') || ($_SERVER['SERVER_PORT'] != '443' && $protocol == 'https')) && strpos($_SERVER['HTTP_HOST'], ':') === false) ? ':'.$_SERVER['SERVER_PORT'] : '';
+	$port = isset($_SERVER['SERVER_PORT']) && (($_SERVER['SERVER_PORT'] != '80' && $protocol == 'http') || ($_SERVER['SERVER_PORT'] != '443' && $protocol == 'https')) && strpos($_SERVER['HTTP_HOST'], ':') === false ? ':'.$_SERVER['SERVER_PORT'] : '';
 
 	$url = urldecode($protocol.'://'.$_SERVER['HTTP_HOST'].$port.$_SERVER['REQUEST_URI']);
 
@@ -311,7 +311,7 @@ function set_default_user()
 	$pun_user['style'] = $pun_config['o_default_style'];
 	$pun_user['is_guest'] = true;
 	$pun_user['is_admmod'] = false;
-	$pun_user['is_bot'] = (strpos($remote_addr, '[Bot]') !== false); // MOD определения ботов - Visman
+	$pun_user['is_bot'] = strpos($remote_addr, '[Bot]') !== false; // MOD определения ботов - Visman
 	$pun_user['ident'] = $remote_addr; // Кто в этой теме - Visman
 
 	// быстрое переключение языка - Visman
@@ -484,7 +484,7 @@ function check_username($username, $exclude_id = null)
 		$errors[] = $lang_register['Username censor'];
 
 	// Check that the username (or a too similar username) is not already registered
-	$query = (!is_null($exclude_id)) ? ' AND id!='.$exclude_id : '';
+	$query = !is_null($exclude_id) ? ' AND id!='.$exclude_id : '';
 
 	$result = $db->query('SELECT username FROM '.$db->prefix.'users WHERE (UPPER(username)=UPPER(\''.$db->escape($username).'\') OR UPPER(username)=UPPER(\''.$db->escape(preg_replace('%[^\p{L}\p{N}]%u', '', $username)).'\')) AND id>1'.$query) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
 	$busy = $db->fetch_row($result);
@@ -694,8 +694,8 @@ function get_tracked_topics()
 {
 	global $cookie_name;
 
-	$cookie_data = isset($_COOKIE[$cookie_name.'_track']) ? $_COOKIE[$cookie_name.'_track'] : false;
-	if (!$cookie_data)
+	$cookie_data = $_COOKIE[$cookie_name.'_track'] ?? null;
+	if (! is_string($cookie_data))
 		return array('topics' => array(), 'forums' => array());
 
 	if (strlen($cookie_data) > FORUM_MAX_COOKIE_SIZE)
@@ -799,7 +799,7 @@ function delete_topic($topic_id, $flag_f = 1) // not sum - Visman
 	$post_ids = '';
 	$result = $db->query('SELECT id FROM '.$db->prefix.'posts WHERE topic_id='.$topic_id) or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());
 	while ($row = $db->fetch_row($result))
-		$post_ids .= ($post_ids != '') ? ','.$row[0] : $row[0];
+		$post_ids .= $post_ids != '' ? ','.$row[0] : $row[0];
 
 	// Make sure we have a list of post IDs
 	if ($post_ids != '')
@@ -1002,7 +1002,7 @@ function paginate($num_pages, $cur_page, $link)
 		}
 
 		// Don't ask me how the following works. It just does, OK? :-)
-		for ($current = ($cur_page == 5) ? $cur_page - 3 : $cur_page - 2, $stop = ($cur_page + 4 == $num_pages) ? $cur_page + 4 : $cur_page + 3; $current < $stop; ++$current)
+		for ($current = $cur_page == 5 ? $cur_page - 3 : $cur_page - 2, $stop = $cur_page + 4 == $num_pages ? $cur_page + 4 : $cur_page + 3; $current < $stop; ++$current)
 		{
 			if ($current < 1 || $current > $num_pages)
 				continue;
@@ -1012,7 +1012,7 @@ function paginate($num_pages, $cur_page, $link)
 				$pages[] = '<strong'.(empty($pages) ? ' class="item1"' : '').'>'.forum_number_format($current).'</strong>';
 		}
 
-		if ($cur_page <= ($num_pages-3))
+		if ($cur_page <= $num_pages - 3)
 		{
 			if ($cur_page != ($num_pages-3) && $cur_page != ($num_pages-4))
 				$pages[] = '<span class="spacer">'.$lang_common['Spacer'].'</span>';
@@ -1166,14 +1166,9 @@ function confirm_message($error_msg = false)
 
 function confirm_referrer($script, $error_msg = false, $use_ip = true)
 {
-	$hash = '';
+	$hash = $_POST['csrf_hash'] ?? ($_GET['csrf_hash'] ?? null);
 
-	if (isset($_POST['csrf_hash']))
-		$hash = (string) $_POST['csrf_hash'];
-	else if (isset($_GET['csrf_hash']))
-		$hash = (string) $_GET['csrf_hash'];
-
-	if (empty($hash) || !hash_equals(csrf_hash($script, $use_ip), $hash))
+	if (! is_string($hash) || ! hash_equals(csrf_hash($script, $use_ip), $hash))
 		confirm_message($error_msg);
 }
 
@@ -1275,9 +1270,7 @@ function check_csrf($token)
 {
 	global $lang_common;
 
-	$is_hash_authorized = hash_equals($token, pun_csrf_token());
-
-	if (!isset($token) || !$is_hash_authorized)
+	if (! is_string($token) || ! hash_equals($token, pun_csrf_token()))
 		message($lang_common['Bad csrf hash'], false, '404 Not Found');
 }
 
