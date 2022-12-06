@@ -31,8 +31,8 @@ if (!isset($sf_array_asc[$cur_post['fid']]))
 	message($lang_common['Bad request'], false, '404 Not Found');
 
 // Sort out who the moderators are and if we are currently a moderator (or an admin)
-$mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : array();
-$is_admmod = ($pun_user['g_id'] == PUN_ADMIN || ($pun_user['g_moderator'] == '1' && array_key_exists($pun_user['username'], $mods_array))) ? true : false;
+$mods_array = $cur_post['moderators'] != '' ? unserialize($cur_post['moderators']) : array();
+$is_admmod = $pun_user['g_id'] == PUN_ADMIN || ($pun_user['g_moderator'] == '1' && array_key_exists($pun_user['username'], $mods_array)) ? true : false;
 
 $can_edit_subject = $id == $cur_post['first_post_id'];
 
@@ -140,14 +140,14 @@ if (isset($_POST['form_sent']))
 	// Did everything go according to plan?
 	if (empty($errors) && !isset($_POST['preview']))
 	{
-		$is_modified = ($subject != $cur_post['subject'] ||
-										$message != $cur_post['message'] ||
-										$hide_smilies != $cur_post['hide_smilies'] ||
-										$edit_post != $cur_post['edit_post'] ||
-										$stick_fp != $cur_post['stick_fp'] ||
-										$stick_topic != $cur_post['sticky']); // MOD warnings - Visman
+		$is_modified = $subject != $cur_post['subject'] ||
+			$message != $cur_post['message'] ||
+			$hide_smilies != $cur_post['hide_smilies'] ||
+			$edit_post != $cur_post['edit_post'] ||
+			$stick_fp != $cur_post['stick_fp'] ||
+			$stick_topic != $cur_post['sticky']; // MOD warnings - Visman
 
-		$edited_sql = (!isset($_POST['silent']) || !$is_admmod) ? ', edited='.time().', edited_by=\''.$db->escape($pun_user['username']).'\'' : '';
+		$edited_sql = !isset($_POST['silent']) || !$is_admmod ? ', edited='.time().', edited_by=\''.$db->escape($pun_user['username']).'\'' : '';
 		$edited_sql.= ', edit_post='.$edit_post; // Visman
 
 		require PUN_ROOT.'include/search_idx.php';
