@@ -20,11 +20,11 @@ if (!$pun_user['is_admmod'])
 // Load the admin_index.php language file
 require PUN_ROOT.'lang/'.$admin_language.'/admin_index.php';
 
-$action = isset($_GET['action']) ? $_GET['action'] : null;
+$action = $_GET['action'] ?? null;
 
 
 // Show phpinfo() output
-if ($action == 'phpinfo' && $pun_user['g_id'] == PUN_ADMIN)
+if ($action === 'phpinfo' && $pun_user['g_id'] == PUN_ADMIN)
 {
 	// Is phpinfo() a disabled function?
 	if (strpos(strtolower((string) ini_get('disable_functions')), 'phpinfo') !== false)
