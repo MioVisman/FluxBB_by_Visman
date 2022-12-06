@@ -25,12 +25,12 @@ if (! empty($_POST)) {
 	if (function_exists('csrf_hash')) {
 		confirm_referrer('AP_Upload.php');
 	} else {
-		check_csrf(isset($_POST['csrf_hash']) ? $_POST['csrf_hash'] : null);
+		check_csrf($_POST['csrf_hash'] ?? '');
 	}
 }
 
 $sconf = [
-	'thumb' => (true === $upf_class->isResize()) ? 1 : 0,
+	'thumb' => true === $upf_class->isResize() ? 1 : 0,
 	'thumb_size' => 100,
 	'thumb_perc' => 75,
 	'pic_mass' => 300, //килобайт
@@ -165,12 +165,12 @@ else if (isset($_POST['update'])) {
 			$g_ext = PLUGIN_EXTS;
 		}
 
-		$g_max = (! isset($g_up_max[$gid]) || $g_up_max[$gid] < 0) ? 0 : $g_up_max[$gid];
+		$g_max = ! isset($g_up_max[$gid]) || $g_up_max[$gid] < 0 ? 0 : $g_up_max[$gid];
 		$g_max = (int) (100 * min($g_max, $upf_class->size(ini_get('upload_max_filesize')) / 1048576, $upf_class->size(ini_get('post_max_size')) / 1048576));
-		$g_lim = (! isset($g_up_limit[$gid]) || $g_up_limit[$gid] < 0) ? 0 : $g_up_limit[$gid];
+		$g_lim = ! isset($g_up_limit[$gid]) || $g_up_limit[$gid] < 0 ? 0 : $g_up_limit[$gid];
 		$g_lim = min($g_lim, 20971520);
 
-		$g_perm_del = (! isset($g_up_perm_del[$gid]) || $g_up_perm_del[$gid] < 1) ? 0 : 1;
+		$g_perm_del = ! isset($g_up_perm_del[$gid]) || $g_up_perm_del[$gid] < 1 ? 0 : 1;
 
 		$db->query('UPDATE ' . $db->prefix . 'groups SET g_up_ext=\'' . $db->escape($g_ext) . '\', g_up_limit=' . $g_lim . ', g_up_max=' . $g_max . ', g_up_perm_del=' . $g_perm_del . ' WHERE g_id=' . $gid) or error('Unable to update user group list', __FILE__, __LINE__, $db->error());
 	}
@@ -336,8 +336,8 @@ $upf_token = function_exists('csrf_hash') ? csrf_hash('AP_Upload.php') : pun_csr
 						<input type="hidden" name="csrf_hash" value="<?= $upf_token ?>" />
 <?php
 
-$disbl = (true === $upf_class->isResize()) ? '' : '" disabled="disabled';
-$stthumb = ('' === $disbl && 1 == $aconf['thumb']) ? '' : '" disabled="disabled';
+$disbl = true === $upf_class->isResize() ? '' : '" disabled="disabled';
+$stthumb = '' === $disbl && 1 == $aconf['thumb'] ? '' : '" disabled="disabled';
 
 if (defined('PLUGIN_OFF')) {
 
@@ -439,7 +439,7 @@ if (defined('PLUGIN_OFF')) {
 									<td class="tc2"><input type="text" name="g_up_ext[<?= $cur_group['g_id'] ?>]" value="<?= pun_htmlspecialchars($cur_group['g_up_ext']) ?>" tabindex="<?= $tabindex++ ?>" size="40" maxlength="255" /></td>
 									<td class="tcr"><input type="text" name="g_up_max[<?= $cur_group['g_id'] ?>]" value="<?= $cur_group['g_up_max'] / 100 ?>" tabindex="<?= $tabindex++ ?>" size="10" maxlength="10" /></td>
 									<td class="tcr"><input type="text" name="g_up_limit[<?= $cur_group['g_id'] ?>]" value="<?= $cur_group['g_up_limit'] ?>" tabindex="<?= $tabindex++ ?>" size="10" maxlength="10" /></td>
-									<td class="tc3"><input type="checkbox" name="g_up_perm_del[<?= $cur_group['g_id'] ?>]" value="1" tabindex="<?= $tabindex++ ?>"<?= ($cur_group['g_up_perm_del'] == 1 ? ' checked="checked"' : '')?>></td>
+									<td class="tc3"><input type="checkbox" name="g_up_perm_del[<?= $cur_group['g_id'] ?>]" value="1" tabindex="<?= $tabindex++ ?>"<?= ($cur_group['g_up_perm_del'] == 1 ? ' checked="checked"' : '') ?>></td>
 								</tr>
 <?php
 
@@ -508,7 +508,7 @@ if (is_dir(PUN_ROOT . $upf_mem)) {
 
 	if (! empty($af)) {
 		$num_pages = ceil(count($af) / PLUGIN_NF);
-		$p = (empty($_GET['p']) || $_GET['p'] < 1) ? 1 : intval($_GET['p']);
+		$p = empty($_GET['p']) || $_GET['p'] < 1 ? 1 : intval($_GET['p']);
 		if ($p > $num_pages) {
 			header('Location: ' . PLUGIN_URL . '&p=' . $num_pages . '#gofile');
 			exit;
