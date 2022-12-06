@@ -159,7 +159,7 @@ if (isset($_POST['form_sent']))
 		// Insert the new user into the database. We do this now to get the last inserted ID for later use
 		$now = time();
 
-		$intial_group_id = ($pun_config['o_regs_verify'] == '0') ? intval($pun_config['o_default_user_group']) : PUN_UNVERIFIED;
+		$intial_group_id = $pun_config['o_regs_verify'] == '0' ? intval($pun_config['o_default_user_group']) : PUN_UNVERIFIED;
 		$password_hash = password_hash($password1, PASSWORD_DEFAULT);
 
 		// Add the user
