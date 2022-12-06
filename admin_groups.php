@@ -32,19 +32,20 @@ if (isset($_POST['add_group']) || isset($_GET['edit_group']))
 {
 	if (isset($_POST['add_group']))
 	{
-		$base_group = intval($_POST['base_group']);
-		$group = $groups[$base_group];
+		$base_group = intval($_POST['base_group'] ?? 0);
+		if (! isset($groups[$base_group]))
+			message($lang_common['Bad request'], false, '404 Not Found');
 
+		$group = $groups[$base_group];
 		$mode = 'add';
 	}
 	else // We are editing a group
 	{
-		$group_id = intval($_GET['edit_group']);
-		if ($group_id < 1 || !isset($groups[$group_id]))
+		$group_id = intval($_GET['edit_group'] ?? 0);
+		if (! isset($groups[$group_id]))
 			message($lang_common['Bad request'], false, '404 Not Found');
 
 		$group = $groups[$group_id];
-
 		$mode = 'edit';
 	}
 
@@ -305,18 +306,18 @@ else if (isset($_POST['add_edit_group']))
 	confirm_referrer('admin_groups.php');
 
 	// Is this the admin group? (special rules apply)
-	$is_admin_group = (isset($_POST['group_id']) && $_POST['group_id'] == PUN_ADMIN) ? true : false;
+	$is_admin_group = isset($_POST['group_id']) && $_POST['group_id'] == PUN_ADMIN ? true : false;
 
-	$title = pun_trim($_POST['req_title']);
-	$user_title = pun_trim($_POST['user_title']);
+	$title = pun_trim($_POST['req_title'] ?? '');
+	$user_title = pun_trim($_POST['user_title'] ?? '');
 
-	$promote_min_posts = isset($_POST['promote_min_posts']) ? intval($_POST['promote_min_posts']) : '0';
-	if (isset($_POST['promote_next_group']) &&
-			isset($groups[$_POST['promote_next_group']]) &&
-			!in_array($_POST['promote_next_group'], array(PUN_ADMIN, PUN_GUEST)) &&
-			(!isset($_POST['group_id']) || $_POST['promote_next_group'] != $_POST['group_id']))
-		$promote_next_group = $_POST['promote_next_group'];
-	else
+	$promote_min_posts = intval($_POST['promote_min_posts'] ?? 0);
+	$promote_next_group = intval($_POST['promote_next_group'] ?? 0);
+	if (
+		! isset($groups[$promote_next_group]) ||
+		in_array($promote_next_group, array(PUN_ADMIN, PUN_GUEST)) ||
+		(isset($_POST['group_id']) && $promote_next_group == $_POST['group_id'])
+	)
 		$promote_next_group = '0';
 
 	$moderator = isset($_POST['moderator']) && $_POST['moderator'] == '1' ? '1' : '0';
@@ -337,15 +338,15 @@ else if (isset($_POST['add_edit_group']))
 	$search = isset($_POST['search']) ? intval($_POST['search']) : '1';
 	$search_users = isset($_POST['search_users']) ? intval($_POST['search_users']) : '1';
 	$send_email = (isset($_POST['send_email']) && $_POST['send_email'] == '1') || $is_admin_group ? '1' : '0';
-	$post_flood = (isset($_POST['post_flood']) && $_POST['post_flood'] >= 0) ? intval($_POST['post_flood']) : '0';
-	$search_flood = (isset($_POST['search_flood']) && $_POST['search_flood'] >= 0) ? intval($_POST['search_flood']) : '0';
-	$email_flood = (isset($_POST['email_flood']) && $_POST['email_flood'] >= 0) ? intval($_POST['email_flood']) : '0';
-	$report_flood = (isset($_POST['report_flood']) && $_POST['report_flood'] >= 0) ? intval($_POST['report_flood']) : '0';
+	$post_flood = isset($_POST['post_flood']) && $_POST['post_flood'] >= 0 ? intval($_POST['post_flood']) : '0';
+	$search_flood = isset($_POST['search_flood']) && $_POST['search_flood'] >= 0 ? intval($_POST['search_flood']) : '0';
+	$email_flood = isset($_POST['email_flood']) && $_POST['email_flood'] >= 0 ? intval($_POST['email_flood']) : '0';
+	$report_flood = isset($_POST['report_flood']) && $_POST['report_flood'] >= 0 ? intval($_POST['report_flood']) : '0';
 
 	if ($title == '')
 		message($lang_admin_groups['Must enter title message']);
 
-	$user_title = ($user_title != '') ? '\''.$db->escape($user_title).'\'' : 'NULL';
+	$user_title = $user_title != '' ? '\''.$db->escape($user_title).'\'' : 'NULL';
 
 	if ($_POST['mode'] == 'add')
 	{
@@ -393,14 +394,14 @@ else if (isset($_POST['set_default_group']))
 {
 	confirm_referrer('admin_groups.php');
 
-	$group_id = intval($_POST['default_group']);
+	$group_id = intval($_POST['default_group'] ?? 0);
 
 	// Make sure it's not the admin or guest groups
 	if ($group_id == PUN_ADMIN || $group_id == PUN_GUEST)
 		message($lang_common['Bad request'], false, '404 Not Found');
 
 	// Make sure it's not a moderator group
-	if ($groups[$group_id]['g_moderator'] != 0)
+	if (! isset($groups[$group_id]) || $groups[$group_id]['g_moderator'] != 0)
 		message($lang_common['Bad request'], false, '404 Not Found');
 
 	$db->query('UPDATE '.$db->prefix.'config SET conf_value='.$group_id.' WHERE conf_name=\'o_default_user_group\'') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
@@ -439,7 +440,7 @@ else if (isset($_GET['del_group']))
 		{
 			if (isset($_POST['del_group']))
 			{
-				$move_to_group = intval($_POST['move_to_group']);
+				$move_to_group = intval($_POST['move_to_group'] ?? 0);
 				$db->query('UPDATE '.$db->prefix.'users SET group_id='.$move_to_group.' WHERE group_id='.$group_id) or error('Unable to move users into group', __FILE__, __LINE__, $db->error());
 			}
 
