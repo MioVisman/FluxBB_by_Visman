@@ -20,10 +20,10 @@ if (!$pun_user['is_admmod'])
 // Load the admin_index.php language file
 require PUN_ROOT.'lang/'.$admin_language.'/admin_index.php';
 
-$action = isset($_GET['action']) ? $_GET['action'] : null;
+$action = $_GET['action'] ?? null;
 
 // Check for upgrade
-if ($action == 'check_upgrade')
+if ($action === 'check_upgrade')
 {
 	if (!ini_get('allow_url_fopen'))
 		message($lang_admin_index['fopen disabled message']);
@@ -38,7 +38,7 @@ if ($action == 'check_upgrade')
 		message(sprintf($lang_admin_index['New version available message'], '<a href="https://fluxbb.org/">FluxBB.org</a>'));
 }
 // Remove install.php
-else if ($action == 'remove_install_file')
+else if ($action === 'remove_install_file')
 {
 	$deleted = @unlink(PUN_ROOT.'install.php');
 
