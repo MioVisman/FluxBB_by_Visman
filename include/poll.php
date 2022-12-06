@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2011-2013 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2011-2022 Visman (mio.visman@yandex.ru)
  * based on code by kg (kg@as-planned.com)
  * Poll Mod for FluxBB, written by As-Planned.com
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -128,8 +128,8 @@ function poll_info($tid, $uid = null)
 
 	if ($kol == 0) return null;
 
-	$rez['canVote'] = (is_null($uid)) ? false : poll_can_vote($tid, $uid);
-	$rez['isGuest'] = (is_null($uid) || $uid > 1) ? false : true;
+	$rez['canVote'] = is_null($uid) ? false : poll_can_vote($tid, $uid);
+	$rez['isGuest'] = is_null($uid) || $uid > 1 ? false : true;
 
 	return $rez;
 }
@@ -176,17 +176,17 @@ function poll_form($tid)
 	if (poll_bad()) return;
 
 	$top = poll_topic($tid);
-	$enabled = ($top[0] > 0);
-	$resu = ($top[2] > 1);
+	$enabled = $top[0] > 0;
+	$resu = $top[2] > 1;
 	$term = max($top[2],$pun_config['o_poll_term']);
 
-	$edit = (poll_noedit($tid)) ? false : true;
+	$edit = poll_noedit($tid) ? false : true;
 
 	$questions = $type = $choices = array();
 	if ($edit && poll_post('form_sent', false))
 	{
-		$enabled = (poll_post('poll_enabled', 0) == 1);
-		$resu = (poll_post('poll_result', 0) == 1);
+		$enabled = poll_post('poll_enabled', 0) == 1;
+		$resu = poll_post('poll_result', 0) == 1;
 
 		$questions = poll_post('poll_question', array());
 		$choices = poll_post('poll_choice', array());
@@ -229,7 +229,7 @@ function poll_form($tid)
 		$fk = true;
 		for ($k = 1; $k <= $pun_config['o_poll_max_ques'] && $fk; $k++)
 		{
-			$question = (isset($questions[$k])) ? pun_htmlspecialchars($questions[$k]) : '';
+			$question = isset($questions[$k]) ? pun_htmlspecialchars($questions[$k]) : '';
 			if (empty($question))
 			{
 				$fk = false;
@@ -246,7 +246,7 @@ function poll_form($tid)
 
 			for ($i = 1; $i <= $pun_config['o_poll_max_field'] && $fi; $i++)
 			{
-				$choice = (isset($choices[$k][$i])) ? pun_htmlspecialchars(pun_trim($choices[$k][$i])) : '';
+				$choice = isset($choices[$k][$i]) ? pun_htmlspecialchars(pun_trim($choices[$k][$i])) : '';
 				if (empty($choice))
 				{
 					$fi = false;
@@ -295,7 +295,7 @@ function poll_form($tid)
 	$fk = true;
 	for ($k = 1; $k <= $pun_config['o_poll_max_ques']; $k++)
 	{
-		$question = (isset($questions[$k]) && $fk) ? pun_htmlspecialchars($questions[$k]) : '';
+		$question = isset($questions[$k]) && $fk ? pun_htmlspecialchars($questions[$k]) : '';
 
 ?>
 						<div id="poll_number_<?php echo $k ?>">
@@ -310,7 +310,7 @@ function poll_form($tid)
 
 		for ($i = 1; $i <= $pun_config['o_poll_max_field']; $i++)
 		{
-			$choice = (isset($choices[$k][$i]) && $fi) ? pun_htmlspecialchars(pun_trim($choices[$k][$i])) : '';
+			$choice = isset($choices[$k][$i]) && $fi ? pun_htmlspecialchars(pun_trim($choices[$k][$i])) : '';
 
 ?>
 							<label><?php printf($lang_poll['Form choice'], $i) ?><br /><input class="longinput" type="text" name="poll_choice[<?php echo $k ?>][<?php echo $i?>]" value="<?php echo $choice ?>" tabindex="<?php echo $cur_index++ ?>" size="80" maxlength="250" onkeyup="ForChoice(<?php echo $k ?>,<?php echo $i?>)" /></label>
@@ -352,7 +352,7 @@ function poll_form_validate($tid, &$errors)
 
 	if (poll_bad() || poll_noedit($tid)) return;
 
-	$enabled = (poll_post('poll_enabled', 0) == 1);
+	$enabled = poll_post('poll_enabled', 0) == 1;
 	if ($enabled)
 	{
 		$questions = poll_post('poll_question', array());
@@ -366,7 +366,7 @@ function poll_form_validate($tid, &$errors)
 		$kol = 0;
 		for ($k = 1; $k <= $pun_config['o_poll_max_ques'] && $fk; $k++)
 		{
-			$question = (isset($questions[$k]) && $fk) ? $questions[$k] : '';
+			$question = isset($questions[$k]) && $fk ? $questions[$k] : '';
 			if ($question == '')
 				$fk = false;
 			else
@@ -379,7 +379,7 @@ function poll_form_validate($tid, &$errors)
 				$fi = $fk;
 				for ($i = 1; $i <= $pun_config['o_poll_max_field'] && $fi; $i++)
 				{
-					$choice = (isset($choices[$k][$i]) && $fi) ? pun_trim($choices[$k][$i]) : '';
+					$choice = isset($choices[$k][$i]) && $fi ? pun_trim($choices[$k][$i]) : '';
 					if ($choice == '')
 						$fi = false;
 					else
@@ -428,7 +428,7 @@ function poll_save($tid)
 	if (poll_bad() || poll_noedit($tid)) return;
 
 	$top = poll_topic($tid);
-	$enabled = (poll_post('poll_enabled', 0) == 1);
+	$enabled = poll_post('poll_enabled', 0) == 1;
 	if ($enabled)
 	{
 		$term = 0;
@@ -450,7 +450,7 @@ function poll_save($tid)
 		$fk = true;
 		for ($k = 1; $k <= $pun_config['o_poll_max_ques'] && $fk; $k++)
 		{
-			$question = (isset($questions[$k]) && $fk) ? $questions[$k] : '';
+			$question = isset($questions[$k]) && $fk ? $questions[$k] : '';
 			if ($question == '')
 				$fk = false;
 			else
@@ -467,7 +467,7 @@ function poll_save($tid)
 				$fi = $fk;
 				for ($i = 1; $i <= $pun_config['o_poll_max_field'] && $fi; $i++)
 				{
-					$choice = (isset($choices[$k][$i]) && $fi) ? pun_trim($choices[$k][$i]) : '';
+					$choice = isset($choices[$k][$i]) && $fi ? pun_trim($choices[$k][$i]) : '';
 					if ($choice == '')
 						$fi = false;
 					else
@@ -554,7 +554,7 @@ function poll_display_post($tid, $uid)
 		$fk = true;
 		for ($k = 1; $k <= $pun_config['o_poll_max_ques'] && $fk; $k++)
 		{
-			$question = (isset($questions[$k]) && $fk) ? $questions[$k] : '';
+			$question = isset($questions[$k]) && $fk ? $questions[$k] : '';
 			if ($question == '')
 		 		$fk = false;
 			else
@@ -565,7 +565,7 @@ function poll_display_post($tid, $uid)
 				$fi = $fk;
 				for ($i = 1; $i <= $pun_config['o_poll_max_field'] && $fi; $i++)
 				{
-					$choice = (isset($choices[$k][$i]) && $fi) ? pun_trim($choices[$k][$i]) : '';
+					$choice = isset($choices[$k][$i]) && $fi ? pun_trim($choices[$k][$i]) : '';
 					if ($choice == '')
 						$fi = false;
 					else
@@ -599,8 +599,8 @@ function poll_display($tid, $uid, $info, $top, $prev = false)
 
 	if (is_null($info)) return;
 
-	$can_vote = ($info['canVote'] && $top[0] != 2 && poll_post('poll_view') === null);
-	$can_visi = ((($info['isGuest'] && $pun_config['o_poll_guest'] == '1') || !$info['isGuest']) && $top[2] <= $top[3]);
+	$can_vote = $info['canVote'] && $top[0] != 2 && poll_post('poll_view') === null;
+	$can_visi = (($info['isGuest'] && $pun_config['o_poll_guest'] == '1') || !$info['isGuest']) && $top[2] <= $top[3];
 	$fmess = '';
 	if ($prev)
 		$fmess = '&#160;';
@@ -644,7 +644,7 @@ function poll_display($tid, $uid, $info, $top, $prev = false)
 		{
 			if ($v > $max) $max = $v;
 		}
-		$maxPercent = ($top[3] == 0 || !$max) ? 1 : 100 * $max / $top[3];
+		$maxPercent = $top[3] == 0 || !$max ? 1 : 100 * $max / $top[3];
 
 ?>
 	<fieldset class="poll">
@@ -662,7 +662,7 @@ function poll_display($tid, $uid, $info, $top, $prev = false)
 		{
 			if (empty($ch)) continue;
 
-			$percent = ($top[3] == 0) ? 0 : round(100 * $vote[$i] / $top[3],2);
+			$percent = $top[3] == 0 ? 0 : round(100 * $vote[$i] / $top[3],2);
 
 ?>
 			<li>
