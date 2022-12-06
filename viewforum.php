@@ -44,8 +44,8 @@ if ($cur_forum['redirect_url'] != '')
 }
 
 // Sort out who the moderators are and if we are currently a moderator (or an admin)
-$mods_array = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : array();
-$is_admmod = ($pun_user['g_id'] == PUN_ADMIN || ($pun_user['g_moderator'] == '1' && array_key_exists($pun_user['username'], $mods_array))) ? true : false;
+$mods_array = $cur_forum['moderators'] != '' ? unserialize($cur_forum['moderators']) : array();
+$is_admmod = $pun_user['g_id'] == PUN_ADMIN || ($pun_user['g_moderator'] == '1' && array_key_exists($pun_user['username'], $mods_array)) ? true : false;
 
 switch ($cur_forum['sort_by'])
 {
@@ -76,7 +76,7 @@ if (!$pun_user['is_guest'])
 // Determine the topic offset (based on $_GET['p'])
 $num_pages = ceil($cur_forum['num_topics'] / $pun_user['disp_topics']);
 
-$p = (!isset($_GET['p']) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages) ? 1 : intval($_GET['p']);
+$p = ! is_numeric($_GET['p'] ?? null) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages ? 1 : intval($_GET['p']);
 $start_from = $pun_user['disp_topics'] * ($p - 1);
 
 // Generate paging links
@@ -211,7 +211,7 @@ if (!empty($topic_ids))
 	{
 		++$topic_count;
 		$status_text = array();
-		$item_status = ($topic_count % 2 == 0) ? 'roweven' : 'rowodd';
+		$item_status = $topic_count % 2 == 0 ? 'roweven' : 'rowodd';
 		$icon_type = 'icon';
 
 		if (is_null($cur_topic['moved_to']))
@@ -294,7 +294,7 @@ if (!empty($topic_ids))
 }
 else
 {
-	$colspan = ($pun_config['o_topic_views'] == '1') ? 4 : 3;
+	$colspan = $pun_config['o_topic_views'] == '1' ? 4 : 3;
 
 ?>
 				<tr class="rowodd inone">
