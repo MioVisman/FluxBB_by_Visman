@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2013 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2022 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -13,7 +13,7 @@ require PUN_ROOT.'include/common.php';
 if ($pun_user['g_read_board'] == '0')
 	message($lang_common['No view'], false, '403 Forbidden');
 
-if (!isset($_GET['u']) || $pun_user['is_bot'])
+if (! is_string($_GET['u'] ?? null) || $pun_user['is_bot'])
 	message($lang_common['Bad request'], false, '404 Not Found');
 
 if (file_exists(PUN_ROOT.'lang/'.$pun_user['language'].'/re.php'))
