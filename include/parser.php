@@ -792,9 +792,9 @@ function handle_time_tag($after_time)
 	if ($merged_hours > 0)
 		$content[] = $merged_hours.$lang_common['After time H'];
 	if ($merged_min > 0)
-		$content[] = (($merged_min < 10) ? '0'.$merged_min : $merged_min).$lang_common['After time i'];
+		$content[] = ($merged_min < 10 ? '0'.$merged_min : $merged_min).$lang_common['After time i'];
 	if ($merged_sec > 0)
-		$content[] = (($merged_sec < 10) ? '0'.$merged_sec : $merged_sec).$lang_common['After time s'];
+		$content[] = ($merged_sec < 10 ? '0'.$merged_sec : $merged_sec).$lang_common['After time s'];
 
 	return pun_linebreaks(pun_trim('<span style="color: #808080"><em>'.$lang_common['After time'].' '.implode(' ', $content).':</em></span>'."\n"));
 
@@ -1010,7 +1010,7 @@ function parse_message($text, $hide_smilies)
 			$text .= $part;
 			if (isset($inside[$i]))
 			{
-				$num_lines = (substr_count($inside[$i], "\n"));
+				$num_lines = substr_count($inside[$i], "\n");
 				$text .= '</p><div class="codebox"><pre'.(($num_lines > 28) ? ' class="vscroll"' : '').'><code>'.pun_trim($inside[$i], "\n\r").'</code></pre></div><p>';
 			}
 		}
