@@ -292,7 +292,7 @@ class DBLayer
 	function table_exists($table_name, $no_prefix = false)
 	{
 		$result = $this->query('SELECT COUNT(type) FROM sqlite_master WHERE name = \''.($no_prefix ? '' : $this->prefix).$this->escape($table_name).'\' AND type=\'table\'');
-		$table_exists = (intval($this->result($result)) > 0);
+		$table_exists = intval($this->result($result)) > 0;
 
 		// Free results for DROP
 		if ($result instanceof Sqlite3Result)
@@ -326,7 +326,7 @@ class DBLayer
 	function index_exists($table_name, $index_name, $no_prefix = false)
 	{
 		$result = $this->query('SELECT COUNT(type) FROM sqlite_master WHERE tbl_name = \''.($no_prefix ? '' : $this->prefix).$this->escape($table_name).'\' AND name = \''.($no_prefix ? '' : $this->prefix).$this->escape($table_name).'_'.$this->escape($index_name).'\' AND type=\'index\'');
-		$index_exists = (intval($this->result($result)) > 0);
+		$index_exists = intval($this->result($result)) > 0;
 
 		// Free results for DROP
 		if ($result instanceof Sqlite3Result)
