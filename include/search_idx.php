@@ -266,7 +266,7 @@ function update_search_index($mode, $post_id, $message, $subject = null)
 
 		while ($row = $db->fetch_row($result))
 		{
-			$match_in = ($row[2]) ? 'subject' : 'post';
+			$match_in = $row[2] ? 'subject' : 'post';
 			$cur_words[$match_in][$row[1]] = $row[0];
 		}
 
@@ -328,13 +328,13 @@ function update_search_index($mode, $post_id, $message, $subject = null)
 	// Delete matches (only if editing a post)
 	foreach ($words['del'] as $match_in => $wordlist)
 	{
-		$subject_match = ($match_in == 'subject') ? 1 : 0;
+		$subject_match = $match_in == 'subject' ? 1 : 0;
 
 		if (!empty($wordlist))
 		{
 			$sql = '';
 			foreach ($wordlist as $word)
-				$sql .= (($sql != '') ? ',' : '').$cur_words[$match_in][$word];
+				$sql .= ($sql != '' ? ',' : '').$cur_words[$match_in][$word];
 
 			$db->query('DELETE FROM '.$db->prefix.'search_matches WHERE word_id IN ('.$sql.') AND post_id='.$post_id.' AND subject_match='.$subject_match) or error('Unable to delete search index word matches', __FILE__, __LINE__, $db->error());
 		}
@@ -343,7 +343,7 @@ function update_search_index($mode, $post_id, $message, $subject = null)
 	// Add new matches
 	foreach ($words['add'] as $match_in => $wordlist)
 	{
-		$subject_match = ($match_in == 'subject') ? 1 : 0;
+		$subject_match = $match_in == 'subject' ? 1 : 0;
 
 		if (!empty($wordlist))
 			$db->query('INSERT INTO '.$db->prefix.'search_matches (post_id, word_id, subject_match) SELECT '.$post_id.', id, '.$subject_match.' FROM '.$db->prefix.'search_words WHERE word IN (\''.implode('\',\'', array_map(array($db, 'escape'), $wordlist)).'\')') or error('Unable to insert search index word matches', __FILE__, __LINE__, $db->error());
@@ -371,7 +371,7 @@ function strip_search_index($post_ids)
 
 			$word_ids = '';
 			while ($row = $db->fetch_row($result))
-				$word_ids .= ($word_ids != '') ? ','.$row[0] : $row[0];
+				$word_ids .= $word_ids != '' ? ','.$row[0] : $row[0];
 
 			if ($word_ids != '')
 			{
@@ -379,7 +379,7 @@ function strip_search_index($post_ids)
 
 				$word_ids = '';
 				while ($row = $db->fetch_row($result))
-					$word_ids .= ($word_ids != '') ? ','.$row[0] : $row[0];
+					$word_ids .= $word_ids != '' ? ','.$row[0] : $row[0];
 
 				if ($word_ids != '')
 				{
