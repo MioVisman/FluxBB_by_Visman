@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2011-2019 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2011-2022 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -24,13 +24,7 @@ function upf_return_json($data)
 
 function upf_get_pg($key, $default = null)
 {
-	if (isset($_POST[$key])) {
-		return $_POST[$key];
-	} elseif (isset($_GET[$key])) {
-		return $_GET[$key];
-	} else {
-		return $default;
-	}
+	return $_POST[$key] ?? ($_GET[$key] ?? $default);
 }
 
 function upf_message($message, $no_back_link = false, $http_status = null)
@@ -61,7 +55,7 @@ require PUN_ROOT . 'include/common.php';
 define('PLUGIN_REF', pun_htmlspecialchars('upfiles.php'));
 define('PLUGIN_NF', 25);
 
-$upf_ajax = ('1' == upf_get_pg('ajx'));
+$upf_ajax = '1' == upf_get_pg('ajx');
 $upf_action = upf_get_pg('action');
 $upf_page = intval(upf_get_pg('p', 1));
 
