@@ -21,7 +21,7 @@ if ($pun_user['g_read_board'] == '0')
 	message($lang_common['No view'], false, '403 Forbidden');
 else if ($pun_user['g_search'] == '0')
 	message($lang_search['No search permission'], false, '403 Forbidden');
-else if ($pun_user['is_bot'] && (isset($_GET['search_id']) || !isset($_GET['action']) || $_GET['action'] == 'search')) // Visman - запрет поиска ботам
+else if ($pun_user['is_bot'] && (isset($_GET['search_id']) || !isset($_GET['action']) || $_GET['action'] === 'search')) // Visman - запрет поиска ботам
 	message($lang_search['No search permission'], false, '403 Forbidden');
 
 require PUN_ROOT.'include/search_idx.php';
@@ -34,9 +34,9 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 	$url_shl = '';
 	// search HL - Visman
 
-	$action = (isset($_GET['action'])) ? $_GET['action'] : null;
-	$forums = isset($_GET['forums']) ? (is_array($_GET['forums']) ? $_GET['forums'] : array_filter(explode(',', $_GET['forums']))) : ((isset($_GET['forum']) && isset($sf_array_asc[$_GET['forum']])) ? $sf_array_asc[$_GET['forum']] : array()); // MOD subforums - Visman
-	$sort_dir = (isset($_GET['sort_dir']) && $_GET['sort_dir'] == 'DESC') ? 'DESC' : 'ASC';
+	$action = is_string($_GET['action'] ?? null) ? $_GET['action'] : '';
+	$forums = isset($_GET['forums']) ? (is_array($_GET['forums']) ? $_GET['forums'] : array_filter(explode(',', $_GET['forums']))) : (isset($_GET['forum']) && isset($sf_array_asc[$_GET['forum']]) ? $sf_array_asc[$_GET['forum']] : array()); // MOD subforums - Visman
+	$sort_dir = isset($_GET['sort_dir']) && $_GET['sort_dir'] == 'DESC' ? 'DESC' : 'ASC';
 
 	$forums = array_map('intval', $forums);
 
@@ -71,14 +71,14 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 		if ($author)
 			$author = str_replace(array('*', '_'), array('%', '\\_'), $author);
 
-		$show_as = (isset($_GET['show_as']) && $_GET['show_as'] == 'topics') ? 'topics' : 'posts';
-		$sort_by = (isset($_GET['sort_by'])) ? intval($_GET['sort_by']) : 0;
-		$search_in = (!isset($_GET['search_in']) || $_GET['search_in'] == '0') ? 0 : (($_GET['search_in'] == '1') ? 1 : -1);
+		$show_as = isset($_GET['show_as']) && $_GET['show_as'] == 'topics' ? 'topics' : 'posts';
+		$sort_by = isset($_GET['sort_by']) ? intval($_GET['sort_by']) : 0;
+		$search_in = !isset($_GET['search_in']) || $_GET['search_in'] == '0' ? 0 : ($_GET['search_in'] == '1' ? 1 : -1);
 	}
 	// If it's a user search (by ID)
 	else if ($action == 'show_user_posts' || $action == 'show_user_topics' || $action == 'show_subscriptions')
 	{
-		$user_id = (isset($_GET['user_id'])) ? intval($_GET['user_id']) : $pun_user['id'];
+		$user_id = isset($_GET['user_id']) ? intval($_GET['user_id']) : $pun_user['id'];
 		if ($user_id < 2)
 			message($lang_common['Bad request'], false, '404 Not Found');
 
@@ -92,7 +92,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 		if ($pun_user['is_guest'])
 			message($lang_common['No permission'], false, '403 Forbidden');
 
-		$user_id = (isset($_GET['user_id'])) ? intval($_GET['user_id']) : $pun_user['id'];
+		$user_id = isset($_GET['user_id']) ? intval($_GET['user_id']) : $pun_user['id'];
 		if ($user_id < 2)
 			message($lang_common['Bad request'], false, '404 Not Found');
 	}
@@ -110,7 +110,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 	// If a valid search_id was supplied we attempt to fetch the search results from the db
 	if (isset($search_id))
 	{
-		$ident = ($pun_user['is_guest']) ? get_remote_address() : $pun_user['username'];
+		$ident = $pun_user['is_guest'] ? get_remote_address() : $pun_user['username'];
 
 		$result = $db->query('SELECT search_data FROM '.$db->prefix.'search_cache WHERE id='.$search_id.' AND ident=\''.$db->escape($ident).'\'') or error('Unable to fetch search results', __FILE__, __LINE__, $db->error());
 		if ($row = $db->fetch_assoc($result))
@@ -135,7 +135,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 		$keyword_results = $author_results = array();
 
 		// Search a specific forum?
-		$forum_sql = (!empty($forums) || (empty($forums) && $pun_config['o_search_all_forums'] == '0' && !$pun_user['is_admmod'])) ? ' AND t.forum_id IN ('.implode(',', $forums).')' : '';
+		$forum_sql = !empty($forums) || (empty($forums) && $pun_config['o_search_all_forums'] == '0' && !$pun_user['is_admmod']) ? ' AND t.forum_id IN ('.implode(',', $forums).')' : '';
 
 		if (!empty($author) || !empty($keywords))
 		{
@@ -151,7 +151,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 			switch ($sort_by)
 			{
 				case 1:
-					$sort_by_sql = ($show_as == 'topics') ? 't.poster' : 'p.poster';
+					$sort_by_sql = $show_as == 'topics' ? 't.poster' : 'p.poster';
 					$sort_type = SORT_STRING;
 					break;
 
@@ -171,7 +171,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 					break;
 
 				default:
-					$sort_by_sql = ($show_as == 'topics') ? 't.last_post' : 'p.posted';
+					$sort_by_sql = $show_as == 'topics' ? 't.last_post' : 'p.posted';
 					$sort_type = SORT_NUMERIC;
 					break;
 			}
@@ -186,7 +186,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 					message($lang_search['No hits']);
 
 				// Should we search in message body or topic subject specifically?
-				$search_in_cond = ($search_in) ? (($search_in > 0) ? ' AND m.subject_match = 0' : ' AND m.subject_match = 1') : '';
+				$search_in_cond = $search_in ? ($search_in > 0 ? ' AND m.subject_match = 0' : ' AND m.subject_match = 1') : '';
 
 				$word_count = 0;
 				$match_type = 'and';
@@ -212,7 +212,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 							if (is_cjk($cur_word))
 							{
 								$where_cond = str_replace('*', '%', $cur_word);
-								$where_cond = ($search_in ? (($search_in > 0) ? 'p.message LIKE \'%'.$db->escape($where_cond).'%\'' : 't.subject LIKE \'%'.$db->escape($where_cond).'%\'') : 'p.message LIKE \'%'.$db->escape($where_cond).'%\' OR t.subject LIKE \'%'.$db->escape($where_cond).'%\'');
+								$where_cond = ($search_in ? ($search_in > 0 ? 'p.message LIKE \'%'.$db->escape($where_cond).'%\'' : 't.subject LIKE \'%'.$db->escape($where_cond).'%\'') : 'p.message LIKE \'%'.$db->escape($where_cond).'%\' OR t.subject LIKE \'%'.$db->escape($where_cond).'%\'');
 
 								$result = $db->query('SELECT p.id AS post_id, p.topic_id, '.$sort_by_sql.' AS sort_by FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'topics AS t ON t.id=p.topic_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.$pun_user['g_id'].') WHERE ('.$where_cond.') AND (fp.read_forum IS NULL OR fp.read_forum=1)'.$forum_sql, true) or error('Unable to search for posts', __FILE__, __LINE__, $db->error());
 							}
@@ -471,7 +471,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 		));
 		$search_id = random_int(1, 2147483647);
 
-		$ident = ($pun_user['is_guest']) ? get_remote_address() : $pun_user['username'];
+		$ident = $pun_user['is_guest'] ? get_remote_address() : $pun_user['username'];
 
 		$db->query('INSERT INTO '.$db->prefix.'search_cache (id, ident, search_data) VALUES ('.$search_id.', \''.$db->escape($ident).'\', \''.$db->escape($temp).'\')') or error('Unable to insert search results', __FILE__, __LINE__, $db->error());
 
@@ -498,7 +498,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 		switch ($sort_by)
 		{
 			case 1:
-				$sort_by_sql = ($show_as == 'topics') ? 't.poster' : 'p.poster';
+				$sort_by_sql = $show_as == 'topics' ? 't.poster' : 'p.poster';
 				break;
 
 			case 2:
@@ -514,15 +514,15 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 				break;
 
 			default:
-				$sort_by_sql = ($show_as == 'topics') ? 't.last_post' : 'p.posted';
+				$sort_by_sql = $show_as == 'topics' ? 't.last_post' : 'p.posted';
 				break;
 		}
 
 		// Determine the topic or post offset (based on $_GET['p'])
-		$per_page = ($show_as == 'posts') ? $pun_user['disp_posts'] : $pun_user['disp_topics'];
+		$per_page = $show_as == 'posts' ? $pun_user['disp_posts'] : $pun_user['disp_topics'];
 		$num_pages = ceil($num_hits / $per_page);
 
-		$p = (!isset($_GET['p']) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages) ? 1 : intval($_GET['p']);
+		$p = ! is_numeric($_GET['p'] ?? null) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages ? 1 : intval($_GET['p']);
 		$start_from = $per_page * ($p - 1);
 
 		// Generate paging links
@@ -748,7 +748,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 			{
 				++$topic_count;
 				$status_text = array();
-				$item_status = ($topic_count % 2 == 0) ? 'roweven' : 'rowodd';
+				$item_status = $topic_count % 2 == 0 ? 'roweven' : 'rowodd';
 				$icon_type = 'icon';
 
 				$subject = '<a href="viewtopic.php?id='.$cur_search['tid'].$url_shl.'">'.pun_htmlspecialchars($cur_search['subject']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_search['poster']).'</span>'; // search HL - Visman
