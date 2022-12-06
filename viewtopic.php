@@ -15,7 +15,7 @@ if ($pun_user['g_read_board'] == '0')
 	message($lang_common['No view'], false, '403 Forbidden');
 
 
-$action = isset($_GET['action']) ? $_GET['action'] : null;
+$action = $_GET['action'] ?? null;
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $pid = isset($_GET['pid']) ? intval($_GET['pid']) : 0;
 if ($id < 1 && $pid < 1)
@@ -43,7 +43,7 @@ if ($pid)
 else
 {
 	// If action=new, we redirect to the first new post (if any)
-	if ($action == 'new')
+	if ($action === 'new')
 	{
 		if (!$pun_user['is_guest'])
 		{
@@ -66,7 +66,7 @@ else
 	}
 
 	// If action=last, we redirect to the last post
-	if ($action == 'last')
+	if ($action === 'last')
 	{
 		$result = $db->query('SELECT MAX(id) FROM '.$db->prefix.'posts WHERE topic_id='.$id) or error('Unable to fetch last post info', __FILE__, __LINE__, $db->error());
 		$last_post_id = $db->result($result);
@@ -97,7 +97,7 @@ if (isset($_GET['search_hl']))
 	if ($search_hl < 1)
 		message($lang_common['Bad request'], false, '404 Not Found');
 
-	$ident = ($pun_user['is_guest']) ? get_remote_address() : $pun_user['username'];
+	$ident = $pun_user['is_guest'] ? get_remote_address() : $pun_user['username'];
 
 	$result = $db->query('SELECT search_data FROM '.$db->prefix.'search_cache WHERE id='.$search_hl.' AND ident=\''.$db->escape($ident).'\'') or error('Unable to fetch search results', __FILE__, __LINE__, $db->error());
 	if ($row = $db->fetch_assoc($result))
@@ -186,8 +186,8 @@ if (defined('WITT_ENABLE'))
 // MOD Кто в этой теме - Visman
 
 // Sort out who the moderators are and if we are currently a moderator (or an admin)
-$mods_array = ($cur_topic['moderators'] != '') ? unserialize($cur_topic['moderators']) : array();
-$is_admmod = ($pun_user['g_id'] == PUN_ADMIN || ($pun_user['g_moderator'] == '1' && array_key_exists($pun_user['username'], $mods_array))) ? true : false;
+$mods_array = $cur_topic['moderators'] != '' ? unserialize($cur_topic['moderators']) : array();
+$is_admmod = $pun_user['g_id'] == PUN_ADMIN || ($pun_user['g_moderator'] == '1' && array_key_exists($pun_user['username'], $mods_array)) ? true : false;
 if ($is_admmod)
 	$admin_ids = get_admin_ids();
 
@@ -225,7 +225,7 @@ if (!$pun_user['is_guest'])
 // Determine the post offset (based on $_GET['p'])
 $num_pages = ceil(($cur_topic['num_replies'] + 1) / $pun_user['disp_posts']);
 
-$p = (!isset($_GET['p']) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages) ? 1 : intval($_GET['p']);
+$p = ! is_numeric($_GET['p'] ?? null) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages ? 1 : intval($_GET['p']);
 $start_from = $pun_user['disp_posts'] * ($p - 1);
 
 // Generate paging links
@@ -333,7 +333,7 @@ if (empty($post_ids))
 	error('The post table and topic table seem to be out of sync!', __FILE__, __LINE__);
 
 // StickFP - Visman
-$stick_fp_flag = ($cur_topic['stick_fp'] != 0 || $cur_topic['poll_type'] > 0);
+$stick_fp_flag = $cur_topic['stick_fp'] != 0 || $cur_topic['poll_type'] > 0;
 $stick_fp_start_from = 0;
 if ($stick_fp_flag)
 	$post_ids[] = $cur_topic['first_post_id'];
@@ -402,7 +402,7 @@ while ($cur_post = $db->fetch_assoc($result))
 		$user_title = get_title($cur_post);
 
 		// Format the online indicator
-		$is_online = (isset($onl_u[$cur_post['poster_id']])) ? '<strong>'.$lang_topic['Online'].'</strong>' : '<span>'.$lang_topic['Offline'].'</span>';
+		$is_online = isset($onl_u[$cur_post['poster_id']]) ? '<strong>'.$lang_topic['Online'].'</strong>' : '<span>'.$lang_topic['Offline'].'</span>';
 
 		if ($pun_config['o_avatars'] == '1' && $pun_user['show_avatars'] != '0')
 		{
@@ -682,8 +682,8 @@ $cur_index = 1;
 
 if ($pun_user['is_guest'])
 {
-	$email_label = ($pun_config['p_force_guest_email'] == '1') ? '<strong>'.$lang_common['Email'].' <span>'.$lang_common['Required'].'</span></strong>' : $lang_common['Email'];
-	$email_form_name = ($pun_config['p_force_guest_email'] == '1') ? 'req_email' : 'email';
+	$email_label = $pun_config['p_force_guest_email'] == '1' ? '<strong>'.$lang_common['Email'].' <span>'.$lang_common['Required'].'</span></strong>' : $lang_common['Email'];
+	$email_form_name = $pun_config['p_force_guest_email'] == '1' ? 'req_email' : 'email';
 
 ?>
 						<label class="conl required"><strong><?php echo $lang_post['Guest name'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="text" name="req_username" size="25" maxlength="25" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
