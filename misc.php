@@ -16,10 +16,10 @@ require PUN_ROOT.'include/common.php';
 // Load the misc.php language file
 require PUN_ROOT.'lang/'.$pun_user['language'].'/misc.php';
 
-$action = isset($_GET['action']) ? $_GET['action'] : null;
+$action = $_GET['action'] ?? null;
 
 
-if ($action == 'rules')
+if ($action === 'rules')
 {
 	if ($pun_config['o_rules'] == '0' || ($pun_user['is_guest'] && $pun_user['g_read_board'] == '0' && $pun_config['o_regs_allow'] == '0'))
 		message($lang_common['Bad request'], false, '404 Not Found');
@@ -46,7 +46,7 @@ if ($action == 'rules')
 }
 
 // START быстрое переключение языка - Visman
-else if ($action == 'lang')
+else if ($action === 'lang')
 {
 	confirm_referrer('misc.php');
 
@@ -74,7 +74,7 @@ else if ($action == 'lang')
 }
 // END быстрое переключение языка - Visman
 
-else if ($action == 'markread')
+else if ($action === 'markread')
 {
 	if ($pun_user['is_guest'])
 		message($lang_common['No permission'], false, '403 Forbidden');
@@ -91,7 +91,7 @@ else if ($action == 'markread')
 
 
 // Mark the topics/posts in a forum as read?
-else if ($action == 'markforumread')
+else if ($action === 'markforumread')
 {
 	if ($pun_user['is_guest'])
 		message($lang_common['No permission'], false, '403 Forbidden');
@@ -136,8 +136,8 @@ else if (isset($_GET['email']))
 		confirm_referrer('misc.php');
 
 		// Clean up message and subject from POST
-		$subject = pun_trim($_POST['req_subject']);
-		$message = pun_trim($_POST['req_message']);
+		$subject = pun_trim($_POST['req_subject'] ?? '');
+		$message = pun_trim($_POST['req_message'] ?? '');
 
 		if ($subject == '')
 			message($lang_misc['No email subject']);
@@ -171,7 +171,7 @@ else if (isset($_GET['email']))
 		$db->query('UPDATE '.$db->prefix.'users SET last_email_sent='.time().' WHERE id='.$pun_user['id']) or error('Unable to update user', __FILE__, __LINE__, $db->error());
 
 		// Try to determine if the data in redirect_url is valid (if not, we redirect to index.php after the email is sent)
-		$redirect_url = validate_redirect($_POST['redirect_url'], 'index.php');
+		$redirect_url = validate_redirect($_POST['redirect_url'] ?? '', 'index.php');
 
 		redirect(pun_htmlspecialchars($redirect_url), $lang_misc['Email sent redirect']);
 	}
@@ -237,7 +237,7 @@ else if (isset($_GET['report']))
 		confirm_referrer('misc.php');
 
 		// Clean up reason from POST
-		$reason = pun_linebreaks(pun_trim($_POST['req_reason']));
+		$reason = pun_linebreaks(pun_trim($_POST['req_reason'] ?? ''));
 		if ($reason == '')
 			message($lang_misc['No reason']);
 		else if (strlen($reason) > 65535) // TEXT field can only hold 65535 bytes
@@ -350,7 +350,7 @@ else if (isset($_GET['report']))
 }
 
 
-else if ($action == 'subscribe')
+else if ($action === 'subscribe')
 {
 	if ($pun_user['is_guest'])
 		message($lang_common['No permission'], false, '403 Forbidden');
@@ -402,7 +402,7 @@ else if ($action == 'subscribe')
 }
 
 
-else if ($action == 'unsubscribe')
+else if ($action === 'unsubscribe')
 {
 	if ($pun_user['is_guest'])
 		message($lang_common['No permission'], false, '403 Forbidden');
