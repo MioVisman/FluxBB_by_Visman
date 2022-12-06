@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2021 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2022 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2008-2010 FluxBB
  * based on code by Rickard Andersson copyright (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -138,8 +138,8 @@ if (isset($_POST['csrf_hash']))
 
 	if ($tid == 0)
 	{
-		$subject = pun_trim($_POST['req_subject']);
-		$addressee = pun_trim($_POST['req_addressee']);
+		$subject = pun_trim($_POST['req_subject'] ?? '');
+		$addressee = pun_trim($_POST['req_addressee'] ?? '');
 
 		if ($subject == '')
 			$errors[] = $lang_pmsn['No subject'];
@@ -204,7 +204,7 @@ if (isset($_POST['csrf_hash']))
 			$errors[] = $lang_pmsn['Addr block you'];
 	}
 
-	$message = pun_linebreaks(pun_trim($_POST['req_message']));
+	$message = pun_linebreaks(pun_trim($_POST['req_message'] ?? ''));
 
 	if (strlen($message) > 65535)
 		$errors[] = $lang_pmsn['Too long message'];
