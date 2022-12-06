@@ -42,7 +42,7 @@ if (isset($_REQUEST['add_ban']) || isset($_GET['edit_ban']))
 		}
 		else // Otherwise the username is in POST
 		{
-			$ban_user = pun_trim($_POST['new_ban_user']);
+			$ban_user = pun_trim($_POST['new_ban_user'] ?? '');
 
 			if ($ban_user != '')
 			{
@@ -102,7 +102,7 @@ if (isset($_REQUEST['add_ban']) || isset($_GET['edit_ban']))
 		list($ban_user, $ban_ip, $ban_email, $ban_message, $ban_expire) = $banned_user_info;
 
 		$diff = ($pun_user['timezone'] + $pun_user['dst']) * 3600;
-		$ban_expire = ($ban_expire != '') ? gmdate('Y-m-d', $ban_expire + $diff) : '';
+		$ban_expire = $ban_expire != '' ? gmdate('Y-m-d', $ban_expire + $diff) : '';
 
 		$mode = 'edit';
 	}
@@ -192,11 +192,11 @@ else if (isset($_POST['add_edit_ban']))
 {
 	confirm_referrer('admin_bans.php');
 
-	$ban_user = pun_trim($_POST['ban_user']);
-	$ban_ip = pun_trim($_POST['ban_ip']);
-	$ban_email = strtolower(pun_trim($_POST['ban_email']));
-	$ban_message = pun_trim($_POST['ban_message']);
-	$ban_expire = pun_trim($_POST['ban_expire']);
+	$ban_user = pun_trim($_POST['ban_user'] ?? '');
+	$ban_ip = pun_trim($_POST['ban_ip'] ?? '');
+	$ban_email = strtolower(pun_trim($_POST['ban_email'] ?? ''));
+	$ban_message = pun_trim($_POST['ban_message'] ?? '');
+	$ban_expire = pun_trim($_POST['ban_expire'] ?? '');
 
 	if ($ban_user == '' && $ban_ip == '' && $ban_email == '')
 		message($lang_admin_bans['Must enter message']);
@@ -254,7 +254,7 @@ else if (isset($_POST['add_edit_ban']))
 
 				for ($c = 0; $c < count($octets); ++$c)
 				{
-					$octets[$c] = (strlen($octets[$c]) > 1) ? ltrim($octets[$c], "0") : $octets[$c];
+					$octets[$c] = strlen($octets[$c]) > 1 ? ltrim($octets[$c], "0") : $octets[$c];
 
 					if ($c > 3 || preg_match('%[^0-9]%', $octets[$c]) || intval($octets[$c]) > 255)
 						message($lang_admin_bans['Invalid IP message']);
@@ -279,7 +279,7 @@ else if (isset($_POST['add_edit_ban']))
 		if (!is_valid_email($ban_email_cl) && !is_valid_email('test@' . $ban_email_cl))
 			message($lang_admin_bans['Invalid e-mail message']);
 
-		$match = $_POST['mode'] == 'edit' ? intval($_POST['ban_id']) : -1;
+		$match = $_POST['mode'] == 'edit' ? intval($_POST['ban_id'] ?? 0) : -1;
 		$match = is_banned_email(($domain ? '.' : '') . $ban_email_cl, $match);
 
 		if (false !== $match)
@@ -307,15 +307,15 @@ else if (isset($_POST['add_edit_ban']))
 	else
 		$ban_expire = 'NULL';
 
-	$ban_user = ($ban_user != '') ? '\''.$db->escape($ban_user).'\'' : 'NULL';
-	$ban_ip = ($ban_ip != '') ? '\''.$db->escape($ban_ip).'\'' : 'NULL';
-	$ban_email = ($ban_email != '') ? '\''.$db->escape($ban_email).'\'' : 'NULL';
-	$ban_message = ($ban_message != '') ? '\''.$db->escape($ban_message).'\'' : 'NULL';
+	$ban_user = $ban_user != '' ? '\''.$db->escape($ban_user).'\'' : 'NULL';
+	$ban_ip = $ban_ip != '' ? '\''.$db->escape($ban_ip).'\'' : 'NULL';
+	$ban_email = $ban_email != '' ? '\''.$db->escape($ban_email).'\'' : 'NULL';
+	$ban_message = $ban_message != '' ? '\''.$db->escape($ban_message).'\'' : 'NULL';
 
 	if ($_POST['mode'] == 'add')
 		$db->query('INSERT INTO '.$db->prefix.'bans (username, ip, email, message, expire, ban_creator) VALUES ('.$ban_user.', '.$ban_ip.', '.$ban_email.', '.$ban_message.', '.$ban_expire.', '.$pun_user['id'].')') or error('Unable to add ban', __FILE__, __LINE__, $db->error());
 	else
-		$db->query('UPDATE '.$db->prefix.'bans SET username='.$ban_user.', ip='.$ban_ip.', email='.$ban_email.', message='.$ban_message.', expire='.$ban_expire.' WHERE id='.intval($_POST['ban_id'])) or error('Unable to update ban', __FILE__, __LINE__, $db->error());
+		$db->query('UPDATE '.$db->prefix.'bans SET username='.$ban_user.', ip='.$ban_ip.', email='.$ban_email.', message='.$ban_message.', expire='.$ban_expire.' WHERE id='.intval($_POST['ban_id'] ?? 0)) or error('Unable to update ban', __FILE__, __LINE__, $db->error());
 
 	// Regenerate the bans cache
 	if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
@@ -352,7 +352,7 @@ else if (isset($_GET['del_ban']))
 // Find bans
 else if (isset($_GET['find_ban']))
 {
-	$form = isset($_GET['form']) ? $_GET['form'] : array();
+	$form = is_array($_GET['form'] ?? null) ? $_GET['form'] : array();
 
 	// trim() all elements in $form
 	$form = array_map('pun_trim', $form);
@@ -388,7 +388,7 @@ else if (isset($_GET['find_ban']))
 		$conditions[] = 'b.expire<'.$expire_before;
 	}
 
-	$like_command = ($db_type == 'pgsql') ? 'ILIKE' : 'LIKE';
+	$like_command = $db_type == 'pgsql' ? 'ILIKE' : 'LIKE';
 	foreach ($form as $key => $input)
 	{
 		if ($input != '' && in_array($key, array('username', 'ip', 'email', 'message')))
@@ -405,7 +405,7 @@ else if (isset($_GET['find_ban']))
 	// Determine the ban offset (based on $_GET['p'])
 	$num_pages = ceil($num_bans / 50);
 
-	$p = (!isset($_GET['p']) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages) ? 1 : intval($_GET['p']);
+	$p = ! is_numeric($_GET['p'] ?? null) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages ? 1 : intval($_GET['p']);
 	$start_from = 50 * ($p - 1);
 
 	// Generate paging links
