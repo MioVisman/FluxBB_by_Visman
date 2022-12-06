@@ -182,7 +182,7 @@ else if (isset($_POST['delete']))
 $file_content = file_get_contents($prefhf);
 if ($file_content === false)
 	message(pun_htmlspecialchars($prefhf.$lang_fb['Error open file']));
-$f_inst = (strpos($file_content, $fd_str) !== false);
+$f_inst = strpos($file_content, $fd_str) !== false;
 if ($f_inst && !isset($pun_config['o_fbox_files'])) // непредвиденная ситуация при обновлении
 {
 	$db->query('DELETE FROM '.$db->prefix.'config WHERE conf_name=\'o_fbox_guest\'') or error('Unable to remove config entries', __FILE__, __LINE__, $db->error());;
