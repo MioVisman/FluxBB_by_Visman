@@ -14,76 +14,82 @@ require PUN_ROOT.'include/common.php';
 require PUN_ROOT.'include/common_admin.php';
 
 
+function sva_gf($key)
+{
+	return $_POST['form'][$key] ?? '';
+}
+
+
 if ($pun_user['g_id'] != PUN_ADMIN)
 	message($lang_common['No permission'], false, '403 Forbidden');
 
 // Load the admin_options.php language file
 require PUN_ROOT.'lang/'.$admin_language.'/admin_options.php';
 
-if (isset($_POST['form_sent']))
+if (isset($_POST['form_sent'], $_POST['form']) && is_array($_POST['form']))
 {
 	confirm_referrer('admin_options.php', $lang_admin_options['Bad HTTP Referer message']);
 
 	$form = array(
-		'board_title'			=> pun_trim($_POST['form']['board_title']),
-		'board_desc'			=> pun_trim($_POST['form']['board_desc']),
-		'base_url'				=> pun_trim($_POST['form']['base_url']),
-		'default_timezone'		=> floatval($_POST['form']['default_timezone']),
-		'default_dst'			=> $_POST['form']['default_dst'] != '1' ? '0' : '1',
-		'default_lang'			=> pun_trim($_POST['form']['default_lang']),
-		'default_style'			=> pun_trim($_POST['form']['default_style']),
-		'time_format'			=> pun_trim($_POST['form']['time_format']),
-		'date_format'			=> pun_trim($_POST['form']['date_format']),
-		'timeout_visit'			=> (intval($_POST['form']['timeout_visit']) > 0) ? intval($_POST['form']['timeout_visit']) : 1,
-		'timeout_online'		=> (intval($_POST['form']['timeout_online']) > 0) ? intval($_POST['form']['timeout_online']) : 1,
-		'redirect_delay'		=> (intval($_POST['form']['redirect_delay']) >= 0) ? intval($_POST['form']['redirect_delay']) : 0,
-		'show_version'			=> $_POST['form']['show_version'] != '1' ? '0' : '1',
-		'show_user_info'		=> $_POST['form']['show_user_info'] != '1' ? '0' : '1',
-		'show_post_count'		=> $_POST['form']['show_post_count'] != '1' ? '0' : '1',
-		'smilies'				=> $_POST['form']['smilies'] != '1' ? '0' : '1',
-		'smilies_sig'			=> $_POST['form']['smilies_sig'] != '1' ? '0' : '1',
-		'make_links'			=> $_POST['form']['make_links'] != '1' ? '0' : '1',
-		'topic_review'			=> (intval($_POST['form']['topic_review']) >= 0) ? intval($_POST['form']['topic_review']) : 0,
-		'disp_topics_default'	=> intval($_POST['form']['disp_topics_default']),
-		'disp_posts_default'	=> intval($_POST['form']['disp_posts_default']),
-		'indent_num_spaces'		=> (intval($_POST['form']['indent_num_spaces']) >= 0) ? intval($_POST['form']['indent_num_spaces']) : 0,
-		'quote_depth'			=> (intval($_POST['form']['quote_depth']) > 0) ? intval($_POST['form']['quote_depth']) : 1,
-		'quickpost'				=> $_POST['form']['quickpost'] != '1' ? '0' : '1',
-		'users_online'			=> $_POST['form']['users_online'] != '1' ? '0' : '1',
-		'censoring'				=> $_POST['form']['censoring'] != '1' ? '0' : '1',
-		'signatures'			=> $_POST['form']['signatures'] != '1' ? '0' : '1',
-		'show_dot'				=> $_POST['form']['show_dot'] != '1' ? '0' : '1',
-		'topic_views'			=> $_POST['form']['topic_views'] != '1' ? '0' : '1',
-		'quickjump'				=> $_POST['form']['quickjump'] != '1' ? '0' : '1',
-		'gzip'					=> $_POST['form']['gzip'] != '1' ? '0' : '1',
-		'search_all_forums'		=> $_POST['form']['search_all_forums'] != '1' ? '0' : '1',
-		'additional_navlinks'	=> pun_trim($_POST['form']['additional_navlinks']),
-		'feed_type'				=> intval($_POST['form']['feed_type']),
-		'feed_ttl'				=> intval($_POST['form']['feed_ttl']),
-		'report_method'			=> intval($_POST['form']['report_method']),
-		'mailing_list'			=> pun_trim($_POST['form']['mailing_list']),
-		'avatars'				=> $_POST['form']['avatars'] != '1' ? '0' : '1',
-		'avatars_dir'			=> str_replace([':', '//'], '', pun_trim($_POST['form']['avatars_dir'])),
-		'avatars_width'			=> (intval($_POST['form']['avatars_width']) > 0) ? intval($_POST['form']['avatars_width']) : 1,
-		'avatars_height'		=> (intval($_POST['form']['avatars_height']) > 0) ? intval($_POST['form']['avatars_height']) : 1,
-		'avatars_size'			=> (intval($_POST['form']['avatars_size']) > 0) ? intval($_POST['form']['avatars_size']) : 1,
-		'admin_email'			=> strtolower(pun_trim($_POST['form']['admin_email'])),
-		'webmaster_email'		=> strtolower(pun_trim($_POST['form']['webmaster_email'])),
-		'forum_subscriptions'	=> $_POST['form']['forum_subscriptions'] != '1' ? '0' : '1',
-		'topic_subscriptions'	=> $_POST['form']['topic_subscriptions'] != '1' ? '0' : '1',
-		'smtp_host'				=> pun_trim($_POST['form']['smtp_host']),
-		'smtp_user'				=> pun_trim($_POST['form']['smtp_user']),
-		'smtp_ssl'				=> $_POST['form']['smtp_ssl'] != '1' ? '0' : '1',
-		'regs_allow'			=> $_POST['form']['regs_allow'] != '1' ? '0' : '1',
-		'regs_verify'			=> $_POST['form']['regs_verify'] != '1' ? '0' : '1',
-		'regs_report'			=> $_POST['form']['regs_report'] != '1' ? '0' : '1',
-		'rules'					=> $_POST['form']['rules'] != '1' ? '0' : '1',
-		'rules_message'			=> pun_trim($_POST['form']['rules_message']),
-		'default_email_setting'	=> intval($_POST['form']['default_email_setting']),
-		'announcement'			=> $_POST['form']['announcement'] != '1' ? '0' : '1',
-		'announcement_message'	=> pun_trim($_POST['form']['announcement_message']),
-		'maintenance'			=> $_POST['form']['maintenance'] != '1' ? '0' : '1',
-		'maintenance_message'	=> pun_trim($_POST['form']['maintenance_message']),
+		'board_title'			=> pun_trim(sva_gf('board_title')),
+		'board_desc'			=> pun_trim(sva_gf('board_desc')),
+		'base_url'				=> pun_trim(sva_gf('base_url')),
+		'default_timezone'		=> floatval(sva_gf('default_timezone')),
+		'default_dst'			=> sva_gf('default_dst') != '1' ? '0' : '1',
+		'default_lang'			=> pun_trim(sva_gf('default_lang')),
+		'default_style'			=> pun_trim(sva_gf('default_style')),
+		'time_format'			=> pun_trim(sva_gf('time_format')),
+		'date_format'			=> pun_trim(sva_gf('date_format')),
+		'timeout_visit'			=> intval(sva_gf('timeout_visit')) > 0 ? intval(sva_gf('timeout_visit')) : 1,
+		'timeout_online'		=> intval(sva_gf('timeout_online')) > 0 ? intval(sva_gf('timeout_online')) : 1,
+		'redirect_delay'		=> intval(sva_gf('redirect_delay')) >= 0 ? intval(sva_gf('redirect_delay')) : 0,
+		'show_version'			=> sva_gf('show_version') != '1' ? '0' : '1',
+		'show_user_info'		=> sva_gf('show_user_info') != '1' ? '0' : '1',
+		'show_post_count'		=> sva_gf('show_post_count') != '1' ? '0' : '1',
+		'smilies'				=> sva_gf('smilies') != '1' ? '0' : '1',
+		'smilies_sig'			=> sva_gf('smilies_sig') != '1' ? '0' : '1',
+		'make_links'			=> sva_gf('make_links') != '1' ? '0' : '1',
+		'topic_review'			=> intval(sva_gf('topic_review')) >= 0 ? intval(sva_gf('topic_review')) : 0,
+		'disp_topics_default'	=> intval(sva_gf('disp_topics_default')),
+		'disp_posts_default'	=> intval(sva_gf('disp_posts_default')),
+		'indent_num_spaces'		=> intval(sva_gf('indent_num_spaces')) >= 0 ? intval(sva_gf('indent_num_spaces')) : 0,
+		'quote_depth'			=> intval(sva_gf('quote_depth')) > 0 ? intval(sva_gf('quote_depth')) : 1,
+		'quickpost'				=> sva_gf('quickpost') != '1' ? '0' : '1',
+		'users_online'			=> sva_gf('users_online') != '1' ? '0' : '1',
+		'censoring'				=> sva_gf('censoring') != '1' ? '0' : '1',
+		'signatures'			=> sva_gf('signatures') != '1' ? '0' : '1',
+		'show_dot'				=> sva_gf('show_dot') != '1' ? '0' : '1',
+		'topic_views'			=> sva_gf('topic_views') != '1' ? '0' : '1',
+		'quickjump'				=> sva_gf('quickjump') != '1' ? '0' : '1',
+		'gzip'					=> sva_gf('gzip') != '1' ? '0' : '1',
+		'search_all_forums'		=> sva_gf('search_all_forums') != '1' ? '0' : '1',
+		'additional_navlinks'	=> pun_trim(sva_gf('additional_navlinks')),
+		'feed_type'				=> intval(sva_gf('feed_type')),
+		'feed_ttl'				=> intval(sva_gf('feed_ttl')),
+		'report_method'			=> intval(sva_gf('report_method')),
+		'mailing_list'			=> pun_trim(sva_gf('mailing_list')),
+		'avatars'				=> sva_gf('avatars') != '1' ? '0' : '1',
+		'avatars_dir'			=> str_replace([':', '//'], '', pun_trim(sva_gf('avatars_dir'))),
+		'avatars_width'			=> intval(sva_gf('avatars_width')) > 0 ? intval(sva_gf('avatars_width')) : 1,
+		'avatars_height'		=> intval(sva_gf('avatars_height')) > 0 ? intval(sva_gf('avatars_height')) : 1,
+		'avatars_size'			=> intval(sva_gf('avatars_size')) > 0 ? intval(sva_gf('avatars_size')) : 1,
+		'admin_email'			=> strtolower(pun_trim(sva_gf('admin_email'))),
+		'webmaster_email'		=> strtolower(pun_trim(sva_gf('webmaster_email'))),
+		'forum_subscriptions'	=> sva_gf('forum_subscriptions') != '1' ? '0' : '1',
+		'topic_subscriptions'	=> sva_gf('topic_subscriptions') != '1' ? '0' : '1',
+		'smtp_host'				=> pun_trim(sva_gf('smtp_host')),
+		'smtp_user'				=> pun_trim(sva_gf('smtp_user')),
+		'smtp_ssl'				=> sva_gf('smtp_ssl') != '1' ? '0' : '1',
+		'regs_allow'			=> sva_gf('regs_allow') != '1' ? '0' : '1',
+		'regs_verify'			=> sva_gf('regs_verify') != '1' ? '0' : '1',
+		'regs_report'			=> sva_gf('regs_report') != '1' ? '0' : '1',
+		'rules'					=> sva_gf('rules') != '1' ? '0' : '1',
+		'rules_message'			=> pun_trim(sva_gf('rules_message')),
+		'default_email_setting'	=> intval(sva_gf('default_email_setting')),
+		'announcement'			=> sva_gf('announcement') != '1' ? '0' : '1',
+		'announcement_message'	=> pun_trim(sva_gf('announcement_message')),
+		'maintenance'			=> sva_gf('maintenance') != '1' ? '0' : '1',
+		'maintenance_message'	=> pun_trim(sva_gf('maintenance_message')),
 	);
 
 	if ($form['board_title'] == '')
@@ -138,8 +144,8 @@ if (isset($_POST['form_sent']))
 	// Change or enter a SMTP password
 	if (isset($_POST['form']['smtp_change_pass']))
 	{
-		$smtp_pass1 = isset($_POST['form']['smtp_pass1']) ? pun_trim($_POST['form']['smtp_pass1']) : '';
-		$smtp_pass2 = isset($_POST['form']['smtp_pass2']) ? pun_trim($_POST['form']['smtp_pass2']) : '';
+		$smtp_pass1 = pun_trim(sva_gf('smtp_pass1'));
+		$smtp_pass2 = pun_trim(sva_gf('smtp_pass2'));
 
 		if ($smtp_pass1 == $smtp_pass2)
 			$form['smtp_pass'] = $smtp_pass1;
