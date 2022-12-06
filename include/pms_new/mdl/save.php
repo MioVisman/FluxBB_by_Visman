@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2021 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2022 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2008-2010 FluxBB
  * based on code by Rickard Andersson copyright (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -55,7 +55,7 @@ else
 	// Determine the topic offset (based on $_GET['p'])
 	$num_pages = ceil($pmsn_kol_save / $pun_user['disp_topics']);
 
-	$p = (!isset($_GET['p']) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages) ? 1 : intval($_GET['p']);
+	$p = ! is_numeric($_GET['p'] ?? null) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages ? 1 : intval($_GET['p']);
 	$start_from = $pun_user['disp_topics'] * ($p - 1);
 
 	// Generate paging links
@@ -117,7 +117,7 @@ function ChekUncheck(el)
 		{
 			++$topic_count;
 			$status_text = array();
-			$item_status = ($topic_count % 2 == 0) ? 'roweven' : 'rowodd';
+			$item_status = $topic_count % 2 == 0 ? 'roweven' : 'rowodd';
 			$icon_type = 'icon';
 
 			$last_post = format_time($cur_topic['last_posted']).'<br /><span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars(($cur_topic['last_poster']) ? $cur_topic['to_user'] : $cur_topic['starter']).'</span>';
