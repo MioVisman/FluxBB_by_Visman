@@ -139,7 +139,7 @@ if ($pun_config['o_pms_enabled'] == '1')
 ?>
 								<tr>
 									<td class="tcl"><?php echo pun_htmlspecialchars($cur_group['g_title']) ?></td>
-									<td class="tc2"><input type="checkbox" name="g_pm[<?php echo $cur_group['g_id'] ?>]" value="1" tabindex="<?php echo ($tabindex++) ?>"<?php echo ($cur_group['g_pm'] == 1 ? ' checked="checked"' : '')?> /></td>
+									<td class="tc2"><input type="checkbox" name="g_pm[<?php echo $cur_group['g_id'] ?>]" value="1" tabindex="<?php echo ($tabindex++) ?>"<?php echo ($cur_group['g_pm'] == 1 ? ' checked="checked"' : '') ?> /></td>
 									<td class="tcr"><input type="text" name="g_limit[<?php echo $cur_group['g_id'] ?>]" value="<?php echo $cur_group['g_pm_limit'] ?>" tabindex="<?php echo ($tabindex++) ?>" size="10" maxlength="10" /></td>
 								</tr>
 <?php
