@@ -48,8 +48,8 @@ if ($cur_posting['redirect_url'] != '')
 	message($lang_common['Bad request'], false, '404 Not Found');
 
 // Sort out who the moderators are and if we are currently a moderator (or an admin)
-$mods_array = ($cur_posting['moderators'] != '') ? unserialize($cur_posting['moderators']) : array();
-$is_admmod = ($pun_user['g_id'] == PUN_ADMIN || ($pun_user['g_moderator'] == '1' && array_key_exists($pun_user['username'], $mods_array))) ? true : false;
+$mods_array = $cur_posting['moderators'] != '' ? unserialize($cur_posting['moderators']) : array();
+$is_admmod = $pun_user['g_id'] == PUN_ADMIN || ($pun_user['g_moderator'] == '1' && array_key_exists($pun_user['username'], $mods_array)) ? true : false;
 
 if ($tid && $pun_config['o_censoring'] == '1')
 	$cur_posting['subject'] = censor_words($cur_posting['subject']);
@@ -229,7 +229,7 @@ if (isset($_POST['form_sent']))
 			else
 			{
 				// It's a guest. Insert the new post
-				$email_sql = ($pun_config['p_force_guest_email'] == '1' || $email != '') ? '\''.$db->escape($email).'\'' : 'NULL';
+				$email_sql = $pun_config['p_force_guest_email'] == '1' || $email != '' ? '\''.$db->escape($email).'\'' : 'NULL';
 				$db->query('INSERT INTO '.$db->prefix.'posts (poster, poster_ip, poster_email, message, hide_smilies, posted, topic_id, user_agent) VALUES (\''.$db->escape($username).'\', \''.$db->escape(get_remote_address()).'\', '.$email_sql.', \''.$db->escape($message).'\', '.$hide_smilies.', '.$now.', '.$tid.', \''.$db->escape($http_uagent).'\')') or error('Unable to create post', __FILE__, __LINE__, $db->error());
 				$new_pid = $db->insert_id();
 			}
@@ -332,7 +332,7 @@ if (isset($_POST['form_sent']))
 		// If it's a new topic
 		else if ($fid)
 		{
-			$stick_fp = ($is_admmod && isset($_POST['stickfp'])) ? 1 : 0; // StickFP - Visman
+			$stick_fp = $is_admmod && isset($_POST['stickfp']) ? 1 : 0; // StickFP - Visman
 			// Create the topic
 			$db->query('INSERT INTO '.$db->prefix.'topics (stick_fp, poster, subject, posted, last_post, last_poster, sticky, forum_id) VALUES ('.$stick_fp.', \''.$db->escape($username).'\', \''.$db->escape($subject).'\', '.$now.', '.$now.', \''.$db->escape($username).'\', '.$stick_topic.', '.$fid.')') or error('Unable to create topic', __FILE__, __LINE__, $db->error());
 			$new_tid = $db->insert_id();
@@ -349,7 +349,7 @@ if (isset($_POST['form_sent']))
 			else
 			{
 				// Create the post ("topic post")
-				$email_sql = ($pun_config['p_force_guest_email'] == '1' || $email != '') ? '\''.$db->escape($email).'\'' : 'NULL';
+				$email_sql = $pun_config['p_force_guest_email'] == '1' || $email != '' ? '\''.$db->escape($email).'\'' : 'NULL';
 				$db->query('INSERT INTO '.$db->prefix.'posts (poster, poster_ip, poster_email, message, hide_smilies, posted, topic_id, user_agent) VALUES (\''.$db->escape($username).'\', \''.$db->escape(get_remote_address()).'\', '.$email_sql.', \''.$db->escape($message).'\', '.$hide_smilies.', '.$now.', '.$new_tid.', \''.$db->escape($http_uagent).'\')') or error('Unable to create post', __FILE__, __LINE__, $db->error());
 			}
 			$new_pid = $db->insert_id();
@@ -600,7 +600,7 @@ $required_fields = array('req_email' => $lang_common['Email'], 'req_subject' => 
 $focus_element = array('post');
 
 if (!$pun_user['is_guest'])
-	$focus_element[] = ($fid) ? 'req_subject' : 'req_message';
+	$focus_element[] = $fid ? 'req_subject' : 'req_message';
 else
 {
 	$required_fields['req_username'] = $lang_post['Guest name'];
@@ -696,8 +696,8 @@ $cur_index = 1;
 
 if ($pun_user['is_guest'])
 {
-	$email_label = ($pun_config['p_force_guest_email'] == '1') ? '<strong>'.$lang_common['Email'].' <span>'.$lang_common['Required'].'</span></strong>' : $lang_common['Email'];
-	$email_form_name = ($pun_config['p_force_guest_email'] == '1') ? 'req_email' : 'email';
+	$email_label = $pun_config['p_force_guest_email'] == '1' ? '<strong>'.$lang_common['Email'].' <span>'.$lang_common['Required'].'</span></strong>' : $lang_common['Email'];
+	$email_form_name = $pun_config['p_force_guest_email'] == '1' ? 'req_email' : 'email';
 
 ?>
 						<label class="conl required"><strong><?php echo $lang_post['Guest name'] ?> <span><?php echo $lang_common['Required'] ?></span></strong><br /><input type="text" name="req_username" value="<?php if (isset($_POST['req_username'])) echo pun_htmlspecialchars($username); ?>" size="25" maxlength="25" tabindex="<?php echo $cur_index++ ?>" /><br /></label>
