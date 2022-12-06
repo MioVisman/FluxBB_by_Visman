@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2015 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2022 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -30,7 +30,7 @@ if (isset($_POST['csrf_hash']) || isset($_GET['csrf_hash']))
 }
 
 $action = pmsn_get_var('action', '');
-if ($action == 'onoff')
+if ($action === 'onoff')
 {
 	$csrf_token = pmsn_csrf_token('onoff');
 	if (!hash_equals($csrf_token, pmsn_get_var('csrf_token', '')))
@@ -42,7 +42,7 @@ if ($action == 'onoff')
 		if ($pun_user['messages_enable'] == 1)
 			pmsn_user_delete($pun_user['id'], 2);
 
-		$pun_user['messages_enable'] = ($pun_user['messages_enable'] == 0) ? 1 : 0;
+		$pun_user['messages_enable'] = $pun_user['messages_enable'] == 0 ? 1 : 0;
 		$db->query('UPDATE '.$db->prefix.'users SET messages_enable='.$pun_user['messages_enable'].' WHERE id='.$pun_user['id']) or error('Unable to update users table', __FILE__, __LINE__, $db->error());
 
 		redirect('pmsnew.php', $lang_pmsn['Options redirect']);
@@ -52,7 +52,7 @@ if ($action == 'onoff')
 	else
 		$pmsn_modul = 'closeq';
 }
-else if ($action == 'email')
+else if ($action === 'email')
 {
 	$csrf_token = pmsn_csrf_token('email');
 	if (!hash_equals($csrf_token, pmsn_get_var('csrf_token', '')))
@@ -92,7 +92,7 @@ if (preg_match('%[^a-z]%', $pmsn_modul))
 if (!file_exists(PUN_ROOT.'include/pms_new/mdl/'.$pmsn_modul.'.php'))
 	message(sprintf($lang_pmsn['No modul message'], $pmsn_modul), false, '404 Not Found');
 
-$pmsn_csrf_hash = (function_exists('csrf_hash')) ? csrf_hash() : '1';
+$pmsn_csrf_hash = function_exists('csrf_hash') ? csrf_hash() : '1';
 
 // запросы по папкам
 $pmsn_arr_list = $pmsn_arr_new = $pmsn_arr_save = array();
@@ -127,7 +127,7 @@ while ($ttmp)
 	if ($sid && empty($siduser))
 		$siduser = pun_htmlspecialchars(($ttmp['starter_id'] == $sid) ? $ttmp['starter'] : $ttmp['to_user']);
 
-	$ftmp = ($ttmp['starter_id'] == $pun_user['id']) ? $ttmp['topic_st'] : $ttmp['topic_to'];
+	$ftmp = $ttmp['starter_id'] == $pun_user['id'] ? $ttmp['topic_st'] : $ttmp['topic_to'];
 
 	if ($ftmp == 0)
 		$pmsn_arr_list[] = $ttmp['id'];
