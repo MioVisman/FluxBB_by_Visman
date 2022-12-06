@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2018 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2022 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2008-2010 FluxBB
  * based on code by Rickard Andersson copyright (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -29,7 +29,7 @@ if ($pid)
 	$i = $db->result($result) + 1;
 	$_GET['p'] = ceil($i / $pun_user['disp_posts']);
 }
-else if ($action == 'new')
+else if ($action === 'new')
 {
 	$result = $db->query('SELECT MIN(id) FROM '.$db->prefix.'pms_new_posts WHERE poster_id!='.$pun_user['id'].' AND topic_id='.$tid.' AND post_new=1') or error('Unable to fetch pms_new_posts info', __FILE__, __LINE__, $db->error());
 	$first_new_post_id = $db->result($result);
@@ -120,7 +120,7 @@ require PUN_ROOT.'lang/'.$pun_user['language'].'/topic.php';
 // Determine the post offset (based on $_GET['p'])
 $num_pages = ceil(($cur_topic['replies'] + 1) / $pun_user['disp_posts']);
 
-$p = (!isset($_GET['p']) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages) ? 1 : intval($_GET['p']);
+$p = ! is_numeric($_GET['p'] ?? null) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages ? 1 : intval($_GET['p']);
 $start_from = $pun_user['disp_posts'] * ($p - 1);
 
 // Generate paging links
@@ -238,7 +238,7 @@ while ($cur_post = $db->fetch_assoc($result))
 	else
 	{
 		// Format the online indicator
-		$is_online = (isset($onl_u[$cur_post['poster_id']])) ? '<strong>'.$lang_topic['Online'].'</strong>' : '<span>'.$lang_topic['Offline'].'</span>';
+		$is_online = isset($onl_u[$cur_post['poster_id']]) ? '<strong>'.$lang_topic['Online'].'</strong>' : '<span>'.$lang_topic['Offline'].'</span>';
 
 		if ($pun_config['o_avatars'] == '1' && $pun_user['show_avatars'] != '0')
 		{
