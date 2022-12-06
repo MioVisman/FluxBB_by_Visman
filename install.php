@@ -48,7 +48,7 @@ forum_remove_bad_characters();
 
 
 // If we've been passed a default language, use it
-$install_lang = isset($_REQUEST['install_lang']) ? pun_trim($_REQUEST['install_lang']) : 'English';
+$install_lang = is_string($_REQUEST['install_lang'] ?? null) ? pun_trim($_REQUEST['install_lang']) : 'English';
 
 // Make sure we got a valid language string
 $install_lang = preg_replace('%[\.\\\/]%', '', $install_lang);
@@ -160,21 +160,21 @@ if (!isset($_POST['form_sent']))
 }
 else
 {
-	$db_type = $_POST['req_db_type'];
-	$db_host = pun_trim($_POST['req_db_host']);
-	$db_name = pun_trim($_POST['req_db_name']);
-	$db_username = pun_trim($_POST['db_username']);
-	$db_password = pun_trim($_POST['db_password']);
-	$db_prefix = pun_trim($_POST['db_prefix']);
-	$username = pun_trim($_POST['req_username']);
-	$email = strtolower(pun_trim($_POST['req_email']));
-	$password1 = pun_trim($_POST['req_password1']);
-	$password2 = pun_trim($_POST['req_password2']);
-	$title = pun_trim($_POST['req_title']);
-	$description = pun_trim($_POST['desc']);
-	$base_url = pun_trim($_POST['req_base_url']);
-	$default_lang = pun_trim($_POST['req_default_lang']);
-	$default_style = pun_trim($_POST['req_default_style']);
+	$db_type = $_POST['req_db_type'] ?? '';
+	$db_host = pun_trim($_POST['req_db_host'] ?? '');
+	$db_name = pun_trim($_POST['req_db_name'] ?? '');
+	$db_username = pun_trim($_POST['db_username'] ?? '');
+	$db_password = pun_trim($_POST['db_password'] ?? '');
+	$db_prefix = pun_trim($_POST['db_prefix'] ?? '');
+	$username = pun_trim($_POST['req_username'] ?? '');
+	$email = strtolower(pun_trim($_POST['req_email'] ?? ''));
+	$password1 = pun_trim($_POST['req_password1'] ?? '');
+	$password2 = pun_trim($_POST['req_password2'] ?? '');
+	$title = pun_trim($_POST['req_title'] ?? '');
+	$description = pun_trim($_POST['desc'] ?? '');
+	$base_url = pun_trim($_POST['req_base_url'] ?? '');
+	$default_lang = pun_trim($_POST['req_default_lang'] ?? '');
+	$default_style = pun_trim($_POST['req_default_style'] ?? '');
 	$alerts = array();
 
 	// Make sure base_url doesn't end with a slash
