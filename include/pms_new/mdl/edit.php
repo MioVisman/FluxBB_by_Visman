@@ -68,7 +68,7 @@ if (isset($_POST['csrf_hash']))
 {
 
 	// Clean up message from POST
-	$message = pun_linebreaks(pun_trim($_POST['req_message']));
+	$message = pun_linebreaks(pun_trim($_POST['req_message'] ?? ''));
 
 	if (strlen($message) > 65535)
 		$errors[] = $lang_pmsn['Too long message'];
