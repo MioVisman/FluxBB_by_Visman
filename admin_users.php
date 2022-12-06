@@ -42,7 +42,7 @@ if (isset($_GET['ip_stats']))
 	// Determine the ip offset (based on $_GET['p'])
 	$num_pages = ceil($num_ips / 50);
 
-	$p = (!isset($_GET['p']) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages) ? 1 : intval($_GET['p']);
+	$p = ! is_numeric($_GET['p'] ?? null) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages ? 1 : intval($_GET['p']);
 	$start_from = 50 * ($p - 1);
 
 	// Generate paging links
@@ -146,7 +146,7 @@ if (isset($_GET['show_users']))
 	// Determine the user offset (based on $_GET['p'])
 	$num_pages = ceil($num_users / 50);
 
-	$p = (!isset($_GET['p']) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages) ? 1 : intval($_GET['p']);
+	$p = ! is_numeric($_GET['p'] ?? null) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages ? 1 : intval($_GET['p']);
 	$start_from = 50 * ($p - 1);
 
 	// Generate paging links
@@ -339,12 +339,12 @@ else if (isset($_POST['move_users']) || isset($_POST['move_users_comply']))
 			$result = $db->query('SELECT id, moderators FROM '.$db->prefix.'forums') or error('Unable to fetch forum list', __FILE__, __LINE__, $db->error());
 			while ($cur_forum = $db->fetch_assoc($result))
 			{
-				$cur_moderators = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : array();
+				$cur_moderators = $cur_forum['moderators'] != '' ? unserialize($cur_forum['moderators']) : array();
 
 				foreach ($user_groups as $group_users)
 					$cur_moderators = array_diff($cur_moderators, $group_users);
 
-				$cur_moderators = (!empty($cur_moderators)) ? '\''.$db->escape(serialize($cur_moderators)).'\'' : 'NULL';
+				$cur_moderators = !empty($cur_moderators) ? '\''.$db->escape(serialize($cur_moderators)).'\'' : 'NULL';
 				$db->query('UPDATE '.$db->prefix.'forums SET moderators='.$cur_moderators.' WHERE id='.$cur_forum['id']) or error('Unable to update forum', __FILE__, __LINE__, $db->error());
 			}
 		}
@@ -452,12 +452,12 @@ else if (isset($_POST['delete_users']) || isset($_POST['delete_users_comply']))
 		$result = $db->query('SELECT id, moderators FROM '.$db->prefix.'forums') or error('Unable to fetch forum list', __FILE__, __LINE__, $db->error());
 		while ($cur_forum = $db->fetch_assoc($result))
 		{
-			$cur_moderators = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : array();
+			$cur_moderators = $cur_forum['moderators'] != '' ? unserialize($cur_forum['moderators']) : array();
 
 			foreach ($user_groups as $group_users)
 				$cur_moderators = array_diff($cur_moderators, $group_users);
 
-			$cur_moderators = (!empty($cur_moderators)) ? '\''.$db->escape(serialize($cur_moderators)).'\'' : 'NULL';
+			$cur_moderators = !empty($cur_moderators) ? '\''.$db->escape(serialize($cur_moderators)).'\'' : 'NULL';
 			$db->query('UPDATE '.$db->prefix.'forums SET moderators='.$cur_moderators.' WHERE id='.$cur_forum['id']) or error('Unable to update forum', __FILE__, __LINE__, $db->error());
 		}
 
@@ -588,8 +588,8 @@ else if (isset($_POST['ban_users']) || isset($_POST['ban_users_comply']))
 
 	if (isset($_POST['ban_users_comply']))
 	{
-		$ban_message = pun_trim($_POST['ban_message']);
-		$ban_expire = pun_trim($_POST['ban_expire']);
+		$ban_message = pun_trim($_POST['ban_message'] ?? '');
+		$ban_expire = pun_trim($_POST['ban_expire'] ?? '');
 		$ban_the_ip = isset($_POST['ban_the_ip']) ? intval($_POST['ban_the_ip']) : 0;
 
 		if ($ban_expire != '' && $ban_expire != 'Never')
@@ -608,7 +608,7 @@ else if (isset($_POST['ban_users']) || isset($_POST['ban_users_comply']))
 		else
 			$ban_expire = 'NULL';
 
-		$ban_message = ($ban_message != '') ? '\''.$db->escape($ban_message).'\'' : 'NULL';
+		$ban_message = $ban_message != '' ? '\''.$db->escape($ban_message).'\'' : 'NULL';
 
 		// Fetch user information
 		$user_info = array();
@@ -629,7 +629,7 @@ else if (isset($_POST['ban_users']) || isset($_POST['ban_users_comply']))
 		{
 			$ban_username = '\''.$db->escape($user_info[$user_id]['username']).'\'';
 			$ban_email = '\''.$db->escape($user_info[$user_id]['email']).'\'';
-			$ban_ip = ($ban_the_ip != 0) ? '\''.$db->escape($user_info[$user_id]['ip']).'\'' : 'NULL';
+			$ban_ip = $ban_the_ip != 0 ? '\''.$db->escape($user_info[$user_id]['ip']).'\'' : 'NULL';
 
 			$db->query('INSERT INTO '.$db->prefix.'bans (username, ip, email, message, expire, ban_creator) VALUES ('.$ban_username.', '.$ban_ip.', '.$ban_email.', '.$ban_message.', '.$ban_expire.', '.$pun_user['id'].')') or error('Unable to add ban', __FILE__, __LINE__, $db->error());
 		}
@@ -702,7 +702,7 @@ else if (isset($_POST['ban_users']) || isset($_POST['ban_users_comply']))
 
 else if (isset($_GET['find_user']))
 {
-	$form = isset($_GET['form']) ? $_GET['form'] : array();
+	$form = is_array($_GET['form'] ?? null) ? $_GET['form'] : array();
 
 	// trim() all elements in $form
 	$form = array_map('pun_trim', $form);
@@ -789,7 +789,7 @@ else if (isset($_GET['find_user']))
 		$conditions[] = 'u.registered<'.$registered_before;
 	}
 
-	$like_command = ($db_type == 'pgsql') ? 'ILIKE' : 'LIKE';
+	$like_command = $db_type == 'pgsql' ? 'ILIKE' : 'LIKE';
 	foreach ($form as $key => $input)
 	{
 		if ($input != '' && in_array($key, array('username', 'email', 'title', 'realname', 'gender', 'url', 'jabber', 'icq', 'location', 'signature', 'admin_note'))) // мод пола - Visman
@@ -820,7 +820,7 @@ else if (isset($_GET['find_user']))
 	// Determine the user offset (based on $_GET['p'])
 	$num_pages = ceil($num_users / 50);
 
-	$p = (!isset($_GET['p']) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages) ? 1 : intval($_GET['p']);
+	$p = ! is_numeric($_GET['p'] ?? null) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages ? 1 : intval($_GET['p']);
 	$start_from = 50 * ($p - 1);
 
 	// Generate paging links
@@ -887,7 +887,7 @@ else if (isset($_GET['find_user']))
 			if (($user_data['g_id'] == '' || $user_data['g_id'] == PUN_UNVERIFIED) && $user_title != $lang_common['Banned'])
 				$user_title = '<span class="warntext">'.$lang_admin_users['Not verified'].'</span>';
 
-			$actions = (($pun_user['g_id'] == PUN_ADMIN) ? '<a href="admin_users.php?ip_stats='.$user_data['id'].'">'.$lang_admin_users['Results view IP link'].'</a> | ' : '').'<a href="search.php?action=show_user_posts&amp;user_id='.$user_data['id'].'">'.$lang_admin_users['Results show posts link'].'</a>';
+			$actions = ($pun_user['g_id'] == PUN_ADMIN ? '<a href="admin_users.php?ip_stats='.$user_data['id'].'">'.$lang_admin_users['Results view IP link'].'</a> | ' : '').'<a href="search.php?action=show_user_posts&amp;user_id='.$user_data['id'].'">'.$lang_admin_users['Results show posts link'].'</a>';
 
 ?>
 				<tr>
