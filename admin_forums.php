@@ -25,7 +25,7 @@ if (isset($_POST['add_forum']))
 {
 	confirm_referrer('admin_forums.php');
 
-	$add_to_cat = intval($_POST['add_to_cat']);
+	$add_to_cat = intval($_POST['add_to_cat'] ?? 0);
 	if ($add_to_cat < 1)
 		message($lang_common['Bad request'], false, '404 Not Found');
 
@@ -47,7 +47,7 @@ else if (isset($_GET['del_forum']))
 {
 	confirm_referrer('admin_forums.php');
 
-	$forum_id = intval($_GET['del_forum']);
+	$forum_id = intval($_GET['del_forum'] ?? 0);
 	if ($forum_id < 1)
 		message($lang_common['Bad request'], false, '404 Not Found');
 
@@ -127,9 +127,12 @@ else if (isset($_POST['update_positions']))
 {
 	confirm_referrer('admin_forums.php');
 
+	if (! is_array($_POST['position'] ?? null))
+		message($lang_common['Bad request'], false, '404 Not Found');
+
 	foreach ($_POST['position'] as $forum_id => $disp_position)
 	{
-		$disp_position = trim($disp_position);
+		$disp_position = pun_trim($disp_position);
 		if ($disp_position == '' || preg_match('%[^0-9]%', $disp_position))
 			message($lang_admin_forums['Must be integer message']);
 
@@ -158,14 +161,14 @@ else if (isset($_GET['edit_forum']))
 		confirm_referrer('admin_forums.php');
 
 		// Start with the forum details
-		$forum_name = pun_trim($_POST['forum_name']);
-		$forum_desc = pun_linebreaks(pun_trim($_POST['forum_desc']));
-		$cat_id = intval($_POST['cat_id']);
-		$sort_by = intval($_POST['sort_by']);
+		$forum_name = pun_trim($_POST['forum_name'] ?? '');
+		$forum_desc = pun_linebreaks(pun_trim($_POST['forum_desc'] ?? ''));
+		$cat_id = intval($_POST['cat_id'] ?? 0);
+		$sort_by = intval($_POST['sort_by'] ?? 0);
 		$redirect_url = isset($_POST['redirect_url']) ? pun_trim($_POST['redirect_url']) : null;
 
 		// MOD subforums - Visman
-		$parent_forum_id = $i = intval($_POST['parent_forum']);
+		$parent_forum_id = $i = intval($_POST['parent_forum'] ?? 0);
 		while (isset($sf_array_desc[$i][0]))
 			$i = $sf_array_desc[$i][0];
 
@@ -178,8 +181,8 @@ else if (isset($_GET['edit_forum']))
 		if ($cat_id < 1)
 			message($lang_common['Bad request'], false, '404 Not Found');
 
-		$forum_desc = ($forum_desc != '') ? '\''.$db->escape($forum_desc).'\'' : 'NULL';
-		$redirect_url = ($redirect_url != '') ? '\''.$db->escape($redirect_url).'\'' : 'NULL';
+		$forum_desc = $forum_desc != '' ? '\''.$db->escape($forum_desc).'\'' : 'NULL';
+		$redirect_url = $redirect_url != '' ? '\''.$db->escape($redirect_url).'\'' : 'NULL';
 
 		$db->query('UPDATE '.$db->prefix.'forums SET forum_name=\''.$db->escape($forum_name).'\', forum_desc='.$forum_desc.', redirect_url='.$redirect_url.', sort_by='.$sort_by.', cat_id='.$cat_id.', parent_forum_id='.$parent_forum_id.' WHERE id='.$forum_id) or error('Unable to update forum', __FILE__, __LINE__, $db->error()); // MOD subforums - Visman
 
@@ -284,7 +287,7 @@ else if (isset($_GET['edit_forum']))
 	$result = $db->query('SELECT id, cat_name FROM '.$db->prefix.'categories ORDER BY disp_position') or error('Unable to fetch category list', __FILE__, __LINE__, $db->error());
 	while ($cur_cat = $db->fetch_assoc($result))
 	{
-		$selected = ($cur_cat['id'] == $cur_forum['cat_id']) ? ' selected="selected"' : '';
+		$selected = $cur_cat['id'] == $cur_forum['cat_id'] ? ' selected="selected"' : '';
 		echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_cat['id'].'"'.$selected.'>'.pun_htmlspecialchars($cur_cat['cat_name']).'</option>'."\n";
 	}
 
@@ -330,8 +333,8 @@ else if (isset($_GET['edit_forum']))
 				$cur_category = $forum_list['cid'];
 			}
 
-			$selected = ($forum_list['fid'] == $cur_forum['parent_forum_id']) ? ' selected="selected"' : '';
-			$disabled = ($forum_list['fid'] == $cur_forum['id'] || (isset($sf_array_asc[$cur_forum['id']]) && in_array($forum_list['fid'], $sf_array_asc[$cur_forum['id']]))) ? ' disabled="disabled"' : '';
+			$selected = $forum_list['fid'] == $cur_forum['parent_forum_id'] ? ' selected="selected"' : '';
+			$disabled = $forum_list['fid'] == $cur_forum['id'] || (isset($sf_array_asc[$cur_forum['id']]) && in_array($forum_list['fid'], $sf_array_asc[$cur_forum['id']])) ? ' disabled="disabled"' : '';
 
 			echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$forum_list['fid'].'"'.$selected.$disabled.'>'.$space.pun_htmlspecialchars($forum_list['forum_name']).'</option>'."\n";
 			sf_select_view ($forum_list['fid'], $cur_forum, $space.'&#160;&#160;');
@@ -371,14 +374,14 @@ else if (isset($_GET['edit_forum']))
 
 	while ($cur_perm = $db->fetch_assoc($result))
 	{
-		$read_forum = ($cur_perm['read_forum'] != '0') ? true : false;
-		$post_replies = (($cur_perm['g_post_replies'] == '0' && $cur_perm['post_replies'] == '1') || ($cur_perm['g_post_replies'] == '1' && $cur_perm['post_replies'] != '0')) ? true : false;
-		$post_topics = (($cur_perm['g_post_topics'] == '0' && $cur_perm['post_topics'] == '1') || ($cur_perm['g_post_topics'] == '1' && $cur_perm['post_topics'] != '0')) ? true : false;
+		$read_forum = $cur_perm['read_forum'] != '0' ? true : false;
+		$post_replies = ($cur_perm['g_post_replies'] == '0' && $cur_perm['post_replies'] == '1') || ($cur_perm['g_post_replies'] == '1' && $cur_perm['post_replies'] != '0') ? true : false;
+		$post_topics = ($cur_perm['g_post_topics'] == '0' && $cur_perm['post_topics'] == '1') || ($cur_perm['g_post_topics'] == '1' && $cur_perm['post_topics'] != '0') ? true : false;
 
 		// Determine if the current settings differ from the default or not
-		$read_forum_def = ($cur_perm['read_forum'] == '0') ? false : true;
-		$post_replies_def = (($post_replies && $cur_perm['g_post_replies'] == '0') || (!$post_replies && ($cur_perm['g_post_replies'] == '' || $cur_perm['g_post_replies'] == '1'))) ? false : true;
-		$post_topics_def = (($post_topics && $cur_perm['g_post_topics'] == '0') || (!$post_topics && ($cur_perm['g_post_topics'] == '' || $cur_perm['g_post_topics'] == '1'))) ? false : true;
+		$read_forum_def = $cur_perm['read_forum'] == '0' ? false : true;
+		$post_replies_def = ($post_replies && $cur_perm['g_post_replies'] == '0') || (!$post_replies && ($cur_perm['g_post_replies'] == '' || $cur_perm['g_post_replies'] == '1')) ? false : true;
+		$post_topics_def = ($post_topics && $cur_perm['g_post_topics'] == '0') || (!$post_topics && ($cur_perm['g_post_topics'] == '' || $cur_perm['g_post_topics'] == '1')) ? false : true;
 
 ?>
 								<tr>
