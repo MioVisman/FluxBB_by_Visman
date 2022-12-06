@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2018 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2022 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -18,12 +18,12 @@ if ($pun_user['g_read_board'] == '0')
 if ($pun_user['is_guest'])
 	exit($lang_common['No permission']);
 
-$action = isset($_POST['action']) ? $_POST['action'] : '';
-$id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+$action = $_POST['action'] ?? null;
+$id = intval($_POST['id'] ?? 0);
 if ($id < 1)
 	exit($lang_common['Bad request']);
 
-if ($action == "quote")
+if ($action === "quote")
 {
 	// Fetch some info about the post, the topic and the forum
 	$result = $db->query('SELECT p.message FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'topics AS t ON t.id=p.topic_id INNER JOIN '.$db->prefix.'forums AS f ON f.id=t.forum_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.id='.$id) or exit('Unable to fetch post info '.$db->error());
@@ -40,7 +40,7 @@ if ($action == "quote")
 <?php
 
 }
-else if ($action == "pmquote")
+else if ($action === "pmquote")
 {
 	if ($pun_config['o_pms_enabled'] != '1' || $pun_user['g_pm'] == 0 || $pun_user['messages_enable'] == 0)
 		exit($lang_common['No permission']);
