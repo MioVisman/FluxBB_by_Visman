@@ -25,7 +25,7 @@ if (isset($_POST['add_cat']))
 {
 	confirm_referrer('admin_categories.php');
 
-	$new_cat_name = pun_trim($_POST['new_cat_name']);
+	$new_cat_name = pun_trim($_POST['new_cat_name'] ?? '');
 	if ($new_cat_name == '')
 		message($lang_admin_categories['Must enter name message']);
 
@@ -39,7 +39,7 @@ else if (isset($_POST['del_cat']) || isset($_POST['del_cat_comply']))
 {
 	confirm_referrer('admin_categories.php');
 
-	$cat_to_delete = intval($_POST['cat_to_delete']);
+	$cat_to_delete = intval($_POST['cat_to_delete'] ?? 0);
 	if ($cat_to_delete < 1)
 		message($lang_common['Bad request'], false, '404 Not Found');
 
@@ -124,14 +124,14 @@ else if (isset($_POST['update'])) // Change position and name of the categories
 {
 	confirm_referrer('admin_categories.php');
 
-	$categories = $_POST['cat'];
-	if (empty($categories))
+	$categories = $_POST['cat'] ?? null;
+	if (! is_array($categories) || empty($categories))
 		message($lang_common['Bad request'], false, '404 Not Found');
 
 	foreach ($categories as $cat_id => $cur_cat)
 	{
-		$cur_cat['name'] = pun_trim($cur_cat['name']);
-		$cur_cat['order'] = pun_trim($cur_cat['order']);
+		$cur_cat['name'] = pun_trim($cur_cat['name'] ?? '');
+		$cur_cat['order'] = pun_trim($cur_cat['order'] ?? '');
 
 		if ($cur_cat['name'] == '')
 			message($lang_admin_categories['Must enter name message']);
