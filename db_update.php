@@ -322,8 +322,8 @@ function alter_table_utf8($table)
 		list($type) = explode('(', $cur_column['Type']);
 		if (isset($types[$type]) && strpos($cur_column['Collation'], 'utf8mb4') === false)
 		{
-			$allow_null = ($cur_column['Null'] == 'YES');
-			$collate = (substr($cur_column['Collation'], -3) == 'bin') ? 'utf8mb4_bin' : 'utf8mb4_unicode_ci';
+			$allow_null = $cur_column['Null'] == 'YES';
+			$collate = substr($cur_column['Collation'], -3) == 'bin' ? 'utf8mb4_bin' : 'utf8mb4_unicode_ci';
 
 //			$db->alter_field($table, $cur_column['Field'], preg_replace('%'.$type.'%i', $types[$type], $cur_column['Type']), $allow_null, $cur_column['Default'], null, true) or error('Unable to alter field to binary', __FILE__, __LINE__, $db->error());
 			$db->alter_field($table, $cur_column['Field'], $cur_column['Type'].' CHARACTER SET utf8mb4 COLLATE '.$collate, $allow_null, $cur_column['Default'], null, true) or error('Unable to alter field to utf8mb4', __FILE__, __LINE__, $db->error());
@@ -438,9 +438,9 @@ header('Content-type: text/html; charset=utf-8');
 while (@ob_end_clean());
 
 
-$stage = isset($_REQUEST['stage']) ? $_REQUEST['stage'] : '';
-$old_charset = isset($_REQUEST['req_old_charset']) ? str_replace('ISO8859', 'ISO-8859', strtoupper($_REQUEST['req_old_charset'])) : 'ISO-8859-1';
-$start_at = isset($_REQUEST['start_at']) ? intval($_REQUEST['start_at']) : 0;
+$stage = is_string($_REQUEST['stage'] ?? null) ? $_REQUEST['stage'] : '';
+$old_charset = is_string($_REQUEST['req_old_charset'] ?? null) ? str_replace('ISO8859', 'ISO-8859', strtoupper($_REQUEST['req_old_charset'])) : 'ISO-8859-1';
+$start_at = is_numeric($_REQUEST['start_at'] ?? null) ? intval($_REQUEST['start_at']) : 0;
 $query_str = '';
 
 if (0 !== preg_match('%[^\w-]%', $old_charset))
@@ -670,8 +670,8 @@ if (isset($_POST['req_db_pass']))
 		fclose($fh);
 
 		// Update maintenance message
-		if ($_POST['req_maintenance_message'] != '')
-			$maintenance_message = pun_trim(pun_linebreaks($_POST['req_maintenance_message']));
+		if (! empty($_POST['req_maintenance_message']))
+			$maintenance_message = pun_linebreaks(pun_trim($_POST['req_maintenance_message']));
 		else
 		{
 			// Load the admin_options.php language file
@@ -1292,7 +1292,7 @@ switch ($stage)
 
 		function _conv_forums($cur_item, $old_charset)
 		{
-			$moderators = ($cur_item['moderators'] != '') ? unserialize($cur_item['moderators']) : array();
+			$moderators = $cur_item['moderators'] != '' ? unserialize($cur_item['moderators']) : array();
 			$moderators_utf8 = array();
 			foreach ($moderators as $mod_username => $mod_user_id)
 			{
@@ -1545,7 +1545,7 @@ switch ($stage)
 			{
 				$errors[$id] = array();
 
-				$username = pun_trim($_POST['dupe_users'][$id]);
+				$username = pun_trim($_POST['dupe_users'][$id] ?? '');
 
 				if (pun_strlen($username) < 2)
 					$errors[$id][] = $lang_update['Username too short error'];
@@ -1600,7 +1600,7 @@ switch ($stage)
 
 						while ($cur_forum = $db->fetch_assoc($result))
 						{
-							$cur_moderators = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : array();
+							$cur_moderators = $cur_forum['moderators'] != '' ? unserialize($cur_forum['moderators']) : array();
 
 							if (in_array($id, $cur_moderators))
 							{
