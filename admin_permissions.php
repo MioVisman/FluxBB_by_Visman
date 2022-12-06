@@ -20,7 +20,7 @@ if ($pun_user['g_id'] != PUN_ADMIN)
 // Load the admin_permissions.php language file
 require PUN_ROOT.'lang/'.$admin_language.'/admin_permissions.php';
 
-if (isset($_POST['form_sent']))
+if (isset($_POST['form_sent'], $_POST['form']) && is_array($_POST['form']))
 {
 	confirm_referrer('admin_permissions.php');
 
