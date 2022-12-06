@@ -136,7 +136,7 @@ function prune($forum_id, $prune_sticky, $prune_date)
 {
 	global $db;
 
-	$extra_sql = ($prune_date != -1) ? ' AND last_post<'.$prune_date : '';
+	$extra_sql = $prune_date != -1 ? ' AND last_post<'.$prune_date : '';
 
 	if (!$prune_sticky)
 		$extra_sql .= ' AND sticky=\'0\'';
@@ -146,7 +146,7 @@ function prune($forum_id, $prune_sticky, $prune_date)
 
 	$topic_ids = '';
 	while ($row = $db->fetch_row($result))
-		$topic_ids .= (($topic_ids != '') ? ',' : '').$row[0];
+		$topic_ids .= ($topic_ids != '' ? ',' : '').$row[0];
 
 	if ($topic_ids != '')
 	{
@@ -172,7 +172,7 @@ function prune($forum_id, $prune_sticky, $prune_date)
 
 		$post_ids = '';
 		while ($row = $db->fetch_row($result))
-			$post_ids .= (($post_ids != '') ? ',' : '').$row[0];
+			$post_ids .= ($post_ids != '' ? ',' : '').$row[0];
 
 		if ($post_ids != '')
 		{
