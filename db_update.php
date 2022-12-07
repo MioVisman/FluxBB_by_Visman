@@ -2359,7 +2359,7 @@ foreach ($errors[$id] as $cur_error)
 				'PUN_MAX_POSTSIZE' => array('65535', true, ''),
 				'FORUM_EOL' => array('"\r\n"', false, 'possible values can be PHP_EOL, "\r\n", "\n" or "\r"'),
 				'FORUM_UA_OFF' => array('1', false, ''),
-				'FORUM_AJAX_JQUERY' => array('\'//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js\'', true, ''),
+				'FORUM_AJAX_JQUERY' => array('\'js/jquery-1.12.4.min.js\'', true, ''),
 			);
 
 			$conf_add = array();
