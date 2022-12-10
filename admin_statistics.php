@@ -90,7 +90,7 @@ if (ini_get('opcache.enable') && function_exists('opcache_invalidate'))
 elseif (ini_get('wincache.fcenabled'))
 	$php_accelerator = '<a href="https://www.php.net/wincache/">Windows Cache for PHP</a>';
 elseif (ini_get('apc.enabled') && function_exists('apc_delete_file'))
-	$php_accelerator = '<a href="https://www.php.net/apc/">Alternative PHP Cache (APC)</a>';
+	$php_accelerator = '<a href="https://web.archive.org/web/20160324235630/http://www.php.net/apc/">Alternative PHP Cache (APC)</a>';
 elseif (isset($_PHPA))
 	$php_accelerator = '<a href="https://www.ioncube.com/">ionCube PHP Accelerator</a>';
 else if (ini_get('eaccelerator.enable'))
