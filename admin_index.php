@@ -22,23 +22,8 @@ require PUN_ROOT.'lang/'.$admin_language.'/admin_index.php';
 
 $action = $_GET['action'] ?? null;
 
-// Check for upgrade
-if ($action === 'check_upgrade')
-{
-	if (!ini_get('allow_url_fopen'))
-		message($lang_admin_index['fopen disabled message']);
-
-	$latest_version = trim(@file_get_contents('https://fluxbb.org/latest_version'));
-	if (empty($latest_version))
-		message($lang_admin_index['Upgrade check failed message']);
-
-	if (version_compare($pun_config['o_cur_version'], $latest_version, '>='))
-		message($lang_admin_index['Running latest version message']);
-	else
-		message(sprintf($lang_admin_index['New version available message'], '<a href="https://fluxbb.org/">FluxBB.org</a>'));
-}
 // Remove install.php
-else if ($action === 'remove_install_file')
+if ($action === 'remove_install_file')
 {
 	$deleted = @unlink(PUN_ROOT.'install.php');
 
@@ -89,7 +74,7 @@ generate_admin_menu('index');
 				<dl>
 					<dt><?php echo $lang_admin_index['FluxBB version label'] ?></dt>
 					<dd>
-						<?php printf($lang_admin_index['FluxBB version data']."\n", $pun_config['o_cur_version'].'.'.$pun_config['o_cur_ver_revision'], '<a href="https://fluxbb.org/forums/viewtopic.php?id=4941">'.$lang_admin_index['Check for upgrade'].'</a>') ?> - <a href="https://github.com/MioVisman/FluxBB_by_Visman">GitHub</a>
+						<?php printf($lang_admin_index['FluxBB version data']."\n", $pun_config['o_cur_version'].'.'.$pun_config['o_cur_ver_revision']) ?>
 					</dd>
 					<dt><?php echo $lang_admin_index['Server statistics label'] ?></dt>
 					<dd>
@@ -97,7 +82,7 @@ generate_admin_menu('index');
 					</dd>
 					<dt><?php echo $lang_admin_index['Support label'] ?></dt>
 					<dd>
-						<a href="https://fluxbb.org/forums/index.php"><?php echo $lang_admin_index['Forum label'] ?></a> - <a href="https://fluxbb.org/community/irc.html"><?php echo $lang_admin_index['IRC label'] ?></a>
+						<a href="https://github.com/MioVisman/FluxBB_by_Visman">GitHub</a>
 					</dd>
 				</dl>
 			</div>

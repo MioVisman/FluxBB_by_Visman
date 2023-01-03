@@ -20,8 +20,8 @@ of the other forums have whilst not sacrificing essential functionality or usabi
 
 ## Links
 
-* Homepage: https://fluxbb.org
-* Documentation: https://fluxbb.org/docs/v1.5
-* Community: https://fluxbb.org/forums/, https://fluxbb.qb7.ru/forum/ (русское)
-* Resources: https://fluxbb.org/resources/
+* Homepage: https_://fluxbb.org
+* Documentation: https_://fluxbb.org/docs/v1.5
+* Community: https_://fluxbb.org/forums/, https://fluxbb.qb7.ru/forum/ (русское)
+* Resources: https_://fluxbb.org/resources/
 * Development: https://github.com/MioVisman/FluxBB_by_Visman
