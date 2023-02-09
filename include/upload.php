@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2011-2022 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2011-2023 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -455,7 +455,10 @@ class upfClass
 
         $buf1 = '';
         while ($buf2 = fread($f, 4096)) {
-            if (preg_match( "%<(?:script|html|head|title|body|table|a\s+href|img\s|plaintext|cross\-domain\-policy|embed|applet|i?frame|\?php)%msi", $buf1 . $buf2)) {
+            if (
+                preg_match( "%<(?:script|html|head|title|body|table|a\s+href|img\s|plaintext|cross\-domain\-policy|embed|applet|i?frame|\?php)%msi", $buf1 . $buf2)
+                || false !== strpos($buf1 . $buf2, "tEXtprofile\0")
+            ) {
                 fclose($f);
                 return true;
             }
