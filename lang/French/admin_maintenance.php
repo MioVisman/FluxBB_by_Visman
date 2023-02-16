@@ -1,0 +1,40 @@
+<?php
+
+// Language definitions used in admin_maintenance.php
+$lang_admin_maintenance = array(
+
+'Maintenance head'				=>	'Entretien des forums',
+'Rebuild index subhead'			=>	'Reconstruire l\'index de recherche',
+'Rebuild index info'			=>	'Si vous avez ajouté, modifié ou supprimé des messages manuellement dans la base de données ou si vous rencontrez des problèmes de recherche, vous devez reconstruire l\'index de recherche. Pour de meilleures performances, vous devez mettre le forum dans %s lors de la reconstruction. <strong>La reconstruction de l\'index de recherche peut prendre beaucoup de temps et augmentera la charge du serveur pendant le processus de reconstruction !</strong>',
+'Posts per cycle label'			=>	'Messages par cycle',
+'Posts per cycle help'			=>	'Le nombre de messages à traiter par page vue. Par exemple. si vous deviez entrer 300, trois cents messages seraient traités, puis la page serait actualisée. Cela permet d\'éviter que le script n\'expire pendant le processus de reconstruction.',
+'Starting post label'			=>	'ID de message de départ',
+'Starting post help'			=>	'ID de publication à partir duquel commencer la reconstruction. La valeur par défaut est le premier ID disponible dans la base de données. Normalement, vous ne voudriez pas changer cela.',
+'Empty index label'				=>	'Index vide',
+'Empty index help'				=>	'Sélectionnez cette option si vous souhaitez que l\'index de recherche soit vidé avant la reconstruction (voir ci-dessous).',
+'Rebuild completed info'		=>	'Une fois le processus terminé, vous serez redirigé vers cette page. Si vous êtes obligé d\'abandonner le processus de reconstruction, notez le dernier ID de publication traité et entrez cet ID + 1 dans "Starting post ID" quand/si vous voulez continuer ("Empty index" ne doit pas être sélectionné).',
+'Rebuild index'					=>	'Reconstruire l\'index',
+'Rebuilding search index'		=>	'Reconstruction de l\'index de recherche',
+'Rebuilding index info'			=>	'Indice de reconstruction. C\'est peut-être le bon moment pour se faire couler un café :-)',
+'Processing post'				=>	'Traitement de la publication <strong>%s</strong>…',
+'Click here'					=>	'Cliquez ici',
+'Javascript redirect failed'	=>	'Échec de la redirection automatique. %s pour continuer…',
+'Posts must be integer message'	=>	'Les publications par cycle doivent être une valeur entière positive.',
+'Days must be integer message'	=>	'Les jours d\'élagage doivent être une valeur entière positive.',
+'No old topics message'			=>	'Il n\'y a pas de sujets datant de %s jours. Veuillez diminuer la valeur de "Jours anciens" et réessayer.',
+'Posts pruned redirect'			=>	'Messages élagués. Redirection…',
+'Prune head'					=>	'Élagage',
+'Prune subhead'					=>	'Élaguer les anciens messages',
+'Days old label'				=>	'Jours anciens',
+'Days old help'					=>	'Le nombre de jours "anciens" qu\'un sujet doit avoir pour être élagués. Par exemple. si vous deviez entrer 30, tous les sujets qui ne contenaient pas de message datant de moins de 30 jours seraient supprimés.',
+'Prune sticky label'			=>	'Élaguer les sujets épinglés',
+'Prune sticky help'				=>	'Lorsqu\'il est activé, les sujets épinglés seront également élagués.',
+'Prune from label'				=>	'Élaguage du forum',
+'All forums'					=>	'Tous les forums',
+'Prune from help'				=>	'Le forum à partir duquel vous souhaitez supprimer les messages.',
+'Prune info'					=>	'Utilisez cette fonction avec prudence. <strong>Les messages élagués ne peuvent jamais être récupérés.</strong> Pour de meilleures performances, vous devez placer le forum dans %s lors de l\'élagage.',
+'Confirm prune subhead'			=>	'Confirmer les messages d\'élagage',
+'Confirm prune info'			=>	'Êtes-vous sûr de vouloir supprimer tous les sujets de plus de %s jours à partir de %s (%s sujets).',
+'Confirm prune warn'			=>	'ATTENTION! L\'élagage des messages les supprime définitivement.',
+
+);
