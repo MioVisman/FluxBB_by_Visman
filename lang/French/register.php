@@ -22,7 +22,7 @@ $lang_register = array(
 'Email not match'			=>	'Les adresses e-mail ne correspondent pash.',
 
 // Registration email stuff
-'Reg email'					=>	'Merci de votre inscription. Votre mot de passe a été envoyé à l\'adresse indiquée. S'il n'arrive pas, vous pouvez contacter l\'administrateur du forum à',
+'Reg email'					=>	'Merci de votre inscription. Votre mot de passe a été envoyé à l\'adresse indiquée. S\'il n\'arrive pas, vous pouvez contacter l\'administrateur du forum à',
 'Reg complete'				=>	'Inscription complète. Connexion et redirection…',
 
 // Register info
