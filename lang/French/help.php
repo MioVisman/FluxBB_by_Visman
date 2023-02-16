@@ -27,7 +27,7 @@ $lang_help = array(
 'Links info'			=>	'Vous pouvez créer des liens vers d\'autres documents ou vers des adresses e-mail à l\'aide des balises suivantes:',
 'This help page'		=>	'Ceci est la page d\'aide',
 'My email address'		=>	'Mon adresse e-mail',
-'Images info'			=>	'Si vous souhaitez afficher une image, vous pouvez utiliser la balise img. Le texte apparaissant après le signe "=" dans la balise d'ouverture est utilisé pour l'attribut alt et doit être inclus dans la mesure du possible.',
+'Images info'			=>	'Si vous souhaitez afficher une image, vous pouvez utiliser la balise img. Le texte apparaissant après le signe "=" dans la balise d\'ouverture est utilisé pour l\'attribut alt et doit être inclus dans la mesure du possible.',
 'FluxBB bbcode test'	=>	'Test du bbcode FluxBB',
 
 'Test topic'			=>	'Sujet de test',
