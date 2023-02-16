@@ -10,6 +10,6 @@ $lang_admin_plugin_merge_posts = array(
 'Legend text'			=>	'Entrer le temps d\'association.',
 'Text to show'			=>	'Temps en secondes',
 'Show text button'		=>	'Sauvegarder les modifications',
-'Plugin redirect' 		=> 'Options mises à joir. Redirection …',
+'Plugin redirect' 		=> 'Options mises à jour. Redirection …',
 
 );
