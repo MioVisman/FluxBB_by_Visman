@@ -1,10 +1,10 @@
-Subject: New topic in forum: '<forum_name>'
+Subject: Nouveau sujet dans le forum : '<forum_name>'
 
-<poster> has posted a new topic '<topic_subject>' in the forum '<forum_name>', to which you are subscribed.
+<poster> a posté un nouveau sujet '<topic_subject>' dans le forum '<forum_name>', auquel vous êtes abonné.
 
-The topic is located at <topic_url>
+Le sujet se trouve à <topic_url>
 
-You can unsubscribe by going to <unsubscribe_url> and clicking the Unsubscribe link at the bottom of the page.
+Vous pouvez vous désabonner en allant sur <unsubscribe_url> et en cliquant sur le lien Se désabonner au bas de la page.
 
 --
 <board_mailer> Mailer

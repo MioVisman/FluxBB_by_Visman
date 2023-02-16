@@ -1,18 +1,17 @@
-Subject: Reply to topic: '<topic_subject>'
+Subject: Réponsee au sujet : '<topic_subject>'
 
-<replier> has replied to the topic '<topic_subject>' to which you are subscribed. There may be more new replies, but this is the only notification you will receive until you visit the board again.
+<replier> a répondu au sujet '<topic_subject>' auquel vous êtes abonné. Il peut y avoir plus de nouvelles réponses, mais c'est la seule notification que vous recevrez jusqu'à ce que vous reveniez sur le forum.
 
-The post is located at <post_url>
+Le poste est situé à <post_url>
 
-The message reads as follows:
------------------------------------------------------------------------
+Le message se lit comme suit :
+-------------------------------------------------- ---------------------
 
 <message>
 
------------------------------------------------------------------------
+-------------------------------------------------- ---------------------
 
-You can unsubscribe by going to <unsubscribe_url> and clicking the Unsubscribe link at the bottom of the page.
-
+Vous pouvez vous désabonner en allant sur <unsubscribe_url> et en cliquant sur le lien Se désabonner au bas de la page.
 --
 <board_mailer> Mailer
 (Do not reply to this message)

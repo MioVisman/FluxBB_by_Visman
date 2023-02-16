@@ -1,8 +1,8 @@
-Subject: Alert - Duplicate email detected
+Subject: Alerte - E-mail en double détecté
 
-User '<username>' changed to an email address that also belongs to: <dupe_list>
+L'utilisateur '<username>' a été remplacé par une adresse e-mail qui appartient également à : <dupe_list>
 
-User profile: <profile_url>
+Profil utilisateur : <profile_url>
 
 --
 <board_mailer> Mailer

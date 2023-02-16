@@ -1,8 +1,8 @@
-Subject: Report(<forum_id>) - '<topic_subject>'
+Subject: Rapport(<forum_id>) - '<topic_subject>'
 
-User '<username>' has reported the following message: <post_url>
+L'utilisateur '<username>' a signalé le message suivant : <post_url>
 
-Reason: <reason>
+Raison : <reason>
 
 --
 <board_mailer> Mailer

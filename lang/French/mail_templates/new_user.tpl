@@ -1,11 +1,11 @@
-Subject: Alert - New registration
+Subject: Alerte - Nouvelle inscription
 
-User '<username>' registered in the forums at <base_url>
+Utilisateur '<username>' enregistré dans les forums à <base_url>
 
-User profile: <profile_url>
+Profil utilisateur : <profile_url>
 
-To administer this account, please visit the following page:
-<admin_url>
+Pour administrer ce compte, veuillez visiter la page suivante :
+<URL_admin>
 
 --
 <board_mailer> Mailer

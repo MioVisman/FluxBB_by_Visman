@@ -1,8 +1,8 @@
-Subject: Alert - Banned email detected
+Subject: Alerte - E-mail interdit détecté
 
-User '<username>' changed to banned email address: <email>
+L'utilisateur '<username>' a été remplacé par une adresse e-mail interdite : <email>
 
-User profile: <profile_url>
+Profil utilisateur : <profile_url>
 
 --
 <board_mailer> Mailer

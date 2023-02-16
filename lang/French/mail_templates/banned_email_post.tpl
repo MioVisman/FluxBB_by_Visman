@@ -1,8 +1,8 @@
-Subject: Alert - Banned email detected
+Subject: Alerte - E-mail interdit détecté
 
-User '<username>' posted with banned email address: <email>
+L'utilisateur '<username>' a été publié avec une adresse e-mail interdite : <email>
 
-Post URL: <post_url>
+URL de publication : <post_url>
 
 --
 <board_mailer> Mailer

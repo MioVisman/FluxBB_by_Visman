@@ -1,11 +1,11 @@
-Subject: User account renamed
+Subject: Compte utilisateur renommé
 
-During an upgrade to the forums at <base_url> it was determined your username is too similar to an existing user. Your username has been changed accordingly.
+Lors d'une mise à jour des forums sur <base_url>, il a été déterminé que votre nom d'utilisateur est trop similaire à un utilisateur existant. Votre nom d'utilisateur a été modifié en conséquence.
 
-Old username: <old_username>
-New username: <new_username>
+Ancien nom d'utilisateur : <old_username>
+Nouveau nom d'utilisateur : <new_username>
 
-We apologise for any inconvenience caused.
+Nous nous excusons pour la gêne occasionnée.
 
 --
 <board_mailer> Mailer

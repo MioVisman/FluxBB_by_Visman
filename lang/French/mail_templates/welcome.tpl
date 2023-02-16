@@ -1,12 +1,12 @@
-Subject: Welcome to <board_title>!
+Subject: Bienvenu sur <board_title>!
 
-Thank you for registering in the forums at <base_url>. Your account details are:
+Merci de vous être inscrit sur les forums de <base_url>. Les détails de votre compte sont :
 
 Username: <username>
-Password: <password>
+Mot de passe: <password>
 
-Login at <login_url> to activate the account.
+Connectez-vous à <login_url> pour activer le compte.
 
 --
 <board_mailer> Mailer
-(Do not reply to this message)
+(Ne pas répondre à ce message)

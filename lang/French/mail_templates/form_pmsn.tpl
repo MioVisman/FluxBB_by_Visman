@@ -1,9 +1,9 @@
-Subject: New personal message: <mail_subject>
+Subject: Nouveau message personnel : <mail_subject>
 
-Hello, <user>!
+Bonjour, <user> !
 
-<sender> from <board_title> has sent you a personal message.
-The message is located at <message_url>
+<sender> de <board_title> vous a envoyé un message personnel.
+Le message se trouve à <message_url>
 
 -- 
 <board_mailer> Mailer
