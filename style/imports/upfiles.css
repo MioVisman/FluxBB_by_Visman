@@ -136,6 +136,7 @@ ul#upf-list {
 #upf-table .upf-c2 {
 	width: 80%;
 	text-align: left;
+	word-break: break-word;
 }
 
 #upf-table .upf-c3 img {
