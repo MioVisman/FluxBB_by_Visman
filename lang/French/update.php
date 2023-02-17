@@ -1,0 +1,76 @@
+<?php
+
+// Language definitions used in db_update.php
+
+$lang_update = array(
+
+'Update'						=>	'Mettre à jour FluxBB',
+'Update message'				=>	'Votre base de données FluxBB est obsolète et doit être mise à jour pour continuer. Si vous êtes l\'administrateur du forum, veuillez suivre les instructions ci-dessous pour effectuer la mise à niveau.',
+'Note'							=>	'Note:',
+'Members message'				=>	'Ce processus est réservé aux administrateurs du conseil. Si vous êtes membre, il n\'y a rien à craindre - les forums seront bientôt de retour !',
+'Administrator only'			=>	'Cette étape est réservée à l\'administrateur du forum !',
+'Database password info'		=>	'Pour effectuer la mise à jour de la base de données, veuillez saisir le mot de passe de la base de données avec lequel FluxBB a été installé. Si vous ne vous en souvenez pas, ceci est stocké dans votre fichier \'config.php\'.',
+'Database password note'		=>	'Si vous utilisez SQLite (et que vous n\'avez donc pas de mot de passe pour la base de données), veuillez utiliser le nom du fichier de base de données à la place. Cela doit correspondre exactement au nom du fichier de base de données donné dans votre fichier de configuration.',
+'Database password'				=>	'Mot de passe de la base de données',
+'Maintenance'					=>	'Entretien',
+'Maintenance message info'		=>	'Le message qui sera affiché aux utilisateurs pendant le processus de mise à jour. Ce texte ne sera pas analysé comme les messages normaux et peut donc contenir du HTML.',
+'Maintenance message'		    =>	'Message de maintenance',
+
+'You are running error'			=>	'Vous utilisez %1$s version %2$s. FluxBB %3$s nécessite au moins %1$s %4$s pour fonctionner correctement. Vous devez mettre à niveau votre installation %1$s avant de pouvoir continuer.',
+'Version mismatch error'		=>	'Incompatibilite de version. La base de données \'%s\' ne semble pas exécuter un schéma de base de données FluxBB pris en charge par ce script de mise à jour.',
+'Invalid file error'			=>	'Nom de fichier de base de données non valide. Lorsque vous utilisez SQLite, le nom du fichier de base de données doit être saisi exactement tel qu\'il apparaît dans votre \'%s\'',
+'Invalid password error'		=>	'Mot de passe de base de données invalide. Pour mettre à jour FluxBB, vous devez entrer le mot de passe de votre base de données exactement tel qu\'il apparaît dans votre \'%s\'',
+'No password error'				=>	'Aucun mot de passe de base de données fourni',
+'Script runs error'				=>	'Il semble que le script de mise à jour soit déjà exécuté par quelqu\'un d\'autre. Si ce n\'est pas le cas, veuillez supprimer manuellement le fichier \'%s\' et réessayer',
+'No update error'				=>	'Votre forum est déjà à jour !',
+
+'Intro 1'						=>	'Ce script mettra à jour la base de données de votre forum. La procédure de mise à jour peut prendre entre une seconde et plusieurs heures selon la vitesse du serveur et la taille de la base de données du forum. N\'oubliez pas de faire une sauvegarde de la base de données avant de continuer.',
+'Intro 2'						=>	'Avez-vous lu les instructions de mise à jour dans la documentation ? Si non, commencez par là.',
+'No charset conversion'			=>	'<strong>IMPORTANT !</strong> FluxBB a détecté que cet environnement PHP ne prend pas en charge les mécanismes d\'encodage requis pour effectuer la conversion UTF-8 à partir de jeux de caractères autres que ISO-8859-1. Cela signifie que si le jeu de caractères actuel n\'est pas ISO-8859-1, FluxBB ne pourra pas convertir votre base de données de forum en UTF-8 et vous devrez le faire manuellement. Les instructions pour effectuer une conversion manuelle du jeu de caractères se trouvent dans les instructions de mise à jour.',
+'Enable conversion'				=>	'<strong>Activer la conversion :</strong> lorsqu\'il est activé, ce script de mise à jour, après avoir apporté les modifications structurelles requises à la base de données, convertira tout le texte de la base de données du jeu de caractères actuel en UTF-8. Cette conversion est requise si vous effectuez une mise à niveau à partir de la version 1.2.',
+'Current character set'			=>	'<strong>Jeu de caractères actuel :</strong> si la langue principale de votre forum est l\'anglais, vous pouvez laisser la valeur par défaut. Cependant, si votre forum n\'est pas en anglais, vous devez entrer le jeu de caractères du pack de langue principal utilisé dans le forum. <em>Une erreur peut corrompre votre base de données, alors ne vous contentez pas de deviner !</em> Remarque : Ceci est nécessaire même si l\'ancienne base de données est UTF-8.',
+'Charset conversion'			=>	'Conversion du jeu de caractères',
+'Enable conversion label'		=>	'<strong>Activer la conversion</strong> (effectuer la conversion du jeu de caractères de la base de données).',
+'Current character set label'	=>	'Jeu de caractères actuel',
+'Current character set info'	=>	'Acceptez la valeur par défaut pour les forums en anglais, sinon le jeu de caractères du pack de langue principal.',
+'Start update'					=>	'Démarrer la mise a jour',
+'Error converting users'		=>	'Erreur lors de la conversion des utilisateurs',
+'Error info 1'					=>	'Une erreur s\'est produite lors de la conversion de certains utilisateurs. Cela peut se produire lors de la conversion depuis FluxBB v1.2 si plusieurs utilisateurs se sont enregistrés avec des noms d\'utilisateur très similaires, par exemple "bob" et "böb".',
+'Error info 2'					=>	'Vous trouverez ci-dessous une liste des utilisateurs qui n\'ont pas réussi à se convertir. Veuillez choisir un nouveau nom d\'utilisateur pour chaque utilisateur. Les utilisateurs renommés recevront automatiquement un e-mail les avertissant du changement.',
+'New username'					=>	'Nouveau nom d\'utilisateur',
+'Required'						=>	'(Requis)',
+'Correct errors'				=>	'Les erreurs suivantes doivent être corrigées :',
+'Rename users'					=>	'Renommer les utilisateurs',
+'Successfully updated'			=>	'La base de données de votre forum a été mise à jour avec succès. Vous pouvez maintenant %s.',
+'go to index'					=>	'aller à l\'index du forum',
+
+'Unable to lock error'			=>	'Impossible d\'écrire le verrou de mise à jour. Assurez-vous que PHP a un accès en écriture au répertoire \'%s\' et que personne d\'autre n\'exécute actuellement le script de mise à jour.',
+
+'Converting'					=>	'Conversion de %s …',
+'Converting item'				=>	'Conversion de %1$s %2$s …',
+'Preparsing item'				=>	'Préparation de %1$s %2$s …',
+'Rebuilding index item'			=>	'Reconstruction d\'index pour %1$s %2$s',
+'Click here'					=>	'Cliquez ici',
+'Automatic redirect failed'		=>	'Échec de la redirection automatique. %s pour continuer…',
+
+'ban'							=>	'interdire',
+'categories'					=>	'catégories',
+'censor words'					=>	'censurer des mots',
+'configuration'					=>	'configuration',
+'forums'						=>	'forums',
+'groups'						=>	'groupes',
+'post'							=>	'message',
+'report'						=>	'rapport',
+'topic'							=>	'sujet',
+'user'							=>	'utilisateur',
+'signature'						=>	'signature',
+
+'Username too short error'		=>	'Les noms d\'utilisateur doivent comporter au moins 2 caractères. Veuillez choisir un autre nom d\'utilisateur (plus long).',
+'Username too long error'		=>	'Les noms d\'utilisateur ne doivent pas dépasser 25 caractères. Veuillez choisir un autre nom d\'utilisateur (plus court).',
+'Username Guest reserved error'	=>	'Le nom d\'utilisateur invité est réservé. Veuillez choisir un autre nom d\'utilisateur.',
+'Username IP format error'		=>	'Les noms d\'utilisateur ne peuvent pas être sous la forme d\'une adresse IP. Veuillez choisir un autre nom d\'utilisateur.',
+'Username bad characters error'	=>	'Les noms d\'utilisateur ne peuvent pas contenir tous les caractères \', " et [ ou ] à la fois. Veuillez choisir un autre nom d\'utilisateur.',
+'Username BBCode error'			=>	'Les noms d\'utilisateur ne peuvent contenir aucune des balises de formatage de texte (BBCode) utilisées par le forum. Veuillez choisir un autre nom d\'utilisateur.',
+'Username duplicate error'		=>	'Quelqu\'un est déjà enregistré avec le nom d\'utilisateur %s. Le nom d\'utilisateur que vous avez entré est trop similaire. Le nom d\'utilisateur doit différer de celui-ci d\'au moins un caractère alphanumérique (a-z ou 0-9). Merci de choisir un autre nom d\'utilisateur.',
+
+);
