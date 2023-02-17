@@ -5,11 +5,11 @@ Subject: Nouveau sujet dans le forum : '<forum_name>'
 Le sujet se trouve à <topic_url>
 
 Le message se lit comme suit :
--------------------------------------------------- ---------------------
+-----------------------------------------------------------------------
 
 <message>
 
--------------------------------------------------- ---------------------
+-----------------------------------------------------------------------
 
 Vous pouvez vous désabonner en allant sur <unsubscribe_url> et en cliquant sur le lien Se désabonner au bas de la page.
 

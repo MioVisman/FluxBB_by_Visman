@@ -5,7 +5,7 @@ Utilisateur '<username>' enregistré dans les forums à <base_url>
 Profil utilisateur : <profile_url>
 
 Pour administrer ce compte, veuillez visiter la page suivante :
-<URL_admin>
+<admin_url>
 
 --
 <board_mailer> Mailer

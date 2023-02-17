@@ -5,11 +5,11 @@ Subject: Réponsee au sujet : '<topic_subject>'
 Le poste est situé à <post_url>
 
 Le message se lit comme suit :
--------------------------------------------------- ---------------------
+-----------------------------------------------------------------------
 
 <message>
 
--------------------------------------------------- ---------------------
+-----------------------------------------------------------------------
 
 Vous pouvez vous désabonner en allant sur <unsubscribe_url> et en cliquant sur le lien Se désabonner au bas de la page.
 --
