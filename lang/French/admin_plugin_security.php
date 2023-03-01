@@ -18,4 +18,5 @@ $lang_admin_plugin_security = array(
 'Board red help' 		=> 'Expression régulière correspondant aux références non interceptées de redirection. S\'il est vide, toutes les références fonctionnent sans redirection. <br /> Exemple : <strong>^(http|ftp)\:\/\/(www\.)?(site1|site2|site3)</strong>',
 'Board red only guest' 	=> 'Fonctionne uniquement pour les invités.',
 
+'Bad regular expression' => 'Expression régulière incorrecte.',
 );

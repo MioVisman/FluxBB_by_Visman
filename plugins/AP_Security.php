@@ -29,6 +29,10 @@ if (isset($_POST['show_text']))
 	$b_crypto = isset($_POST['crypto_enable']) ? 1 : 0;
 	$b_enable_acaptcha = isset($_POST['enable_acaptcha']) ? 1 : 0;
 
+	if ($b_redirect != '' && false === @preg_match('/'.$b_redirect.'/i', 'abcdef')) {
+		message($lang_admin_plugin_security['Bad regular expression']);
+	}
+
 	$db->query('UPDATE '.$db->prefix.'config SET conf_value=\''.$b_coding_forms.'\' WHERE conf_name=\'o_coding_forms\'') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
 	$db->query('UPDATE '.$db->prefix.'config SET conf_value=\''.$b_check_ip.'\' WHERE conf_name=\'o_check_ip\'') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
 	$db->query('UPDATE '.$db->prefix.'config SET conf_value=\''.$db->escape($b_redirect).'\' WHERE conf_name=\'o_board_redirect\'') or error('Unable to update board config', __FILE__, __LINE__, $db->error());
