@@ -307,7 +307,10 @@ else if (isset($_POST['move_users']) || isset($_POST['move_users_comply']))
 
 	if (isset($_POST['move_users_comply']))
 	{
-		$new_group = isset($_POST['new_group']) && isset($all_groups[$_POST['new_group']]) ? $_POST['new_group'] : message($lang_admin_users['Invalid group message']);
+		$new_group = intval($_POST['new_group'] ?? 0);
+
+		if (! isset($all_groups[$_POST['new_group']]))
+			message($lang_admin_users['Invalid group message']);
 
 		// Is the new group a moderator group?
 		$result = $db->query('SELECT g_moderator FROM '.$db->prefix.'groups WHERE g_id='.$new_group) or error('Unable to fetch group info', __FILE__, __LINE__, $db->error());
