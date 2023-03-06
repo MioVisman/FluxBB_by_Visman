@@ -134,7 +134,7 @@ function check_cookie(&$pun_user)
 //
 // Converts the CDATA end sequence ]]> into ]]&gt;
 //
-function escape_cdata($str)
+function escape_cdata(string $str)
 {
 	return str_replace(']]>', ']]&gt;', $str);
 }
@@ -145,7 +145,7 @@ function escape_cdata($str)
 // $user can be either a user ID (integer) or a username (string)
 // $password can be either a plaintext password or a password hash including salt ($password_is_hash must be set accordingly)
 //
-function authenticate_user($user, $password, $password_is_hash = false)
+function authenticate_user($user, string $password, $password_is_hash = false)
 {
 	global $db, $pun_user;
 
@@ -157,7 +157,7 @@ function authenticate_user($user, $password, $password_is_hash = false)
 		isset($pun_user['id'])
 		&& $pun_user['id'] > 1
 		&& (
-			($password_is_hash && true === hash_equals((string) $password, $pun_user['password']))
+			($password_is_hash && true === hash_equals($password, $pun_user['password']))
 			|| (! $password_is_hash && false !== forum_password_verify($password, $pun_user))
 		)
 	) {
@@ -325,7 +325,7 @@ function set_default_user()
 //
 // SHA1 HMAC with PHP 4 fallback
 //
-function forum_hmac($data, $key, $raw_output = false)
+function forum_hmac(string $data, string $key, $raw_output = false)
 {
 	return hash_hmac('sha1', $data, $key, $raw_output);
 }
@@ -335,7 +335,7 @@ function forum_hmac($data, $key, $raw_output = false)
 // Set a cookie, FluxBB style!
 // Wrapper for forum_setcookie
 //
-function pun_setcookie($user_id, $password_hash, $expire)
+function pun_setcookie(int $user_id, string $password_hash, int $expire)
 {
 	global $cookie_name, $cookie_seed;
 
@@ -346,7 +346,7 @@ function pun_setcookie($user_id, $password_hash, $expire)
 //
 // Set a cookie, FluxBB style!
 //
-function forum_setcookie($name, $value, $expire)
+function forum_setcookie(string $name, string $value, int $expire)
 {
 	global $cookie_path, $cookie_domain, $cookie_secure, $pun_config, $cookie_samesite;
 
@@ -456,7 +456,7 @@ function check_bans()
 //
 // Check username
 //
-function check_username($username, $exclude_id = null)
+function check_username(string $username, $exclude_id = null)
 {
 	global $db, $pun_config, $errors, $lang_prof_reg, $lang_register, $lang_common;
 
@@ -611,7 +611,7 @@ function generate_profile_menu($page = '')
 //
 // Outputs markup to display a user's avatar
 //
-function generate_avatar_markup($user_id)
+function generate_avatar_markup(int $user_id)
 {
 	global $pun_config;
 
@@ -720,7 +720,7 @@ function get_tracked_topics()
 //
 // Shortcut method for executing all callbacks registered with the addon manager for the given hook
 //
-function flux_hook($name)
+function flux_hook(string $name)
 {
 	global $flux_addons;
 
@@ -878,7 +878,7 @@ function forum_clear_cache()
 //
 // Replace censored words in $text
 //
-function censor_words($text)
+function censor_words(string $text)
 {
 	global $db;
 	static $search_for, $replace_with;
@@ -959,7 +959,7 @@ function get_title($user)
 //
 // Generate a string with numbered links (for multipage scripts)
 //
-function paginate($num_pages, $cur_page, $link)
+function paginate(int $num_pages, int $cur_page, string $link)
 {
 	global $lang_common;
 
@@ -1032,7 +1032,7 @@ function paginate($num_pages, $cur_page, $link)
 //
 // Display a message
 //
-function message($message, $no_back_link = false, $http_status = null)
+function message(string $message, $no_back_link = false, $http_status = null)
 {
 	global $db, $lang_common, $pun_config, $pun_start, $tpl_main, $pun_user, $page_js;
 
@@ -1125,7 +1125,7 @@ function forum_number_format($number, $decimals = 0)
 //
 // Generate a random key of length $len
 //
-function random_key($len, $readable = false, $hash = false)
+function random_key(int $len, $readable = false, $hash = false)
 {
 	$key = '';
 
@@ -1164,7 +1164,7 @@ function confirm_message($error_msg = false)
 }
 
 
-function confirm_referrer($script, $error_msg = false, $use_ip = true)
+function confirm_referrer(string $script, $error_msg = false, $use_ip = true)
 {
 	$hash = $_POST['csrf_hash'] ?? ($_GET['csrf_hash'] ?? null);
 
@@ -1178,7 +1178,7 @@ function csrf_hash($script = false, $use_ip = true, $user = false)
 	global $pun_config, $pun_user;
 	static $arr = array();
 
-	$script = $script ? $script : basename($_SERVER['SCRIPT_NAME']);
+	$script = $script ?: basename($_SERVER['SCRIPT_NAME']);
 	$ip = $use_ip ? get_remote_address() : '';
 	$user = is_array($user) ? $user : $pun_user;
 
@@ -1195,7 +1195,7 @@ function csrf_hash($script = false, $use_ip = true, $user = false)
 //
 // Validate the given redirect URL, use the fallback otherwise
 //
-function validate_redirect($redirect_url, $fallback_url)
+function validate_redirect(string $redirect_url, string $fallback_url)
 {
 	$referrer = parse_url(strtolower($redirect_url));
 
@@ -1232,7 +1232,7 @@ function validate_redirect($redirect_url, $fallback_url)
 // Generate a random password of length $len
 // Compatibility wrapper for random_key
 //
-function random_pass($len)
+function random_pass(int $len)
 {
 	return random_key($len, true);
 }
@@ -1241,7 +1241,7 @@ function random_pass($len)
 //
 // Compute a hash of $str
 //
-function pun_hash($str)
+function pun_hash(string $str)
 {
 	global $salt1;
 
@@ -1324,7 +1324,7 @@ function pun_htmlspecialchars_decode($str)
 //
 // A wrapper for mb_strlen for compatibility
 //
-function pun_strlen($str)
+function pun_strlen(string $str)
 {
 	return mb_strlen($str);
 }
@@ -1333,7 +1333,7 @@ function pun_strlen($str)
 //
 // Convert \r\n and \r to \n
 //
-function pun_linebreaks($str)
+function pun_linebreaks(string $str)
 {
 	return str_replace(array("\r\n", "\r"), "\n", $str);
 }
@@ -1361,7 +1361,7 @@ function pun_trim($str, $charlist = false)
 //
 // Checks if a string is in all uppercase
 //
-function is_all_uppercase($string)
+function is_all_uppercase(string $string)
 {
 	return mb_strtoupper($string) === $string && mb_strtolower($string) !== $string;
 }
@@ -1370,7 +1370,7 @@ function is_all_uppercase($string)
 //
 // strcmp() for UTF-8 - Visman
 //
-function pun_strcasecmp($strX, $strY)
+function pun_strcasecmp(string $strX, string $strY)
 {
 	return strcmp(mb_strtolower($strX), mb_strtolower($strY));
 }
@@ -1514,7 +1514,7 @@ function maintenance_message()
 //
 // Display $message and redirect user to $destination_url
 //
-function redirect($destination_url, $message)
+function redirect(string $destination_url, string $message)
 {
 	global $db, $pun_config, $lang_common, $pun_user;
 
@@ -1647,7 +1647,7 @@ function redirect($destination_url, $message)
 //
 // Display a simple error message
 //
-function error($message, $file = null, $line = null, $db_error = false)
+function error(string $message, $file = null, $line = null, $db_error = false)
 {
 	global $pun_config, $lang_common;
 
@@ -1909,7 +1909,7 @@ function generate_stopwords_cache_id()
 //
 // Split text into chunks ($inside contains all text inside $start and $end, and $outside contains all text outside)
 //
-function split_text($text, $start, $end, $retab = true)
+function split_text(string $text, $start, $end, $retab = true)
 {
 	global $pun_config;
 
@@ -1937,7 +1937,7 @@ function split_text($text, $start, $end, $retab = true)
 // Extract blocks from a text with a starting and ending string
 // This function always matches the most outer block so nesting is possible
 //
-function extract_blocks($text, $start, $end, $retab = true)
+function extract_blocks(string $text, $start, $end, $retab = true)
 {
 	global $pun_config;
 
@@ -2018,7 +2018,7 @@ function extract_blocks($text, $start, $end, $retab = true)
 //	  [fragment] => fragone
 //	  [url] => http://www.jmrware.com:80/articles?height=10&width=75#fragone
 // )
-function url_valid($url)
+function url_valid(string $url)
 {
 	if (strpos($url, 'www.') === 0) $url = 'http://'. $url;
 	if (strpos($url, 'ftp.') === 0) $url = 'ftp://'. $url;
@@ -2105,7 +2105,7 @@ function url_valid($url)
 //
 // This function also works on Windows Server where ACLs seem to be ignored.
 //
-function forum_is_writable($path)
+function forum_is_writable(string $path)
 {
 	if (is_dir($path))
 	{
@@ -2260,7 +2260,7 @@ function witt_query($var = NULL)
 //
 // MOD Subforums
 //
-function sf_crumbs($id)
+function sf_crumbs(int $id)
 {
 	global $sf_array_desc;
 
@@ -2278,7 +2278,7 @@ function sf_crumbs($id)
 //
 // Checks the password on the user's data array
 //
-function forum_password_verify($password, $user)
+function forum_password_verify(string $password, $user)
 {
 	global $salt1;
 

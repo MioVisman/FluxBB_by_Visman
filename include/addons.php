@@ -44,7 +44,7 @@ class flux_addon_manager
 		$d->close();
 	}
 
-	function bind($hook, $callback)
+	function bind(string $hook, $callback)
 	{
 		if (!isset($this->hooks[$hook]))
 			$this->hooks[$hook] = array();
@@ -53,7 +53,7 @@ class flux_addon_manager
 			$this->hooks[$hook][] = $callback;
 	}
 
-	function hook($name)
+	function hook(string $name)
 	{
 		if (!$this->loaded)
 			$this->load();

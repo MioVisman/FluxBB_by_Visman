@@ -16,7 +16,7 @@ else
 	require PUN_ROOT.'lang/English/poll.php';
 
 // вывод сообщений *************************************************************
-function poll_mess($mess, $ques = '', $vote = '')
+function poll_mess(string $mess, $ques = '', $vote = '')
 {
 	global $lang_poll;
 
@@ -31,7 +31,7 @@ function poll_mess($mess, $ques = '', $vote = '')
 }
 
 // получение данных из формы ***************************************************
-function poll_post($var, $default = null)
+function poll_post(string $var, $default = null)
 {
 	return isset($_POST[$var]) ? $_POST[$var] : $default;
 }
@@ -142,13 +142,13 @@ function poll_form_post($tid)
 }
 
 // форма редактирования ********************************************************
-function poll_form_edit($tid)
+function poll_form_edit(int $tid)
 {
 	poll_form($tid);
 }
 
 // данные по опросу ************************************************************
-function poll_topic($tid)
+function poll_topic(int $tid)
 {
 	global $cur_post, $cur_topic;
 
@@ -169,7 +169,7 @@ function poll_topic($tid)
 }
 
 // форма ввода/редактирования **************************************************
-function poll_form($tid)
+function poll_form(int $tid)
 {
 	global $cur_index, $lang_poll, $pun_config, $tpl_main;
 
@@ -346,7 +346,7 @@ function ForQues(num,t){if(num > max_ques){return false}var div=document.getElem
 }
 
 // проверяем правильность ******************************************************
-function poll_form_validate($tid, &$errors)
+function poll_form_validate(int $tid, &$errors)
 {
 	global $lang_poll, $pun_config;
 
@@ -401,14 +401,14 @@ function poll_form_validate($tid, &$errors)
 }
 
 // удаление кэша опроса ********************************************************
-function poll_cache_delete($tid)
+function poll_cache_delete(int $tid)
 {
 	if (file_exists(FORUM_CACHE_DIR.'polls/'.$tid.'.php'))
 		@unlink(FORUM_CACHE_DIR.'polls/'.$tid.'.php');
 }
 
 // удаление опроса *************************************************************
-function poll_delete($tid, $flag = false)
+function poll_delete(int $tid, $flag = false)
 {
 	global $db;
 
@@ -421,7 +421,7 @@ function poll_delete($tid, $flag = false)
 }
 
 // сохраняем опрос *************************************************************
-function poll_save($tid)
+function poll_save(int $tid)
 {
 	global $db, $pun_config;
 
@@ -505,7 +505,7 @@ function poll_save($tid)
 }
 
 // результат голосования в теме ************************************************
-function poll_display_topic($tid, $uid, $p = 0, $f = false)
+function poll_display_topic(int $tid, int $uid, $p = 0, $f = false)
 {
 	global $pun_config;
 	static $info = null;
@@ -524,7 +524,7 @@ function poll_display_topic($tid, $uid, $p = 0, $f = false)
 }
 
 // превью в посте **************************************************************
-function poll_display_post($tid, $uid)
+function poll_display_post(int $tid, int $uid)
 {
 	global $pun_config;
 
@@ -592,7 +592,7 @@ function poll_display_post($tid, $uid)
 }
 
 // отображаем результат голосования ********************************************
-function poll_display($tid, $uid, $info, $top, $prev = false)
+function poll_display(int $tid, int $uid, $info, $top, $prev = false)
 {
 
 	global $db, $lang_poll, $pun_config, $lang_common;
@@ -731,7 +731,7 @@ function poll_display($tid, $uid, $info, $top, $prev = false)
 }
 
 // голосуем ********************************************************************
-function poll_vote($tid, $uid)
+function poll_vote(int $tid, int $uid)
 {
 	global $db;
 

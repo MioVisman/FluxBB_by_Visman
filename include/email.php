@@ -18,7 +18,7 @@ if (!defined('FORUM_EOL'))
 //
 // Validate an email address
 //
-function is_valid_email($email)
+function is_valid_email(string $email)
 {
 	if (strlen($email) > 80)
 		return false;
@@ -30,7 +30,7 @@ function is_valid_email($email)
 //
 // Check if $email is banned
 //
-function is_banned_email($email, $id = false)
+function is_banned_email(string $email, $id = false)
 {
 	global $pun_bans;
 
@@ -66,7 +66,7 @@ function is_banned_email($email, $id = false)
 //
 // Only encode with base64, if there is at least one unicode character in the string
 //
-function encode_mail_text($str)
+function encode_mail_text(string $str)
 {
 	if (preg_match('%[^\x20-\x7F]%', $str)) {
 		return '=?UTF-8?B?' . base64_encode($str) . '?=';
@@ -79,7 +79,7 @@ function encode_mail_text($str)
 //
 // Make a post email safe
 //
-function bbcode2email($text, $wrap_length = 72, $language = null)
+function bbcode2email(string $text, $wrap_length = 72, $language = null)
 {
 	static $base_url;
 	static $wrotes = array();
@@ -245,7 +245,7 @@ function bbcode2email($text, $wrap_length = 72, $language = null)
 //
 // Wrapper for PHP's mail()
 //
-function pun_mail($to, $subject, $message, $reply_to_email = '', $reply_to_name = '')
+function pun_mail(string $to, string $subject, string $message, $reply_to_email = '', $reply_to_name = '')
 {
 	global $pun_config, $lang_common;
 
@@ -310,7 +310,7 @@ function server_parse($socket, $expected_response)
 // This function was originally a part of the phpBB Group forum software phpBB2 (http://www.phpbb.com)
 // They deserve all the credit for writing it. I made small modifications for it to suit PunBB and its coding standards.
 //
-function smtp_mail($to, $subject, $message, $headers = '')
+function smtp_mail(string $to, string $subject, string $message, $headers = '')
 {
 	global $pun_config;
 	static $local_host;

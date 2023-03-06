@@ -14,7 +14,7 @@ require PUN_ROOT.'include/common.php';
 require PUN_ROOT.'include/common_admin.php';
 
 
-function sva_gf($key)
+function sva_gf(string $key)
 {
 	return $_POST['form'][$key] ?? '';
 }

@@ -1,14 +1,14 @@
 <?php
 
 /**
- * Copyright (C) 2011-2015 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2011-2023 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
- 
+
 if (!defined('PUN')) exit;
 
 
-function ua_isbot($ua, $ual)
+function ua_isbot(string $ua, string $ual)
 {
 	if (!trim($ua))
 		return false;

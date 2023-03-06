@@ -233,7 +233,7 @@ function generate_admins_cache()
 //
 // Safely write out a cache file.
 //
-function fluxbb_write_cache_file($file, $content)
+function fluxbb_write_cache_file(string $file, string $content)
 {
 	$fh = @fopen(FORUM_CACHE_DIR.$file, 'wb');
 	if (!$fh)
@@ -377,7 +377,7 @@ function generate_subforums_cache($group_id = false)
 //
 // Invalidate updated php files that are cached by an opcache
 //
-function fluxbb_invalidate_cached_file($file)
+function fluxbb_invalidate_cached_file(string $file)
 {
 	if (function_exists('opcache_invalidate'))
 		opcache_invalidate($file, true);

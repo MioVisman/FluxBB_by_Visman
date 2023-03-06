@@ -167,12 +167,12 @@ function pmsn_user_delete(int $user, $mflag, $topics = array())
 		pmsn_user_update($user_up[$i]);
 }
 
-function pmsn_get_var($name, $default = null)
+function pmsn_get_var(string $name, $default = null)
 {
 	return $_POST[$name] ?? ($_GET[$name] ?? $default);
 }
 
-function pmsn_csrf_token($key)
+function pmsn_csrf_token(string $key)
 {
 	global $pun_config, $pun_user;
 	static $arr = array();

@@ -191,12 +191,12 @@ class upfClass
         }
     }
 
-    public function inBlackList($ext)
+    public function inBlackList(string $ext)
     {
         return isset($this->blackList[strtolower($ext)]);
     }
 
-    public function dirSize($dir)
+    public function dirSize(string $dir)
     {
         if ($this->isBadLink($dir)) {
             return false;
@@ -283,7 +283,7 @@ class upfClass
      *
      * @return false|array
      */
-    public function imageExt($path)
+    public function imageExt(string $path)
     {
         if ($this->isBadLink($path)) {
             return false;
@@ -317,7 +317,7 @@ class upfClass
      *
      * @return string
      */
-    protected function filterName($name)
+    protected function filterName(string $name)
     {
         $new = false;
         if (function_exists('transliterator_transliterate')) {
@@ -377,7 +377,7 @@ class upfClass
     protected $fileIsUp;
     protected $image;
 
-    public function loadFile($path, $basename = null)
+    public function loadFile(string $path, $basename = null)
     {
         $this->filePath = null;
         $this->fileName = null;
@@ -523,12 +523,12 @@ class upfClass
         ];
     }
 
-    public function saveFile($path, $overwrite = false)
+    public function saveFile(string $path, $overwrite = false)
     {
         return $this->save($path, $overwrite, false);
     }
 
-    public function saveImage($path, $overwrite = false)
+    public function saveImage(string $path, $overwrite = false)
     {
         if (empty($this->image)) {
             $this->error = 'No image';
@@ -538,7 +538,7 @@ class upfClass
         return $this->save($path, $overwrite, true);
     }
 
-    protected function save($path, $overwrite, $isImage)
+    protected function save(string $path, $overwrite, $isImage)
     {
         if ($this->isBadLink($path)) {
             return false;
@@ -646,7 +646,7 @@ class upfClass
         ];
     }
 
-    public function resizeImage($width, $height = null)
+    public function resizeImage(int $width, $height = null)
     {
         if (empty($this->image)) {
             $this->error = 'No image';
@@ -778,7 +778,7 @@ class upfClass
         $this->destroyImage();
     }
 
-    protected function hidePath($str, $path = null)
+    protected function hidePath(string $str, $path = null)
     {
         $search = [];
         if (null !== $this->filePath) {

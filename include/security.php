@@ -10,7 +10,7 @@ if (!defined('PUN'))
 	exit;
 
 
-function security_lang($val, $isset = false)
+function security_lang(string $val, $isset = false)
 {
 	static $lang_sec;
 
@@ -31,7 +31,7 @@ function security_lang($val, $isset = false)
 }
 
 
-function security_encode_for_js($s)
+function security_encode_for_js(string $s)
 {
 	global $pun_config, $page_js;
 
@@ -69,7 +69,7 @@ function security_show_random_value($val)
 }
 
 
-function security_random_name($s)
+function security_random_name(string $s)
 {
 	global $pun_config;
 	static $s1_ar, $sar;

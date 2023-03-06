@@ -63,7 +63,7 @@ function split_words_clear_link_minor($arr)
 }
 
 
-function split_words_clear_link($url)
+function split_words_clear_link(string $url)
 {
 	$text = '';
 	$arr = parse_url($url);
@@ -101,7 +101,7 @@ function split_words_clear_link($url)
 // "Cleans up" a text string and returns an array of unique words
 // This function depends on the current locale setting
 //
-function split_words($text, $idx)
+function split_words(string $text, $idx)
 {
 	// Remove BBCode
 	$text = preg_replace('%\[/?(b|u|s|ins|del|em|i|h|colou?r|quote|code|img|url|email|list|topic|post|forum|user|imgr|imgl|hr|size|after|spoiler|right|center|justify|mono)(?:\=[^\]]*)?\]%', ' ', $text);
@@ -158,7 +158,7 @@ function split_words($text, $idx)
 //
 // Checks if a word is a valid searchable word
 //
-function validate_search_word($word, $idx)
+function validate_search_word(string $word, $idx)
 {
 	static $stopwords;
 
@@ -201,7 +201,7 @@ function validate_search_word($word, $idx)
 //
 // Check a given word is a search keyword.
 //
-function is_keyword($word)
+function is_keyword(string $word)
 {
 	return $word == 'and' || $word == 'or' || $word == 'not';
 }
@@ -210,7 +210,7 @@ function is_keyword($word)
 //
 // Check if a given word is CJK or Hangul.
 //
-function is_cjk($word)
+function is_cjk(string $word)
 {
 	return preg_match('%^'.PUN_CJK_HANGUL_REGEX.'+$%u', $word) ? true : false;
 }
@@ -219,7 +219,7 @@ function is_cjk($word)
 //
 // Strip [img] [url] and [email] out of the message so we don't index their contents
 //
-function strip_bbcode($text)
+function strip_bbcode(string $text)
 {
 	static $patterns;
 
@@ -242,7 +242,7 @@ function strip_bbcode($text)
 //
 // Updates the search index with the contents of $post_id (and $subject)
 //
-function update_search_index($mode, int $post_id, $message, $subject = null)
+function update_search_index($mode, int $post_id, string $message, $subject = null)
 {
 	global $db_type, $db;
 

@@ -6,13 +6,13 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-function ua_get_filename($name, $folder)
+function ua_get_filename(string $name, string $folder)
 {
 	$name = preg_replace('%[^\w]%', '', strtolower($name));
 	return get_base_url(true).'/img/user_agent/'.$folder.'/'.$name.'.png';
 }
 
-function ua_search_for_item($items, $usrag)
+function ua_search_for_item($items, string $usrag)
 {
 	foreach ($items as $item)
 	{
@@ -23,7 +23,7 @@ function ua_search_for_item($items, $usrag)
 	return 'Unknown';
 }
 
-function get_useragent_names($usrag)
+function get_useragent_names(string $usrag)
 {
 	$browser_img = $browser_version = '';
 
@@ -132,7 +132,7 @@ function get_useragent_names($usrag)
 	return $result;
 }
 
-function get_useragent_icons($usrag)
+function get_useragent_icons(string $usrag)
 {
 	global $pun_user;
 	static $uac = array();
