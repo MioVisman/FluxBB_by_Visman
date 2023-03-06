@@ -316,7 +316,7 @@ else if (isset($_GET['edit_forum']))
 											<option value="0"><?php echo $lang_subforums['No parent forum'] ?></option>
 <?php
 	// MOD subforums - Visman
-	function sf_select_view ($id, $cur_forum, $space = '')
+	function sf_select_view($id, $cur_forum, $space = '')
 	{
 		global $sf_array_tree, $sf_array_asc;
 
@@ -337,11 +337,11 @@ else if (isset($_GET['edit_forum']))
 			$disabled = $forum_list['fid'] == $cur_forum['id'] || (isset($sf_array_asc[$cur_forum['id']]) && in_array($forum_list['fid'], $sf_array_asc[$cur_forum['id']])) ? ' disabled="disabled"' : '';
 
 			echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$forum_list['fid'].'"'.$selected.$disabled.'>'.$space.pun_htmlspecialchars($forum_list['forum_name']).'</option>'."\n";
-			sf_select_view ($forum_list['fid'], $cur_forum, $space.'&#160;&#160;');
+			sf_select_view($forum_list['fid'], $cur_forum, $space.'&#160;&#160;');
 		}
 	}
 
-	sf_select_view (0, $cur_forum);
+	sf_select_view(0, $cur_forum);
 ?>
 											</optgroup>
 										</select>
@@ -513,7 +513,7 @@ if (!empty($sf_array_tree[0])) // MOD subforums - Visman
 $cur_index = 4;
 
 // MOD subforum - Visman
-function sf_list_view ($id, $space = '')
+function sf_list_view($id, $space = '')
 {
 	global $sf_array_tree, $cur_index, $lang_admin_common, $lang_admin_forums;
 
@@ -553,11 +553,11 @@ function sf_list_view ($id, $space = '')
 								</tr>
 <?php
 
-		sf_list_view ($cur_forum['fid'], $space.'&#160;&#160;&#160;');
+		sf_list_view($cur_forum['fid'], $space.'&#160;&#160;&#160;');
 	}
 }
 
-sf_list_view (0);
+sf_list_view(0);
 
 ?>
 							</tbody>

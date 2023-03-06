@@ -576,7 +576,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 
 			if ($search_type[0] == 'both')
 			{
-				list ($keywords, $author) = $search_type[1];
+				list($keywords, $author) = $search_type[1];
 				$crumbs_text['search_type'] = sprintf($lang_search['By both show as '.$show_as], pun_htmlspecialchars($keywords), pun_htmlspecialchars($author));
 			}
 			else if ($search_type[0] == 'keywords')
@@ -881,7 +881,7 @@ if ($pun_config['o_search_all_forums'] == '1' || $pun_user['is_admmod'])
 	echo "\t\t\t\t\t\t".'<div class="checklist">'."\n";
 
 	// MOD subforum - Visman
-	function sf_search_view ($id, $space = '')
+	function sf_search_view($id, $space = '')
 	{
 		global $sf_array_tree;
 
@@ -904,7 +904,7 @@ if ($pun_config['o_search_all_forums'] == '1' || $pun_user['is_admmod'])
 
 			echo "\t\t\t\t\t\t\t\t".'<label><input type="checkbox" name="forums[]" id="forum-'.$cur_forum['fid'].'" value="'.$cur_forum['fid'].'" />'.$space.pun_htmlspecialchars($cur_forum['forum_name']).'</label>'."\n";
 
-			sf_search_view ($cur_forum['fid'], $space.'&#160;&#160;');
+			sf_search_view($cur_forum['fid'], $space.'&#160;&#160;');
 		}
 
 		if ($id == 0 && $cur_category)
@@ -914,7 +914,7 @@ if ($pun_config['o_search_all_forums'] == '1' || $pun_user['is_admmod'])
 		}
 	}
 
-	sf_search_view (0);
+	sf_search_view(0);
 
 	echo "\t\t\t\t\t\t".'</div>'."\n";
 	echo "\t\t\t\t\t\t".'</div>'."\n";
@@ -927,7 +927,7 @@ else
 	echo "\t\t\t\t\t\t".'<select id="forum" name="forum">'."\n";
 
 	// MOD subforum - Visman
-	function sf_search_view ($id, $space = '')
+	function sf_search_view($id, $space = '')
 	{
 		global $sf_array_tree;
 
@@ -946,11 +946,11 @@ else
 
 			echo "\t\t\t\t\t\t\t\t".'<option value="'.$cur_forum['fid'].'">'.$space.pun_htmlspecialchars($cur_forum['forum_name']).'</option>'."\n";
 
-			sf_search_view ($cur_forum['fid'], $space.'&#160;&#160;');
+			sf_search_view($cur_forum['fid'], $space.'&#160;&#160;');
 		}
 	}
 
-	sf_search_view (0);
+	sf_search_view(0);
 
 	echo "\t\t\t\t\t\t\t".'</optgroup>'."\n";
 	echo "\t\t\t\t\t\t".'</select>'."\n";

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2011-2022 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2011-2023 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -36,7 +36,7 @@ $arr_new = array(
 );
 
 // установка изменений в файлы
-function InstallModInFiles ()
+function InstallModInFiles()
 {
 	global $arr_files, $arr_search, $arr_new, $lang_fb;
 
@@ -68,15 +68,15 @@ function InstallModInFiles ()
 			$errors[] = $arr_files[$i].$lang_fb['Error save file'];
 			continue;
 		}
-		fwrite ($fp, $file_content);
-		fclose ($fp);
+		fwrite($fp, $file_content);
+		fclose($fp);
 	}
 
 	return $errors;
 }
 
 // удаление изменений в файлы
-function DeleteModInFiles ()
+function DeleteModInFiles()
 {
 	global $arr_files, $arr_search, $arr_new, $lang_fb;
 
@@ -104,8 +104,8 @@ function DeleteModInFiles ()
 			$errors[] = $arr_files[$i].$lang_fb['Error save file'];
 			continue;
 		}
-		fwrite ($fp, $file_content);
-		fclose ($fp);
+		fwrite($fp, $file_content);
+		fclose($fp);
 	}
 
 	return $errors;
