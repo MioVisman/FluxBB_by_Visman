@@ -731,7 +731,7 @@ function flux_hook($name)
 //
 // Update posts, topics, last_post, last_post_id and last_poster for a forum
 //
-function update_forum($forum_id)
+function update_forum(int $forum_id)
 {
 	global $db;
 
@@ -760,7 +760,7 @@ function update_forum($forum_id)
 //
 // Deletes any avatars owned by the specified user ID
 //
-function delete_avatar($user_id)
+function delete_avatar(int $user_id)
 {
 	global $pun_config;
 
@@ -778,7 +778,7 @@ function delete_avatar($user_id)
 //
 // Delete a topic and all of it's posts
 //
-function delete_topic($topic_id, $flag_f = 1) // not sum - Visman
+function delete_topic(int $topic_id, $flag_f = 1) // not sum - Visman
 {
 	global $db;
 
@@ -825,7 +825,7 @@ function delete_topic($topic_id, $flag_f = 1) // not sum - Visman
 //
 // Delete a single post
 //
-function delete_post($post_id, $topic_id)
+function delete_post(int $post_id, int $topic_id)
 {
 	global $db;
 

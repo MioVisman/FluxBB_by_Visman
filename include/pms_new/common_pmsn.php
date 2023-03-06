@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2022 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2023 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -82,7 +82,7 @@ function generate_pmsn_menu($page = '')
 	}
 }
 
-function pmsn_user_update($user, $flag = false)
+function pmsn_user_update(int $user, $flag = false)
 {
 	global $db, $db_type;
 
@@ -102,7 +102,7 @@ function pmsn_user_update($user, $flag = false)
 	$db->query('UPDATE '.$db->prefix.'users SET '.$tempf.'messages_new='.$mnew.', messages_all='.$mkol.' WHERE id='.$user) or error('Unable to update user', __FILE__, __LINE__, $db->error());
 }
 
-function pmsn_user_delete($user, $mflag, $topics = array())
+function pmsn_user_delete(int $user, $mflag, $topics = array())
 {
 	global $db, $db_type;
 

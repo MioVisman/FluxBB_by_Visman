@@ -132,7 +132,7 @@ function generate_admin_menu($page = '')
 //
 // Delete topics from $forum_id that are "older than" $prune_date (if $prune_sticky is 1, sticky topics will also be deleted)
 //
-function prune($forum_id, $prune_sticky, $prune_date)
+function prune(int $forum_id, $prune_sticky, int $prune_date)
 {
 	global $db;
 

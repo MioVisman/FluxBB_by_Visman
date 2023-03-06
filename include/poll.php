@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2011-2022 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2011-2023 Visman (mio.visman@yandex.ru)
  * based on code by kg (kg@as-planned.com)
  * Poll Mod for FluxBB, written by As-Planned.com
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -37,7 +37,7 @@ function poll_post($var, $default = null)
 }
 
 // запрещено ли редактировать **************************************************
-function poll_noedit($tid)
+function poll_noedit(int $tid)
 {
 	global $is_admmod, $pun_config;
 
@@ -54,11 +54,11 @@ function poll_bad()
 }
 
 // может ли голосовать юзер ****************************************************
-function poll_can_vote($tid, $uid)
+function poll_can_vote(int $tid, $uid)
 {
 	global $db, $cur_topic;
 
-	if (is_null($uid) || $uid < 2) return false;
+	if (! is_numeric($uid) || $uid < 2) return false;
 	if (isset($cur_topic['closed']) && $cur_topic['closed'] != '0') return false;
 
 	$result = $db->query('SELECT 1 FROM '.$db->prefix.'poll_voted WHERE tid='.$tid.' AND uid='.$uid) or error('Unable to fetch poll voted info', __FILE__, __LINE__, $db->error());
@@ -66,7 +66,7 @@ function poll_can_vote($tid, $uid)
 }
 
 // получение информации по опросу **********************************************
-function poll_info($tid, $uid = null)
+function poll_info(int $tid, $uid = null)
 {
 	global $db;
 
