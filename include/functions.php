@@ -1195,7 +1195,7 @@ function csrf_hash($script = false, $use_ip = true, $user = false)
 //
 // Validate the given redirect URL, use the fallback otherwise
 //
-function validate_redirect(string $redirect_url, string $fallback_url)
+function validate_redirect(string $redirect_url, $fallback_url)
 {
 	$referrer = parse_url(strtolower($redirect_url));
 
