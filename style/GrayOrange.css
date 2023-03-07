@@ -1995,6 +1995,11 @@ span.shlight {
 }
 
 @media only screen and (max-width: 640px) {
+.pun .infldset {
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
 .pun .blocktable .tc2 {
 	display: none;
 }
