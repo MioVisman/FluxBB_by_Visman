@@ -417,7 +417,7 @@ elseif (
 	if (true === $upf_class->isImage() && 1 == $upf_conf['thumb'] && $upf_class->isResize()) {
 		$upf_class->setImageQuality($upf_conf['thumb_perc']);
 
-		$scaleResize = $upf_class->resizeImage(null, $upf_conf['thumb_size']);
+		$scaleResize = $upf_class->resizeImage(0, $upf_conf['thumb_size']);
 		if (false !== $scaleResize) {
 			$path = PUN_ROOT . $upf_dir . 'mini_' . $fileinfo['filename'] . '.' . $fileinfo['extension'];
 

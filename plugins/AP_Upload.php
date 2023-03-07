@@ -13,7 +13,7 @@ if (! defined('PUN')) {
 
 // Tell admin_loader.php that this is indeed a plugin and that it is loaded
 define('PUN_PLUGIN_LOADED', 1);
-define('PLUGIN_VERSION', '3.3.0');
+define('PLUGIN_VERSION', '3.3.1');
 define('PLUGIN_URL', pun_htmlspecialchars('admin_loader.php?plugin=' . $plugin));
 define('PLUGIN_EXTS', 'webp,jpg,jpeg,png,gif,mp3,zip,rar,7z');
 define('PLUGIN_NF', 25);
@@ -620,7 +620,7 @@ if (empty($files)) {
 			&& false !== $upf_class->loadImage()
 		) {
 			$upf_class->setImageQuality($aconf['thumb_perc']);
-			$scaleResize = $upf_class->resizeImage(null, $aconf['thumb_size']);
+			$scaleResize = $upf_class->resizeImage(0, $aconf['thumb_size']);
 
 			if (false !== $scaleResize) {
 				if ($scaleResize < 1) {

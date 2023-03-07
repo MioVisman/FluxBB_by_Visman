@@ -672,8 +672,8 @@ class upfClass
                 return false;
         }
 
-        $w = empty($width) || $width < 16 ? 1 : $width / $oldWidth;
-        $h = empty($height) || $height < 16 ? 1 : $height / $oldHeight;
+        $w = $width < 16 ? 1 : $width / $oldWidth;
+        $h = ! is_numeric($height) || $height < 16 ? 1 : $height / $oldHeight;
         $r = min(1, $w, $h);
         if (1 == $r) { // ?
             return 1;
