@@ -26,7 +26,7 @@ define('UPDATE_TO_DB_REVISION', 21);
 define('UPDATE_TO_SI_REVISION', 2.1);
 define('UPDATE_TO_PARSER_REVISION', 2);
 
-define('MIN_PHP_VERSION', '7.0.0');
+define('MIN_PHP_VERSION', '7.2.0');
 define('MIN_MYSQL_VERSION', '5.5.3');
 define('MIN_PGSQL_VERSION', '7.0.0');
 define('PUN_SEARCH_MIN_WORD', 3);

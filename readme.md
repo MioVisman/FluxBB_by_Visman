@@ -10,8 +10,8 @@ of the other forums have whilst not sacrificing essential functionality or usabi
 ## Requirements
 
 * A webserver
-* PHP 7.0 or later
-* A database such as MySQL 5.5.3 or later, PostgreSQL 7.0 or later, or SQLite 3
+* PHP 7.2+
+* A database such as MySQL 5.5.3+, PostgreSQL 7.0+, or SQLite 3
 
 ## Recommendations
 
