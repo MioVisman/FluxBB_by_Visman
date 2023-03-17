@@ -132,12 +132,12 @@ function get_useragent_names(string $usrag)
 	return $result;
 }
 
-function get_useragent_icons(string $usrag)
+function get_useragent_icons($usrag)
 {
 	global $pun_user;
 	static $uac = array();
 
-	if ($usrag == '') return '';
+	if (! is_string($usrag) ||  $usrag == '') return '';
 
 	if (isset($uac[$usrag])) return $uac[$usrag];
 
