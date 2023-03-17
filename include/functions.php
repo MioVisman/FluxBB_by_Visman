@@ -657,7 +657,7 @@ function generate_page_title($page_title, int $p = null)
 //
 // Save array of tracked topics in cookie
 //
-function set_tracked_topics(array $tracked_topics)
+function set_tracked_topics(?array $tracked_topics)
 {
 	global $cookie_name, $cookie_path, $cookie_domain, $cookie_secure, $pun_config;
 
