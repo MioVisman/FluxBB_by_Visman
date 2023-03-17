@@ -377,7 +377,7 @@ class upfClass
     protected $fileIsUp;
     protected $image;
 
-    public function loadFile(string $path, $basename = null)
+    public function loadFile(string $path, string $basename = null)
     {
         $this->filePath = null;
         $this->fileName = null;
@@ -523,12 +523,12 @@ class upfClass
         ];
     }
 
-    public function saveFile(string $path, $overwrite = false)
+    public function saveFile(string $path, bool $overwrite = false)
     {
         return $this->save($path, $overwrite, false);
     }
 
-    public function saveImage(string $path, $overwrite = false)
+    public function saveImage(string $path, bool $overwrite = false)
     {
         if (empty($this->image)) {
             $this->error = 'No image';
@@ -538,7 +538,7 @@ class upfClass
         return $this->save($path, $overwrite, true);
     }
 
-    protected function save(string $path, $overwrite, $isImage)
+    protected function save(string $path, bool $overwrite, bool $isImage)
     {
         if ($this->isBadLink($path)) {
             return false;
@@ -646,7 +646,7 @@ class upfClass
         ];
     }
 
-    public function resizeImage(int $width, $height = null)
+    public function resizeImage(int $width, ?int $height = null)
     {
         if (empty($this->image)) {
             $this->error = 'No image';
@@ -778,7 +778,7 @@ class upfClass
         $this->destroyImage();
     }
 
-    protected function hidePath(string $str, $path = null)
+    protected function hidePath(string $str, string $path = null)
     {
         $search = [];
         if (null !== $this->filePath) {

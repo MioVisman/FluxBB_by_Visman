@@ -10,7 +10,7 @@
 //
 // Cookie stuff!
 //
-function check_cookie(&$pun_user)
+function check_cookie(array &$pun_user)
 {
 	global $db, $db_type, $pun_config, $cookie_name, $cookie_seed;
 
@@ -145,7 +145,7 @@ function escape_cdata(string $str)
 // $user can be either a user ID (integer) or a username (string)
 // $password can be either a plaintext password or a password hash including salt ($password_is_hash must be set accordingly)
 //
-function authenticate_user($user, string $password, $password_is_hash = false)
+function authenticate_user($user, string $password, bool $password_is_hash = false)
 {
 	global $db, $pun_user;
 
@@ -173,7 +173,7 @@ function authenticate_user($user, string $password, $password_is_hash = false)
 //
 // Try to determine the current URL
 //
-function get_current_url($max_length = 0)
+function get_current_url(int $max_length = 0)
 {
 	$protocol = get_current_protocol();
 	$port = isset($_SERVER['SERVER_PORT']) && (($_SERVER['SERVER_PORT'] != '80' && $protocol == 'http') || ($_SERVER['SERVER_PORT'] != '443' && $protocol == 'https')) && strpos($_SERVER['HTTP_HOST'], ':') === false ? ':'.$_SERVER['SERVER_PORT'] : '';
@@ -218,7 +218,7 @@ function get_current_protocol()
 //
 // Fetch the base_url, optionally support HTTPS and HTTP
 //
-function get_base_url($support_https = false)
+function get_base_url(bool $support_https = false)
 {
 	global $pun_config;
 	static $base_url;
@@ -325,7 +325,7 @@ function set_default_user()
 //
 // SHA1 HMAC with PHP 4 fallback
 //
-function forum_hmac(string $data, string $key, $raw_output = false)
+function forum_hmac(string $data, string $key, bool $raw_output = false)
 {
 	return hash_hmac('sha1', $data, $key, $raw_output);
 }
@@ -456,7 +456,7 @@ function check_bans()
 //
 // Check username
 //
-function check_username(string $username, $exclude_id = null)
+function check_username(string $username, int $exclude_id = null)
 {
 	global $db, $pun_config, $errors, $lang_prof_reg, $lang_register, $lang_common;
 
@@ -504,7 +504,7 @@ function check_username(string $username, $exclude_id = null)
 //
 // Update "Users online"
 // ф-ия переписана - Visman
-function update_users_online($tid = 0, &$witt_us = array())
+function update_users_online(int $tid = 0, array &$witt_us = array())
 {
 	global $db, $pun_config, $onl_u, $onl_g, $onl_s;
 
@@ -580,7 +580,7 @@ function update_users_online($tid = 0, &$witt_us = array())
 //
 // Display the profile navigation menu
 //
-function generate_profile_menu($page = '')
+function generate_profile_menu(string $page = '')
 {
 	global $lang_profile, $pun_config, $pun_user, $id;
 
@@ -636,7 +636,7 @@ function generate_avatar_markup(int $user_id)
 //
 // Generate browser's title
 //
-function generate_page_title($page_title, $p = null)
+function generate_page_title($page_title, int $p = null)
 {
 	global $lang_common;
 
@@ -657,7 +657,7 @@ function generate_page_title($page_title, $p = null)
 //
 // Save array of tracked topics in cookie
 //
-function set_tracked_topics($tracked_topics)
+function set_tracked_topics(array $tracked_topics)
 {
 	global $cookie_name, $cookie_path, $cookie_domain, $cookie_secure, $pun_config;
 
@@ -778,7 +778,7 @@ function delete_avatar(int $user_id)
 //
 // Delete a topic and all of it's posts
 //
-function delete_topic(int $topic_id, $flag_f = 1) // not sum - Visman
+function delete_topic(int $topic_id, int $flag_f = 1) // not sum - Visman
 {
 	global $db;
 
@@ -932,7 +932,7 @@ function get_usernames_banlist()
 // Determines the correct title for $user
 // $user must contain the elements 'username', 'title', 'posts', 'g_id' and 'g_user_title'
 //
-function get_title($user)
+function get_title(array $user)
 {
 	global $lang_common, $pun_config;
 
@@ -1032,7 +1032,7 @@ function paginate(int $num_pages, int $cur_page, string $link)
 //
 // Display a message
 //
-function message(string $message, $no_back_link = false, $http_status = null)
+function message(string $message, bool $no_back_link = false, string $http_status = null)
 {
 	global $db, $lang_common, $pun_config, $pun_start, $tpl_main, $pun_user, $page_js;
 
@@ -1070,7 +1070,7 @@ function message(string $message, $no_back_link = false, $http_status = null)
 //
 // Format a time string according to $time_format and time zones
 //
-function format_time($timestamp, $date_only = false, $date_format = null, $time_format = null, $time_only = false, $no_text = false, $user = null)
+function format_time($timestamp, bool $date_only = false, ?string $date_format = null, ?string $time_format = null, bool $time_only = false, bool $no_text = false, array $user = null)
 {
 	global $lang_common, $pun_user, $forum_date_formats, $forum_time_formats;
 
@@ -1114,7 +1114,7 @@ function format_time($timestamp, $date_only = false, $date_format = null, $time_
 //
 // A wrapper for PHP's number_format function
 //
-function forum_number_format($number, $decimals = 0)
+function forum_number_format($number, int $decimals = 0)
 {
 	global $lang_common;
 
@@ -1125,7 +1125,7 @@ function forum_number_format($number, $decimals = 0)
 //
 // Generate a random key of length $len
 //
-function random_key(int $len, $readable = false, $hash = false)
+function random_key(int $len, bool $readable = false, bool $hash = false)
 {
 	$key = '';
 
@@ -1195,7 +1195,7 @@ function csrf_hash($script = false, $use_ip = true, $user = false)
 //
 // Validate the given redirect URL, use the fallback otherwise
 //
-function validate_redirect(string $redirect_url, $fallback_url)
+function validate_redirect(string $redirect_url, ?string $fallback_url)
 {
 	$referrer = parse_url(strtolower($redirect_url));
 
@@ -1342,7 +1342,7 @@ function pun_linebreaks(string $str)
 //
 // A wrapper for utf8_trim for compatibility
 //
-function pun_trim($str, $charlist = false)
+function pun_trim($str, string $charlist = null)
 {
 	if (! is_scalar($str)) {
 		$str = '';
@@ -1382,7 +1382,7 @@ function pun_strcasecmp(string $strX, string $strY)
 // or a string, which is the key that the new element should be inserted before
 // $key is optional: it's used when inserting a new key/value pair into an associative array
 //
-function array_insert(&$input, $offset, $element, $key = null)
+function array_insert(array &$input, $offset, $element, $key = null)
 {
 	if (is_null($key))
 		$key = $offset;
@@ -1647,7 +1647,7 @@ function redirect(string $destination_url, string $message)
 //
 // Display a simple error message
 //
-function error(string $message, $file = null, $line = null, $db_error = false)
+function error(string $message, string $file = null, $line = null, $db_error = false)
 {
 	global $pun_config, $lang_common;
 
@@ -1909,7 +1909,7 @@ function generate_stopwords_cache_id()
 //
 // Split text into chunks ($inside contains all text inside $start and $end, and $outside contains all text outside)
 //
-function split_text(string $text, $start, $end, $retab = true)
+function split_text(string $text, string $start, string $end, bool $retab = true)
 {
 	global $pun_config;
 
@@ -1937,7 +1937,7 @@ function split_text(string $text, $start, $end, $retab = true)
 // Extract blocks from a text with a starting and ending string
 // This function always matches the most outer block so nesting is possible
 //
-function extract_blocks(string $text, $start, $end, $retab = true)
+function extract_blocks(string $text, string $start, string $end, bool $retab = true)
 {
 	global $pun_config;
 
@@ -2209,7 +2209,7 @@ function dump()
 //
 // генерация javascript в футере
 //
-function generation_js($arr)
+function generation_js(array $arr)
 {
 	$res = '';
 	if (!empty($arr['j']))
@@ -2227,7 +2227,7 @@ function generation_js($arr)
 // MOD Кто в этой теме
 // Отложенное выполнение запроса
 //
-function witt_query($var = NULL)
+function witt_query($var = null)
 {
 	global $db;
 	static $query;
@@ -2251,7 +2251,7 @@ function witt_query($var = NULL)
 
 			$db->query($query) or error('Unable to insert/update into online list', __FILE__, __LINE__, $db->error());
 
-			$query = NULL;
+			$query = null;
 		}
 	}
 }
@@ -2278,7 +2278,7 @@ function sf_crumbs(int $id)
 //
 // Checks the password on the user's data array
 //
-function forum_password_verify(string $password, $user)
+function forum_password_verify(string $password, array $user)
 {
 	global $salt1;
 
@@ -2324,7 +2324,7 @@ function forum_password_verify(string $password, $user)
 //
 // Sets common http headers
 //
-function forum_http_headers($type = 'text/html')
+function forum_http_headers(string $type = 'text/html')
 {
 	$now = gmdate('D, d M Y H:i:s') . ' GMT';
 

@@ -35,7 +35,7 @@ function ua_isbot(string $ua, string $ual)
 }
 
 
-function ua_isbotex($ra)
+function ua_isbotex(string $ra)
 {
 	$ua = getenv('HTTP_USER_AGENT');
 	$ual = strtolower($ua);

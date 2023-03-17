@@ -24,7 +24,7 @@ require PUN_ROOT.'lang/'.$admin_language.'/admin_common.php';
 //
 // Fetch a list of available admin plugins
 //
-function forum_list_plugins($is_admin)
+function forum_list_plugins(bool $is_admin)
 {
 	$plugins = array();
 
@@ -52,7 +52,7 @@ function forum_list_plugins($is_admin)
 //
 // Display the admin navigation menu
 //
-function generate_admin_menu($page = '')
+function generate_admin_menu(string $page = '')
 {
 	global $pun_config, $pun_user, $lang_admin_common;
 
@@ -132,7 +132,7 @@ function generate_admin_menu($page = '')
 //
 // Delete topics from $forum_id that are "older than" $prune_date (if $prune_sticky is 1, sticky topics will also be deleted)
 //
-function prune(int $forum_id, $prune_sticky, int $prune_date)
+function prune(int $forum_id, bool $prune_sticky, int $prune_date)
 {
 	global $db;
 

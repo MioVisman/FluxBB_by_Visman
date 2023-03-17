@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2013-2018 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2013-2023 Visman (mio.visman@yandex.ru)
  * Copyright (C) 2008-2012 FluxBB
  * based on code by Rickard Andersson copyright (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -10,14 +10,14 @@
 if (!defined('PUN'))
 	exit;
 
-function sf_status_new($cur_forum)
+function sf_status_new(array $cur_forum)
 {
 	global $new_topics;
 
 	return isset($new_topics[$cur_forum['fid']]);
 }
 
-function sf_data_forum($result, &$forum, $fid = 0)
+function sf_data_forum(array $result, array &$forum, int $fid = 0)
 {
 	if (!$fid)
 		$fid = $forum['fid'];

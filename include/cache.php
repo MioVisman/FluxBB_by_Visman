@@ -81,7 +81,7 @@ function generate_quickjump_cache($group_id = false)
 	}
 
 	// MOD subforums - Visman
-	function generate_quickjump_sf_list($sf_array_tree, $id = 0, $space = '')
+	function generate_quickjump_sf_list(array $sf_array_tree, int $id = 0, string $space = '')
 	{
 		if (empty($sf_array_tree[$id])) return '';
 
@@ -293,7 +293,7 @@ function generate_smiley_cache()
 //
 // Generate the subforums cache - Visman
 //
-function generate_subforums_desc(&$list, $tree, $node = 0)
+function generate_subforums_desc(array &$list, array $tree, int $node = 0)
 {
 	if (!empty($tree[$node]))
 	{
@@ -306,7 +306,7 @@ function generate_subforums_desc(&$list, $tree, $node = 0)
 	}
 }
 
-function generate_subforums_asc(&$list, $tree, $node = array(0))
+function generate_subforums_asc(array &$list, array $tree, array $node = array(0))
 {
 	$list[$node[0]][] = $node[0];
 

@@ -30,7 +30,7 @@ function is_valid_email(string $email)
 //
 // Check if $email is banned
 //
-function is_banned_email(string $email, $id = false)
+function is_banned_email(string $email, int $id = null)
 {
 	global $pun_bans;
 
@@ -38,7 +38,7 @@ function is_banned_email(string $email, $id = false)
 	{
 		if (empty($cur_ban['email'])) {
 			continue;
-		} elseif (false !== $id && $cur_ban['id'] == $id) {
+		} elseif (null !== $id && $cur_ban['id'] == $id) {
 			continue;
 		}
 
@@ -46,12 +46,12 @@ function is_banned_email(string $email, $id = false)
 			$len = strlen($cur_ban['email']);
 			if ($cur_ban['email'][0] == '.') {
 				if (substr($email, -$len) == $cur_ban['email']) {
-					return false === $id ? true : $cur_ban['email'];
+					return null === $id ? true : $cur_ban['email'];
 				}
 			} else {
 				$tmp = substr($email, -1-$len);
 				if ($tmp == '.'.$cur_ban['email'] || $tmp == '@'.$cur_ban['email']) {
-					return false === $id ? true : $cur_ban['email'];
+					return null === $id ? true : $cur_ban['email'];
 				}
 			}
 		} else if ($email == $cur_ban['email']) {
@@ -79,7 +79,7 @@ function encode_mail_text(string $str)
 //
 // Make a post email safe
 //
-function bbcode2email(string $text, $wrap_length = 72, $language = null)
+function bbcode2email(string $text, int $wrap_length = 72, string $language = null)
 {
 	static $base_url;
 	static $wrotes = array();
@@ -245,7 +245,7 @@ function bbcode2email(string $text, $wrap_length = 72, $language = null)
 //
 // Wrapper for PHP's mail()
 //
-function pun_mail(string $to, string $subject, string $message, $reply_to_email = '', $reply_to_name = '')
+function pun_mail(string $to, string $subject, string $message, string $reply_to_email = '', string $reply_to_name = '')
 {
 	global $pun_config, $lang_common;
 
@@ -292,7 +292,7 @@ function pun_mail(string $to, string $subject, string $message, $reply_to_email 
 // This function was originally a part of the phpBB Group forum software phpBB2 (http://www.phpbb.com)
 // They deserve all the credit for writing it. I made small modifications for it to suit PunBB and its coding standards
 //
-function server_parse($socket, $expected_response)
+function server_parse($socket, string $expected_response)
 {
 	$server_response = '';
 	while (substr($server_response, 3, 1) != ' ')
@@ -310,7 +310,7 @@ function server_parse($socket, $expected_response)
 // This function was originally a part of the phpBB Group forum software phpBB2 (http://www.phpbb.com)
 // They deserve all the credit for writing it. I made small modifications for it to suit PunBB and its coding standards.
 //
-function smtp_mail(string $to, string $subject, string $message, $headers = '')
+function smtp_mail(string $to, string $subject, string $message, string $headers = '')
 {
 	global $pun_config;
 	static $local_host;

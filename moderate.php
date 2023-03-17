@@ -66,7 +66,7 @@ if (!$pun_user['is_guest'])
 // Load the misc.php language file
 require PUN_ROOT.'lang/'.$pun_user['language'].'/misc.php';
 
-function generate_list_of_forums($tree, $current, $forums, $root = 0, $space = '')
+function generate_list_of_forums(array $tree, int $current, array $forums, int $root = 0, string $space = '')
 {
 	if (empty($tree[$root])) {
 		return '';

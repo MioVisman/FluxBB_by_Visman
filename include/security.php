@@ -10,7 +10,7 @@ if (!defined('PUN'))
 	exit;
 
 
-function security_lang(string $val, $isset = false)
+function security_lang(string $val, bool $isset = false)
 {
 	static $lang_sec;
 
@@ -103,7 +103,7 @@ function security_random_name(string $s)
 }
 
 
-function security_show_captcha($tabindex, $acaptcha = true, $qcaptcha = false)
+function security_show_captcha(int $tabindex, bool $acaptcha = true, bool $qcaptcha = false)
 {
 	global $lang_common, $cur_index;
 
@@ -240,7 +240,7 @@ function security_test_browser()
 }
 
 
-function security_verify_captcha($form_captcha)
+function security_verify_captcha(string $form_captcha)
 {
 	$form_captcha = unserialize($form_captcha);
 
@@ -259,7 +259,7 @@ function security_verify_captcha($form_captcha)
 }
 
 
-function security_msg($error)
+function security_msg(string $error)
 {
 	return security_lang('Error '.$error, true) ? security_lang('Error '.$error) : 'Error '.$error;
 }

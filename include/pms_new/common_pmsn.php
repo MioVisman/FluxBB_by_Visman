@@ -13,7 +13,7 @@ if (file_exists(PUN_ROOT.'lang/'.$pun_user['language'].'/pms_new.php'))
 else
 	require PUN_ROOT.'lang/English/pms_new.php';
 
-function generate_pmsn_menu($page = '')
+function generate_pmsn_menu(string $page = '')
 {
 	global $pun_user, $lang_pmsn, $pmsn_kol_list, $pmsn_kol_new, $pmsn_kol_save;
 	global $sidamp, $sidvop;
@@ -82,7 +82,7 @@ function generate_pmsn_menu($page = '')
 	}
 }
 
-function pmsn_user_update(int $user, $flag = false)
+function pmsn_user_update(int $user, bool $flag = false)
 {
 	global $db, $db_type;
 
@@ -102,7 +102,7 @@ function pmsn_user_update(int $user, $flag = false)
 	$db->query('UPDATE '.$db->prefix.'users SET '.$tempf.'messages_new='.$mnew.', messages_all='.$mkol.' WHERE id='.$user) or error('Unable to update user', __FILE__, __LINE__, $db->error());
 }
 
-function pmsn_user_delete(int $user, $mflag, $topics = array())
+function pmsn_user_delete(int $user, int $mflag, array $topics = array())
 {
 	global $db, $db_type;
 

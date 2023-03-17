@@ -12,7 +12,7 @@ function ua_get_filename(string $name, string $folder)
 	return get_base_url(true).'/img/user_agent/'.$folder.'/'.$name.'.png';
 }
 
-function ua_search_for_item($items, string $usrag)
+function ua_search_for_item(array $items, string $usrag)
 {
 	foreach ($items as $item)
 	{
@@ -132,12 +132,12 @@ function get_useragent_names(string $usrag)
 	return $result;
 }
 
-function get_useragent_icons($usrag)
+function get_useragent_icons(?string $usrag)
 {
 	global $pun_user;
 	static $uac = array();
 
-	if (! is_string($usrag) ||  $usrag == '') return '';
+	if (empty($usrag)) return '';
 
 	if (isset($uac[$usrag])) return $uac[$usrag];
 

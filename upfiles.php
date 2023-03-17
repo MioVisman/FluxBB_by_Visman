@@ -5,7 +5,7 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-function upf_return_json($data)
+function upf_return_json(array $data)
 {
 	global $db;
 
@@ -22,12 +22,12 @@ function upf_return_json($data)
 	exit(json_encode($data));
 }
 
-function upf_get_pg($key, $default = null)
+function upf_get_pg(string $key, $default = null)
 {
 	return $_POST[$key] ?? ($_GET[$key] ?? $default);
 }
 
-function upf_message($message, $no_back_link = false, $http_status = null)
+function upf_message(string $message, bool $no_back_link = false, string $http_status = null)
 {
 	global $upf_ajax;
 
@@ -38,7 +38,7 @@ function upf_message($message, $no_back_link = false, $http_status = null)
 	}
 }
 
-function upf_redirect($destination_url, $message)
+function upf_redirect(string $destination_url, string $message)
 {
 	global $upf_ajax, $lang_up;
 

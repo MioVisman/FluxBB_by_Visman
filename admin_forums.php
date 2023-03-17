@@ -316,7 +316,7 @@ else if (isset($_GET['edit_forum']))
 											<option value="0"><?php echo $lang_subforums['No parent forum'] ?></option>
 <?php
 	// MOD subforums - Visman
-	function sf_select_view(int $id, $cur_forum, $space = '')
+	function sf_select_view(int $id, array $cur_forum, string $space = '')
 	{
 		global $sf_array_tree, $sf_array_asc;
 
@@ -513,7 +513,7 @@ if (!empty($sf_array_tree[0])) // MOD subforums - Visman
 $cur_index = 4;
 
 // MOD subforum - Visman
-function sf_list_view(int $id, $space = '')
+function sf_list_view(int $id, string $space = '')
 {
 	global $sf_array_tree, $cur_index, $lang_admin_common, $lang_admin_forums;
 

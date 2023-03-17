@@ -57,7 +57,7 @@ if (!isset($smilies))
 //
 // Make sure all BBCodes are lower case and do a little cleanup
 //
-function preparse_bbcode(string $text, &$errors, $is_signature = false)
+function preparse_bbcode(string $text, array &$errors, bool $is_signature = false)
 {
 	global $pun_config, $lang_common, $lang_post, $re_list;
 
@@ -194,7 +194,7 @@ function strip_empty_bbcode(string $text)
 //
 // Check the structure of bbcode tags and fix simple mistakes where possible
 //
-function preparse_tags(string $text, &$errors, $is_signature = false)
+function preparse_tags(string $text, array &$errors, bool $is_signature = false)
 {
 	global $lang_common, $pun_config, $pun_user;
 
@@ -630,7 +630,7 @@ function preparse_tags(string $text, &$errors, $is_signature = false)
 //
 // Preparse the contents of [list] bbcode
 //
-function preparse_list_tag(string $content, $type = '*')
+function preparse_list_tag(string $content, string $type = '*')
 {
 	global $lang_common, $re_list;
 
@@ -658,7 +658,7 @@ function preparse_list_tag(string $content, $type = '*')
 //
 // Truncate URL if longer than 55 characters (add http:// or ftp:// if missing)
 //
-function handle_url_tag(string $url, $link = '', $bbcode = false)
+function handle_url_tag(string $url, string $link = '', bool $bbcode = false)
 {
 	global $pun_config, $pun_user, $page_js;
 
@@ -714,7 +714,7 @@ function handle_url_tag(string $url, $link = '', $bbcode = false)
 //
 // Turns an URL from the [img] tag into an <img> tag or a <a href...> tag
 //
-function handle_img_tag(string $url, $is_signature = false, $alt = null, $float = '')
+function handle_img_tag(string $url, bool $is_signature = false, ?string $alt = null, string $float = '')
 {
 	global $lang_common, $pun_user;
 
@@ -734,7 +734,7 @@ function handle_img_tag(string $url, $is_signature = false, $alt = null, $float 
 //
 // Email bbcode replace to <a href="mailto:... - Visman
 //
-function handle_email_tag(string $mail, $body = null)
+function handle_email_tag(string $mail, string $body = null)
 {
 	if (null === $body)
 		$body = $mail;
@@ -747,7 +747,7 @@ function handle_email_tag(string $mail, $body = null)
 //
 // Parse the contents of [list] bbcode
 //
-function handle_list_tag(string $content, $type = '*')
+function handle_list_tag(string $content, string $type = '*')
 {
 	global $re_list;
 
@@ -803,7 +803,7 @@ function handle_time_tag(string $after_time)
 //
 // Convert BBCodes to their HTML equivalent
 //
-function do_bbcode(string $text, $is_signature = false)
+function do_bbcode(string $text, bool $is_signature = false)
 {
 	global $lang_common, $pun_user, $pun_config, $re_list;
 
@@ -943,9 +943,9 @@ function do_clickable(string $text)
 //
 // Return an array key, if it exists, otherwise return an empty string
 //
-function forum_array_key($arr, $key)
+function forum_array_key(array $arr, int $key)
 {
-	return isset($arr[$key]) ? $arr[$key] : '';
+	return $arr[$key] ?? '';
 }
 
 
@@ -976,7 +976,7 @@ function do_smilies(string $text)
 //
 // Parse message text
 //
-function parse_message(string $text, $hide_smilies)
+function parse_message(string $text, bool $hide_smilies)
 {
 	global $pun_config, $lang_common, $pun_user;
 
@@ -1087,7 +1087,7 @@ function parse_signature(string $text)
 //
 // Обработчик для текста, но не для кода html тегов - Visman
 //
-function sva_do_for_only_text(string $text, $do_smilies)
+function sva_do_for_only_text(string $text, bool $do_smilies)
 {
 	if (! $do_smilies || '' === $text)
 		return $text;

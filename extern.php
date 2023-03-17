@@ -108,7 +108,7 @@ function http_authenticate_user()
 //
 // Output $feed as RSS 2.0
 //
-function output_rss($feed)
+function output_rss(array $feed)
 {
 	global $lang_common, $pun_config;
 
@@ -150,7 +150,7 @@ function output_rss($feed)
 //
 // Output $feed as Atom 1.0
 //
-function output_atom($feed)
+function output_atom(array $feed)
 {
 	global $lang_common, $pun_config;
 
@@ -203,7 +203,7 @@ function output_atom($feed)
 //
 // Output $feed as XML
 //
-function output_xml($feed)
+function output_xml(array $feed)
 {
 	global $lang_common, $pun_config;
 
@@ -245,7 +245,7 @@ function output_xml($feed)
 //
 // Output $feed as HTML (using <li> tags)
 //
-function output_html($feed)
+function output_html(array $feed)
 {
 
 	// Send the Content-type header in case the web server is setup to send something else

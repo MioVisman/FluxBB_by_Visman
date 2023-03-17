@@ -881,7 +881,7 @@ if ($pun_config['o_search_all_forums'] == '1' || $pun_user['is_admmod'])
 	echo "\t\t\t\t\t\t".'<div class="checklist">'."\n";
 
 	// MOD subforum - Visman
-	function sf_search_view($id, $space = '')
+	function sf_search_view(int $id, string $space = '')
 	{
 		global $sf_array_tree;
 
@@ -927,7 +927,7 @@ else
 	echo "\t\t\t\t\t\t".'<select id="forum" name="forum">'."\n";
 
 	// MOD subforum - Visman
-	function sf_search_view($id, $space = '')
+	function sf_search_view(int $id, string $space = '')
 	{
 		global $sf_array_tree;
 

@@ -16,7 +16,7 @@ else
 	require PUN_ROOT.'lang/English/poll.php';
 
 // вывод сообщений *************************************************************
-function poll_mess(string $mess, $ques = '', $vote = '')
+function poll_mess(string $mess, string $ques = '', string $vote = '')
 {
 	global $lang_poll;
 
@@ -33,7 +33,7 @@ function poll_mess(string $mess, $ques = '', $vote = '')
 // получение данных из формы ***************************************************
 function poll_post(string $var, $default = null)
 {
-	return isset($_POST[$var]) ? $_POST[$var] : $default;
+	return $_POST[$var] ?? $default;
 }
 
 // запрещено ли редактировать **************************************************
@@ -54,7 +54,7 @@ function poll_bad()
 }
 
 // может ли голосовать юзер ****************************************************
-function poll_can_vote(int $tid, $uid)
+function poll_can_vote(int $tid, ?int $uid)
 {
 	global $db, $cur_topic;
 
@@ -66,7 +66,7 @@ function poll_can_vote(int $tid, $uid)
 }
 
 // получение информации по опросу **********************************************
-function poll_info(int $tid, $uid = null)
+function poll_info(int $tid, ?int $uid = null)
 {
 	global $db;
 
@@ -346,7 +346,7 @@ function ForQues(num,t){if(num > max_ques){return false}var div=document.getElem
 }
 
 // проверяем правильность ******************************************************
-function poll_form_validate(int $tid, &$errors)
+function poll_form_validate(int $tid, array &$errors)
 {
 	global $lang_poll, $pun_config;
 
@@ -408,7 +408,7 @@ function poll_cache_delete(int $tid)
 }
 
 // удаление опроса *************************************************************
-function poll_delete(int $tid, $flag = false)
+function poll_delete(int $tid, bool $flag = false)
 {
 	global $db;
 
@@ -505,7 +505,7 @@ function poll_save(int $tid)
 }
 
 // результат голосования в теме ************************************************
-function poll_display_topic(int $tid, int $uid, $p = 0, $f = false)
+function poll_display_topic(int $tid, int $uid, int $p = 0, bool $f = false)
 {
 	global $pun_config;
 	static $info = null;
@@ -592,7 +592,7 @@ function poll_display_post(int $tid, int $uid)
 }
 
 // отображаем результат голосования ********************************************
-function poll_display(int $tid, int $uid, $info, $top, $prev = false)
+function poll_display(int $tid, int $uid, ?array $info, array $top, bool $prev = false)
 {
 
 	global $db, $lang_poll, $pun_config, $lang_common;

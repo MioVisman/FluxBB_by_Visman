@@ -41,7 +41,7 @@ define('PUN_CJK_HANGUL_REGEX', '['.
 ']');
 
 
-function split_words_clear_link_minor($arr)
+function split_words_clear_link_minor(array $arr)
 {
 	$res = '';
 
@@ -101,7 +101,7 @@ function split_words_clear_link(string $url)
 // "Cleans up" a text string and returns an array of unique words
 // This function depends on the current locale setting
 //
-function split_words(string $text, $idx)
+function split_words(string $text, bool $idx)
 {
 	// Remove BBCode
 	$text = preg_replace('%\[/?(b|u|s|ins|del|em|i|h|colou?r|quote|code|img|url|email|list|topic|post|forum|user|imgr|imgl|hr|size|after|spoiler|right|center|justify|mono)(?:\=[^\]]*)?\]%', ' ', $text);
@@ -158,7 +158,7 @@ function split_words(string $text, $idx)
 //
 // Checks if a word is a valid searchable word
 //
-function validate_search_word(string $word, $idx)
+function validate_search_word(string $word, bool $idx)
 {
 	static $stopwords;
 
@@ -242,7 +242,7 @@ function strip_bbcode(string $text)
 //
 // Updates the search index with the contents of $post_id (and $subject)
 //
-function update_search_index($mode, int $post_id, string $message, $subject = null)
+function update_search_index(string $mode, int $post_id, string $message, string $subject = null)
 {
 	global $db_type, $db;
 
@@ -356,7 +356,7 @@ function update_search_index($mode, int $post_id, string $message, $subject = nu
 //
 // Strip search index of indexed words in $post_ids
 //
-function strip_search_index($post_ids)
+function strip_search_index(string $post_ids)
 {
 	global $db_type, $db;
 
