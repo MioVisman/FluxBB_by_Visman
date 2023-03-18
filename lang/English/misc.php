@@ -94,6 +94,7 @@ $lang_misc = array(
 
 'Move posts' => 'Move posts',
 'Move posts redirect' => 'Posts moved. Redirecting …',
-'Post from topic' => 'This post is moved from topic'
+'Post from topic' => 'This post is moved from topic',
 
+'Poll cannot be attached' => 'Topic with a poll cannot be attached to another topic.',
 );

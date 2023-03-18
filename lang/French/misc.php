@@ -94,6 +94,7 @@ $lang_misc = array(
 
 'Move posts' => 'Déplacer les messages',
 'Move posts redirect' => 'Messages déplacés. Redirection …',
-'Post from topic' => 'Ce message est déplacé du sujet'
+'Post from topic' => 'Ce message est déplacé du sujet',
 
+'Poll cannot be attached' => 'Le sujet avec un sondage ne peut pas être joint à un autre sujet.',
 );

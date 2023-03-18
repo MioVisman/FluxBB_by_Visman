@@ -95,6 +95,7 @@ $lang_misc = array(
 
 'Move posts' => 'Перенос сообщений',
 'Move posts redirect' => 'Сообщения перенесены. Переадресация &hellip;',
-'Post from topic' => 'Это сообщение перенесено из темы'
+'Post from topic' => 'Это сообщение перенесено из темы',
 
+'Poll cannot be attached' => 'Тему с опросом нельзя прикрепить к другой теме.',
 );

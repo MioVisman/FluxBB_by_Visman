@@ -762,6 +762,15 @@ else if (isset($_POST['merge_topics']) || isset($_POST['merge_topics_comply']))
 		// The topic that we are merging into is the one with the smallest ID
 		$merge_to_tid = $row[1];
 
+		// for Poll mod - Visman
+		$result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'topics WHERE id IN ('.implode(',', $topics).') AND id!='.$merge_to_tid.' AND poll_type>0') or error('Unable to check topics', __FILE__, __LINE__, $db->error());
+		$row = $db->fetch_row($result);
+
+		if (! empty($row[0])) {
+			message($lang_misc['Poll cannot be attached']);
+		}
+		// for Poll mod - Visman
+
 		// Make any redirect topics point to our new, merged topic
 		$query = 'UPDATE '.$db->prefix.'topics SET moved_to='.$merge_to_tid.' WHERE moved_to IN ('.implode(',', $topics).')';
 
