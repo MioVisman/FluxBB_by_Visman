@@ -11,9 +11,10 @@
 #adalerts {padding: 10px}
 #adalerts p {padding: 10px; background: #ffffe1; color: #000000; border: 1px solid #dfe6ee}
 
-#adminconsole fieldset td {text-align: left; padding: 4px; white-space: normal}
+#adminconsole fieldset td {text-align: left; padding: 4px; white-space: normal; word-break: break-word; overflow-wrap: break-word;}
 #adminconsole fieldset th {text-align: left; padding: 4px; white-space: normal}
 #adminconsole fieldset td span, #adminconsole fieldset th span {display: block; font-size: 1em; font-weight: normal}
+#adminconsole fieldset td.location span {display: inline;}
 #adminconsole th {width: 15em; font-weight: bold}
 #adminconsole input, #adminconsole select, #adminconsole textarea {margin-bottom: 0; margin-top: 0; font-weight: normal}
 #adminconsole table.aligntop th, #adminconsole table.aligntop td {vertical-align: top}
@@ -29,9 +30,11 @@
 
 /*** Particular table settings ***/
 #categoryedit .tcl {width: 25%}
-#censoring .tcl, #censoring .tc2 {width: 20%}
-#edforum .tcl, #edforum .tc2 {width: 8%}
-#edforum .tc2 {width: 6%}
+#censoring .tcl, #censoring .tc2 {width: 33%}
+#censoring input[size="24"] {width: 99%}
+#edforum .tcl {width: 31%}
+#edforum .tc2 {width: 20%}
+#edforum .tcr {width: 49%}
 
 table#forumperms th, table#forumperms td {white-space: normal; width: auto; text-align: center}
 table#forumperms .atcl {text-align: left; width: 15em; white-space: nowrap}

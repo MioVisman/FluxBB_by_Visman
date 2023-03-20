@@ -18,6 +18,8 @@
 	white-space: normal;
 	border-style: solid none;
 	border-width: 1px 0;
+	word-break: break-word;
+	overflow-wrap: break-word;
 }
 
 #punadmin thead th {
@@ -83,16 +85,13 @@
 }
 
 #censoring .tcl, #censoring .tc2 {
-	width: 20%;
+	width: 33%;
 }
+#censoring input[size="24"] {width: 99%}
 
-#edforum .tcl {
-	width: 18%;
-}
-
-#edforum .tc2 {
-	width: 12%;
-}
+#edforum .tcl {width: 31%}
+#edforum .tc2 {width: 20%}
+#edforum .tcr {width: 49%}
 
 #forumperms thead th, #forumperms tbody td {
 	text-align: center;
