@@ -711,8 +711,8 @@ body {
 	padding-bottom: 1px;
 }
 
-.pun fieldset .rbox {
-}
+/* .pun fieldset .rbox {
+} */
 
 .pun fieldset .rbox br {
 	display: none;
@@ -732,9 +732,9 @@ body {
 	vertical-align: middle;
 }
 
-.pun .txtarea {
+/* .pun .txtarea {
 	width: 90%;
-}
+} */
 
 .pun .txtarea textarea, .pun input.longinput {
 	width: 100%;
