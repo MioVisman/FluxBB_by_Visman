@@ -661,6 +661,7 @@ function preparse_list_tag(string $content, string $type = '*')
 function handle_url_tag(string $url, string $link = '', bool $bbcode = false)
 {
 	global $pun_config, $pun_user, $page_js;
+	static $prefix;
 
 	$url = pun_trim($url);
 
@@ -692,8 +693,11 @@ function handle_url_tag(string $url, string $link = '', bool $bbcode = false)
 	{
 		if ($pun_config['o_board_redirect'] != '' && ($pun_user['is_guest'] || $pun_config['o_board_redirectg'] != '1') && !preg_match('/'.$pun_config['o_board_redirect'].'/i',$full_url))
 		{
-			$full_url = 're.php?u='.urlencode(str_replace(array('http://', 'https://', 'ftp://'), array('http___', 'https___', 'ftp___'), $full_url));
-			$url = str_replace(array('http://', 'https://', 'ftp://'), '', $url);
+			if (! isset($prefix))
+				$prefix = $pun_user['is_guest'] && ! $pun_user['is_bot'] ? 'csrf_hash=' . csrf_hash('re.php') . '&' : '';
+
+			$full_url = 're.php?'.$prefix.'u='.urlencode(str_replace(['http://', 'https://', 'ftp://'], ['http___', 'https___', 'ftp___'], $full_url));
+			$url = str_replace(['http://', 'https://', 'ftp://'], '', $url);
 		}
 
 		if ($link == '' || $link == $url)

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2010-2022 Visman (mio.visman@yandex.ru)
+ * Copyright (C) 2010-2023 Visman (mio.visman@yandex.ru)
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
@@ -16,12 +16,15 @@ if ($pun_user['g_read_board'] == '0')
 if (! is_string($_GET['u'] ?? null) || $pun_user['is_bot'])
 	message($lang_common['Bad request'], false, '404 Not Found');
 
+if ($pun_user['is_guest'])
+	confirm_referrer('re.php');
+
 if (file_exists(PUN_ROOT.'lang/'.$pun_user['language'].'/re.php'))
 	require PUN_ROOT.'lang/'.$pun_user['language'].'/re.php';
 else
 	require PUN_ROOT.'lang/English/re.php';
 
-$url = str_replace('&amp;', '&', preg_replace(array('%(https?|ftp)___%i', '%([\r\n])|(\%0[ad])|(;\s*data\s*:)%i'), array('$1://', ''), $_GET['u']));
+$url = str_replace('&amp;', '&', preg_replace(['%(https?|ftp)___%i', '%([\r\n])|(\%0[ad])|(;\s*data\s*:)%i'], ['$1://', ''], $_GET['u']));
 
 $page_js['c']['re'] = 'function fluxrdr() {if(history.length<2){window.close()}else{history.go(-1)}return false}';
 
