@@ -71,7 +71,10 @@ class DBLayer
 	{
 		++$this->in_transaction;
 
-		return ($this->link_id->exec('BEGIN TRANSACTION')) ? true : false;
+		if (defined('FORUM_SQLITE3_BUSY_TIMEOUT') && defined('FORUM_SQLITE3_WAL_ON'))
+			return $this->link_id->exec('BEGIN IMMEDIATE TRANSACTION') ? true : false;
+		else
+			return $this->link_id->exec('BEGIN TRANSACTION') ? true : false;
 	}
 
 	function end_transaction()
