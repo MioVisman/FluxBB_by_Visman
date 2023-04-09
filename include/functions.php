@@ -72,6 +72,7 @@ function check_cookie(array &$pun_user)
 			if (!$pun_user['logged'])
 			{
 				$pun_user['logged'] = $now;
+				$pun_user['new_visit'] = true;
 
 				// With MySQL/MySQLi/SQLite, REPLACE INTO avoids a user having two rows in the online table
 				switch ($db_type)
@@ -283,6 +284,7 @@ function set_default_user()
 	if (!$pun_user['logged'])
 	{
 		$pun_user['logged'] = time();
+		$pun_user['new_visit'] = true;
 
 		// With MySQL/MySQLi/SQLite, REPLACE INTO avoids a user having two rows in the online table
 		switch ($db_type)
@@ -2229,12 +2231,14 @@ function generation_js(array $arr)
 //
 function witt_query($var = null)
 {
-	global $db;
+	global $db, $pun_user, $pun_config;
 	static $query;
+
+	$need = !empty($pun_user['new_visit']) || $pun_user['group_id'] != PUN_GUEST || $pun_user['logged'] < time() - $pun_config['o_timeout_online'] / 10;
 
 	if (!defined('WITT_ENABLE'))
 	{
-		if (is_string($var))
+		if (is_string($var) && $need)
 			$db->query(str_replace(array(':?comma?:', ':?equal?:', ':?column?:', ':?value?:'), '', $var)) or error('Unable to insert/update into online list', __FILE__, __LINE__, $db->error());
 	}
 	else
@@ -2245,11 +2249,15 @@ function witt_query($var = null)
 		elseif (!empty($query))
 		{
 			if (is_array($var) && isset($var['column']) && isset($var['value']))
+			{
+				$need  = true;
 				$query = str_replace(array(':?comma?:', ':?equal?:', ':?column?:', ':?value?:'), array(', ', '=', $var['column'], '\''.$db->escape($var['value']).'\''), $query);
+			}
 			else
 				$query = str_replace(array(':?comma?:', ':?equal?:', ':?column?:', ':?value?:'), '', $query);
 
-			$db->query($query) or error('Unable to insert/update into online list', __FILE__, __LINE__, $db->error());
+			if ($need)
+				$db->query($query) or error('Unable to insert/update into online list', __FILE__, __LINE__, $db->error());
 
 			$query = null;
 		}
