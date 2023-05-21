@@ -604,9 +604,9 @@ html, body {
 	margin-right: 10px;
 }
 
-.pun fieldset .rbox br {
+/* .pun fieldset .rbox br {
 	display: none;
-}
+} */
 
 .pun fieldset .rbox label {
 	padding: 3px 0 3px 25px;
@@ -614,7 +614,8 @@ html, body {
 	vertical-align: middle;
 }
 
-.pun fieldset .rbox input {
+.pun fieldset .rbox input[type="checkbox"],
+.pun fieldset .rbox input[type="radio"] {
 	margin: 0 9px 0 -25px;
 	padding: 0;
 	width: 16px;
