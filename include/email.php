@@ -289,20 +289,51 @@ function pun_mail(string $to, string $subject, string $message, string $reply_to
 
 
 //
-// This function was originally a part of the phpBB Group forum software phpBB2 (http://www.phpbb.com)
-// They deserve all the credit for writing it. I made small modifications for it to suit PunBB and its coding standards
+// Проверяет ответ smtp сервера и возвращает его при совпадении с кодом.
 //
 function server_parse($socket, string $expected_response)
 {
 	$server_response = '';
-	while (substr($server_response, 3, 1) != ' ')
-	{
-		if (!($server_response = fgets($socket, 256)))
-			error('Couldn\'t get mail server response codes. Please contact the forum administrator.');
+	$code = null;
+
+	while (! feof($socket)) {
+		$get = fgets($socket, 512);
+
+		if (false === $get) {
+			error('Couldn\'t get mail server response codes. Please contact the forum administrator');
+		}
+
+		$server_response .= $get;
+
+		if (isset($get[3]) && ' ' === $get[3]) {
+			$code = substr($get, 0, 3);
+
+			break;
+		}
 	}
 
-	if (!(substr($server_response, 0, 3) == $expected_response))
+	if ($code !== $expected_response) {
 		error('Unable to send email. Please contact the forum administrator with the following error message reported by the SMTP server: "'.$server_response.'"');
+	}
+
+	return $server_response;
+}
+
+
+//
+// Возвращает массив расширений из ответа сервера
+//
+function smtp_extn(string $response)
+{
+	$result = [];
+
+	if (preg_match_all('%250[- ]([0-9A-Z_-]+)(?:[ =]([^\n\r]+))?%', $response, $matches, PREG_SET_ORDER)) {
+		foreach ($matches as $cur) {
+			$result[$cur[1]] = $cur[2] ?? '';
+		}
+	}
+
+	return $result;
 }
 
 
@@ -336,6 +367,7 @@ function smtp_mail(string $to, string $subject, string $message, string $headers
 	if (!($socket = fsockopen($smtp_host, $smtp_port, $errno, $errstr, 15)))
 		error('Could not connect to smtp host "'.$pun_config['o_smtp_host'].'" ('.$errno.') ('.$errstr.')');
 
+	stream_set_timeout($socket, 15);
 	server_parse($socket, '220');
 
 	if (!isset($local_host))
@@ -355,7 +387,26 @@ function smtp_mail(string $to, string $subject, string $message, string $headers
 	if ($pun_config['o_smtp_user'] != '' && $pun_config['o_smtp_pass'] != '')
 	{
 		fwrite($socket, 'EHLO '.$local_host."\r\n");
-		server_parse($socket, '250');
+		$extn = smtp_extn(server_parse($socket, '250'));
+
+		// сервер поддерживает TLS, пробуем включить его
+		if (isset($extn['STARTTLS'])) {
+			if (! function_exists('stream_socket_enable_crypto')) {
+				error('The smtp server requires STARTTLS, but stream_socket_enable_crypto() was not found');
+			}
+
+			fwrite($socket, 'STARTTLS'."\r\n");
+			server_parse($socket, '220');
+
+			$crypto = @stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
+
+			if (true !== $crypto) {
+				error('Failed to enable encryption on the stream using TLS');
+			}
+
+			fwrite($socket, 'EHLO '.$local_host."\r\n");
+			server_parse($socket, '250');
+		}
 
 		fwrite($socket, 'AUTH LOGIN'."\r\n");
 		server_parse($socket, '334');
