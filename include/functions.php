@@ -2290,7 +2290,7 @@ function forum_password_verify(string $password, $user)
 {
 	global $salt1;
 
-	if (empty($user['password']) || ! is_string($user['password']) || ! is_string($password) || pun_strlen($password) > 100000)
+	if (empty($user['password']) || ! is_string($user['password']) || pun_strlen($password) > 100000)
 	{
 		return false;
 	}

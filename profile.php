@@ -194,7 +194,7 @@ else if ($action === 'change_email')
 	}
 	else if (isset($_POST['form_sent']))
 	{
-		if (empty($_POST['req_password']) || ! forum_password_verify($_POST['req_password'], $pun_user))
+		if (! is_string($_POST['req_password'] ?? null) || ! forum_password_verify($_POST['req_password'], $pun_user))
 			message($lang_profile['Wrong pass']);
 
 		// Make sure they got here from the site
