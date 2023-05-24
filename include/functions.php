@@ -2286,7 +2286,7 @@ function sf_crumbs(int $id)
 //
 // Checks the password on the user's data array
 //
-function forum_password_verify(string $password, array $user)
+function forum_password_verify(string $password, $user)
 {
 	global $salt1;
 
