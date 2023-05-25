@@ -18,7 +18,7 @@ $lang_sec = array(
 'Captcha text' => 'Please prove that you\'re a human being.',
 
 'Idx=' => array('=', 'equals', 'is'),
-'Idx-' => array('-', 'minus', 'to reduce'),
+'Idx-' => array('-', 'minus', 'subtract'),
 'Idx+' => array('+', 'plus', 'add'),
 'Idx*' => array('*', 'x', 'х', 'times'),
 'Idx/' => array('/', 'divided by'),
