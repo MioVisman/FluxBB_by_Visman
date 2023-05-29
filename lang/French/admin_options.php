@@ -190,7 +190,7 @@ $lang_admin_options = array(
 'SMTP change password help'			=>	'Cochez cette case si vous souhaitez modifier ou supprimer le mot de passe actuellement stocké.',
 'SMTP password help'				=>	'Mot de passe pour le serveur SMTP. N\'entrez un mot de passe que s\'il est requis par le serveur SMTP (la plupart des serveurs ne nécessitent <strong>pas</strong> d\'authentification). Veuillez entrer votre mot de passe deux fois pour confirmer.',
 'SMTP SSL label'					=>	'Crypter SMTP à l\'aide de SSL',
-'SMTP SSL help'						=>	'Crypte la connexion au serveur SMTP à l\'aide de SSL. Ne doit être utilisé que si votre serveur SMTP l\'exige et que votre version de PHP prend en charge SSL.',
+'SMTP SSL help'						=>	'Crypte la connexion au serveur SMTP à l\'aide de SSL. Ne doit être utilisé que si votre serveur SMTP l\'exige et que votre version de PHP prend en charge SSL. TLS doit être défini sur <b>Non</b>.',
 
 // Registration Section
 'Registration subhead'				=>	'Inscription',
