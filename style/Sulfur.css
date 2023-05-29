@@ -463,6 +463,7 @@ html, body {
 
 .pun .tcr {
 	width: 30%;
+	overflow: hidden;
 }
 
 .pun .tcl h3 {
@@ -767,10 +768,7 @@ html, body {
 	text-align: right;
 }
 
-#punsearch .blockpost h2 span {
-	white-space: nowrap;
-}
-
+#punsearch .blockpost h2,
 .pun .blockpost .box {
 	overflow: hidden;
 }
