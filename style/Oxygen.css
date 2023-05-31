@@ -599,6 +599,10 @@ html, body {
 	padding: 3px 0;
 }
 
+#qjump > div > label, #qjump2 > div > label {
+	display: inline-block;
+}
+
 .pun label.conl {
 	float: left;
 	overflow: visible;

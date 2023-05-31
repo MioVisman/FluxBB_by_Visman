@@ -694,10 +694,13 @@ body {
 	padding: 0 0 7px 0;
 }
 
-
 .pun label {
 	display: block;
 	padding: 3px 0;
+}
+
+#qjump > div > label, #qjump2 > div > label {
+	display: inline-block;
 }
 
 .pun label.conl {
