@@ -1,4 +1,4 @@
-// post.js v2.2.0 Copyright (C) 2014-2019 Visman (mio.visman@yandex.ru)
+// post.js v2.3.0 Copyright (C) 2014-2023 Visman (mio.visman@yandex.ru)
 if (typeof FluxBB === 'undefined' || !FluxBB) {var FluxBB = {};}
 
 FluxBB.post = (function (doc, win) {
@@ -171,22 +171,13 @@ FluxBB.post = (function (doc, win) {
 					var id = blockposts[i].id.replace('p', '');
 					var dt = blockposts[i].getElementsByTagName('dt')[0];
 					if (typeof dt !== 'undefined') {
-						var a = dt.innerHTML;
-						var n = a.replace(/<[^>]+>/g, '');
-
 						// Decode html special chars
-						nameusers[id] = n.replace(/&lt;/g, '<')
-							.replace(/&gt;/g, '>')
-							.replace(/&quot;/g, '"')
-							.replace(/&#039;/g, '\'')
-							.replace(/&nbsp;/g, ' ')
-							.replace(/&#160;/g, ' ')
-							.replace(/&amp;/g, '&');
+						nameusers[id] = dt.textContent;
 						dt.insertAdjacentHTML('afterBegin', '<strong><a href="#req_message" onclick="return FluxBB.post.insName(' + id + ');">@ </a></strong>');
 
 						var quote = getCN('postquote', blockposts[i])[0];
 						if (typeof quote !== 'undefined') {
-							a = quote.getElementsByTagName('a')[0];
+							var a = quote.getElementsByTagName('a')[0];
 							p = quote.parentNode;
 							p.insertAdjacentHTML('beforeEnd', '<li class="postquote"><span id="pq' + id + '"><a href="' + a.href.replace(/&/g, '&amp;') + '" onmousedown="FluxBB.post.getText();" onclick="return FluxBB.post.quote(' + id + ');">' + lang['QQ'] + '</a></span></li>');
 						}
