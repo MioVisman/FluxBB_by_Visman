@@ -88,7 +88,7 @@ if (!isset($_POST['req_addressee']) && (isset($_GET['uid']) || $sid))
 	if ($uid < 2)
 		message($lang_common['Bad request'], false, '404 Not Found');
 
-	$result = $db->query('SELECT u.*, g.* FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'`groups` AS g ON u.group_id=g.g_id WHERE id='.$uid) or error('Unable to fetch user information', __FILE__, __LINE__, $db->error());
+	$result = $db->query('SELECT u.*, g.* FROM '.$db->prefix.'users AS u INNER JOIN `'.$db->prefix.'groups` AS g ON u.group_id=g.g_id WHERE id='.$uid) or error('Unable to fetch user information', __FILE__, __LINE__, $db->error());
 	$cur_user = $db->fetch_assoc($result);
 
 	if (!isset($cur_user['id']))
@@ -148,7 +148,7 @@ if (isset($_POST['csrf_hash']))
 		else if ($pun_config['p_subject_all_caps'] == '0' && is_all_uppercase($subject) && !$pun_user['is_admmod'])
 			$errors[] = $lang_post['All caps subject'];
 
-		$result = $db->query('SELECT u.*, g.* FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'`groups` AS g ON u.group_id=g.g_id WHERE u.username=\''.$db->escape($addressee).'\'') or error('Unable to fetch user information', __FILE__, __LINE__, $db->error());
+		$result = $db->query('SELECT u.*, g.* FROM '.$db->prefix.'users AS u INNER JOIN `'.$db->prefix.'groups` AS g ON u.group_id=g.g_id WHERE u.username=\''.$db->escape($addressee).'\'') or error('Unable to fetch user information', __FILE__, __LINE__, $db->error());
 		$cur_addressee = $db->fetch_assoc($result);
 
 		if (empty($cur_addressee['id']) || $cur_addressee['id'] < 2)
@@ -184,7 +184,7 @@ if (isset($_POST['csrf_hash']))
 		else
 			$mid = $cur_topic['starter_id'];
 
-		$result = $db->query('SELECT u.*, g.* FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'`groups` AS g ON u.group_id=g.g_id WHERE u.id='.$mid) or error('Unable to fetch user information', __FILE__, __LINE__, $db->error());
+		$result = $db->query('SELECT u.*, g.* FROM '.$db->prefix.'users AS u INNER JOIN `'.$db->prefix.'groups` AS g ON u.group_id=g.g_id WHERE u.id='.$mid) or error('Unable to fetch user information', __FILE__, __LINE__, $db->error());
 		$cur_addressee = $db->fetch_assoc($result);
 
 		if (empty($cur_addressee['id']) || $cur_addressee['id'] < 2)

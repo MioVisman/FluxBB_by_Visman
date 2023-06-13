@@ -34,7 +34,7 @@ if (isset($_POST['form_sent']) && $action === 'in')
 
 	// проверка IP админов и модераторов - Visman
 	if ($pun_config['o_check_ip'] == '1')
-		$result = $db->query('SELECT u.*, g.g_id, g.g_moderator FROM '.$db->prefix.'users AS u LEFT JOIN '.$db->prefix.'`groups` AS g ON u.group_id=g.g_id WHERE '.$username_sql) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+		$result = $db->query('SELECT u.*, g.g_id, g.g_moderator FROM '.$db->prefix.'users AS u LEFT JOIN `'.$db->prefix.'groups` AS g ON u.group_id=g.g_id WHERE '.$username_sql) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
 	else
 		$result = $db->query('SELECT * FROM '.$db->prefix.'users WHERE '.$username_sql) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
 

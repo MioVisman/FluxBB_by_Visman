@@ -66,7 +66,7 @@ if ($action === 'change_pass')
 			message($lang_common['No permission'], false, '403 Forbidden');
 		else if ($pun_user['g_moderator'] == '1') // A moderator trying to change a user's password?
 		{
-			$result = $db->query('SELECT u.group_id, g.g_moderator FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'`groups` AS g ON (g.g_id=u.group_id) WHERE u.id='.$id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+			$result = $db->query('SELECT u.group_id, g.g_moderator FROM '.$db->prefix.'users AS u INNER JOIN `'.$db->prefix.'groups` AS g ON (g.g_id=u.group_id) WHERE u.id='.$id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
 			$user_info = $db->fetch_row($result);
 
 			if (!$user_info)
@@ -163,7 +163,7 @@ else if ($action === 'change_email')
 			message($lang_common['No permission'], false, '403 Forbidden');
 		else if ($pun_user['g_moderator'] == '1') // A moderator trying to change a user's email?
 		{
-			$result = $db->query('SELECT u.group_id, g.g_moderator FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'`groups` AS g ON (g.g_id=u.group_id) WHERE u.id='.$id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+			$result = $db->query('SELECT u.group_id, g.g_moderator FROM '.$db->prefix.'users AS u INNER JOIN `'.$db->prefix.'groups` AS g ON (g.g_id=u.group_id) WHERE u.id='.$id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
 			$user_info = $db->fetch_row($result);
 
 			if (!$user_info)
@@ -508,7 +508,7 @@ else if (isset($_POST['update_group_membership']))
 	if ($old_group_id == PUN_ADMIN || $new_group_id == PUN_ADMIN)
 		generate_admins_cache();
 
-	$result = $db->query('SELECT g_moderator FROM '.$db->prefix.'`groups` WHERE g_id='.$new_group_id) or error('Unable to fetch group', __FILE__, __LINE__, $db->error());
+	$result = $db->query('SELECT g_moderator FROM `'.$db->prefix.'groups` WHERE g_id='.$new_group_id) or error('Unable to fetch group', __FILE__, __LINE__, $db->error());
 	$new_group_mod = $db->result($result);
 
 	// If the user was a moderator or an administrator, we remove him/her from the moderator list in all forums as well
@@ -605,7 +605,7 @@ else if ($action === 'promote')
 
 	$pid = intval($_GET['pid'] ?? 0);
 
-	$sql = 'SELECT g.g_promote_next_group FROM '.$db->prefix.'`groups` AS g INNER JOIN '.$db->prefix.'users AS u ON u.group_id=g.g_id WHERE u.id='.$id.' AND g.g_promote_next_group>0';
+	$sql = 'SELECT g.g_promote_next_group FROM `'.$db->prefix.'groups` AS g INNER JOIN '.$db->prefix.'users AS u ON u.group_id=g.g_id WHERE u.id='.$id.' AND g.g_promote_next_group>0';
 	$result = $db->query($sql) or error('Unable to fetch promotion information', __FILE__, __LINE__, $db->error());
 	$next_group_id = $db->result($result);
 
@@ -635,7 +635,7 @@ else if (isset($_POST['delete_user']) || isset($_POST['delete_user_comply']))
 	if (isset($_POST['delete_user_comply']))
 	{
 		// If the user is a moderator or an administrator, we remove him/her from the moderator list in all forums as well
-		$result = $db->query('SELECT g_moderator FROM '.$db->prefix.'`groups` WHERE g_id='.$group_id) or error('Unable to fetch group', __FILE__, __LINE__, $db->error());
+		$result = $db->query('SELECT g_moderator FROM `'.$db->prefix.'groups` WHERE g_id='.$group_id) or error('Unable to fetch group', __FILE__, __LINE__, $db->error());
 		$group_mod = $db->result($result);
 
 		if ($group_id == PUN_ADMIN || $group_mod == '1')
@@ -748,7 +748,7 @@ else if (isset($_POST['delete_user']) || isset($_POST['delete_user_comply']))
 else if (isset($_POST['form_sent']))
 {
 	// Fetch the user group of the user we are editing
-	$result = $db->query('SELECT u.username, u.group_id, g.g_moderator FROM '.$db->prefix.'users AS u LEFT JOIN '.$db->prefix.'`groups` AS g ON (g.g_id=u.group_id) WHERE u.id='.$id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+	$result = $db->query('SELECT u.username, u.group_id, g.g_moderator FROM '.$db->prefix.'users AS u LEFT JOIN `'.$db->prefix.'groups` AS g ON (g.g_id=u.group_id) WHERE u.id='.$id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
 	$user_info = $db->fetch_row($result);
 
 	if (!$user_info)
@@ -1041,7 +1041,7 @@ else if (isset($_POST['form_sent']))
 		$result = $db->query('SELECT group_id FROM '.$db->prefix.'users WHERE id='.$id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
 		$group_id = $db->result($result);
 
-		$result = $db->query('SELECT g_moderator FROM '.$db->prefix.'`groups` WHERE g_id='.$group_id) or error('Unable to fetch group', __FILE__, __LINE__, $db->error());
+		$result = $db->query('SELECT g_moderator FROM `'.$db->prefix.'groups` WHERE g_id='.$group_id) or error('Unable to fetch group', __FILE__, __LINE__, $db->error());
 		$group_mod = $db->result($result);
 
 		if ($group_id == PUN_ADMIN || $group_mod == '1')
@@ -1081,7 +1081,7 @@ flux_hook('profile_after_form_handling');
 
 
 // мод пола - add "g.g_pm, u.messages_enable," - New PMS - Visman
-$result = $db->query('SELECT u.username, u.gender, u.email, u.title, u.realname, u.url, u.jabber, u.icq, u.location, u.signature, u.disp_topics, u.disp_posts, u.email_setting, u.notify_with_post, u.auto_notify, u.show_smilies, u.show_img, u.show_img_sig, u.show_avatars, u.show_sig, u.timezone, u.dst, u.language, u.style, u.num_posts, u.last_post, u.registered, u.registration_ip, u.admin_note, u.date_format, u.time_format, u.last_visit, u.messages_enable, g.g_id, g.g_user_title, g.g_moderator, g.g_pm FROM '.$db->prefix.'users AS u LEFT JOIN '.$db->prefix.'`groups` AS g ON g.g_id=u.group_id WHERE u.id='.$id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+$result = $db->query('SELECT u.username, u.gender, u.email, u.title, u.realname, u.url, u.jabber, u.icq, u.location, u.signature, u.disp_topics, u.disp_posts, u.email_setting, u.notify_with_post, u.auto_notify, u.show_smilies, u.show_img, u.show_img_sig, u.show_avatars, u.show_sig, u.timezone, u.dst, u.language, u.style, u.num_posts, u.last_post, u.registered, u.registration_ip, u.admin_note, u.date_format, u.time_format, u.last_visit, u.messages_enable, g.g_id, g.g_user_title, g.g_moderator, g.g_pm FROM '.$db->prefix.'users AS u LEFT JOIN `'.$db->prefix.'groups` AS g ON g.g_id=u.group_id WHERE u.id='.$id) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
 $user = $db->fetch_assoc($result);
 
 if (!$user)
@@ -1831,7 +1831,7 @@ else
 							<select id="group_id" name="group_id">
 <?php
 
-				$result = $db->query('SELECT g_id, g_title FROM '.$db->prefix.'`groups` WHERE g_id!='.PUN_GUEST.' ORDER BY g_title') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
+				$result = $db->query('SELECT g_id, g_title FROM `'.$db->prefix.'groups` WHERE g_id!='.PUN_GUEST.' ORDER BY g_title') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
 
 				while ($cur_group = $db->fetch_assoc($result))
 				{

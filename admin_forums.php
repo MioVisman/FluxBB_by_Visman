@@ -189,7 +189,7 @@ else if (isset($_GET['edit_forum']))
 		// Now let's deal with the permissions
 		if (isset($_POST['read_forum_old']))
 		{
-			$result = $db->query('SELECT g_id, g_read_board, g_post_replies, g_post_topics FROM '.$db->prefix.'`groups` WHERE g_id!='.PUN_ADMIN) or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
+			$result = $db->query('SELECT g_id, g_read_board, g_post_replies, g_post_topics FROM `'.$db->prefix.'groups` WHERE g_id!='.PUN_ADMIN) or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
 			while ($cur_group = $db->fetch_assoc($result))
 			{
 				$read_forum_new = $cur_group['g_read_board'] == '1' ? (isset($_POST['read_forum_new'][$cur_group['g_id']]) ? '1' : '0') : intval($_POST['read_forum_old'][$cur_group['g_id']]);
@@ -368,7 +368,7 @@ else if (isset($_GET['edit_forum']))
 							<tbody>
 <?php
 
-	$result = $db->query('SELECT g.g_id, g.g_title, g.g_read_board, g.g_post_replies, g.g_post_topics, fp.read_forum, fp.post_replies, fp.post_topics FROM '.$db->prefix.'`groups` AS g LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (g.g_id=fp.group_id AND fp.forum_id='.$forum_id.') WHERE g.g_id!='.PUN_ADMIN.' ORDER BY g.g_id') or error('Unable to fetch group forum permission list', __FILE__, __LINE__, $db->error());
+	$result = $db->query('SELECT g.g_id, g.g_title, g.g_read_board, g.g_post_replies, g.g_post_topics, fp.read_forum, fp.post_replies, fp.post_topics FROM `'.$db->prefix.'groups` AS g LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (g.g_id=fp.group_id AND fp.forum_id='.$forum_id.') WHERE g.g_id!='.PUN_ADMIN.' ORDER BY g.g_id') or error('Unable to fetch group forum permission list', __FILE__, __LINE__, $db->error());
 
 	$cur_index = 7;
 

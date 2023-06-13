@@ -354,7 +354,7 @@ if (in_array($cur_topic['first_post_id'], $post_ids))
 // мод пола, добавлен u.gender ; мод ограничения времени, добавлен p.edit_post - Visman
 // add "g.g_pm, u.messages_enable," - New PMS - "u.warning_all," - Warnings - p.user_agent, - user agent - Visman
 // Retrieve the posts (and their respective poster/online status)
-$result = $db->query('SELECT u.warning_all, u.gender, u.email, u.title, u.url, u.location, u.signature, u.email_setting, u.num_posts, u.registered, u.admin_note, u.messages_enable, p.id, p.poster AS username, p.poster_id, p.poster_ip, p.poster_email, p.message, p.hide_smilies, p.posted, p.edited, p.edited_by, p.edit_post, p.user_agent, g.g_id, g.g_user_title, g.g_promote_next_group, g.g_pm FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'users AS u ON u.id=p.poster_id INNER JOIN '.$db->prefix.'`groups` AS g ON g.g_id=u.group_id WHERE p.id IN ('.implode(',', $post_ids).') ORDER BY p.id', true) or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
+$result = $db->query('SELECT u.warning_all, u.gender, u.email, u.title, u.url, u.location, u.signature, u.email_setting, u.num_posts, u.registered, u.admin_note, u.messages_enable, p.id, p.poster AS username, p.poster_id, p.poster_ip, p.poster_email, p.message, p.hide_smilies, p.posted, p.edited, p.edited_by, p.edit_post, p.user_agent, g.g_id, g.g_user_title, g.g_promote_next_group, g.g_pm FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'users AS u ON u.id=p.poster_id INNER JOIN `'.$db->prefix.'groups` AS g ON g.g_id=u.group_id WHERE p.id IN ('.implode(',', $post_ids).') ORDER BY p.id', true) or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
 while ($cur_post = $db->fetch_assoc($result))
 {
 	// StickFP - Visman

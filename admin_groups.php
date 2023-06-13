@@ -22,7 +22,7 @@ require PUN_ROOT.'lang/'.$admin_language.'/admin_groups.php';
 
 
 // Fetch all groups
-$result = $db->query('SELECT * FROM '.$db->prefix.'`groups` ORDER BY g_id') or error('Unable to fetch user groups', __FILE__, __LINE__, $db->error());
+$result = $db->query('SELECT * FROM `'.$db->prefix.'groups` ORDER BY g_id') or error('Unable to fetch user groups', __FILE__, __LINE__, $db->error());
 $groups = array();
 while ($cur_group = $db->fetch_assoc($result))
 	$groups[$cur_group['g_id']] = $cur_group;
@@ -350,11 +350,11 @@ else if (isset($_POST['add_edit_group']))
 
 	if ($_POST['mode'] == 'add')
 	{
-		$result = $db->query('SELECT 1 FROM '.$db->prefix.'`groups` WHERE g_title=\''.$db->escape($title).'\'') or error('Unable to check group title collision', __FILE__, __LINE__, $db->error());
+		$result = $db->query('SELECT 1 FROM `'.$db->prefix.'groups` WHERE g_title=\''.$db->escape($title).'\'') or error('Unable to check group title collision', __FILE__, __LINE__, $db->error());
 		if ($db->result($result))
 			message(sprintf($lang_admin_groups['Title already exists message'], pun_htmlspecialchars($title)));
 
-		$db->query('INSERT INTO '.$db->prefix.'`groups` (g_title, g_user_title, g_promote_min_posts, g_promote_next_group, g_moderator, g_mod_edit_users, g_mod_rename_users, g_mod_change_passwords, g_mod_ban_users, g_mod_promote_users, g_read_board, g_view_users, g_post_replies, g_post_topics, g_edit_posts, g_delete_posts, g_delete_topics, g_post_links, g_set_title, g_search, g_search_users, g_send_email, g_post_flood, g_search_flood, g_email_flood, g_report_flood) VALUES (\''.$db->escape($title).'\', '.$user_title.', '.$promote_min_posts.', '.$promote_next_group.', '.$moderator.', '.$mod_edit_users.', '.$mod_rename_users.', '.$mod_change_passwords.', '.$mod_ban_users.', '.$mod_promote_users.', '.$read_board.', '.$view_users.', '.$post_replies.', '.$post_topics.', '.$edit_posts.', '.$delete_posts.', '.$delete_topics.', '.$post_links.', '.$set_title.', '.$search.', '.$search_users.', '.$send_email.', '.$post_flood.', '.$search_flood.', '.$email_flood.', '.$report_flood.')') or error('Unable to add group', __FILE__, __LINE__, $db->error());
+		$db->query('INSERT INTO `'.$db->prefix.'groups` (g_title, g_user_title, g_promote_min_posts, g_promote_next_group, g_moderator, g_mod_edit_users, g_mod_rename_users, g_mod_change_passwords, g_mod_ban_users, g_mod_promote_users, g_read_board, g_view_users, g_post_replies, g_post_topics, g_edit_posts, g_delete_posts, g_delete_topics, g_post_links, g_set_title, g_search, g_search_users, g_send_email, g_post_flood, g_search_flood, g_email_flood, g_report_flood) VALUES (\''.$db->escape($title).'\', '.$user_title.', '.$promote_min_posts.', '.$promote_next_group.', '.$moderator.', '.$mod_edit_users.', '.$mod_rename_users.', '.$mod_change_passwords.', '.$mod_ban_users.', '.$mod_promote_users.', '.$read_board.', '.$view_users.', '.$post_replies.', '.$post_topics.', '.$edit_posts.', '.$delete_posts.', '.$delete_topics.', '.$post_links.', '.$set_title.', '.$search.', '.$search_users.', '.$send_email.', '.$post_flood.', '.$search_flood.', '.$email_flood.', '.$report_flood.')') or error('Unable to add group', __FILE__, __LINE__, $db->error());
 		$new_group_id = $db->insert_id();
 
 		// Now lets copy the forum specific permissions from the group which this group is based on
@@ -364,11 +364,11 @@ else if (isset($_POST['add_edit_group']))
 	}
 	else
 	{
-		$result = $db->query('SELECT 1 FROM '.$db->prefix.'`groups` WHERE g_title=\''.$db->escape($title).'\' AND g_id!='.intval($_POST['group_id'])) or error('Unable to check group title collision', __FILE__, __LINE__, $db->error());
+		$result = $db->query('SELECT 1 FROM `'.$db->prefix.'groups` WHERE g_title=\''.$db->escape($title).'\' AND g_id!='.intval($_POST['group_id'])) or error('Unable to check group title collision', __FILE__, __LINE__, $db->error());
 		if ($db->result($result))
 			message(sprintf($lang_admin_groups['Title already exists message'], pun_htmlspecialchars($title)));
 
-		$db->query('UPDATE '.$db->prefix.'`groups` SET g_title=\''.$db->escape($title).'\', g_user_title='.$user_title.', g_promote_min_posts='.$promote_min_posts.', g_promote_next_group='.$promote_next_group.', g_moderator='.$moderator.', g_mod_edit_users='.$mod_edit_users.', g_mod_rename_users='.$mod_rename_users.', g_mod_change_passwords='.$mod_change_passwords.', g_mod_ban_users='.$mod_ban_users.', g_mod_promote_users='.$mod_promote_users.', g_read_board='.$read_board.', g_view_users='.$view_users.', g_post_replies='.$post_replies.', g_post_topics='.$post_topics.', g_edit_posts='.$edit_posts.', g_delete_posts='.$delete_posts.', g_delete_topics='.$delete_topics.', g_post_links='.$post_links.', g_set_title='.$set_title.', g_search='.$search.', g_search_users='.$search_users.', g_send_email='.$send_email.', g_post_flood='.$post_flood.', g_search_flood='.$search_flood.', g_email_flood='.$email_flood.', g_report_flood='.$report_flood.' WHERE g_id='.intval($_POST['group_id'])) or error('Unable to update group', __FILE__, __LINE__, $db->error());
+		$db->query('UPDATE `'.$db->prefix.'groups` SET g_title=\''.$db->escape($title).'\', g_user_title='.$user_title.', g_promote_min_posts='.$promote_min_posts.', g_promote_next_group='.$promote_next_group.', g_moderator='.$moderator.', g_mod_edit_users='.$mod_edit_users.', g_mod_rename_users='.$mod_rename_users.', g_mod_change_passwords='.$mod_change_passwords.', g_mod_ban_users='.$mod_ban_users.', g_mod_promote_users='.$mod_promote_users.', g_read_board='.$read_board.', g_view_users='.$view_users.', g_post_replies='.$post_replies.', g_post_topics='.$post_topics.', g_edit_posts='.$edit_posts.', g_delete_posts='.$delete_posts.', g_delete_topics='.$delete_topics.', g_post_links='.$post_links.', g_set_title='.$set_title.', g_search='.$search.', g_search_users='.$search_users.', g_send_email='.$send_email.', g_post_flood='.$post_flood.', g_search_flood='.$search_flood.', g_email_flood='.$email_flood.', g_report_flood='.$report_flood.' WHERE g_id='.intval($_POST['group_id'])) or error('Unable to update group', __FILE__, __LINE__, $db->error());
 
 		// Promote all users who would be promoted to this group on their next post
 		if ($promote_next_group)
@@ -430,7 +430,7 @@ else if (isset($_GET['del_group']))
 		message($lang_admin_groups['Cannot remove default message']);
 
 	// Check if this group has any members
-	$result = $db->query('SELECT g.g_title, COUNT(u.id) FROM '.$db->prefix.'`groups` AS g INNER JOIN '.$db->prefix.'users AS u ON g.g_id=u.group_id WHERE g.g_id='.$group_id.' GROUP BY g.g_id, g_title') or error('Unable to fetch group info', __FILE__, __LINE__, $db->error());
+	$result = $db->query('SELECT g.g_title, COUNT(u.id) FROM `'.$db->prefix.'groups` AS g INNER JOIN '.$db->prefix.'users AS u ON g.g_id=u.group_id WHERE g.g_id='.$group_id.' GROUP BY g.g_id, g_title') or error('Unable to fetch group info', __FILE__, __LINE__, $db->error());
 	$group_info = $db->fetch_row($result);
 
 	// If the group doesn't have any members or if we've already selected a group to move the members to
@@ -445,17 +445,17 @@ else if (isset($_GET['del_group']))
 			}
 
 			// Delete the group and any forum specific permissions
-			$db->query('DELETE FROM '.$db->prefix.'`groups` WHERE g_id='.$group_id) or error('Unable to delete group', __FILE__, __LINE__, $db->error());
+			$db->query('DELETE FROM `'.$db->prefix.'groups` WHERE g_id='.$group_id) or error('Unable to delete group', __FILE__, __LINE__, $db->error());
 			$db->query('DELETE FROM '.$db->prefix.'forum_perms WHERE group_id='.$group_id) or error('Unable to delete group forum permissions', __FILE__, __LINE__, $db->error());
 
 			// Don't let users be promoted to this group
-			$db->query('UPDATE '.$db->prefix.'`groups` SET g_promote_next_group=0 WHERE g_promote_next_group='.$group_id) or error('Unable to remove group as promotion target', __FILE__, __LINE__, $db->error());
+			$db->query('UPDATE `'.$db->prefix.'groups` SET g_promote_next_group=0 WHERE g_promote_next_group='.$group_id) or error('Unable to remove group as promotion target', __FILE__, __LINE__, $db->error());
 
 			redirect('admin_groups.php', $lang_admin_groups['Group removed redirect']);
 		}
 		else
 		{
-			$result = $db->query('SELECT g_title FROM '.$db->prefix.'`groups` WHERE g_id='.$group_id) or error('Unable to fetch group title', __FILE__, __LINE__, $db->error());
+			$result = $db->query('SELECT g_title FROM `'.$db->prefix.'groups` WHERE g_id='.$group_id) or error('Unable to fetch group title', __FILE__, __LINE__, $db->error());
 			$group_title = $db->result($result);
 
 			$page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['User groups']);
@@ -515,7 +515,7 @@ else if (isset($_GET['del_group']))
 							<select name="move_to_group">
 <?php
 
-	$result = $db->query('SELECT g_id, g_title FROM '.$db->prefix.'`groups` WHERE g_id!='.PUN_GUEST.' AND g_id!='.$group_id.' ORDER BY g_title') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
+	$result = $db->query('SELECT g_id, g_title FROM `'.$db->prefix.'groups` WHERE g_id!='.PUN_GUEST.' AND g_id!='.$group_id.' ORDER BY g_title') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
 
 	while ($cur_group = $db->fetch_assoc($result))
 	{

@@ -37,7 +37,7 @@ function check_cookie(array &$pun_user)
 
 		// Кто в этой теме - , o.witt_data - Visman
 		// Check if there's a user with the user ID and password hash from the cookie
-		$result = $db->query('SELECT u.*, g.*, o.logged, o.idle, o.witt_data FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'`groups` AS g ON u.group_id=g.g_id LEFT JOIN '.$db->prefix.'online AS o ON o.user_id=u.id WHERE u.id='.$cookie['user_id']) or error('Unable to fetch user information', __FILE__, __LINE__, $db->error());
+		$result = $db->query('SELECT u.*, g.*, o.logged, o.idle, o.witt_data FROM '.$db->prefix.'users AS u INNER JOIN `'.$db->prefix.'groups` AS g ON u.group_id=g.g_id LEFT JOIN '.$db->prefix.'online AS o ON o.user_id=u.id WHERE u.id='.$cookie['user_id']) or error('Unable to fetch user information', __FILE__, __LINE__, $db->error());
 		$pun_user = $db->fetch_assoc($result);
 
 		// If user authorisation failed
@@ -151,7 +151,7 @@ function authenticate_user($user, string $password, bool $password_is_hash = fal
 	global $db, $pun_user;
 
 	// Check if there's a user matching $user and $password
-	$result = $db->query('SELECT u.*, g.*, o.logged, o.idle FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'`groups` AS g ON g.g_id=u.group_id LEFT JOIN '.$db->prefix.'online AS o ON o.user_id=u.id WHERE '.(is_int($user) ? 'u.id='.intval($user) : 'u.username=\''.$db->escape($user).'\'')) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+	$result = $db->query('SELECT u.*, g.*, o.logged, o.idle FROM '.$db->prefix.'users AS u INNER JOIN `'.$db->prefix.'groups` AS g ON g.g_id=u.group_id LEFT JOIN '.$db->prefix.'online AS o ON o.user_id=u.id WHERE '.(is_int($user) ? 'u.id='.intval($user) : 'u.username=\''.$db->escape($user).'\'')) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
 	$pun_user = $db->fetch_assoc($result);
 
 	if (
@@ -274,7 +274,7 @@ function set_default_user()
 
 	// Кто в этой теме - , o.witt_data - Visman
 	// Fetch guest user
-	$result = $db->query('SELECT u.*, g.*, o.logged, o.last_post, o.last_search, o.witt_data FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'`groups` AS g ON u.group_id=g.g_id LEFT JOIN '.$db->prefix.'online AS o ON o.ident=\''.$db->escape($remote_addr).'\' WHERE u.id=1') or error('Unable to fetch guest information', __FILE__, __LINE__, $db->error());
+	$result = $db->query('SELECT u.*, g.*, o.logged, o.last_post, o.last_search, o.witt_data FROM '.$db->prefix.'users AS u INNER JOIN `'.$db->prefix.'groups` AS g ON u.group_id=g.g_id LEFT JOIN '.$db->prefix.'online AS o ON o.ident=\''.$db->escape($remote_addr).'\' WHERE u.id=1') or error('Unable to fetch guest information', __FILE__, __LINE__, $db->error());
 	$pun_user = $db->fetch_assoc($result);
 
 	if (!$pun_user)

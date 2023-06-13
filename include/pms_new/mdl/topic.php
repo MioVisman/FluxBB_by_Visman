@@ -181,7 +181,7 @@ $post_view_new = array();
 
 // мод пола, добавлен u.gender
 // убран запрос к таблице online
-$result = $db->query('SELECT u.gender, u.email, u.title, u.url, u.location, u.signature, u.email_setting, u.num_posts, u.registered, u.admin_note, p.id, p.poster AS username, p.poster_id, p.message, p.hide_smilies, p.posted, p.edited, p.edited_by, p.post_new, g.g_id, g.g_user_title FROM '.$db->prefix.'pms_new_posts AS p LEFT JOIN '.$db->prefix.'users AS u ON u.id=p.poster_id LEFT JOIN '.$db->prefix.'`groups` AS g ON g.g_id=u.group_id WHERE p.id IN ('.implode(',', $post_ids).') ORDER BY p.id', true) or error('Unable to fetch pms_new_posts info', __FILE__, __LINE__, $db->error());
+$result = $db->query('SELECT u.gender, u.email, u.title, u.url, u.location, u.signature, u.email_setting, u.num_posts, u.registered, u.admin_note, p.id, p.poster AS username, p.poster_id, p.message, p.hide_smilies, p.posted, p.edited, p.edited_by, p.post_new, g.g_id, g.g_user_title FROM '.$db->prefix.'pms_new_posts AS p LEFT JOIN '.$db->prefix.'users AS u ON u.id=p.poster_id LEFT JOIN `'.$db->prefix.'groups` AS g ON g.g_id=u.group_id WHERE p.id IN ('.implode(',', $post_ids).') ORDER BY p.id', true) or error('Unable to fetch pms_new_posts info', __FILE__, __LINE__, $db->error());
 while ($cur_post = $db->fetch_assoc($result))
 {
 	$post_count++;
