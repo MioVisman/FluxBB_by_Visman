@@ -32,7 +32,7 @@ if ($pun_user['id'] != $cur_topic['starter_id'] || $cur_topic['see_to'] != 0)
 if ($pun_user['g_pm_limit'] != 0 && $pmsn_kol_list >= $pun_user['g_pm_limit'])
 	message($lang_pmsn['More maximum list']);
 
-$result = $db->query('SELECT u.*, g.* FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'groups AS g ON u.group_id=g.g_id WHERE id='.$cur_topic['to_id']) or error('Unable to fetch user information', __FILE__, __LINE__, $db->error());
+$result = $db->query('SELECT u.*, g.* FROM '.$db->prefix.'users AS u INNER JOIN '.$db->prefix.'`groups` AS g ON u.group_id=g.g_id WHERE id='.$cur_topic['to_id']) or error('Unable to fetch user information', __FILE__, __LINE__, $db->error());
 $cur_user = $db->fetch_assoc($result);
 
 if (!isset($cur_user['id']))

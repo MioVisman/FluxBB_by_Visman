@@ -62,7 +62,7 @@ if (isset($_REQUEST['add_ban']) || isset($_GET['edit_ban']))
 			if ($group_id == PUN_ADMIN)
 				message(sprintf($lang_admin_bans['User is admin message'], pun_htmlspecialchars($ban_user)));
 
-			$result = $db->query('SELECT g_moderator FROM '.$db->prefix.'groups WHERE g_id='.$group_id) or error('Unable to fetch group info', __FILE__, __LINE__, $db->error());
+			$result = $db->query('SELECT g_moderator FROM '.$db->prefix.'`groups` WHERE g_id='.$group_id) or error('Unable to fetch group info', __FILE__, __LINE__, $db->error());
 			$is_moderator_group = $db->result($result);
 
 			if ($is_moderator_group)
@@ -216,7 +216,7 @@ else if (isset($_POST['add_edit_ban']))
 			if ($group_id == PUN_ADMIN)
 				message(sprintf($lang_admin_bans['User is admin message'], pun_htmlspecialchars($ban_user)));
 
-			$result = $db->query('SELECT g_moderator FROM '.$db->prefix.'groups WHERE g_id='.$group_id) or error('Unable to fetch group info', __FILE__, __LINE__, $db->error());
+			$result = $db->query('SELECT g_moderator FROM '.$db->prefix.'`groups` WHERE g_id='.$group_id) or error('Unable to fetch group info', __FILE__, __LINE__, $db->error());
 			$is_moderator_group = $db->result($result);
 
 			if ($is_moderator_group)

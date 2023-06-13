@@ -38,14 +38,14 @@ if (isset($_POST['show_text']))
 	else
 		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_pms_flasher\', \'0\')') or error('Unable to insert into table '.$db->prefix.'config. Please check your configuration and try again.');
 
-	$result = $db->query('SELECT g_id FROM '.$db->prefix.'groups ORDER BY g_id') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
+	$result = $db->query('SELECT g_id FROM '.$db->prefix.'`groups` ORDER BY g_id') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
 
 	while ($cur_group = $db->fetch_assoc($result)) {
 		if ($cur_group['g_id'] != PUN_ADMIN && $cur_group['g_id'] != PUN_GUEST) {
 			$g_p = isset($g_pm[$cur_group['g_id']]) ? 1 : 0;
 			$g_lim = max(intval($g_limit[$cur_group['g_id']] ?? 0), 0);
 
-			$db->query('UPDATE '.$db->prefix.'groups SET g_pm='.$g_p.', g_pm_limit='.$g_lim.' WHERE g_id='.$cur_group['g_id']) or error('Unable to update user group list', __FILE__, __LINE__, $db->error());
+			$db->query('UPDATE '.$db->prefix.'`groups` SET g_pm='.$g_p.', g_pm_limit='.$g_lim.' WHERE g_id='.$cur_group['g_id']) or error('Unable to update user group list', __FILE__, __LINE__, $db->error());
 		}
 	}
 
@@ -131,7 +131,7 @@ if ($pun_config['o_pms_enabled'] == '1')
 							<tbody>
 <?php
 
-	$result = $db->query('SELECT g_id, g_title, g_pm, g_pm_limit FROM '.$db->prefix.'groups ORDER BY g_id') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
+	$result = $db->query('SELECT g_id, g_title, g_pm, g_pm_limit FROM '.$db->prefix.'`groups` ORDER BY g_id') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
 
 	while ($cur_group = $db->fetch_assoc($result)) {
 		if ($cur_group['g_id'] != PUN_ADMIN && $cur_group['g_id'] != PUN_GUEST) {

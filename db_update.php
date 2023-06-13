@@ -830,40 +830,40 @@ switch ($stage)
 			// guest:		2 -> 3
 			// member:		? -> 4
 
-			$result = $db->query('SELECT MAX(g_id) + 1 FROM '.$db->prefix.'groups') or error('Unable to select temp group ID', __FILE__, __LINE__, $db->error());
+			$result = $db->query('SELECT MAX(g_id) + 1 FROM '.$db->prefix.'`groups`') or error('Unable to select temp group ID', __FILE__, __LINE__, $db->error());
 			$temp_id = $db->result($result);
 
-			$result = $db->query('SELECT g_id FROM '.$db->prefix.'groups WHERE g_moderator = 1 AND g_id > 1 LIMIT 1') or error('Unable to select moderator group', __FILE__, __LINE__, $db->error());
+			$result = $db->query('SELECT g_id FROM '.$db->prefix.'`groups` WHERE g_moderator = 1 AND g_id > 1 LIMIT 1') or error('Unable to select moderator group', __FILE__, __LINE__, $db->error());
 			$mod_gid = $db->result($result);
 
 			if (empty($mod_gid))
 			{
-				$db->query('INSERT INTO '.$db->prefix.'groups (g_title, g_user_title, g_moderator, g_mod_edit_users, g_mod_rename_users, g_mod_change_passwords, g_mod_ban_users, g_read_board, g_view_users, g_post_replies, g_post_topics, g_edit_posts, g_delete_posts, g_delete_topics, g_set_title, g_search, g_search_users, g_send_email, g_post_flood, g_search_flood, g_email_flood, g_report_flood) VALUES ('."'Moderators', 'Moderator', 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0)") or error('Unable to add group', __FILE__, __LINE__, $db->error());
+				$db->query('INSERT INTO '.$db->prefix.'`groups` (g_title, g_user_title, g_moderator, g_mod_edit_users, g_mod_rename_users, g_mod_change_passwords, g_mod_ban_users, g_read_board, g_view_users, g_post_replies, g_post_topics, g_edit_posts, g_delete_posts, g_delete_topics, g_set_title, g_search, g_search_users, g_send_email, g_post_flood, g_search_flood, g_email_flood, g_report_flood) VALUES ('."'Moderators', 'Moderator', 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0)") or error('Unable to add group', __FILE__, __LINE__, $db->error());
 				$mod_gid = $db->insert_id();
 			}
 
 			$member_gid = $pun_config['o_default_user_group'];
 
 			// move the mod group to a temp place
-			$db->query('UPDATE '.$db->prefix.'groups SET g_id = '.$temp_id.' WHERE g_id = '.$mod_gid) or error('Unable to update group ID', __FILE__, __LINE__, $db->error());
+			$db->query('UPDATE '.$db->prefix.'`groups` SET g_id = '.$temp_id.' WHERE g_id = '.$mod_gid) or error('Unable to update group ID', __FILE__, __LINE__, $db->error());
 			$db->query('UPDATE '.$db->prefix.'users SET group_id = '.$temp_id.' WHERE group_id = '.$mod_gid) or error('Unable to update users group ID', __FILE__, __LINE__, $db->error());
 			$db->query('UPDATE '.$db->prefix.'forum_perms SET group_id = '.$temp_id.' WHERE group_id = '.$mod_gid) or error('Unable to forum_perms group ID', __FILE__, __LINE__, $db->error());
 			if ($member_gid == $mod_gid) $member_gid = $temp_id;
 
 			// move whoever is in 3 to a spare slot
-			$db->query('UPDATE '.$db->prefix.'groups SET g_id = '.$mod_gid.' WHERE g_id = 3') or error('Unable to update group ID', __FILE__, __LINE__, $db->error());
+			$db->query('UPDATE '.$db->prefix.'`groups` SET g_id = '.$mod_gid.' WHERE g_id = 3') or error('Unable to update group ID', __FILE__, __LINE__, $db->error());
 			$db->query('UPDATE '.$db->prefix.'users SET group_id = '.$mod_gid.' WHERE group_id = 3') or error('Unable to update users group ID', __FILE__, __LINE__, $db->error());
 			$db->query('UPDATE '.$db->prefix.'forum_perms SET group_id = '.$mod_gid.' WHERE group_id = 3') or error('Unable to forum_perms group ID', __FILE__, __LINE__, $db->error());
 			if ($member_gid == 3) $member_gid = $mod_gid;
 
 			// move guest to 3
-			$db->query('UPDATE '.$db->prefix.'groups SET g_id = 3 WHERE g_id = 2') or error('Unable to update group ID', __FILE__, __LINE__, $db->error());
+			$db->query('UPDATE '.$db->prefix.'`groups` SET g_id = 3 WHERE g_id = 2') or error('Unable to update group ID', __FILE__, __LINE__, $db->error());
 			$db->query('UPDATE '.$db->prefix.'users SET group_id = 3 WHERE group_id = 2') or error('Unable to update users group ID', __FILE__, __LINE__, $db->error());
 			$db->query('UPDATE '.$db->prefix.'forum_perms SET group_id = 3 WHERE group_id = 2') or error('Unable to forum_perms group ID', __FILE__, __LINE__, $db->error());
 			if ($member_gid == 2) $member_gid = 3;
 
 			// move mod group in temp place to 2
-			$db->query('UPDATE '.$db->prefix.'groups SET g_id = 2 WHERE g_id = '.$temp_id) or error('Unable to update group ID', __FILE__, __LINE__, $db->error());
+			$db->query('UPDATE '.$db->prefix.'`groups` SET g_id = 2 WHERE g_id = '.$temp_id) or error('Unable to update group ID', __FILE__, __LINE__, $db->error());
 			$db->query('UPDATE '.$db->prefix.'users SET group_id = 2 WHERE group_id = '.$temp_id) or error('Unable to update users group ID', __FILE__, __LINE__, $db->error());
 			$db->query('UPDATE '.$db->prefix.'forum_perms SET group_id = 2 WHERE group_id = '.$temp_id) or error('Unable to forum_perms group ID', __FILE__, __LINE__, $db->error());
 			if ($member_gid == $temp_id) $member_gid = 2;
@@ -872,17 +872,17 @@ switch ($stage)
 			if ($member_gid != $mod_gid || $member_gid != 4)
 			{
 				// move members to temp place
-				$db->query('UPDATE '.$db->prefix.'groups SET g_id = '.$temp_id.' WHERE g_id = '.$member_gid) or error('Unable to update group ID', __FILE__, __LINE__, $db->error());
+				$db->query('UPDATE '.$db->prefix.'`groups` SET g_id = '.$temp_id.' WHERE g_id = '.$member_gid) or error('Unable to update group ID', __FILE__, __LINE__, $db->error());
 				$db->query('UPDATE '.$db->prefix.'users SET group_id = '.$temp_id.' WHERE group_id = '.$member_gid) or error('Unable to update users group ID', __FILE__, __LINE__, $db->error());
 				$db->query('UPDATE '.$db->prefix.'forum_perms SET group_id = '.$temp_id.' WHERE group_id = '.$member_gid) or error('Unable to forum_perms group ID', __FILE__, __LINE__, $db->error());
 
 				// move whoever is in 4 to members place
-				$db->query('UPDATE '.$db->prefix.'groups SET g_id = '.$member_gid.' WHERE g_id = 4') or error('Unable to update group ID', __FILE__, __LINE__, $db->error());
+				$db->query('UPDATE '.$db->prefix.'`groups` SET g_id = '.$member_gid.' WHERE g_id = 4') or error('Unable to update group ID', __FILE__, __LINE__, $db->error());
 				$db->query('UPDATE '.$db->prefix.'users SET group_id = '.$member_gid.' WHERE group_id = 4') or error('Unable to update users group ID', __FILE__, __LINE__, $db->error());
 				$db->query('UPDATE '.$db->prefix.'forum_perms SET group_id = '.$member_gid.' WHERE group_id = 4') or error('Unable to forum_perms group ID', __FILE__, __LINE__, $db->error());
 
 				// move members in temp place to 4
-				$db->query('UPDATE '.$db->prefix.'groups SET g_id = 4 WHERE g_id = '.$temp_id) or error('Unable to update group ID', __FILE__, __LINE__, $db->error());
+				$db->query('UPDATE '.$db->prefix.'`groups` SET g_id = 4 WHERE g_id = '.$temp_id) or error('Unable to update group ID', __FILE__, __LINE__, $db->error());
 				$db->query('UPDATE '.$db->prefix.'users SET group_id = 4 WHERE group_id = '.$temp_id) or error('Unable to update users group ID', __FILE__, __LINE__, $db->error());
 				$db->query('UPDATE '.$db->prefix.'forum_perms SET group_id = 4 WHERE group_id = '.$temp_id) or error('Unable to forum_perms group ID', __FILE__, __LINE__, $db->error());
 			}
@@ -908,7 +908,7 @@ switch ($stage)
 			$db->add_field('groups', 'g_moderator', 'TINYINT(1)', false, 0, 'g_user_title') or error('Unable to add g_moderator field', __FILE__, __LINE__, $db->error());
 
 			// Give the moderator group moderator privileges
-			$db->query('UPDATE '.$db->prefix.'groups SET g_moderator = 1 WHERE g_id = 2') or error('Unable to update moderator powers', __FILE__, __LINE__, $db->error());
+			$db->query('UPDATE '.$db->prefix.'`groups` SET g_moderator = 1 WHERE g_id = 2') or error('Unable to update moderator powers', __FILE__, __LINE__, $db->error());
 		}
 
 		// Replace obsolete p_mod_edit_users config setting with new per-group permission
@@ -918,7 +918,7 @@ switch ($stage)
 
 			$db->add_field('groups', 'g_mod_edit_users', 'TINYINT(1)', false, 0, 'g_moderator') or error('Unable to add g_mod_edit_users field', __FILE__, __LINE__, $db->error());
 
-			$db->query('UPDATE '.$db->prefix.'groups SET g_mod_edit_users = '.$pun_config['p_mod_edit_users'].' WHERE g_moderator = 1') or error('Unable to update moderator powers', __FILE__, __LINE__, $db->error());
+			$db->query('UPDATE '.$db->prefix.'`groups` SET g_mod_edit_users = '.$pun_config['p_mod_edit_users'].' WHERE g_moderator = 1') or error('Unable to update moderator powers', __FILE__, __LINE__, $db->error());
 		}
 
 		// Replace obsolete p_mod_rename_users config setting with new per-group permission
@@ -928,7 +928,7 @@ switch ($stage)
 
 			$db->add_field('groups', 'g_mod_rename_users', 'TINYINT(1)', false, 0, 'g_mod_edit_users') or error('Unable to add g_mod_rename_users field', __FILE__, __LINE__, $db->error());
 
-			$db->query('UPDATE '.$db->prefix.'groups SET g_mod_rename_users = '.$pun_config['p_mod_rename_users'].' WHERE g_moderator = 1') or error('Unable to update moderator powers', __FILE__, __LINE__, $db->error());
+			$db->query('UPDATE '.$db->prefix.'`groups` SET g_mod_rename_users = '.$pun_config['p_mod_rename_users'].' WHERE g_moderator = 1') or error('Unable to update moderator powers', __FILE__, __LINE__, $db->error());
 		}
 
 		// Replace obsolete p_mod_change_passwords config setting with new per-group permission
@@ -938,7 +938,7 @@ switch ($stage)
 
 			$db->add_field('groups', 'g_mod_change_passwords', 'TINYINT(1)', false, 0, 'g_mod_rename_users') or error('Unable to add g_mod_change_passwords field', __FILE__, __LINE__, $db->error());
 
-			$db->query('UPDATE '.$db->prefix.'groups SET g_mod_change_passwords = '.$pun_config['p_mod_change_passwords'].' WHERE g_moderator = 1') or error('Unable to update moderator powers', __FILE__, __LINE__, $db->error());
+			$db->query('UPDATE '.$db->prefix.'`groups` SET g_mod_change_passwords = '.$pun_config['p_mod_change_passwords'].' WHERE g_moderator = 1') or error('Unable to update moderator powers', __FILE__, __LINE__, $db->error());
 		}
 
 		// Replace obsolete p_mod_ban_users config setting with new per-group permission
@@ -948,7 +948,7 @@ switch ($stage)
 
 			$db->add_field('groups', 'g_mod_ban_users', 'TINYINT(1)', false, 0, 'g_mod_change_passwords') or error('Unable to add g_mod_ban_users field', __FILE__, __LINE__, $db->error());
 
-			$db->query('UPDATE '.$db->prefix.'groups SET g_mod_ban_users = '.$pun_config['p_mod_ban_users'].' WHERE g_moderator = 1') or error('Unable to update moderator powers', __FILE__, __LINE__, $db->error());
+			$db->query('UPDATE '.$db->prefix.'`groups` SET g_mod_ban_users = '.$pun_config['p_mod_ban_users'].' WHERE g_moderator = 1') or error('Unable to update moderator powers', __FILE__, __LINE__, $db->error());
 		}
 
 		// We need to add a unique index to avoid users having multiple rows in the online table
@@ -1007,8 +1007,8 @@ switch ($stage)
 		$db->add_field('groups', 'g_report_flood', 'SMALLINT(6)', false, 60, 'g_email_flood') or error('Unable to add g_report_flood field', __FILE__, __LINE__, $db->error());
 
 		// Set non-default g_send_email, g_flood_email and g_flood_report values properly
-		$db->query('UPDATE '.$db->prefix.'groups SET g_send_email = 0 WHERE g_id = 3') or error('Unable to update group email permissions', __FILE__, __LINE__, $db->error());
-		$db->query('UPDATE '.$db->prefix.'groups SET g_email_flood = 0, g_report_flood = 0 WHERE g_id IN (1,2,3)') or error('Unable to update group email permissions', __FILE__, __LINE__, $db->error());
+		$db->query('UPDATE '.$db->prefix.'`groups` SET g_send_email = 0 WHERE g_id = 3') or error('Unable to update group email permissions', __FILE__, __LINE__, $db->error());
+		$db->query('UPDATE '.$db->prefix.'`groups` SET g_email_flood = 0, g_report_flood = 0 WHERE g_id IN (1,2,3)') or error('Unable to update group email permissions', __FILE__, __LINE__, $db->error());
 
 		// Add the auto notify/subscription option to the users table
 		$db->add_field('users', 'auto_notify', 'TINYINT(1)', false, 0, 'notify_with_post') or error('Unable to add auto_notify field', __FILE__, __LINE__, $db->error());
@@ -1338,7 +1338,7 @@ switch ($stage)
 			return $cur_item;
 		}
 
-		convert_table_utf8($db->prefix.'groups', '_conv_groups', $old_charset, 'g_id');
+		convert_table_utf8($db->prefix.'`groups`', '_conv_groups', $old_charset, 'g_id');
 
 		break;
 
@@ -1591,7 +1591,7 @@ switch ($stage)
 					$db->query('UPDATE '.$db->prefix.'online SET ident=\''.$db->escape($username).'\' WHERE ident=\''.$db->escape($old_username).'\' COLLATE utf8mb4_bin') or error('Unable to update online list', __FILE__, __LINE__, $db->error());
 
 					// If the user is a moderator or an administrator we have to update the moderator lists
-					$result = $db->query('SELECT g_moderator FROM '.$db->prefix.'groups WHERE g_id='.$cur_user['group_id']) or error('Unable to fetch group', __FILE__, __LINE__, $db->error());
+					$result = $db->query('SELECT g_moderator FROM '.$db->prefix.'`groups` WHERE g_id='.$cur_user['group_id']) or error('Unable to fetch group', __FILE__, __LINE__, $db->error());
 					$group_mod = $db->result($result);
 
 					if ($cur_user['group_id'] == PUN_ADMIN || $group_mod == '1')
@@ -1899,7 +1899,7 @@ foreach ($errors[$id] as $cur_error)
 			$db->add_field('users', 'messages_all', 'INT(10) UNSIGNED', false, 0) or error('Unable to add messages_all field', __FILE__, __LINE__, $db->error());
 			$db->add_field('users', 'pmsn_last_post', 'INT(10) UNSIGNED', true) or error('Unable to add pmsn_last_post field', __FILE__, __LINE__, $db->error());
 
-			$db->query('UPDATE '.$db->prefix.'groups SET g_pm_limit=0 WHERE g_id='.PUN_ADMIN) or error('Unable to merge groups', __FILE__, __LINE__, $db->error());
+			$db->query('UPDATE '.$db->prefix.'`groups` SET g_pm_limit=0 WHERE g_id='.PUN_ADMIN) or error('Unable to merge groups', __FILE__, __LINE__, $db->error());
 
  			if (!array_key_exists('o_pms_enabled', $pun_config))
 				$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_pms_enabled\', \'1\')') or error('Unable to insert config value \'o_pms_enabled\'', __FILE__, __LINE__, $db->error());

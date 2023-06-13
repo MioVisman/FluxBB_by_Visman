@@ -26,14 +26,14 @@ if (isset($_POST['show_text']))
 	$g_order = $_POST['g_order'] ?? null;
 	$g_order = is_array($g_order) ? array_map('pun_trim', $g_order) : [];
 
-	$result = $db->query('SELECT g_id, g_title, g_deledit_interval FROM '.$db->prefix.'groups ORDER BY g_id') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
+	$result = $db->query('SELECT g_id, g_title, g_deledit_interval FROM '.$db->prefix.'`groups` ORDER BY g_id') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
 
 	while ($cur_group = $db->fetch_assoc($result)) {
 		if ($cur_group['g_id'] != PUN_ADMIN && $cur_group['g_id'] != PUN_GUEST) {
 			$g_time = intval($g_order[$cur_group['g_id']] ?? 0);
 			$g_time = max(0, $g_time);
 
-			$db->query('UPDATE '.$db->prefix.'groups SET g_deledit_interval='.$g_time.' WHERE g_id='.$cur_group['g_id']) or error('Unable to update user group list', __FILE__, __LINE__, $db->error());
+			$db->query('UPDATE '.$db->prefix.'`groups` SET g_deledit_interval='.$g_time.' WHERE g_id='.$cur_group['g_id']) or error('Unable to update user group list', __FILE__, __LINE__, $db->error());
 		}
 	}
 
@@ -72,7 +72,7 @@ else
 <?php
 
 	$tabindex = 2;
-	$result = $db->query('SELECT g_id, g_title, g_deledit_interval FROM '.$db->prefix.'groups ORDER BY g_id') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
+	$result = $db->query('SELECT g_id, g_title, g_deledit_interval FROM '.$db->prefix.'`groups` ORDER BY g_id') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
 
 	while ($cur_group = $db->fetch_assoc($result)) {
 		if ($cur_group['g_id'] != PUN_ADMIN && $cur_group['g_id'] != PUN_GUEST) {

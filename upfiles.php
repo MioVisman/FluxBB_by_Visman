@@ -105,7 +105,7 @@ if (! isset($_GET['id'])) {
 		upf_message($lang_common['Bad request'], false, '404 Not Found');
 	}
 
-	$result = $db->query('SELECT u.username, u.upload_size, g.g_up_ext, g.g_up_max, g.g_up_limit FROM ' . $db->prefix . 'users AS u INNER JOIN '.$db->prefix.'groups AS g ON u.group_id=g.g_id WHERE u.id=' . $id) or error('Unable to fetch user information', __FILE__, __LINE__, $db->error());
+	$result = $db->query('SELECT u.username, u.upload_size, g.g_up_ext, g.g_up_max, g.g_up_limit FROM ' . $db->prefix . 'users AS u INNER JOIN '.$db->prefix.'`groups` AS g ON u.group_id=g.g_id WHERE u.id=' . $id) or error('Unable to fetch user information', __FILE__, __LINE__, $db->error());
 	$user_info = $db->fetch_row($result);
 
 	if (! $user_info) {

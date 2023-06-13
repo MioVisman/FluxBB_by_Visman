@@ -66,7 +66,7 @@ function generate_quickjump_cache($group_id = false)
 	if ($group_id !== false)
 	{
 		// Is this group even allowed to read forums?
-		$result = $db->query('SELECT g_read_board FROM '.$db->prefix.'groups WHERE g_id='.intval($group_id)) or error('Unable to fetch user group read permission', __FILE__, __LINE__, $db->error());
+		$result = $db->query('SELECT g_read_board FROM '.$db->prefix.'`groups` WHERE g_id='.intval($group_id)) or error('Unable to fetch user group read permission', __FILE__, __LINE__, $db->error());
 		$read_board = $db->result($result);
 
 		$groups[$group_id] = $read_board;
@@ -74,7 +74,7 @@ function generate_quickjump_cache($group_id = false)
 	else
 	{
 		// A group_id was not supplied, so we generate the quick jump cache for all groups
-		$result = $db->query('SELECT g_id, g_read_board FROM '.$db->prefix.'groups') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
+		$result = $db->query('SELECT g_id, g_read_board FROM '.$db->prefix.'`groups`') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
 
 		while ($row = $db->fetch_row($result))
 			$groups[$row[0]] = $row[1];
@@ -333,7 +333,7 @@ function generate_subforums_cache($group_id = false)
 	if ($group_id !== false)
 	{
 		// Is this group even allowed to read forums?
-		$result = $db->query('SELECT g_read_board FROM '.$db->prefix.'groups WHERE g_id='.intval($group_id)) or error('Unable to fetch user group read permission', __FILE__, __LINE__, $db->error());
+		$result = $db->query('SELECT g_read_board FROM '.$db->prefix.'`groups` WHERE g_id='.intval($group_id)) or error('Unable to fetch user group read permission', __FILE__, __LINE__, $db->error());
 		$read_board = $db->result($result);
 
 		$groups[$group_id] = $read_board;
@@ -341,7 +341,7 @@ function generate_subforums_cache($group_id = false)
 	else
 	{
 		// A group_id was not supplied, so we generate the quick jump cache for all groups
-		$result = $db->query('SELECT g_id, g_read_board FROM '.$db->prefix.'groups') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
+		$result = $db->query('SELECT g_id, g_read_board FROM '.$db->prefix.'`groups`') or error('Unable to fetch user group list', __FILE__, __LINE__, $db->error());
 
 		while ($row = $db->fetch_row($result))
 			$groups[$row[0]] = $row[1];
