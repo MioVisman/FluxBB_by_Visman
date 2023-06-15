@@ -165,7 +165,7 @@ else
 	$db_name = pun_trim($_POST['req_db_name'] ?? '');
 	$db_username = pun_trim($_POST['db_username'] ?? '');
 	$db_password = pun_trim($_POST['db_password'] ?? '');
-	$db_prefix = pun_trim($_POST['db_prefix'] ?? '');
+	$db_prefix = pun_trim($_POST['req_db_prefix'] ?? '');
 	$username = pun_trim($_POST['req_username'] ?? '');
 	$email = strtolower(pun_trim($_POST['req_email'] ?? ''));
 	$password1 = pun_trim($_POST['req_password1'] ?? '');
@@ -216,6 +216,10 @@ else
 	$styles = forum_list_styles();
 	if (!in_array($default_style, $styles))
 		$alerts[] = $lang_install['Error default style'];
+
+	// Validate prefix
+	if (empty($db_prefix) || strlen($db_prefix) > 40 || !preg_match('%^[a-zA-Z_][a-zA-Z0-9_]*$%', $db_prefix))
+		$alerts[] = sprintf($lang_install['Table prefix error'], $db_prefix);
 }
 
 // Check if the cache directory is writable
@@ -269,7 +273,8 @@ function process_form(the_form)
 		"req_password2": "<?php echo $lang_install['Confirm password'] ?>",
 		"req_email": "<?php echo $lang_install['Administrator email'] ?>",
 		"req_title": "<?php echo $lang_install['Board title'] ?>",
-		"req_base_url": "<?php echo $lang_install['Base URL'] ?>"
+		"req_base_url": "<?php echo $lang_install['Base URL'] ?>",
+		"req_db_prefix": "<?php echo $lang_install['Table prefix'] ?>"
 	};
 	if (document.all || document.getElementById)
 	{
@@ -289,7 +294,7 @@ function process_form(the_form)
 /* ]]> */
 </script>
 </head>
-<body onload="document.getElementById('install').req_db_type.focus();document.getElementById('install').start.disabled=false;" onunload="">
+<body onload="document.getElementById('req_db_type').focus();document.getElementById('install').start.disabled=false;" onunload="">
 
 <div id="puninstall" class="pun">
 <div class="top-box"><div><!-- Top Corners --></div></div>
@@ -365,7 +370,7 @@ foreach ($alerts as $cur_alert)
 					<div class="infldset">
 						<p><?php echo $lang_install['Info 2'] ?></p>
 						<label class="required"><strong><?php echo $lang_install['Database type'] ?> <span><?php echo $lang_install['Required'] ?></span></strong>
-						<br /><select name="req_db_type">
+						<br /><select id="req_db_type" name="req_db_type">
 <?php
 
 	foreach ($db_extensions as $temp)
@@ -416,7 +421,7 @@ foreach ($alerts as $cur_alert)
 					<legend><?php echo $lang_install['Database enter prefix'] ?></legend>
 					<div class="infldset">
 						<p><?php echo $lang_install['Info 6'] ?></p>
-						<label><?php echo $lang_install['Table prefix'] ?><br /><input id="db_prefix" type="text" name="db_prefix" value="<?php echo pun_htmlspecialchars($db_prefix) ?>" size="20" maxlength="30" /><br /></label>
+						<label class="required"><strong><?php echo $lang_install['Table prefix'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input id="db_prefix" type="text" name="req_db_prefix" value="<?php echo pun_htmlspecialchars($db_prefix) ?>" size="20" maxlength="30" /><br /></label>
 					</div>
 				</fieldset>
 			</div>
@@ -531,10 +536,6 @@ else
 
 	// Create the database object (and connect/select db)
 	$db = new DBLayer($db_host, $db_username, $db_password, $db_name, $db_prefix, false);
-
-	// Validate prefix
-	if (strlen($db_prefix) > 0 && (!preg_match('%^[a-zA-Z_][a-zA-Z0-9_]*$%', $db_prefix) || strlen($db_prefix) > 40))
-		error(sprintf($lang_install['Table prefix error'], $db->prefix));
 
 	// Do some DB type specific checks
 	switch ($db_type)
@@ -1940,10 +1941,10 @@ else
 	$db->query('INSERT INTO '.$db->prefix.'groups ('.($db_type != 'pgsql' ? 'g_id, ' : '').'g_title, g_user_title, g_moderator, g_mod_edit_users, g_mod_rename_users, g_mod_change_passwords, g_mod_ban_users, g_read_board, g_view_users, g_post_replies, g_post_topics, g_edit_posts, g_delete_posts, g_delete_topics, g_set_title, g_search, g_search_users, g_send_email, g_post_flood, g_search_flood, g_email_flood, g_report_flood) VALUES ('.($db_type != 'pgsql' ? '4, ' : '').'\''.$db->escape($lang_install['Members']).'\', NULL, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 60, 30, 60, 60)') or error('Unable to add group', __FILE__, __LINE__, $db->error());
 
 	// Insert guest and first admin user
-	$db->query('INSERT INTO '.$db_prefix.'users (group_id, username, password, email) VALUES (3, \''.$db->escape($lang_install['Guest']).'\', \''.$db->escape($lang_install['Guest']).'\', \''.$db->escape($lang_install['Guest']).'\')')
+	$db->query('INSERT INTO '.$db->prefix.'users (group_id, username, password, email) VALUES (3, \''.$db->escape($lang_install['Guest']).'\', \''.$db->escape($lang_install['Guest']).'\', \''.$db->escape($lang_install['Guest']).'\')')
 		or error('Unable to add guest user. Please check your configuration and try again', __FILE__, __LINE__, $db->error());
 
-	$db->query('INSERT INTO '.$db_prefix.'users (group_id, username, password, email, language, style, num_posts, last_post, registered, registration_ip, last_visit) VALUES (1, \''.$db->escape($username).'\', \''.$db->escape(password_hash($password1, PASSWORD_DEFAULT)).'\', \''.$email.'\', \''.$db->escape($default_lang).'\', \''.$db->escape($default_style).'\', 1, '.$now.', '.$now.', \''.$db->escape(get_remote_address()).'\', '.$now.')')
+	$db->query('INSERT INTO '.$db->prefix.'users (group_id, username, password, email, language, style, num_posts, last_post, registered, registration_ip, last_visit) VALUES (1, \''.$db->escape($username).'\', \''.$db->escape(password_hash($password1, PASSWORD_DEFAULT)).'\', \''.$email.'\', \''.$db->escape($default_lang).'\', \''.$db->escape($default_style).'\', 1, '.$now.', '.$now.', \''.$db->escape(get_remote_address()).'\', '.$now.')')
 		or error('Unable to add administrator user. Please check your configuration and try again', __FILE__, __LINE__, $db->error());
 
 	// New PMS - Visman
@@ -2057,25 +2058,25 @@ else
 
 	foreach ($pun_config as $conf_name => $conf_value)
 	{
-		$db->query('INSERT INTO '.$db_prefix.'config (conf_name, conf_value) VALUES (\''.$conf_name.'\', '.(is_null($conf_value) ? 'NULL' : '\''.$db->escape($conf_value).'\'').')')
-			or error('Unable to insert into table '.$db_prefix.'config. Please check your configuration and try again', __FILE__, __LINE__, $db->error());
+		$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\''.$conf_name.'\', '.(is_null($conf_value) ? 'NULL' : '\''.$db->escape($conf_value).'\'').')')
+			or error('Unable to insert into table '.$db->prefix.'config. Please check your configuration and try again', __FILE__, __LINE__, $db->error());
 	}
 
 	// Insert some other default data
 	$subject = $lang_install['Test post'];
 	$message = $lang_install['Message'];
 
-	$db->query('INSERT INTO '.$db_prefix.'categories (cat_name, disp_position) VALUES (\''.$db->escape($lang_install['Test category']).'\', 1)')
-		or error('Unable to insert into table '.$db_prefix.'categories. Please check your configuration and try again', __FILE__, __LINE__, $db->error());
+	$db->query('INSERT INTO '.$db->prefix.'categories (cat_name, disp_position) VALUES (\''.$db->escape($lang_install['Test category']).'\', 1)')
+		or error('Unable to insert into table '.$db->prefix.'categories. Please check your configuration and try again', __FILE__, __LINE__, $db->error());
 
-	$db->query('INSERT INTO '.$db_prefix.'forums (forum_name, forum_desc, num_topics, num_posts, last_post, last_post_id, last_poster, last_topic, disp_position, cat_id) VALUES (\''.$db->escape($lang_install['Test forum']).'\', \''.$db->escape($lang_install['This is just a test forum']).'\', 1, 1, '.$now.', 1, \''.$db->escape($username).'\', \''.$db->escape($subject).'\', 1, 1)') // last topic on index - Visman
-		or error('Unable to insert into table '.$db_prefix.'forums. Please check your configuration and try again', __FILE__, __LINE__, $db->error());
+	$db->query('INSERT INTO '.$db->prefix.'forums (forum_name, forum_desc, num_topics, num_posts, last_post, last_post_id, last_poster, last_topic, disp_position, cat_id) VALUES (\''.$db->escape($lang_install['Test forum']).'\', \''.$db->escape($lang_install['This is just a test forum']).'\', 1, 1, '.$now.', 1, \''.$db->escape($username).'\', \''.$db->escape($subject).'\', 1, 1)') // last topic on index - Visman
+		or error('Unable to insert into table '.$db->prefix.'forums. Please check your configuration and try again', __FILE__, __LINE__, $db->error());
 
-	$db->query('INSERT INTO '.$db_prefix.'topics (poster, subject, posted, first_post_id, last_post, last_post_id, last_poster, forum_id) VALUES (\''.$db->escape($username).'\', \''.$db->escape($subject).'\', '.$now.', 1, '.$now.', 1, \''.$db->escape($username).'\', 1)')
-		or error('Unable to insert into table '.$db_prefix.'topics. Please check your configuration and try again', __FILE__, __LINE__, $db->error());
+	$db->query('INSERT INTO '.$db->prefix.'topics (poster, subject, posted, first_post_id, last_post, last_post_id, last_poster, forum_id) VALUES (\''.$db->escape($username).'\', \''.$db->escape($subject).'\', '.$now.', 1, '.$now.', 1, \''.$db->escape($username).'\', 1)')
+		or error('Unable to insert into table '.$db->prefix.'topics. Please check your configuration and try again', __FILE__, __LINE__, $db->error());
 
-	$db->query('INSERT INTO '.$db_prefix.'posts (poster, poster_id, poster_ip, message, posted, topic_id) VALUES (\''.$db->escape($username).'\', 2, \''.$db->escape(get_remote_address()).'\', \''.$db->escape($message).'\', '.$now.', 1)')
-		or error('Unable to insert into table '.$db_prefix.'posts. Please check your configuration and try again', __FILE__, __LINE__, $db->error());
+	$db->query('INSERT INTO '.$db->prefix.'posts (poster, poster_id, poster_ip, message, posted, topic_id) VALUES (\''.$db->escape($username).'\', 2, \''.$db->escape(get_remote_address()).'\', \''.$db->escape($message).'\', '.$now.', 1)')
+		or error('Unable to insert into table '.$db->prefix.'posts. Please check your configuration and try again', __FILE__, __LINE__, $db->error());
 
 	// Index the test post so searching for it works
 	require PUN_ROOT.'include/search_idx.php';
