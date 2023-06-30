@@ -42,14 +42,14 @@ table#forumperms .atcl {text-align: left; width: 15em; white-space: nowrap}
 
 /*** User/Ban Search Result Tables ***/
 #users2 th, #bans1 th {text-align: left}
-#users2 th.tcmod {text-align: center}
+#users2 th.tcmod {text-align: center; overflow: hidden;}
 #users2 .tcl, #bans1 .tcl {width: auto; text-align: left; padding: 4px 6px}
 #users2 .tc2, #bans1 .tc2 {width: 18%; text-align: left; padding: 4px 6px}
 #users2 .tc3, #users2 .tc5, #bans1 .tc3, #bans1 .tc5, #bans1 .tc6 {width: 12%; text-align: left; padding: 4px 6px}
 #users2 .tc4, #bans1 .tc4 {width: 10%; text-align: center}
-#users2 .tcr {width: 20%;}
+#users2 .tcr {width: 10%;}
 #bans1 .tcr {width: 15%; white-space: nowrap}
-#users2 .tcmod {width: 10%; text-align: center}
+#users2 .tcmod {width: 2em; text-align: center}
 #adminconsole #linkst, #adminconsole #linksb a {font-weight: bold}
 
 /*** Plugins ***/

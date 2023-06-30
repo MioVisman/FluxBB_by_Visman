@@ -213,14 +213,14 @@ if (isset($_GET['show_users']))
 			{
 				$user_title = get_title($user_data[$cur_poster['poster_id']]);
 
-				$actions = '<a href="admin_users.php?ip_stats='.$user_data[$cur_poster['poster_id']]['id'].'">'.$lang_admin_users['Results view IP link'].'</a> | <a href="search.php?action=show_user_posts&amp;user_id='.$user_data[$cur_poster['poster_id']]['id'].'">'.$lang_admin_users['Results show posts link'].'</a>';
+				$actions = $pun_user['g_id'] == PUN_ADMIN ? '<a href="admin_users.php?ip_stats='.$user_data[$cur_poster['poster_id']]['id'].'">'.$lang_admin_users['Results view IP link'].'</a>' : '&#160;';
 
 ?>
 				<tr>
 					<td class="tcl"><?php echo '<a href="profile.php?id='.$user_data[$cur_poster['poster_id']]['id'].'">'.pun_htmlspecialchars($user_data[$cur_poster['poster_id']]['username']).'</a>' ?></td>
 					<td class="tc2"><a href="mailto:<?php echo pun_htmlspecialchars($user_data[$cur_poster['poster_id']]['email']) ?>"><?php echo pun_htmlspecialchars($user_data[$cur_poster['poster_id']]['email']) ?></a></td>
 					<td class="tc3"><?php echo $user_title ?></td>
-					<td class="tc4"><?php echo forum_number_format($user_data[$cur_poster['poster_id']]['num_posts']) ?></td>
+					<td class="tc4"><a href="search.php?action=show_user_posts&amp;user_id=<?php echo $user_data[$cur_poster['poster_id']]['id'] ?>"><?php echo forum_number_format($user_data[$cur_poster['poster_id']]['num_posts']) ?></a></td>
 					<td class="tc5"><?php echo ($user_data[$cur_poster['poster_id']]['admin_note'] != '') ? pun_htmlspecialchars($user_data[$cur_poster['poster_id']]['admin_note']) : '&#160;' ?></td>
 					<td class="tcr"><?php echo $actions ?></td>
 				</tr>
@@ -890,14 +890,14 @@ else if (isset($_GET['find_user']))
 			if (($user_data['g_id'] == '' || $user_data['g_id'] == PUN_UNVERIFIED) && $user_title != $lang_common['Banned'])
 				$user_title = '<span class="warntext">'.$lang_admin_users['Not verified'].'</span>';
 
-			$actions = ($pun_user['g_id'] == PUN_ADMIN ? '<a href="admin_users.php?ip_stats='.$user_data['id'].'">'.$lang_admin_users['Results view IP link'].'</a> | ' : '').'<a href="search.php?action=show_user_posts&amp;user_id='.$user_data['id'].'">'.$lang_admin_users['Results show posts link'].'</a>';
+			$actions = $pun_user['g_id'] == PUN_ADMIN ? '<a href="admin_users.php?ip_stats='.$user_data['id'].'">'.$lang_admin_users['Results view IP link'].'</a>' : '&#160;';
 
 ?>
 				<tr>
 					<td class="tcl"><?php echo '<a href="profile.php?id='.$user_data['id'].'">'.pun_htmlspecialchars($user_data['username']).'</a>' ?></td>
 					<td class="tc2"><a href="mailto:<?php echo pun_htmlspecialchars($user_data['email']) ?>"><?php echo pun_htmlspecialchars($user_data['email']) ?></a></td>
 					<td class="tc3"><?php echo $user_title ?></td>
-					<td class="tc4"><?php echo forum_number_format($user_data['num_posts']) ?></td>
+					<td class="tc4"><a href="search.php?action=show_user_posts&amp;user_id=<?php echo $user_data['id'] ?>"><?php echo forum_number_format($user_data['num_posts']) ?></a></td>
 					<td class="tc5"><?php echo ($user_data['admin_note'] != '') ? pun_htmlspecialchars($user_data['admin_note']) : '&#160;' ?></td>
 					<td class="tcr"><?php echo $actions ?></td>
 <?php if ($can_action): ?>					<td class="tcmod"><input type="checkbox" name="users[<?php echo $user_data['id'] ?>]" value="1" /></td>
