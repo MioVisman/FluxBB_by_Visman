@@ -844,7 +844,7 @@ function delete_post(int $post_id, int $topic_id)
 
 	// Count number of replies in the topic
 	$result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'posts WHERE topic_id='.$topic_id) or error('Unable to fetch post count for topic', __FILE__, __LINE__, $db->error());
-	$num_replies = $db->result($result, 0) - 1;
+	$num_replies = $db->result($result) - 1;
 
 	// If the message we deleted is the most recent in the topic (at the end of the topic)
 	if ($last_id == $post_id)

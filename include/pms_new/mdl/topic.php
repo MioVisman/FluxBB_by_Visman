@@ -174,8 +174,9 @@ $post_count = 0; // Keep track of post numbers
 $result = $db->query('SELECT id FROM '.$db->prefix.'pms_new_posts WHERE topic_id='.$tid.' ORDER BY id LIMIT '.$start_from.','.$pun_user['disp_posts']) or error('Unable to fetch pms_new_posts IDs', __FILE__, __LINE__, $db->error());
 
 $post_ids = array();
-for ($i = 0;$cur_post_id = $db->result($result, $i);$i++)
-	$post_ids[] = $cur_post_id;
+while ($row = $db->fetch_row($result)) {
+	$post_ids[] = $row[0];
+}
 
 $post_view_new = array();
 

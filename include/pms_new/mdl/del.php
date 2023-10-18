@@ -52,7 +52,7 @@ if (isset($_POST['action2']))
 
 		// Count number of replies in the topic
 		$result = $db->query('SELECT COUNT(id) FROM '.$db->prefix.'pms_new_posts WHERE topic_id='.$cur_post['tid']) or error('Unable to fetch post count', __FILE__, __LINE__, $db->error());
-		$num_replies = $db->result($result, 0) - 1;
+		$num_replies = $db->result($result) - 1;
 		$mquery[] = 'replies='.$num_replies;
 
 
@@ -146,4 +146,3 @@ generate_pmsn_menu($pmsn_modul);
 		</div>
 	</div>
 <?php
-

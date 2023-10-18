@@ -186,8 +186,9 @@ if ($p == 1 && !empty($sf_array_tree[$id]))
 $result = $db->query('SELECT id FROM '.$db->prefix.'topics WHERE forum_id='.$id.' ORDER BY sticky DESC, '.$sort_by.', id DESC LIMIT '.$start_from.', '.$pun_user['disp_topics']) or error('Unable to fetch topic IDs', __FILE__, __LINE__, $db->error());
 
 $topic_ids = array();
-for ($i = 0; $cur_topic_id = $db->result($result, $i); $i++)
-	$topic_ids[] = $cur_topic_id;
+while ($row = $db->fetch_row($result)) {
+	$topic_ids[] = $row[0];
+}
 
 // If there are topics in this forum
 if (!empty($topic_ids))
