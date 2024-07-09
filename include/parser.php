@@ -738,7 +738,7 @@ function handle_img_tag(string $url, bool $is_signature = false, ?string $alt = 
 //
 // Email bbcode replace to <a href="mailto:... - Visman
 //
-function handle_email_tag(string $mail, string $body = null)
+function handle_email_tag(string $mail, ?string $body = null)
 {
 	if (null === $body)
 		$body = $mail;

@@ -27,7 +27,7 @@ function upf_get_pg(string $key, $default = null)
 	return $_POST[$key] ?? ($_GET[$key] ?? $default);
 }
 
-function upf_message(string $message, bool $no_back_link = false, string $http_status = null)
+function upf_message(string $message, bool $no_back_link = false, ?string $http_status = null)
 {
 	global $upf_ajax;
 

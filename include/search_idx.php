@@ -242,7 +242,7 @@ function strip_bbcode(string $text)
 //
 // Updates the search index with the contents of $post_id (and $subject)
 //
-function update_search_index(string $mode, int $post_id, string $message, string $subject = null)
+function update_search_index(string $mode, int $post_id, string $message, ?string $subject = null)
 {
 	global $db_type, $db;
 

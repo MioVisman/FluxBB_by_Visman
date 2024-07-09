@@ -30,7 +30,7 @@ function is_valid_email(string $email)
 //
 // Check if $email is banned
 //
-function is_banned_email(string $email, int $id = null)
+function is_banned_email(string $email, ?int $id = null)
 {
 	global $pun_bans;
 
@@ -79,7 +79,7 @@ function encode_mail_text(string $str)
 //
 // Make a post email safe
 //
-function bbcode2email(string $text, int $wrap_length = 72, string $language = null)
+function bbcode2email(string $text, int $wrap_length = 72, ?string $language = null)
 {
 	static $base_url;
 	static $wrotes = array();

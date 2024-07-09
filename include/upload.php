@@ -377,7 +377,7 @@ class upfClass
     protected $fileIsUp;
     protected $image;
 
-    public function loadFile(string $path, string $basename = null)
+    public function loadFile(string $path, ?string $basename = null)
     {
         $this->filePath = null;
         $this->fileName = null;
@@ -778,7 +778,7 @@ class upfClass
         $this->destroyImage();
     }
 
-    protected function hidePath(string $str, string $path = null)
+    protected function hidePath(string $str, ?string $path = null)
     {
         $search = [];
         if (null !== $this->filePath) {

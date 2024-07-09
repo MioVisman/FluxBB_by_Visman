@@ -458,7 +458,7 @@ function check_bans()
 //
 // Check username
 //
-function check_username(string $username, int $exclude_id = null)
+function check_username(string $username, ?int $exclude_id = null)
 {
 	global $db, $pun_config, $errors, $lang_prof_reg, $lang_register, $lang_common;
 
@@ -638,7 +638,7 @@ function generate_avatar_markup(int $user_id)
 //
 // Generate browser's title
 //
-function generate_page_title($page_title, int $p = null)
+function generate_page_title($page_title, ?int $p = null)
 {
 	global $lang_common;
 
@@ -1034,7 +1034,7 @@ function paginate(int $num_pages, int $cur_page, string $link)
 //
 // Display a message
 //
-function message(string $message, bool $no_back_link = false, string $http_status = null)
+function message(string $message, bool $no_back_link = false, ?string $http_status = null)
 {
 	global $db, $lang_common, $pun_config, $pun_start, $tpl_main, $pun_user, $page_js;
 
@@ -1344,7 +1344,7 @@ function pun_linebreaks(string $str)
 //
 // A wrapper for utf8_trim for compatibility
 //
-function pun_trim($str, string $charlist = null)
+function pun_trim($str, ?string $charlist = null)
 {
 	if (! is_scalar($str)) {
 		$str = '';
@@ -1649,7 +1649,7 @@ function redirect(string $destination_url, string $message)
 //
 // Display a simple error message
 //
-function error(string $message, string $file = null, $line = null, $db_error = false)
+function error(string $message, ?string $file = null, $line = null, $db_error = false)
 {
 	global $pun_config, $lang_common;
 
