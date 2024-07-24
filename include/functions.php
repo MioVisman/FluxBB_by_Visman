@@ -1072,7 +1072,7 @@ function message(string $message, bool $no_back_link = false, ?string $http_stat
 //
 // Format a time string according to $time_format and time zones
 //
-function format_time($timestamp, bool $date_only = false, ?string $date_format = null, ?string $time_format = null, bool $time_only = false, bool $no_text = false, array $user = null)
+function format_time($timestamp, bool $date_only = false, ?string $date_format = null, ?string $time_format = null, bool $time_only = false, bool $no_text = false, ?array $user = null)
 {
 	global $lang_common, $pun_user, $forum_date_formats, $forum_time_formats;
 
