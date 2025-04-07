@@ -880,7 +880,7 @@ function forum_clear_cache()
 //
 // Replace censored words in $text
 //
-function censor_words(string $text)
+function censor_words(string $text, int &$count = 0)
 {
 	global $db;
 	static $search_for, $replace_with;
@@ -902,7 +902,10 @@ function censor_words(string $text)
 	}
 
 	if (!empty($search_for))
-		$text = substr(preg_replace($search_for, $replace_with, ' '.$text.' '), 1, -1);
+	{
+		$text = substr(preg_replace($search_for, $replace_with, ' '.$text.' ', -1, $cnt), 1, -1);
+		$count += $cnt;
+	}
 
 	return $text;
 }

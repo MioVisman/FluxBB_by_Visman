@@ -13,6 +13,7 @@ $lang_post = array(
 'All caps subject'	=>	'Les titres ne peuvent pas contenir que des majuscules.',
 'All caps message'	=>	'Les messages ne peuvent pas contenir que des majuscules.',
 'Empty after strip'	=>	'Il semble que votre message se compose uniquement de BBCodes vides. Il est possible que cela se soit produit parce que, par ex. le guillemet le plus interne a été ignoré en raison du niveau de profondeur de guillemet maximum.',
+'Too many censored words' => 'De nombreux mots ont été censurés.',
 
 // Posting
 'Post errors'		=>	'Erreurs de publication',

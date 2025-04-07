@@ -57,6 +57,7 @@ if (isset($_POST['form_sent'], $_POST['form']) && is_array($_POST['form']))
 		'quickpost'				=> sva_gf('quickpost') != '1' ? '0' : '1',
 		'users_online'			=> sva_gf('users_online') != '1' ? '0' : '1',
 		'censoring'				=> sva_gf('censoring') != '1' ? '0' : '1',
+		'censoring_count'       => intval(sva_gf('censoring_count')) > 0 ? intval(sva_gf('censoring_count')) : 0,
 		'signatures'			=> sva_gf('signatures') != '1' ? '0' : '1',
 		'show_dot'				=> sva_gf('show_dot') != '1' ? '0' : '1',
 		'topic_views'			=> sva_gf('topic_views') != '1' ? '0' : '1',
@@ -538,6 +539,13 @@ generate_admin_menu('options');
 										<label class="conl"><input type="radio" name="form[censoring]" value="1"<?php if ($pun_config['o_censoring'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
 										<label class="conl"><input type="radio" name="form[censoring]" value="0"<?php if ($pun_config['o_censoring'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
 										<span class="clearb"><?php printf($lang_admin_options['Censor words help'], '<a href="admin_censoring.php">'.$lang_admin_common['Censoring'].'</a>') ?></span>
+									</td>
+								</tr>
+								<tr>
+									<th scope="row"><?php echo $lang_admin_options['Censor words count label'] ?></th>
+									<td>
+										<input type="text" name="form[censoring_count]" size="3" maxlength="3" value="<?php echo ($pun_config['o_censoring_count'] ?? '0') ?>" />
+										<span><?php echo $lang_admin_options['Censor words count help'] ?></span>
 									</td>
 								</tr>
 								<tr>

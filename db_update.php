@@ -19,7 +19,7 @@ mb_substitute_character(0xFFFD);
 // The FluxBB version this script updates to
 define('UPDATE_TO', '1.5.11');
 
-define('UPDATE_TO_VER_REVISION', 86);	// номер сборки - Visman
+define('UPDATE_TO_VER_REVISION', 87);	// номер сборки - Visman
 define('LATEST_REV_DB_CHANGES', 79);	// последняя ревизия с изменениями БД - Visman
 
 define('UPDATE_TO_DB_REVISION', 21);
@@ -2468,6 +2468,12 @@ foreach ($errors[$id] as $cur_error)
 				alter_table_utf8($db_prefix . $t);
 			}
 		} // rev.79
+
+		if (!array_key_exists('o_cur_ver_revision', $pun_config) || $pun_config['o_cur_ver_revision'] < 87)
+		{
+			if (!array_key_exists('o_censoring_count', $pun_config))
+				$db->query('INSERT INTO '.$db->prefix.'config (conf_name, conf_value) VALUES (\'o_censoring_count\', \'0\')') or error('Unable to insert config value \'o_censoring_count\'', __FILE__, __LINE__, $db->error());
+		} // rev.87
 		// Visman
 		break;
 

@@ -13,6 +13,7 @@ $lang_post = array(
 'All caps subject'	=>	'Subjects cannot contain only capital letters.',
 'All caps message'	=>	'Posts cannot contain only capital letters.',
 'Empty after strip'	=>	'It seems your post consisted of empty BBCodes only. It is possible that this happened because e.g. the innermost quote was discarded because of the maximum quote depth level.',
+'Too many censored words' => 'Many words have been censored.',
 
 // Posting
 'Post errors'		=>	'Post errors',

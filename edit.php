@@ -68,13 +68,15 @@ if (isset($_POST['form_sent']))
 	// Make sure they got here from the site
 	confirm_referrer('edit.php');
 
+	$cens_count = 0;
+
 	// If it's a topic it must contain a subject
 	if ($can_edit_subject)
 	{
 		$subject = pun_trim($_POST['req_subject'] ?? '');
 
 		if ($pun_config['o_censoring'] == '1')
-			$censored_subject = pun_trim(censor_words($subject));
+			$censored_subject = pun_trim(censor_words($subject, $cens_count));
 
 		if ($subject == '')
 			$errors[] = $lang_post['No subject'];
@@ -116,12 +118,15 @@ if (isset($_POST['form_sent']))
 		else if ($pun_config['o_censoring'] == '1')
 		{
 			// Censor message to see if that causes problems
-			$censored_message = pun_trim(censor_words($message));
+			$censored_message = pun_trim(censor_words($message, $cens_count));
 
 			if ($censored_message == '')
 				$errors[] = $lang_post['No message after censoring'];
 		}
 	}
+
+	if (!empty($pun_config['o_censoring_count']) && $cens_count > $pun_config['o_censoring_count'])
+		$errors[] = $lang_post['Too many censored words'];
 
 	$hide_smilies = isset($_POST['hide_smilies']) ? '1' : '0';
 	$stick_topic = isset($_POST['stick_topic']) ? '1' : '0';
