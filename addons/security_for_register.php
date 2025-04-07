@@ -124,7 +124,7 @@ class addon_security_for_register extends flux_addon
 			return;
 		}
 
-		if (!isset($_POST['req_user']) || !isset($_POST['req_email1']) || !isset($_POST['timezone']) || !isset($_POST['email_setting']))
+		if (!isset($_POST['req_user'], $_POST['req_email1'], $_POST['timezone'], $_POST['email_setting']) || (empty($_POST['language']) && count(forum_list_langs()) > 1))
 			$errors[] = security_msg('1');
 
 		if (security_test_browser())
@@ -139,7 +139,7 @@ class addon_security_for_register extends flux_addon
 			return;
 		}
 
-		if ($cur_form['form_ip'] != get_remote_address())
+		if ($cur_form['form_ip'] !== get_remote_address())
 			$errors[] = security_msg('4');
 
 		if ($now - $this->time_min < $cur_form['form_time'])

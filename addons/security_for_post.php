@@ -138,7 +138,7 @@ class addon_security_for_post extends flux_addon
 			return;
 		}
 
-		if ($cur_form['form_ip'] != get_remote_address())
+		if ($cur_form['form_ip'] !== get_remote_address())
 			$errors[] = security_msg('4');
 
 		if ($now - $this->time_min < $cur_form['form_time'])

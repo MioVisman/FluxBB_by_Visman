@@ -106,7 +106,7 @@ if (isset($_POST['form_sent']))
 
 	if (!is_valid_email($email1))
 		$errors[] = $lang_common['Invalid email'];
-	else if ($pun_config['o_regs_verify'] == '1' && $email1 != $email2)
+	else if ($pun_config['o_regs_verify'] == '1' && $email1 !== $email2)
 		$errors[] = $lang_register['Email not match'];
 
 	// Check if it's a banned email address

@@ -236,7 +236,7 @@ function security_show_captcha(int $tabindex, bool $acaptcha = true, bool $qcapt
 
 function security_test_browser()
 {
-		return empty($_SERVER['HTTP_ACCEPT_CHARSET']) && empty($_SERVER['HTTP_ACCEPT_ENCODING']) && empty($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+	return empty($_SERVER['HTTP_ACCEPT']) || '*/*' == $_SERVER['HTTP_ACCEPT'] || empty($_SERVER['HTTP_ACCEPT_ENCODING']) || empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) || empty($_SERVER['HTTP_ORIGIN']);
 }
 
 
