@@ -22,7 +22,7 @@ of the other forums have whilst not sacrificing essential functionality or usabi
 
 * Homepage: https_://fluxbb.org
 * Documentation: https_://fluxbb.org/docs/v1.5
-* Community: https_://fluxbb.org/forums/, https://fluxbb.qb7.ru/forum/ (русское)
+* Community: https_://fluxbb.org/forums/, https_://fluxbb.qb7.ru/forum/ (русское)
 * Resources: https_://fluxbb.org/resources/
 * Development: https://github.com/MioVisman/FluxBB_by_Visman
 * Language packs:
