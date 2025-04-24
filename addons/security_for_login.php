@@ -127,7 +127,7 @@ class addon_security_for_login extends flux_addon
 			return;
 		}
 
-		if (empty($_POST['req_username']) || empty($_POST['req_password']) || empty($_POST['redirect_url']))
+		if (empty($_POST['req_username']) || empty($_POST['req_password']) || empty($_POST['redirect_url']) || empty($_POST['login']))
 			$errors[] = security_msg('1');
 
 		if (security_test_browser())

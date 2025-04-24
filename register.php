@@ -450,7 +450,7 @@ if (!empty($errors))
 				</fieldset>
 			</div>
 <?php flux_hook('register_before_submit'); ?>
-			<p class="buttons"><input type="submit" name="register" value="<?php echo $lang_register['Register'] ?>" /></p>
+			<p class="buttons"><input type="submit" name="register2" value="<?php echo $lang_register['Register'] ?>" /></p>
 		</form>
 	</div>
 </div>

@@ -124,7 +124,7 @@ class addon_security_for_register extends flux_addon
 			return;
 		}
 
-		if (!isset($_POST['req_user'], $_POST['req_email1'], $_POST['timezone'], $_POST['email_setting']) || (empty($_POST['language']) && count(forum_list_langs()) > 1))
+		if (!isset($_POST['req_user'], $_POST['req_email1'], $_POST['timezone'], $_POST['email_setting']) || (empty($_POST['language']) && count(forum_list_langs()) > 1) || empty($_POST['register2']))
 			$errors[] = security_msg('1');
 
 		if (security_test_browser())
