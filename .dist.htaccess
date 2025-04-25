@@ -10,7 +10,7 @@ AddDefaultCharset UTF-8
   #
   ### Only works in Apache 2.4.10+ (Reason, condition  -> "expr = -z% {resp: ...}") ###
   #
-  Header always set Content-Security-Policy "object-src 'none';frame-ancestors 'none';base-uri 'none';form-action 'self'" "expr=-z %{resp:Content-Security-Policy}"
+  Header always set Content-Security-Policy "default-src 'self';object-src 'none';frame-ancestors 'none';base-uri 'none';form-action 'self'" "expr=-z %{resp:Content-Security-Policy}"
   Header always set Feature-Policy "accelerometer 'none';ambient-light-sensor 'none';autoplay 'none';battery 'none';camera 'none';document-domain 'self';fullscreen 'self';geolocation 'none';gyroscope 'none';magnetometer 'none';microphone 'none';midi 'none';payment 'none';picture-in-picture 'none';sync-xhr 'self';usb 'none'" "expr=-z %{resp:Feature-Policy}"
   Header always set Referrer-Policy "strict-origin-when-cross-origin" "expr=-z %{resp:Referrer-Policy}"
 # for https only mode
