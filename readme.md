@@ -27,3 +27,4 @@ of the other forums have whilst not sacrificing essential functionality or usabi
 * Development: https://github.com/MioVisman/FluxBB_by_Visman
 * Language packs:
   * Simplified Chinese: https://github.com/tanziran/langs
+  * Hindi: https://github.com/druvx13/hindi-fluxbb-pkg
