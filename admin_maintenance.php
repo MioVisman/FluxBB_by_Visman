@@ -53,7 +53,7 @@ if ($action === 'rebuild')
 				$result = $db->query('ALTER TABLE '.$db->prefix.'search_words auto_increment=1') or error('Unable to update table auto_increment', __FILE__, __LINE__, $db->error());
 				break;
 
-			case 'pgsql';
+			case 'pgsql':
 				$result = $db->query('SELECT setval(\''.$db->prefix.'search_words_id_seq\', 1, false)') or error('Unable to update sequence', __FILE__, __LINE__, $db->error());
 		}
 	}
