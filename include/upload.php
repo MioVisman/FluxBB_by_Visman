@@ -760,7 +760,11 @@ class upfClass
                 }
                 break;
             case self::GD:
-                $result = imagedestroy($this->image);
+                if (PHP_VERSION_ID < 80000) {
+                    $result = imagedestroy($this->image);
+                } else {
+                    $result = true;
+                }
                 break;
         }
 
