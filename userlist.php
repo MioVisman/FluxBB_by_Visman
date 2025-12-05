@@ -46,7 +46,15 @@ $num_users = $db->result($result);
 // Determine the user offset (based on $_GET['p'])
 $num_pages = ceil($num_users / 50);
 
-$p = ! is_numeric($_GET['p'] ?? null) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages ? 1 : intval($_GET['p']);
+if (! isset($_GET['p']))
+	$p = 1;
+elseif (! is_numeric($_GET['p']) || $_GET['p'] < 1)
+	message($lang_common['Bad request'], false, '404 Not Found');
+elseif ($_GET['p'] > $num_pages)
+	message($lang_common['No page'] ?? $lang_common['Bad request'], false, '404 Not Found');
+else
+	$p = intval($_GET['p']);
+
 $start_from = 50 * ($p - 1);
 
 $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_common['User list']);

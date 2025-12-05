@@ -21,6 +21,7 @@ $lang_common = array(
 'Pun include extension'  			=>	'Impossible de traiter l\'inclusion d\'utilisateur %s à partir du modèle %s. Les fichiers "%s" ne sont pas autorisés',
 'Pun include directory'				=>	'Impossible de traiter l\'inclusion d\'utilisateur %s à partir du modèle %s. La traversée de répertoire n\'est pas autorisée',
 'Pun include error'					=>	'Impossible de traiter l\'inclusion d\'utilisateur %s à partir du modèle %s. Il n\'y a pas de fichier de ce type ni dans le répertoire du modèle ni dans le répertoire d\'inclusion de l\'utilisateur',
+'No page' => 'This page doesn\'t exist yet. Or doesn\'t exist anymore.',
 
 'Hidden text' => 'Texte caché',
 'Show' => 'Afficher',

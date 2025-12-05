@@ -76,7 +76,15 @@ if (!$pun_user['is_guest'])
 // Determine the topic offset (based on $_GET['p'])
 $num_pages = ceil($cur_forum['num_topics'] / $pun_user['disp_topics']);
 
-$p = ! is_numeric($_GET['p'] ?? null) || $_GET['p'] <= 1 || $_GET['p'] > $num_pages ? 1 : intval($_GET['p']);
+if (! isset($_GET['p']))
+	$p = 1;
+elseif (! is_numeric($_GET['p']) || $_GET['p'] < 1)
+	message($lang_common['Bad request'], false, '404 Not Found');
+elseif ($_GET['p'] > $num_pages)
+	message($lang_common['No page'] ?? $lang_common['Bad request'], false, '404 Not Found');
+else
+	$p = intval($_GET['p']);
+
 $start_from = $pun_user['disp_topics'] * ($p - 1);
 
 // Generate paging links

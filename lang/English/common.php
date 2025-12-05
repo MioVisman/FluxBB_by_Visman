@@ -21,6 +21,7 @@ $lang_common = array(
 'Pun include extension'  			=>	'Unable to process user include %s from template %s. "%s" files are not allowed',
 'Pun include directory'				=>	'Unable to process user include %s from template %s. Directory traversal is not allowed',
 'Pun include error'					=>	'Unable to process user include %s from template %s. There is no such file in neither the template directory nor in the user include directory',
+'No page' => 'This page doesn\'t exist yet. Or doesn\'t exist anymore.',
 
 'Hidden text' => 'Hidden text',
 'Show' => 'Show',
