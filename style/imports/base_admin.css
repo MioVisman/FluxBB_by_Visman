@@ -49,6 +49,8 @@ table#forumperms .atcl {text-align: left; width: 15em; white-space: nowrap}
 #users2 .tc4, #bans1 .tc4 {width: 10%; text-align: center}
 #users2 .tcr {width: 10%;}
 #bans1 .tcr {width: 15%; white-space: nowrap}
+#users2 .tcl, #users2 .tc2, #users2 .tc3, #users2 .tc4, #users2 .tc5 {overflow-wrap: break-word;}
+#bans1 .tcl, #bans1 .tc2, #bans1 .tc3, #bans1 .tc4, #bans1 .tc5, #bans1 .tc6 {overflow-wrap: break-word;}
 #users2 .tcmod {width: 2em; text-align: center}
 #adminconsole #linkst, #adminconsole #linksb a {font-weight: bold}
 

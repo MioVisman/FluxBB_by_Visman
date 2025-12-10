@@ -156,6 +156,9 @@
 	text-align: center;
 }
 
+#users2 .tcl, #users2 .tc2, #users2 .tc3, #users2 .tc4, #users2 .tc5 {overflow-wrap: break-word;}
+#bans1 .tcl, #bans1 .tc2, #bans1 .tc3, #bans1 .tc4, #bans1 .tc5, #bans1 .tc6 {overflow-wrap: break-word;}
+
 .plugin p {
 	padding: 12px 18px 0;
 }
