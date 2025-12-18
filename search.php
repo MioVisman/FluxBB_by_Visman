@@ -818,7 +818,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 					</td>
 					<td class="tc2"><?php echo $forum ?></td>
 					<td class="tc3"><?php echo forum_number_format($cur_search['num_replies']) ?></td>
-					<td class="tcr"><?php echo '<a href="viewtopic.php?pid='.$cur_search['last_post_id'].$url_shl.'#p'.$cur_search['last_post_id'].'">'.format_time($cur_search['last_post']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_search['last_poster']) ?></span></td>
+					<td class="tcr"><?php echo '<a href="viewtopic.php?id='.$cur_search['tid'].($num_pages_topic > 1 ? '&p='.$num_pages_topic : '').$url_shl.'#p'.$cur_search['last_post_id'].'">'.format_time($cur_search['last_post']).'</a> <span class="byuser">'.$lang_common['by'].' '.pun_htmlspecialchars($cur_search['last_poster']) ?></span></td>
 				</tr>
 <?php
 

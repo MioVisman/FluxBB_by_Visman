@@ -39,6 +39,14 @@ if ($pid)
 	$num_posts = $db->result($result) + 1;
 
 	$_GET['p'] = ceil($num_posts / $pun_user['disp_posts']);
+
+	if ($pun_user['is_guest'])
+	{
+		$search_hl = intval($_GET['search_hl'] ?? 0);
+
+		header('Location: viewtopic.php?id='.$id.($_GET['p'] > 1 ? '&p='.$_GET['p'] : '').($search_hl > 0 ? '&search_hl='.$search_hl : '').'#p'.$pid, true, 301);
+		exit;
+	}
 }
 else
 {
@@ -68,12 +76,22 @@ else
 	// If action=last, we redirect to the last post
 	if ($action === 'last')
 	{
-		$result = $db->query('SELECT MAX(id) FROM '.$db->prefix.'posts WHERE topic_id='.$id) or error('Unable to fetch last post info', __FILE__, __LINE__, $db->error());
-		$last_post_id = $db->result($result);
+//		$result = $db->query('SELECT MAX(id) FROM '.$db->prefix.'posts WHERE topic_id='.$id) or error('Unable to fetch last post info', __FILE__, __LINE__, $db->error());
+//		$last_post_id = $db->result($result);
+//
+//		if ($last_post_id)
+//		{
+//			header('Location: viewtopic.php?pid='.$last_post_id.'#p'.$last_post_id);
+//			exit;
+//		}
+		$result = $db->query('SELECT num_replies, last_post_id FROM '.$db->prefix.'topics WHERE id='.$id) or error('Unable to fetch last post info', __FILE__, __LINE__, $db->error());
+		$cur_topic = $db->fetch_assoc($result);
 
-		if ($last_post_id)
+		if (! empty($cur_topic))
 		{
-			header('Location: viewtopic.php?pid='.$last_post_id.'#p'.$last_post_id);
+			$last_page = ceil(($cur_topic['num_replies'] + 1) / $pun_user['disp_posts']);
+
+			header('Location: viewtopic.php?id='.$id.($last_page > 1 ? '&p='.$last_page : '').'#p'.$cur_topic['last_post_id']);
 			exit;
 		}
 	}
@@ -547,7 +565,7 @@ while ($cur_post = $db->fetch_assoc($result))
 
 ?>
 <div id="p<?php echo $cur_post['id'] ?>" class="blockpost<?php echo ($post_count % 2 == 0) ? ' roweven' : ' rowodd' ?><?php if ($cur_post['id'] == $cur_topic['first_post_id']) echo ' firstpost'; ?><?php if ($post_count == 1) echo ' blockpost1'; ?>">
-	<h2><span><span class="conr">#<?php echo ($start_from + $post_count) ?></span> <a href="viewtopic.php?pid=<?php echo $cur_post['id'].'#p'.$cur_post['id'] ?>"><?php echo format_time($cur_post['posted']) ?></a></span></h2>
+	<h2><span><span class="conr">#<?php echo ($start_from + $post_count) ?></span> <a href="<?php echo ($pun_user['is_guest'] ? '' : 'viewtopic.php?pid='.$cur_post['id']).'#p'.$cur_post['id'] ?>"><?php echo format_time($cur_post['posted']) ?></a></span></h2>
 	<div class="box">
 		<div class="inbox">
 			<div class="postbody">
