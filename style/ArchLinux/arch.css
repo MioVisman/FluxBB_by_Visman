@@ -1,0 +1,162 @@
+* { font-family: sans-serif !important; }
+.pun { max-width: none; margin: 0; }
+#archnavbar.anb-forum ul li.anb-selected a { color: #fff !important; }
+.pun pre, .pun code { font-family: monospace !important; }
+html, body, .pun { background: #f6f9fc; color: #222; }
+.pun .punwrap {	border-color: #bcd; border-radius: 0; }
+
+.pun a, .pun a:link, .pun a:visited { text-decoration:none; color:#07b; outline: none; }
+.pun a:focus, #brdmain a:focus { color: #e90; }
+.pun a:hover, #brdmain a:hover { color:#999 !important; text-decoration:underline; }
+.pun a:active, #brdmain a:active { color: #e90 !important; }
+
+#brdmenu { background: #fff; }
+#brdmenu ul { margin-left: -9px; }
+#brdmenu a, #brdmenu a:link, #brdmenu a:visited { display: inline; padding-right: 10px; background: #fff; color: #07b; }
+#brdmain a:visited { color: #666; }
+#brdmenu a:hover { color:#999; text-decoration:underline; }
+#brdmenu a:active, #brdmenu a:focus { color: #e90; }
+
+.pun .postmsg a { font-weight: bold; }
+
+/* hide round edges */
+.pun .top-box { background: none; }
+.pun .top-box div { background: none; }
+.pun .end-box { background: none; }
+.pun .end-box div { background: none; }
+
+/* hide moderator list */
+#brdmain .tcl .modlist { display: none; }
+
+/* replace green color */
+#punindex .blocktable h2, .pun #vf h2 { color: #444; }
+.pun .blocktable th { color: #444; }
+.pun .blockpost h2 { color: #444; }
+.pun .quotebox cite { color: #444; }
+.pun #quickpost h2, #punpost .blockform h2, #punedit .blockform h2, #posterror h2, #pundelete .blockform h2 { color: #444; }
+.pun label, .pun legend, #adminconsole fieldset th { color: #444; }
+.pun #viewprofile dt, #adstats dt { color: #444; }
+
+.pun .icon { border-color: #e8ecf1; border-width: 6px; margin: 2px 0 0 2px; }
+.pun .inew .icon { border-color: #07b; }
+
+.pun .quotebox { border-color: #bcd; background: #f6f9fc; color: #444; }
+.pun .codebox { border-color: #bcd; background: #ebf1f5; color: #222; }
+
+/* hide border of images */
+.pun .postimg img { border: none; }
+
+@media (max-width: 575px) {
+    #brdstats .conr,
+    #punindex .tcr .byuser,
+    #punpost .blockform h2, #punedit .blockform h2, .pun #quickpost h2,
+    #pundelete .blockform h2,
+    .pun .blocktable .tc2,
+    .pun .blocktable .tc3,
+    .pun .blockpost .postfootleft,
+    .pun .blockpost .postleft dd,
+    .pun .blocktable td .byuser,
+    .pun .blockpost h2 .conr,
+    .pun .blockpost .postleft .postavatar,
+    .pun #quickpost legend, #punpost legend, #punedit legend,
+    .pun #quickpost .bblinks {
+        display: none;
+    }
+
+    .pun .blockpost .postleft {
+        margin-left: 0;
+        padding: 0;
+    }
+
+    .pun .blockpost .postbody {
+        float: none;
+    }
+
+    .pun .blockpost .postright {
+        padding: 5px;
+    }
+
+    .pun .inform {
+        padding: 0 5px;
+    }
+
+    .pun input[type=text], .pun input[type=password], .pun select, .pun textarea {
+        max-width: 75vw;
+    }
+
+    .pun .blockpost {
+        background-color: #fcfdfe;
+    }
+
+    .pun .quotebox {
+        margin: 0.75em 0.5em;
+    }
+
+    .pun .blockmenu {
+        width: 100%;
+        float: none;
+    }
+
+    .pun .block2col .blockform, .pun .block2col .block {
+        margin-left: 0;
+    }
+
+    #brdmenu a:link, #brdmenu a:visited {
+        padding-left: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .pun {
+        padding: 30px 5px;
+    }
+
+    .pun .punwrap {
+        padding: 18px 5px;
+    }
+
+    #brdwelcome {
+        padding: 20px 0;
+    }
+
+    #brdmenu ul {
+        margin-left: 0;
+    }
+
+    #punindex #brdmain .blocktable h2, #punsearch #vf h2 {
+        padding-top: 4px;
+    }
+
+    .pun .required strong {
+        white-space: normal;
+    }
+
+    .pun .crumbs li {
+        white-space: normal;
+    }
+
+    .pun .postlinksb .crumbs {
+        margin-right: 0;
+    }
+
+    .pun .blockpost .postfoot {
+        border-left-style: none;
+    }
+
+    #brdwelcome .conl {
+        display: none;
+    }
+
+    .pun .subscribelink {
+        position: inherit;
+    }
+}
+
+#archfooter {
+    display: flex;
+    justify-content: flex-end;
+}
+
+#archfooter li {
+    margin-left: 10px;
+}
