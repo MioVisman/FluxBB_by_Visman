@@ -10,6 +10,8 @@
 if (!function_exists('mysqli_connect'))
 	exit('This PHP environment doesn\'t have Improved MySQL (mysqli) support built in. Improved MySQL support is required if you want to use a MySQL 4.1 (or later) database to run this forum. Consult the PHP documentation for further assistance.');
 
+require_once dirname(__FILE__).'/common_params.php';
+
 
 class DBLayer
 {
@@ -97,10 +99,99 @@ class DBLayer
 	}
 
 
+	function query_params($sql, $params = array(), $unbuffered = false)
+	{
+		$normalized = dbp_normalize_params($params, $error);
+		if ($normalized === false)
+			return $this->set_param_error($sql, $error);
+
+		if (!dbp_assert_param_count($sql, count($normalized), $error))
+			return $this->set_param_error($sql, $error);
+
+		if (defined('PUN_SHOW_QUERIES'))
+			$q_start = microtime(true);
+
+		$stmt = @mysqli_prepare($this->link_id, $sql);
+		if (!$stmt)
+			return $this->set_driver_error($sql, $normalized, defined('PUN_SHOW_QUERIES') ? $q_start : null);
+
+		if (!empty($normalized))
+		{
+			list($types, $values) = $this->stmt_types_and_values($normalized);
+			$bind_args = array_merge(array($stmt, $types), $this->ref_values($values));
+			if (!call_user_func_array('mysqli_stmt_bind_param', $bind_args))
+			{
+				$this->error_no = @mysqli_stmt_errno($stmt);
+				$this->error_msg = @mysqli_stmt_error($stmt);
+				@mysqli_stmt_close($stmt);
+
+				if (defined('PUN_SHOW_QUERIES'))
+					$this->saved_queries[] = array($this->debug_query($sql, $normalized), 0);
+
+				return false;
+			}
+		}
+
+		if (!@mysqli_stmt_execute($stmt))
+		{
+			$this->error_no = @mysqli_stmt_errno($stmt);
+			$this->error_msg = @mysqli_stmt_error($stmt);
+			@mysqli_stmt_close($stmt);
+
+			if (defined('PUN_SHOW_QUERIES'))
+				$this->saved_queries[] = array($this->debug_query($sql, $normalized), 0);
+
+			return false;
+		}
+
+		$field_count = mysqli_stmt_field_count($stmt);
+
+		if ($field_count > 0)
+		{
+			if (function_exists('mysqli_stmt_get_result'))
+			{
+				$this->query_result = @mysqli_stmt_get_result($stmt);
+				if ($this->query_result instanceof mysqli_result)
+				{
+					@mysqli_stmt_close($stmt);
+				}
+				else
+				{
+					$this->query_result = $this->fetch_stmt_buffered_result($stmt);
+				}
+			}
+			else
+			{
+				$this->query_result = $this->fetch_stmt_buffered_result($stmt);
+			}
+		}
+		else
+		{
+			$this->query_result = true;
+			@mysqli_stmt_close($stmt);
+		}
+
+		if (defined('PUN_SHOW_QUERIES'))
+			$this->saved_queries[] = array($this->debug_query($sql, $normalized), sprintf('%.5F', microtime(true) - $q_start));
+
+		++$this->num_queries;
+
+		return $this->query_result;
+	}
+
+
 	function result($query_id = 0, $row = 0, $col = 0)
 	{
 		if ($query_id)
 		{
+			if ($query_id instanceof DBLayerBufferedResult)
+			{
+				if (!isset($query_id->rows[$row]['num'][$col]))
+					return false;
+
+				return $query_id->rows[$row]['num'][$col];
+			}
+
 			if ($row !== 0 && @mysqli_data_seek($query_id, $row) === false)
 				return false;
 
@@ -117,18 +208,43 @@ class DBLayer
 
 	function fetch_assoc($query_id = 0)
 	{
+		if ($query_id instanceof DBLayerBufferedResult)
+		{
+			if (!isset($query_id->rows[$query_id->row_ptr]))
+				return false;
+
+			$row = $query_id->rows[$query_id->row_ptr]['assoc'];
+			$query_id->row_ptr++;
+
+			return $row;
+		}
+
 		return ($query_id) ? @mysqli_fetch_assoc($query_id) : false;
 	}
 
 
 	function fetch_row($query_id = 0)
 	{
+		if ($query_id instanceof DBLayerBufferedResult)
+		{
+			if (!isset($query_id->rows[$query_id->row_ptr]))
+				return false;
+
+			$row = $query_id->rows[$query_id->row_ptr]['num'];
+			$query_id->row_ptr++;
+
+			return $row;
+		}
+
 		return ($query_id) ? @mysqli_fetch_row($query_id) : false;
 	}
 
 
 	function num_rows($query_id = 0)
 	{
+		if ($query_id instanceof DBLayerBufferedResult)
+			return count($query_id->rows);
+
 		return ($query_id) ? @mysqli_num_rows($query_id) : false;
 	}
 
@@ -159,6 +275,9 @@ class DBLayer
 
 	function free_result($query_id = false)
 	{
+		if ($query_id instanceof DBLayerBufferedResult)
+			return true;
+
 		return ($query_id) ? @mysqli_free_result($query_id) : false;
 	}
 
@@ -190,6 +309,114 @@ class DBLayer
 		}
 		else
 			return false;
+	}
+
+
+	function stmt_types_and_values($params)
+	{
+		$types = '';
+		$values = array();
+
+		foreach ($params as $value)
+		{
+			if (is_bool($value) || is_int($value))
+				$types .= 'i';
+			else if (is_float($value))
+				$types .= 'd';
+			else
+				$types .= 's';
+
+			$values[] = $value;
+		}
+
+		return array($types, $values);
+	}
+
+
+	function ref_values(&$arr)
+	{
+		$refs = array();
+		foreach ($arr as $k => $v)
+			$refs[$k] = &$arr[$k];
+
+		return $refs;
+	}
+
+
+	function fetch_stmt_buffered_result($stmt)
+	{
+		$result = new DBLayerBufferedResult();
+		$meta = @mysqli_stmt_result_metadata($stmt);
+
+		if (!$meta)
+		{
+			@mysqli_stmt_close($stmt);
+			return $result;
+		}
+
+		$fields = array();
+		while ($field = @mysqli_fetch_field($meta))
+			$fields[] = $field->name;
+
+		$bound = array();
+		$bind_refs = array($stmt);
+		for ($i = 0; $i < count($fields); $i++)
+		{
+			$bound[$i] = null;
+			$bind_refs[] = &$bound[$i];
+		}
+
+		@call_user_func_array('mysqli_stmt_bind_result', $bind_refs);
+		@mysqli_stmt_store_result($stmt);
+
+		while (@mysqli_stmt_fetch($stmt))
+		{
+			$num = array();
+			$assoc = array();
+
+			for ($i = 0; $i < count($fields); $i++)
+			{
+				$num[$i] = $bound[$i];
+				$assoc[$fields[$i]] = $bound[$i];
+			}
+
+			$result->rows[] = array('num' => $num, 'assoc' => $assoc);
+		}
+
+		@mysqli_free_result($meta);
+		@mysqli_stmt_close($stmt);
+
+		return $result;
+	}
+
+
+	function debug_query($sql, $params)
+	{
+		return $sql.' /* params: '.str_replace('*/', '* /', var_export($params, true)).' */';
+	}
+
+
+	function set_param_error($sql, $error)
+	{
+		$this->error_no = false;
+		$this->error_msg = $error;
+
+		if (defined('PUN_SHOW_QUERIES'))
+			$this->saved_queries[] = array($this->debug_query($sql, array()), 0);
+
+		return false;
+	}
+
+
+	function set_driver_error($sql, $params, $q_start = null)
+	{
+		$this->error_no = @mysqli_errno($this->link_id);
+		$this->error_msg = @mysqli_error($this->link_id);
+
+		if (defined('PUN_SHOW_QUERIES'))
+			$this->saved_queries[] = array($this->debug_query($sql, $params), 0);
+
+		return false;
 	}
 
 

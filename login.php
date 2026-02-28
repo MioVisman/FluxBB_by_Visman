@@ -30,13 +30,13 @@ if (isset($_POST['form_sent']) && $action === 'in')
 	$form_password = pun_trim($_POST['req_password'] ?? '');
 	$save_pass = isset($_POST['save_pass']);
 
-	$username_sql = $db_type == 'mysql' || $db_type == 'mysqli' || $db_type == 'mysql_innodb' || $db_type == 'mysqli_innodb' ? 'username=\''.$db->escape($form_username).'\'' : 'LOWER(username)=LOWER(\''.$db->escape($form_username).'\')';
+	$username_sql = $db_type == 'mysql' || $db_type == 'mysqli' || $db_type == 'mysql_innodb' || $db_type == 'mysqli_innodb' ? 'username=?' : 'LOWER(username)=LOWER(?)';
 
 	// проверка IP админов и модераторов - Visman
 	if ($pun_config['o_check_ip'] == '1')
-		$result = $db->query('SELECT u.*, g.g_id, g.g_moderator FROM '.$db->prefix.'users AS u LEFT JOIN '.$db->prefix.'groups AS g ON u.group_id=g.g_id WHERE '.$username_sql) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+		$result = $db->query_params('SELECT u.*, g.g_id, g.g_moderator FROM '.$db->prefix.'users AS u LEFT JOIN '.$db->prefix.'groups AS g ON u.group_id=g.g_id WHERE '.$username_sql, array($form_username)) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
 	else
-		$result = $db->query('SELECT * FROM '.$db->prefix.'users WHERE '.$username_sql) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+		$result = $db->query_params('SELECT * FROM '.$db->prefix.'users WHERE '.$username_sql, array($form_username)) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
 
 	$cur_user = $db->fetch_assoc($result);
 
@@ -52,11 +52,11 @@ if (isset($_POST['form_sent']) && $action === 'in')
 
 		if (3 === $authorized)
 		{
-			$db->query('UPDATE '.$db->prefix.'users SET password=\''.$db->escape($cur_user['password']).'\', salt=NULL WHERE id='.$cur_user['id']) or error('Unable to update user password', __FILE__, __LINE__, $db->error());
+			$db->query_params('UPDATE '.$db->prefix.'users SET password=?, salt=NULL WHERE id=?', array($cur_user['password'], $cur_user['id'])) or error('Unable to update user password', __FILE__, __LINE__, $db->error());
 		}
 		else
 		{
-			$db->query('UPDATE '.$db->prefix.'users SET password=\''.$db->escape($cur_user['password']).'\' WHERE id='.$cur_user['id']) or error('Unable to update user password', __FILE__, __LINE__, $db->error());
+			$db->query_params('UPDATE '.$db->prefix.'users SET password=? WHERE id=?', array($cur_user['password'], $cur_user['id'])) or error('Unable to update user password', __FILE__, __LINE__, $db->error());
 		}
 	}
 
@@ -68,7 +68,7 @@ if (isset($_POST['form_sent']) && $action === 'in')
 		// Update the status if this is the first time the user logged in
 		if ($cur_user['group_id'] == PUN_UNVERIFIED)
 		{
-			$db->query('UPDATE '.$db->prefix.'users SET group_id='.intval($pun_config['o_default_user_group']).' WHERE id='.$cur_user['id']) or error('Unable to update user status', __FILE__, __LINE__, $db->error());
+			$db->query_params('UPDATE '.$db->prefix.'users SET group_id=? WHERE id=?', array(intval($pun_config['o_default_user_group']), $cur_user['id'])) or error('Unable to update user status', __FILE__, __LINE__, $db->error());
 
 			// Regenerate the users info cache
 			if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
@@ -81,11 +81,11 @@ if (isset($_POST['form_sent']) && $action === 'in')
 		if ($pun_config['o_check_ip'] == '1')
 		{
 			if ($cur_user['g_id'] == PUN_ADMIN || $cur_user['g_moderator'] == '1')
-				$db->query('UPDATE '.$db->prefix.'users SET registration_ip=\''.$db->escape(get_remote_address()).'\' WHERE id='.$cur_user['id']) or error('Unable to update user IP', __FILE__, __LINE__, $db->error());
+				$db->query_params('UPDATE '.$db->prefix.'users SET registration_ip=? WHERE id=?', array(get_remote_address(), $cur_user['id'])) or error('Unable to update user IP', __FILE__, __LINE__, $db->error());
 		}
 
 		// Remove this users guest entry from the online list
-		$db->query('DELETE FROM '.$db->prefix.'online WHERE ident=\''.$db->escape(get_remote_address()).'\'') or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
+		$db->query_params('DELETE FROM '.$db->prefix.'online WHERE ident=?', array(get_remote_address())) or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
 
 		$expire = $save_pass == '1' ? time() + 1209600 : time() + $pun_config['o_timeout_visit'];
 		pun_setcookie($cur_user['id'], $cur_user['password'], $expire);
@@ -113,11 +113,11 @@ else if ($action === 'out')
 	confirm_referrer('login.php');
 
 	// Remove user from "users online" list
-	$db->query('DELETE FROM '.$db->prefix.'online WHERE user_id='.$pun_user['id']) or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
+	$db->query_params('DELETE FROM '.$db->prefix.'online WHERE user_id=?', array($pun_user['id'])) or error('Unable to delete from online list', __FILE__, __LINE__, $db->error());
 
 	// Update last_visit (make sure there's something to update it with)
 	if (isset($pun_user['logged']))
-		$db->query('UPDATE '.$db->prefix.'users SET last_visit='.$pun_user['logged'].' WHERE id='.$pun_user['id']) or error('Unable to update user visit data', __FILE__, __LINE__, $db->error());
+		$db->query_params('UPDATE '.$db->prefix.'users SET last_visit=? WHERE id=?', array($pun_user['logged'], $pun_user['id'])) or error('Unable to update user visit data', __FILE__, __LINE__, $db->error());
 
 	forum_setcookie($cookie_name, '', 1);
 
@@ -152,7 +152,7 @@ else if ($action === 'forget' || $action === 'forget_2')
 		// Did everything go according to plan?
 		if (empty($errors))
 		{
-			$result = $db->query('SELECT id, username, last_email_sent FROM '.$db->prefix.'users WHERE email=\''.$db->escape($email).'\'') or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
+			$result = $db->query_params('SELECT id, username, last_email_sent FROM '.$db->prefix.'users WHERE email=?', array($email)) or error('Unable to fetch user info', __FILE__, __LINE__, $db->error());
 			$cur_hit = $db->fetch_assoc($result);
 
 			if (is_array($cur_hit))
@@ -179,7 +179,7 @@ else if ($action === 'forget' || $action === 'forget_2')
 					$new_password = random_pass(12);
 					$new_password_key = random_pass(8);
 
-					$db->query('UPDATE '.$db->prefix.'users SET activate_string=\''.$db->escape(password_hash($new_password, PASSWORD_DEFAULT)).'\', activate_key=\''.$db->escape($new_password_key).'\', last_email_sent = '.time().' WHERE id='.$cur_hit['id']) or error('Unable to update activation data', __FILE__, __LINE__, $db->error());
+					$db->query_params('UPDATE '.$db->prefix.'users SET activate_string=?, activate_key=?, last_email_sent=? WHERE id=?', array(password_hash($new_password, PASSWORD_DEFAULT), $new_password_key, time(), $cur_hit['id'])) or error('Unable to update activation data', __FILE__, __LINE__, $db->error());
 
 					// Do the user specific replacements to the template
 					$cur_mail_message = str_replace('<username>', $cur_hit['username'], $mail_message);

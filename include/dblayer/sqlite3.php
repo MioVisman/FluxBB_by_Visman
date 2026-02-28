@@ -10,6 +10,8 @@
 if (!class_exists('SQLite3'))
 	exit('This PHP environment doesn\'t have SQLite3 support built in. SQLite3 support is required if you want to use a SQLite3 database to run this forum. Consult the PHP documentation for further assistance.');
 
+require_once dirname(__FILE__).'/common_params.php';
+
 
 class DBLayer
 {
@@ -126,6 +128,98 @@ class DBLayer
 
 			return false;
 		}
+	}
+
+
+	function query_params($sql, $params = array(), $unbuffered = false)
+	{
+		$this->last_query = $sql;
+
+		$normalized = dbp_normalize_params($params, $error);
+		if ($normalized === false)
+			return $this->set_param_error($sql, $error);
+
+		if (!dbp_assert_param_count($sql, count($normalized), $error))
+			return $this->set_param_error($sql, $error);
+
+		if (defined('PUN_SHOW_QUERIES'))
+			$q_start = microtime(true);
+
+		$stmt = @$this->link_id->prepare($sql);
+		if (!$stmt)
+		{
+			$this->error_no = $this->link_id->lastErrorCode();
+			$this->error_msg = $this->link_id->lastErrorMsg();
+
+			if (defined('PUN_SHOW_QUERIES'))
+				$this->saved_queries[] = array($this->debug_query($sql, $normalized), 0);
+
+			if ($this->in_transaction > 0)
+			{
+				--$this->in_transaction;
+				$this->link_id->exec('ROLLBACK');
+			}
+
+			return false;
+		}
+
+		for ($i = 0; $i < count($normalized); $i++)
+		{
+			$value = $normalized[$i];
+			$type = SQLITE3_TEXT;
+
+			if ($value === null)
+				$type = SQLITE3_NULL;
+			else if (is_bool($value) || is_int($value))
+				$type = SQLITE3_INTEGER;
+			else if (is_float($value))
+				$type = SQLITE3_FLOAT;
+
+			if (!@$stmt->bindValue($i + 1, $value, $type))
+			{
+				$this->error_no = $this->link_id->lastErrorCode();
+				$this->error_msg = $this->link_id->lastErrorMsg();
+				@$stmt->close();
+
+				if (defined('PUN_SHOW_QUERIES'))
+					$this->saved_queries[] = array($this->debug_query($sql, $normalized), 0);
+
+				if ($this->in_transaction > 0)
+				{
+					--$this->in_transaction;
+					$this->link_id->exec('ROLLBACK');
+				}
+
+				return false;
+			}
+		}
+
+		$this->query_result = @$stmt->execute();
+		@$stmt->close();
+
+		if ($this->query_result)
+		{
+			if (defined('PUN_SHOW_QUERIES'))
+				$this->saved_queries[] = array($this->debug_query($sql, $normalized), sprintf('%.5F', microtime(true) - $q_start));
+
+			++$this->num_queries;
+
+			return $this->query_result;
+		}
+
+		if (defined('PUN_SHOW_QUERIES'))
+			$this->saved_queries[] = array($this->debug_query($sql, $normalized), 0);
+
+		$this->error_no = $this->link_id->lastErrorCode();
+		$this->error_msg = $this->link_id->lastErrorMsg();
+
+		if ($this->in_transaction > 0)
+		{
+			--$this->in_transaction;
+			$this->link_id->exec('ROLLBACK');
+		}
+
+		return false;
 	}
 
 
@@ -266,6 +360,24 @@ class DBLayer
 		}
 		else
 			return false;
+	}
+
+
+	function debug_query($sql, $params)
+	{
+		return $sql.' /* params: '.str_replace('*/', '* /', var_export($params, true)).' */';
+	}
+
+
+	function set_param_error($sql, $error)
+	{
+		$this->error_no = false;
+		$this->error_msg = $error;
+
+		if (defined('PUN_SHOW_QUERIES'))
+			$this->saved_queries[] = array($this->debug_query($sql, array()), 0);
+
+		return false;
 	}
 
 

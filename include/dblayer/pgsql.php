@@ -10,6 +10,8 @@
 if (!function_exists('pg_connect'))
 	exit('This PHP environment doesn\'t have PostgreSQL support built in. PostgreSQL support is required if you want to use a PostgreSQL database to run this forum. Consult the PHP documentation for further assistance.');
 
+require_once dirname(__FILE__).'/common_params.php';
+
 
 class DBLayer
 {
@@ -139,6 +141,54 @@ class DBLayer
 	}
 
 
+	function query_params($sql, $params = array(), $unbuffered = false)
+	{
+		if (strrpos($sql, 'LIMIT') !== false)
+			$sql = preg_replace('%LIMIT ([0-9]+),([ 0-9]+)%', 'LIMIT \\2 OFFSET \\1', $sql);
+
+		$normalized = dbp_normalize_params($params, $error);
+		if ($normalized === false)
+			return $this->set_param_error($sql, $error);
+
+		if (!dbp_assert_param_count($sql, count($normalized), $error))
+			return $this->set_param_error($sql, $error);
+
+		$pgsql_sql = dbp_pgsql_rewrite_placeholders($sql);
+
+		if (defined('PUN_SHOW_QUERIES'))
+			$q_start = microtime(true);
+
+		$this->query_result = @pg_query_params($this->link_id, $pgsql_sql, $normalized);
+
+		if ($this->query_result !== false && pg_result_status($this->query_result) != PGSQL_FATAL_ERROR)
+		{
+			if (defined('PUN_SHOW_QUERIES'))
+				$this->saved_queries[] = array($this->debug_query($sql, $normalized), sprintf('%.5F', microtime(true) - $q_start));
+
+			++$this->num_queries;
+			$this->last_query_text = $pgsql_sql;
+
+			return $this->query_result;
+		}
+
+		if (defined('PUN_SHOW_QUERIES'))
+			$this->saved_queries[] = array($this->debug_query($sql, $normalized), 0);
+
+		$this->error_no = false;
+		$this->error_msg = $this->query_result ? @pg_result_error($this->query_result) : @pg_last_error($this->link_id);
+
+		if ($this->in_transaction)
+		{
+			--$this->in_transaction;
+			@pg_query($this->link_id, 'ROLLBACK');
+		}
+
+		$this->last_query_text = '';
+
+		return false;
+	}
+
+
 	function result($query_id = 0, $row = 0, $col = 0)
 	{
 		return ($query_id) ? @pg_fetch_result($query_id, $row, $col) : false;
@@ -244,6 +294,25 @@ class DBLayer
 		}
 		else
 			return false;
+	}
+
+
+	function debug_query($sql, $params)
+	{
+		return $sql.' /* params: '.str_replace('*/', '* /', var_export($params, true)).' */';
+	}
+
+
+	function set_param_error($sql, $error)
+	{
+		$this->error_no = false;
+		$this->error_msg = $error;
+		$this->last_query_text = '';
+
+		if (defined('PUN_SHOW_QUERIES'))
+			$this->saved_queries[] = array($this->debug_query($sql, array()), 0);
+
+		return false;
 	}
 
 
