@@ -1169,7 +1169,7 @@ if ($pun_user['id'] != $id &&																	// If we aren't the user (i.e. edi
 	if ($user['icq'] != '')
 	{
 		$user_messaging[] = '<dt>'.$lang_profile['ICQ'].'</dt>';
-		$user_messaging[] = '<dd>'.$user['icq'].'</dd>';
+		$user_messaging[] = '<dd>'.pun_htmlspecialchars($user['icq']).'</dd>';
 	}
 
 	$user_personality = array();
@@ -1570,7 +1570,7 @@ else
 							<input type="hidden" name="form_sent" value="1" />
 							<input type="hidden" name="csrf_hash" value="<?php echo csrf_hash() ?>" />
 							<label><?php echo $lang_profile['Jabber'] ?><br /><input id="jabber" type="text" name="form[jabber]" value="<?php echo pun_htmlspecialchars($user['jabber']) ?>" size="40" maxlength="75" /><br /></label>
-							<label><?php echo $lang_profile['ICQ'] ?><br /><input id="icq" type="text" name="form[icq]" value="<?php echo $user['icq'] ?>" size="12" maxlength="12" /><br /></label>
+							<label><?php echo $lang_profile['ICQ'] ?><br /><input id="icq" type="text" name="form[icq]" value="<?php echo pun_htmlspecialchars($user['icq']) ?>" size="12" maxlength="12" /><br /></label>
 						</div>
 					</fieldset>
 				</div>
